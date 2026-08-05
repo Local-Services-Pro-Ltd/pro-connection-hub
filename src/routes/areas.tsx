@@ -20,6 +20,7 @@ export const Route = createFileRoute("/areas")({
       "Areas we cover — local tradesmen across the UK | TradesmanFinder";
     const description =
       "Vetted tradesmen in London, Manchester, Birmingham, Bristol, Leeds, Glasgow, Cardiff and Newcastle — plus nationwide coverage by postcode.";
+    const base = loaderData?.origin ?? "";
     const image = loaderData?.origin
       ? `${loaderData.origin}/og/areas.jpg`
       : undefined;
@@ -30,7 +31,7 @@ export const Route = createFileRoute("/areas")({
         { property: "og:title", content: "Areas we cover — TradesmanFinder" },
         { property: "og:description", content: description },
         { property: "og:type", content: "website" },
-        { property: "og:url", content: "/areas" },
+        { property: "og:url", content: `${base}/areas` },
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:title", content: "Areas we cover — TradesmanFinder" },
         { name: "twitter:description", content: description },
@@ -45,7 +46,7 @@ export const Route = createFileRoute("/areas")({
             ]
           : []),
       ],
-      links: [{ rel: "canonical", href: "/areas" }],
+      links: [{ rel: "canonical", href: `${base}/areas` }],
     };
   },
 

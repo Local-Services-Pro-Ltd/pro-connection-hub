@@ -20,6 +20,7 @@ export const Route = createFileRoute("/trades/")({
     const title = "All trades — find a vetted UK tradesman | TradesmanFinder";
     const description =
       "Browse every trade on TradesmanFinder — builders, plumbers, electricians, roofers, tilers and more. Typical costs and local availability.";
+    const base = loaderData?.origin ?? "";
     const image = loaderData?.origin
       ? `${loaderData.origin}/og/trades.jpg`
       : undefined;
@@ -30,7 +31,7 @@ export const Route = createFileRoute("/trades/")({
         { property: "og:title", content: "All trades — TradesmanFinder" },
         { property: "og:description", content: description },
         { property: "og:type", content: "website" },
-        { property: "og:url", content: "/trades" },
+        { property: "og:url", content: `${base}/trades` },
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:title", content: "All trades — TradesmanFinder" },
         { name: "twitter:description", content: description },
@@ -45,7 +46,7 @@ export const Route = createFileRoute("/trades/")({
             ]
           : []),
       ],
-      links: [{ rel: "canonical", href: "/trades" }],
+      links: [{ rel: "canonical", href: `${base}/trades` }],
     };
   },
 

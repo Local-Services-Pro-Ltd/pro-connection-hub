@@ -35,6 +35,7 @@ export const Route = createFileRoute("/")({
     const title = "TradesmanFinder — Find a vetted local tradesman in the UK";
     const description =
       "Post your job for free and compare quotes from vetted builders, plumbers, electricians, roofers and more near you. No obligation, real reviews.";
+    const base = loaderData?.origin ?? "";
     const image = loaderData?.origin
       ? `${loaderData.origin}/og/home.jpg`
       : undefined;
@@ -48,7 +49,7 @@ export const Route = createFileRoute("/")({
         },
         { property: "og:description", content: description },
         { property: "og:type", content: "website" },
-        { property: "og:url", content: "/" },
+        { property: "og:url", content: `${base}/` },
         { name: "twitter:card", content: "summary_large_image" },
         {
           name: "twitter:title",
@@ -66,7 +67,7 @@ export const Route = createFileRoute("/")({
             ]
           : []),
       ],
-      links: [{ rel: "canonical", href: "/" }],
+      links: [{ rel: "canonical", href: `${base}/` }],
     };
   },
 

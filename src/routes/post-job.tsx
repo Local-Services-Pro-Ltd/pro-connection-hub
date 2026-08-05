@@ -33,6 +33,7 @@ export const Route = createFileRoute("/post-job")({
     const title = "Post a job free — get up to 3 quotes | TradesmanFinder";
     const description =
       "Describe your job in two minutes and get quotes from up to three vetted local tradesmen. Free to post, no obligation.";
+    const base = loaderData?.origin ?? "";
     const image = loaderData?.origin
       ? `${loaderData.origin}/og/post-job.jpg`
       : undefined;
@@ -43,7 +44,7 @@ export const Route = createFileRoute("/post-job")({
         { property: "og:title", content: "Post a job free — TradesmanFinder" },
         { property: "og:description", content: description },
         { property: "og:type", content: "website" },
-        { property: "og:url", content: "/post-job" },
+        { property: "og:url", content: `${base}/post-job` },
         { name: "twitter:card", content: "summary_large_image" },
         {
           name: "twitter:title",
@@ -61,7 +62,7 @@ export const Route = createFileRoute("/post-job")({
             ]
           : []),
       ],
-      links: [{ rel: "canonical", href: "/post-job" }],
+      links: [{ rel: "canonical", href: `${base}/post-job` }],
     };
   },
 

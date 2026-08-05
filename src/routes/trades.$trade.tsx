@@ -64,6 +64,7 @@ export const Route = createFileRoute("/trades/$trade")({
     const { trade, origin } = loaderData;
     const title = `Find a local ${trade.name.toLowerCase()} | TradesmanFinder`;
     const description = `${trade.blurb} Compare vetted ${trade.name.toLowerCase()}s near you. Typical cost ${trade.typical_cost}.`;
+    const base = origin ?? "";
     const image =
       origin && hasTradeOgImage(trade.slug)
         ? `${origin}/og/trade-${trade.slug}.jpg`
@@ -75,7 +76,7 @@ export const Route = createFileRoute("/trades/$trade")({
         { property: "og:title", content: title },
         { property: "og:description", content: description },
         { property: "og:type", content: "website" },
-        { property: "og:url", content: `/trades/${trade.slug}` },
+        { property: "og:url", content: `${base}/trades/${trade.slug}` },
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:title", content: title },
         { name: "twitter:description", content: description },
@@ -90,7 +91,7 @@ export const Route = createFileRoute("/trades/$trade")({
             ]
           : []),
       ],
-      links: [{ rel: "canonical", href: `/trades/${trade.slug}` }],
+      links: [{ rel: "canonical", href: `${base}/trades/${trade.slug}` }],
     };
   },
 

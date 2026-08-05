@@ -11,6 +11,7 @@ export const Route = createFileRoute("/for-tradesmen")({
       "Join as a tradesman — real leads, no lead fees | TradesmanFinder";
     const description =
       "Get matched to homeowners in your postcodes. One flat monthly membership, no per-lead charges, no bidding wars.";
+    const base = loaderData?.origin ?? "";
     const image = loaderData?.origin
       ? `${loaderData.origin}/og/for-tradesmen.jpg`
       : undefined;
@@ -21,7 +22,7 @@ export const Route = createFileRoute("/for-tradesmen")({
         { property: "og:title", content: "Join TradesmanFinder as a trade" },
         { property: "og:description", content: description },
         { property: "og:type", content: "website" },
-        { property: "og:url", content: "/for-tradesmen" },
+        { property: "og:url", content: `${base}/for-tradesmen` },
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:title", content: "Join TradesmanFinder as a trade" },
         { name: "twitter:description", content: description },
@@ -36,7 +37,7 @@ export const Route = createFileRoute("/for-tradesmen")({
             ]
           : []),
       ],
-      links: [{ rel: "canonical", href: "/for-tradesmen" }],
+      links: [{ rel: "canonical", href: `${base}/for-tradesmen` }],
     };
   },
   component: ForTradesmen,
