@@ -373,7 +373,7 @@ function PostJob() {
               {!user && (
                 <>
                   {" "}
-                  <Link to="/signin" search={{}} className="text-primary hover:underline">
+                  <Link to="/signin" search={{}} className="font-medium text-primary underline underline-offset-2">
                     Sign in
                   </Link>{" "}
                   to track quotes in your account.
