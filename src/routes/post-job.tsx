@@ -20,25 +20,49 @@ export const Route = createFileRoute("/post-job")({
       ? { pro: search["pro"] }
       : {}),
   }),
-  loader: ({ context }) =>
-    context.queryClient.ensureQueryData(tradesQuery).then(() => null),
-  head: () => ({
-    meta: [
-      { title: "Post a job free — get up to 3 quotes | TradesmanFinder" },
-      {
-        name: "description",
-        content:
-          "Describe your job in two minutes and get quotes from up to three vetted local tradesmen. Free to post, no obligation.",
-      },
-      { property: "og:title", content: "Post a job free — TradesmanFinder" },
-      {
-        property: "og:description",
-        content: "Two minutes to post. Up to three quotes from vetted trades.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+  loader: async ({ context }) => {
+    const [, origin] = await Promise.all([
+      context.queryClient.ensureQueryData(tradesQuery),
+      getRequestOrigin(),
+    ]);
+    return { origin };
+  },
+  head: ({ loaderData }) => {
+    const title = "Post a job free — get up to 3 quotes | TradesmanFinder";
+    const description =
+      "Describe your job in two minutes and get quotes from up to three vetted local tradesmen. Free to post, no obligation.";
+    const image = loaderData?.origin
+      ? `${loaderData.origin}/og/post-job.jpg`
+      : undefined;
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: "Post a job free — TradesmanFinder" },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "website" },
+        { property: "og:url", content: "/post-job" },
+        { name: "twitter:card", content: "summary_large_image" },
+        {
+          name: "twitter:title",
+          content: "Post a job free — TradesmanFinder",
+        },
+        { name: "twitter:description", content: description },
+        ...(image
+          ? [
+              { property: "og:image", content: image },
+              {
+                property: "og:image:alt",
+                content: "A homeowner's kitchen mid-renovation",
+              },
+              { name: "twitter:image", content: image },
+            ]
+          : []),
+      ],
+      links: [{ rel: "canonical", href: "/post-job" }],
+    };
+  },
+
   errorComponent: ({ error }) => (
     <Section>
       <p role="alert" className="text-muted-foreground">

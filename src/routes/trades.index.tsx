@@ -4,31 +4,51 @@ import { ArrowUpRight } from "lucide-react";
 import { PageHero, Section } from "@/components/layout-bits";
 import { SearchBar } from "@/components/search-bar";
 import { tradesQuery, proCountsQuery } from "@/lib/queries";
+import { getRequestOrigin } from "@/lib/origin.functions";
 import heroTrades from "@/assets/hero-trades.jpg";
 
 export const Route = createFileRoute("/trades/")({
-  loader: ({ context }) =>
-    Promise.all([
+  loader: async ({ context }) => {
+    const [, , origin] = await Promise.all([
       context.queryClient.ensureQueryData(tradesQuery),
       context.queryClient.ensureQueryData(proCountsQuery),
-    ]).then(() => null),
-  head: () => ({
-    meta: [
-      { title: "All trades — find a vetted UK tradesman | TradesmanFinder" },
-      {
-        name: "description",
-        content:
-          "Browse every trade on TradesmanFinder — builders, plumbers, electricians, roofers, tilers and more. Typical costs and local availability.",
-      },
-      { property: "og:title", content: "All trades — TradesmanFinder" },
-      {
-        property: "og:description",
-        content: "Browse vetted UK trades with typical costs and availability.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+      getRequestOrigin(),
+    ]);
+    return { origin };
+  },
+  head: ({ loaderData }) => {
+    const title = "All trades — find a vetted UK tradesman | TradesmanFinder";
+    const description =
+      "Browse every trade on TradesmanFinder — builders, plumbers, electricians, roofers, tilers and more. Typical costs and local availability.";
+    const image = loaderData?.origin
+      ? `${loaderData.origin}/og/trades.jpg`
+      : undefined;
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: "All trades — TradesmanFinder" },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "website" },
+        { property: "og:url", content: "/trades" },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: "All trades — TradesmanFinder" },
+        { name: "twitter:description", content: description },
+        ...(image
+          ? [
+              { property: "og:image", content: image },
+              {
+                property: "og:image:alt",
+                content: "UK tradespeople at work in a warmly lit workshop",
+              },
+              { name: "twitter:image", content: image },
+            ]
+          : []),
+      ],
+      links: [{ rel: "canonical", href: "/trades" }],
+    };
+  },
+
   errorComponent: ({ error }) => (
     <Section>
       <p role="alert" className="text-muted-foreground">
