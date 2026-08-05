@@ -10,6 +10,8 @@ import {
   type Trade,
 } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
+import { tradeHero } from "@/lib/trade-media";
+
 
 type Search = {
   area?: string;
@@ -109,7 +111,10 @@ function TradePage() {
         eyebrow={search.area ? `Near ${search.area}` : "Trade"}
         title={`${trade.name}s you can actually book.`}
         sub={trade.blurb}
+        image={tradeHero(trade.slug)}
+        imageAlt={`${trade.name} at work on a UK job`}
       >
+
         <dl className="flex flex-wrap gap-x-12 gap-y-4 border-t border-border pt-6">
           <div>
             <dt className="eyebrow">Typical cost</dt>
