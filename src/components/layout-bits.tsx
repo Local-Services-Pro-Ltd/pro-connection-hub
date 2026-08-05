@@ -50,16 +50,36 @@ export function PageHero({
   title,
   sub,
   children,
+  image,
+  imageAlt,
 }: {
   eyebrow: string;
   title: string;
   sub?: string;
   children?: ReactNode;
+  image?: string;
+  imageAlt?: string;
 }) {
   return (
     <div className="relative overflow-hidden border-b border-border bg-surface">
-      <div className="rule-grid pointer-events-none absolute inset-0 opacity-40" />
-      <div className="relative mx-auto max-w-7xl px-5 py-16 lg:px-8 lg:py-24">
+      {image ? (
+        <>
+          <img
+            src={image}
+            alt={imageAlt ?? ""}
+            width={1600}
+            height={900}
+            className="absolute inset-0 h-full w-full object-cover opacity-70"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/85 to-background/25" />
+          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-background to-transparent" />
+        </>
+      ) : (
+        <div className="rule-grid pointer-events-none absolute inset-0 opacity-40" />
+      )}
+      <div
+        className={`relative mx-auto max-w-7xl px-5 lg:px-8 ${image ? "py-24 lg:py-36" : "py-16 lg:py-24"}`}
+      >
         <p className="eyebrow">{eyebrow}</p>
         <h1 className="mt-4 max-w-3xl text-4xl leading-[1.02] sm:text-5xl lg:text-6xl">
           {title}
@@ -74,3 +94,4 @@ export function PageHero({
     </div>
   );
 }
+
