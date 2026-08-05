@@ -88,6 +88,8 @@ function ForTradesmen() {
         sub="A flat monthly membership, a cap of three quotes per job, and homeowners who already know what they want. That's the whole model."
         image={heroForTradesmen}
         imageAlt="A tradesman checking his phone beside his van at sunrise"
+        focal="55% 40%"
+        focalMobile="65% 42%"
       >
 
         <Link

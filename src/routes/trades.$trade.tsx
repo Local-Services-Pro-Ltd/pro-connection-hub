@@ -112,7 +112,9 @@ function TradePage() {
         title={`${trade.name}s you can actually book.`}
         sub={trade.blurb}
         image={tradeHero(trade.slug)}
-        imageAlt={`${trade.name} at work on a UK job`}
+        imageAlt={`A professional ${trade.name.toLowerCase()} at work on a UK job`}
+        focal="50% 45%"
+        focalMobile="60% 45%"
       >
 
         <dl className="flex flex-wrap gap-x-12 gap-y-4 border-t border-border pt-6">
