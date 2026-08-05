@@ -69,14 +69,16 @@ export function PageHero({
             alt={imageAlt ?? ""}
             width={1600}
             height={900}
-            className="absolute inset-0 h-full w-full object-cover opacity-70"
+            className="absolute inset-0 h-full w-full object-cover"
+            style={{ opacity: "var(--hero-image-opacity)" }}
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/85 to-background/25" />
-          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-background to-transparent" />
+          <div className="hero-veil absolute inset-0" />
+          <div className="hero-veil-bottom absolute inset-x-0 bottom-0 h-32" />
         </>
       ) : (
         <div className="rule-grid pointer-events-none absolute inset-0 opacity-40" />
       )}
+
       <div
         className={`relative mx-auto max-w-7xl px-5 lg:px-8 ${image ? "py-24 lg:py-36" : "py-16 lg:py-24"}`}
       >

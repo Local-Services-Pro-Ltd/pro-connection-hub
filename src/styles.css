@@ -232,3 +232,11 @@
 @utility shadow-ember {
   box-shadow: var(--shadow-ember);
 }
+
+@utility hero-veil {
+  background-image: var(--hero-veil);
+}
+
+@utility hero-veil-bottom {
+  background-image: var(--hero-veil-bottom);
+}

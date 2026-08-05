@@ -2,6 +2,8 @@ import { Link } from "@tanstack/react-router";
 import { type ReactNode, useState } from "react";
 import { Menu, X, UserRound } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { ThemeControl } from "@/components/theme-control";
+
 
 const nav = [
   { to: "/trades", label: "Find a tradesman" },
