@@ -61,9 +61,13 @@ export const Route = createFileRoute("/trades/$trade")({
         ],
       };
     }
-    const { trade } = loaderData;
+    const { trade, origin } = loaderData;
     const title = `Find a local ${trade.name.toLowerCase()} | TradesmanFinder`;
     const description = `${trade.blurb} Compare vetted ${trade.name.toLowerCase()}s near you. Typical cost ${trade.typical_cost}.`;
+    const image =
+      origin && hasTradeOgImage(trade.slug)
+        ? `${origin}/og/trade-${trade.slug}.jpg`
+        : undefined;
     return {
       meta: [
         { title },
@@ -71,10 +75,25 @@ export const Route = createFileRoute("/trades/$trade")({
         { property: "og:title", content: title },
         { property: "og:description", content: description },
         { property: "og:type", content: "website" },
+        { property: "og:url", content: `/trades/${trade.slug}` },
         { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: description },
+        ...(image
+          ? [
+              { property: "og:image", content: image },
+              {
+                property: "og:image:alt",
+                content: `A professional ${trade.name.toLowerCase()} at work on a UK job`,
+              },
+              { name: "twitter:image", content: image },
+            ]
+          : []),
       ],
+      links: [{ rel: "canonical", href: `/trades/${trade.slug}` }],
     };
   },
+
   errorComponent: ({ error }) => (
     <Section>
       <p role="alert" className="text-muted-foreground">
