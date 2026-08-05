@@ -125,9 +125,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" data-theme="dim" style={{ colorScheme: "dark" }}>
       <head>
         <HeadContent />
+        <script dangerouslySetInnerHTML={{ __html: themeBootstrapScript }} />
       </head>
       <body>
         {children}
@@ -142,6 +143,7 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
       <AuthProvider>
       <div className="flex min-h-screen flex-col">
         <SiteHeader />
@@ -154,7 +156,9 @@ function RootComponent() {
         <SiteFooter />
       </div>
       </AuthProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
+
 }
 
