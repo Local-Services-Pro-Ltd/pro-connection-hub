@@ -12,6 +12,7 @@ import {
   latestReviewsQuery,
   proCountsQuery,
 } from "@/lib/queries";
+import { getRequestOrigin } from "@/lib/origin.functions";
 import { usePrefersReducedMotion } from "@/hooks/use-reduced-motion";
 import heroVideo from "@/assets/hero.mp4.asset.json";
 import heroPoster from "@/assets/hero-poster.jpg";
