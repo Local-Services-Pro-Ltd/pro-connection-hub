@@ -10,33 +10,53 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TradesIndexRouteImport } from './routes/trades.index'
+import { Route as TradesTradeRouteImport } from './routes/trades.$trade'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TradesIndexRoute = TradesIndexRouteImport.update({
+  id: '/trades/',
+  path: '/trades/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TradesTradeRoute = TradesTradeRouteImport.update({
+  id: '/trades/$trade',
+  path: '/trades/$trade',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/trades/$trade': typeof TradesTradeRoute
+  '/trades/': typeof TradesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/trades/$trade': typeof TradesTradeRoute
+  '/trades': typeof TradesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/trades/$trade': typeof TradesTradeRoute
+  '/trades/': typeof TradesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/trades/$trade' | '/trades/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/trades/$trade' | '/trades'
+  id: '__root__' | '/' | '/trades/$trade' | '/trades/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  TradesTradeRoute: typeof TradesTradeRoute
+  TradesIndexRoute: typeof TradesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +68,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/trades/': {
+      id: '/trades/'
+      path: '/trades'
+      fullPath: '/trades/'
+      preLoaderRoute: typeof TradesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/trades/$trade': {
+      id: '/trades/$trade'
+      path: '/trades/$trade'
+      fullPath: '/trades/$trade'
+      preLoaderRoute: typeof TradesTradeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  TradesTradeRoute: TradesTradeRoute,
+  TradesIndexRoute: TradesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

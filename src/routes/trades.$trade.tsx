@@ -5,8 +5,9 @@ import { trades, pros } from "@/lib/site-data";
 
 export const Route = createFileRoute("/trades/$trade")({
   validateSearch: (search: Record<string, unknown>) => ({
-    area: typeof search.area === "string" ? search.area : undefined,
+    area: typeof search["area"] === "string" ? (search["area"] as string) : undefined,
   }),
+
   loader: ({ params }) => {
     const trade = trades.find((t) => t.slug === params.trade);
     if (!trade) throw notFound();

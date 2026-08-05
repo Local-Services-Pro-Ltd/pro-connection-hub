@@ -4,7 +4,7 @@ import { PageHero, Section } from "@/components/layout-bits";
 import { SearchBar } from "@/components/search-bar";
 import { trades } from "@/lib/site-data";
 
-export const Route = createFileRoute("/trades")({
+export const Route = createFileRoute("/trades/")({
   head: () => ({
     meta: [
       { title: "All trades — find a vetted UK tradesman | TradesmanFinder" },
