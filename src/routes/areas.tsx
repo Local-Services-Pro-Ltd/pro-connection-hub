@@ -3,6 +3,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { PageHero, Section, SectionHead } from "@/components/layout-bits";
 import { areasQuery, proCountsQuery } from "@/lib/queries";
 import street from "@/assets/street.jpg";
+import heroAreas from "@/assets/hero-areas.jpg";
 
 export const Route = createFileRoute("/areas")({
   loader: ({ context }) =>
@@ -55,7 +56,10 @@ function Areas() {
         eyebrow="Coverage"
         title="Local means local."
         sub="Trades are matched by the postcodes they actually work in — not by how far they're willing to drive for a lead."
+        image={heroAreas}
+        imageAlt="A misty UK city skyline of terraced streets at golden hour"
       />
+
 
       <Section>
         <div className="grid gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">

@@ -4,6 +4,7 @@ import { ArrowUpRight } from "lucide-react";
 import { PageHero, Section } from "@/components/layout-bits";
 import { SearchBar } from "@/components/search-bar";
 import { tradesQuery, proCountsQuery } from "@/lib/queries";
+import heroTrades from "@/assets/hero-trades.jpg";
 
 export const Route = createFileRoute("/trades/")({
   loader: ({ context }) =>
@@ -53,6 +54,8 @@ function TradesIndex() {
         eyebrow="Directory"
         title="Every trade, vetted the same way."
         sub="ID check, insurance check, trade certification. No paid placement — ranking is based on reviews and response time."
+        image={heroTrades}
+        imageAlt="Builders, an electrician and a plumber at work in a warmly lit workshop"
       >
         <SearchBar compact />
       </PageHero>
