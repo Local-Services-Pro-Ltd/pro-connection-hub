@@ -58,6 +58,8 @@ function Areas() {
         sub="Trades are matched by the postcodes they actually work in — not by how far they're willing to drive for a lead."
         image={heroAreas}
         imageAlt="A misty UK city skyline of terraced streets at golden hour"
+        focal="50% 55%"
+        focalMobile="55% 60%"
       />
 
 

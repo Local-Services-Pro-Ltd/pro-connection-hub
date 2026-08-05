@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 export function Section({
   children,
@@ -52,6 +52,9 @@ export function PageHero({
   children,
   image,
   imageAlt,
+  focal = "center",
+  focalMobile,
+  priority = true,
 }: {
   eyebrow: string;
   title: string;
@@ -59,28 +62,48 @@ export function PageHero({
   children?: ReactNode;
   image?: string;
   imageAlt?: string;
+  /** object-position on >= sm screens, e.g. "50% 35%" */
+  focal?: string;
+  /** object-position on mobile; defaults to `focal` */
+  focalMobile?: string;
+  /** Above-the-fold heroes load eagerly; set false to lazy-load. */
+  priority?: boolean;
 }) {
+  const mobileFocal = focalMobile ?? focal;
   return (
-    <div className="relative overflow-hidden border-b border-border bg-surface">
+    <div className="relative isolate overflow-hidden border-b border-border bg-surface">
       {image ? (
         <>
-          <img
-            src={image}
-            alt={imageAlt ?? ""}
-            width={1600}
-            height={900}
-            className="absolute inset-0 h-full w-full object-cover"
-            style={{ opacity: "var(--hero-image-opacity)" }}
-          />
-          <div className="hero-veil absolute inset-0" />
-          <div className="hero-veil-bottom absolute inset-x-0 bottom-0 h-32" />
+          {/* Reserved by the content padding below, so no layout shift. */}
+          <picture className="absolute inset-0 -z-10 block">
+            <img
+              src={image}
+              alt={imageAlt ?? ""}
+              width={1600}
+              height={900}
+              sizes="100vw"
+              decoding="async"
+              loading={priority ? "eager" : "lazy"}
+              {...(priority ? { fetchPriority: "high" as const } : {})}
+              className="h-full w-full object-cover [object-position:var(--focal-mobile)] sm:[object-position:var(--focal)]"
+              style={
+                {
+                  opacity: "var(--hero-image-opacity)",
+                  "--focal": focal,
+                  "--focal-mobile": mobileFocal,
+                } as CSSProperties
+              }
+            />
+          </picture>
+          <div className="hero-veil pointer-events-none absolute inset-0 -z-10" />
+          <div className="hero-veil-bottom pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-32" />
         </>
       ) : (
-        <div className="rule-grid pointer-events-none absolute inset-0 opacity-40" />
+        <div className="rule-grid pointer-events-none absolute inset-0 -z-10 opacity-40" />
       )}
 
       <div
-        className={`relative mx-auto max-w-7xl px-5 lg:px-8 ${image ? "py-24 lg:py-36" : "py-16 lg:py-24"}`}
+        className={`relative mx-auto max-w-7xl px-5 lg:px-8 ${image ? "py-20 sm:py-24 lg:py-36" : "py-16 lg:py-24"}`}
       >
         <p className="eyebrow">{eyebrow}</p>
         <h1 className="mt-4 max-w-3xl text-4xl leading-[1.02] sm:text-5xl lg:text-6xl">
@@ -96,4 +119,5 @@ export function PageHero({
     </div>
   );
 }
+
 

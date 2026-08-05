@@ -56,6 +56,8 @@ function TradesIndex() {
         sub="ID check, insurance check, trade certification. No paid placement — ranking is based on reviews and response time."
         image={heroTrades}
         imageAlt="Builders, an electrician and a plumber at work in a warmly lit workshop"
+        focal="50% 45%"
+        focalMobile="60% 50%"
       >
         <SearchBar compact />
       </PageHero>

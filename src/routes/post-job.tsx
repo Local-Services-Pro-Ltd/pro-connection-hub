@@ -144,6 +144,8 @@ function PostJob() {
         sub="Two minutes. Free. Up to three vetted local trades will come back to you — usually the same day."
         image={heroPostJob}
         imageAlt="A kitchen mid-renovation with a notepad and tape measure on the worktop"
+        focal="50% 50%"
+        focalMobile="58% 55%"
       />
 
 
