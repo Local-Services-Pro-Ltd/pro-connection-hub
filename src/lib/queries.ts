@@ -44,6 +44,27 @@ export const areasQuery = queryOptions({
   staleTime: 5 * 60_000,
 });
 
+/** Live counts of published pros per trade slug and per area slug. */
+export const proCountsQuery = queryOptions({
+  queryKey: ["pro-counts"],
+  queryFn: async () => {
+    const rows = unwrap(
+      await supabase
+        .from("pros")
+        .select("trade_slug, area_slug")
+        .eq("published", true),
+    ) as { trade_slug: string; area_slug: string | null }[];
+    const byTrade: Record<string, number> = {};
+    const byArea: Record<string, number> = {};
+    for (const r of rows) {
+      byTrade[r.trade_slug] = (byTrade[r.trade_slug] ?? 0) + 1;
+      if (r.area_slug) byArea[r.area_slug] = (byArea[r.area_slug] ?? 0) + 1;
+    }
+    return { byTrade, byArea, total: rows.length };
+  },
+  staleTime: 5 * 60_000,
+});
+
 export type ProFilters = {
   trade?: string | undefined;
   area?: string | undefined;
