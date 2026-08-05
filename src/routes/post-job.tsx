@@ -101,23 +101,32 @@ function PostJob() {
       if (form.contact_name.trim().length < 2) errors.push("Enter your name.");
       if (errors.length) throw new Error(errors[0]);
 
-      const { data, error } = await supabase
-        .from("jobs")
-        .insert({
-          trade_slug: form.trade_slug,
-          postcode: form.postcode.trim().toUpperCase(),
-          title: form.title.trim().slice(0, 140),
-          description: form.description.trim().slice(0, 4000),
-          timing: form.timing,
-          budget_band: form.budget_band,
-          contact_name: form.contact_name.trim().slice(0, 80),
-          contact_email: form.contact_email.trim().toLowerCase(),
-          user_id: user?.id ?? null,
-        })
-        .select("reference")
-        .single();
+      const row = {
+        trade_slug: form.trade_slug,
+        postcode: form.postcode.trim().toUpperCase(),
+        title: form.title.trim().slice(0, 140),
+        description: form.description.trim().slice(0, 4000),
+        timing: form.timing,
+        budget_band: form.budget_band,
+        contact_name: form.contact_name.trim().slice(0, 80),
+        contact_email: form.contact_email.trim().toLowerCase(),
+        user_id: user?.id ?? null,
+      };
+
+      // Guests can post but cannot read jobs back, so only signed-in
+      // customers get the stored reference returned.
+      if (user) {
+        const { data, error } = await supabase
+          .from("jobs")
+          .insert(row)
+          .select("reference")
+          .single();
+        if (error) throw error;
+        return data.reference as string;
+      }
+      const { error } = await supabase.from("jobs").insert(row);
       if (error) throw error;
-      return data.reference as string;
+      return "";
     },
     onSuccess: (ref) => {
       setReference(ref);
@@ -136,18 +145,23 @@ function PostJob() {
 
       <Section>
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px]">
-          {reference ? (
+          {reference !== null ? (
             <div className="rounded-md border border-border bg-card p-10">
               <div className="grid h-12 w-12 place-items-center rounded-sm bg-primary/15">
                 <Check className="h-6 w-6 text-primary" />
               </div>
               <h2 className="mt-6 text-2xl">Job posted</h2>
               <p className="mt-3 max-w-md text-muted-foreground">
-                Your reference is{" "}
-                <strong className="font-display text-foreground">
-                  {reference}
-                </strong>
-                . We're matching vetted trades covering{" "}
+                {reference ? (
+                  <>
+                    Your reference is{" "}
+                    <strong className="font-display text-foreground">
+                      {reference}
+                    </strong>
+                    .{" "}
+                  </>
+                ) : null}
+                We're matching vetted trades covering{" "}
                 {form.postcode.toUpperCase()} now — you'll hear from up to three
                 of them.
               </p>
