@@ -6,6 +6,8 @@ import { Check } from "lucide-react";
 import { PageHero, Section } from "@/components/layout-bits";
 import heroPostJob from "@/assets/hero-post-job.jpg";
 import { tradesQuery, budgetBands } from "@/lib/queries";
+import { getRequestOrigin } from "@/lib/origin.functions";
+
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 
