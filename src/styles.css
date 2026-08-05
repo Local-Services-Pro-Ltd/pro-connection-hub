@@ -262,3 +262,29 @@
   }
 }
 
+/* Reduced motion: hero media stays still, hover lifts and scroll effects are
+   flattened, and every transition/animation collapses to a near-instant swap. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .lift:hover {
+    transform: none;
+  }
+
+  [data-hero-media] {
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+  }
+}
