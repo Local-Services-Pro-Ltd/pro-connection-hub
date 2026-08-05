@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 export function Section({
   children,
@@ -91,7 +91,7 @@ export function PageHero({
                   opacity: "var(--hero-image-opacity)",
                   "--focal": focal,
                   "--focal-mobile": mobileFocal,
-                } as React.CSSProperties
+                } as CSSProperties
               }
             />
           </picture>
