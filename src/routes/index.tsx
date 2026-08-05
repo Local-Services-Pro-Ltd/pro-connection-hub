@@ -12,6 +12,7 @@ import {
   latestReviewsQuery,
   proCountsQuery,
 } from "@/lib/queries";
+import { usePrefersReducedMotion } from "@/hooks/use-reduced-motion";
 import heroVideo from "@/assets/hero.mp4.asset.json";
 import heroPoster from "@/assets/hero-poster.jpg";
 
@@ -88,6 +89,7 @@ function Home() {
   const { data: stats } = useSuspenseQuery(statsQuery);
   const { data: reviews } = useSuspenseQuery(latestReviewsQuery);
   const { data: counts } = useSuspenseQuery(proCountsQuery);
+  const reducedMotion = usePrefersReducedMotion();
 
   const ledger = [
     { value: String(stats.pros), label: "Verified tradesmen" },
@@ -101,18 +103,33 @@ function Home() {
 
   return (
     <>
-      {/* Hero — cinematic video band */}
+      {/* Hero — cinematic video band (still poster when motion is reduced) */}
       <section className="relative isolate min-h-[88vh] max-h-[900px] overflow-hidden border-b border-border">
-        <video
-          className="absolute inset-0 h-full w-full object-cover"
-          src={heroVideo.url}
-          poster={heroPoster}
-          autoPlay
-          muted
-          loop
-          playsInline
-          aria-hidden="true"
-        />
+        {reducedMotion ? (
+          <img
+            data-hero-media
+            className="absolute inset-0 h-full w-full object-cover"
+            src={heroPoster}
+            alt=""
+            width={1600}
+            height={900}
+            decoding="async"
+            fetchPriority="high"
+          />
+        ) : (
+          <video
+            data-hero-media
+            className="absolute inset-0 h-full w-full object-cover"
+            src={heroVideo.url}
+            poster={heroPoster}
+            autoPlay
+            muted
+            loop
+            playsInline
+            aria-hidden="true"
+          />
+        )}
+
         <div className="absolute inset-0 bg-background/55" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
 
