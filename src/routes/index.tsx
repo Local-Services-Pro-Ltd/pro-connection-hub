@@ -1,13 +1,32 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, ArrowUpRight, Check, Quote } from "lucide-react";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { ArrowRight, ArrowUpRight, Check, Quote, Star } from "lucide-react";
 import { SearchBar } from "@/components/search-bar";
 import { ProCard } from "@/components/pro-card";
 import { Section, SectionHead } from "@/components/layout-bits";
-import { trades, pros, reviews, stats, areas } from "@/lib/site-data";
+import {
+  tradesQuery,
+  areasQuery,
+  prosQuery,
+  statsQuery,
+  latestReviewsQuery,
+  proCountsQuery,
+} from "@/lib/queries";
 import heroVideo from "@/assets/hero.mp4.asset.json";
 import heroPoster from "@/assets/hero-poster.jpg";
 
 export const Route = createFileRoute("/")({
+  loader: ({ context }) => {
+    const qc = context.queryClient;
+    return Promise.all([
+      qc.ensureQueryData(tradesQuery),
+      qc.ensureQueryData(areasQuery),
+      qc.ensureQueryData(prosQuery({ sort: "rating" })),
+      qc.ensureQueryData(statsQuery),
+      qc.ensureQueryData(latestReviewsQuery),
+      qc.ensureQueryData(proCountsQuery),
+    ]).then(() => null);
+  },
   head: () => ({
     meta: [
       { title: "TradesmanFinder — Find a vetted local tradesman in the UK" },
@@ -25,8 +44,22 @@ export const Route = createFileRoute("/")({
         content:
           "Free to post, quotes usually within hours, every trade ID-checked and insured.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
+  errorComponent: ({ error }) => (
+    <Section>
+      <p role="alert" className="text-muted-foreground">
+        {error.message}
+      </p>
+    </Section>
+  ),
+  notFoundComponent: () => (
+    <Section>
+      <p className="text-muted-foreground">Nothing here.</p>
+    </Section>
+  ),
   component: Home,
 });
 
@@ -49,6 +82,23 @@ const steps = [
 ];
 
 function Home() {
+  const { data: trades } = useSuspenseQuery(tradesQuery);
+  const { data: areas } = useSuspenseQuery(areasQuery);
+  const { data: pros } = useSuspenseQuery(prosQuery({ sort: "rating" }));
+  const { data: stats } = useSuspenseQuery(statsQuery);
+  const { data: reviews } = useSuspenseQuery(latestReviewsQuery);
+  const { data: counts } = useSuspenseQuery(proCountsQuery);
+
+  const ledger = [
+    { value: String(stats.pros), label: "Verified tradesmen" },
+    { value: String(stats.trades), label: "Trades covered" },
+    {
+      value: stats.avgResponse ? `${stats.avgResponse} min` : "—",
+      label: "Average response",
+    },
+    { value: String(stats.reviews), label: "Customer reviews" },
+  ];
+
   return (
     <>
       {/* Hero — cinematic video band */}
@@ -64,19 +114,12 @@ function Home() {
           aria-hidden="true"
         />
         <div className="absolute inset-0 bg-background/55" />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(90deg, var(--background) 8%, transparent 65%), linear-gradient(0deg, var(--background) 2%, transparent 45%)",
-          }}
-        />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
 
-        <div className="relative mx-auto flex min-h-[88vh] max-h-[900px] max-w-7xl flex-col justify-end px-5 pb-16 pt-28 lg:px-8 lg:pb-24">
-          <p className="eyebrow">Vetted · Insured · Reviewed</p>
-          <h1 className="mt-5 max-w-4xl text-[2.75rem] leading-[0.98] sm:text-6xl lg:text-[5.25rem]">
-            The right trade,
-            <br />
+        <div className="relative mx-auto flex min-h-[88vh] max-w-7xl flex-col justify-center px-5 py-24 lg:px-8">
+          <p className="eyebrow">Vetted UK trades</p>
+          <h1 className="mt-4 max-w-3xl text-5xl leading-[1.05] sm:text-6xl lg:text-7xl">
+            Find a tradesman who picks up{" "}
             <span className="ember-text">on the first call.</span>
           </h1>
           <p className="mt-6 max-w-lg text-lg leading-relaxed text-muted-foreground">
@@ -104,7 +147,7 @@ function Home() {
       {/* Stats ledger */}
       <div className="border-b border-border bg-surface">
         <div className="mx-auto grid max-w-7xl grid-cols-2 divide-x divide-y divide-border border-border px-0 lg:grid-cols-4 lg:divide-y-0">
-          {stats.map((s) => (
+          {ledger.map((s) => (
             <div key={s.label} className="px-6 py-8 lg:px-8 lg:py-10">
               <p className="font-display text-3xl font-bold lg:text-4xl">
                 {s.value}
@@ -119,7 +162,7 @@ function Home() {
       <Section>
         <SectionHead
           eyebrow="Browse by trade"
-          title="Ten trades. All of them checked."
+          title="Every trade, checked the same way."
           sub="Every firm on the network is ID-verified, insured and holds the certification their trade requires."
           aside={
             <Link
@@ -136,6 +179,7 @@ function Home() {
               key={t.slug}
               to="/trades/$trade"
               params={{ trade: t.slug }}
+              search={{}}
               className="group flex flex-col justify-between gap-6 bg-card p-6 transition-colors hover:bg-surface"
             >
               <div>
@@ -148,7 +192,7 @@ function Home() {
                 </p>
               </div>
               <p className="font-display text-xs uppercase tracking-widest text-primary">
-                {t.pros} local pros
+                {counts.byTrade[t.slug] ?? 0} local pros
               </p>
             </Link>
           ))}
@@ -157,10 +201,7 @@ function Home() {
 
       {/* How it works */}
       <Section className="border-y border-border bg-surface">
-        <SectionHead
-          eyebrow="How it works"
-          title="Three steps, no phone tag."
-        />
+        <SectionHead eyebrow="How it works" title="Three steps, no phone tag." />
         <div className="mt-10 grid gap-px overflow-hidden rounded-md border border-border bg-border lg:grid-cols-3">
           {steps.map((s) => (
             <div key={s.n} className="bg-card p-8">
@@ -181,10 +222,10 @@ function Home() {
         <SectionHead
           eyebrow="Featured tradesmen"
           title="People who turn up."
-          sub="A snapshot of the highest-rated firms currently taking work."
+          sub="The highest-rated firms currently taking work."
         />
         <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {pros.map((p) => (
+          {pros.slice(0, 6).map((p) => (
             <ProCard key={p.id} pro={p} />
           ))}
         </div>
@@ -194,15 +235,22 @@ function Home() {
       <Section className="border-y border-border bg-surface">
         <SectionHead eyebrow="Reviews" title="Written by people who paid." />
         <div className="mt-10 grid gap-px overflow-hidden rounded-md border border-border bg-border lg:grid-cols-3">
-          {reviews.map((r) => (
-            <figure key={r.name} className="flex flex-col bg-card p-8">
-              <Quote className="h-5 w-5 text-primary" />
+          {reviews.slice(0, 3).map((r) => (
+            <figure key={r.id} className="flex flex-col bg-card p-8">
+              <div className="flex items-center justify-between">
+                <Quote className="h-5 w-5 text-primary" />
+                <span className="flex items-center gap-1 text-sm">
+                  <Star className="h-3.5 w-3.5 fill-accent text-accent" />
+                  {r.rating}
+                </span>
+              </div>
               <blockquote className="mt-5 flex-1 text-base leading-relaxed">
-                {r.quote}
+                {r.body}
               </blockquote>
               <figcaption className="mt-6 border-t border-border pt-4 text-sm text-muted-foreground">
-                <span className="text-foreground">{r.name}</span> · {r.place} ·{" "}
-                {r.job}
+                <span className="text-foreground">{r.author_name}</span>
+                {r.author_place ? ` · ${r.author_place}` : ""}
+                {r.job_type ? ` · ${r.job_type}` : ""}
               </figcaption>
             </figure>
           ))}
@@ -227,10 +275,13 @@ function Home() {
           {areas.map((a) => (
             <Link
               key={a.slug}
-              to="/areas"
+              to="/trades"
               className="rounded-sm border border-border px-4 py-2 text-sm text-muted-foreground transition-colors hover:border-primary hover:text-primary"
             >
               {a.name}
+              <span className="ml-2 text-xs text-primary">
+                {counts.byArea[a.slug] ?? 0}
+              </span>
             </Link>
           ))}
         </div>
@@ -248,6 +299,7 @@ function Home() {
             </div>
             <Link
               to="/post-job"
+              search={{}}
               className="inline-flex items-center gap-2 self-start rounded-sm bg-primary px-6 py-3.5 font-display font-semibold text-primary-foreground shadow-ember transition-all hover:brightness-110 lg:self-end"
             >
               Post a job — free <ArrowRight className="h-4 w-4" />
