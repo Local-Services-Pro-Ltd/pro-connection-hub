@@ -15,8 +15,10 @@
   --radius-xl: calc(var(--radius) + 6px);
   --radius-2xl: calc(var(--radius) + 10px);
 
-  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
-  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", "Space Grotesk Fallback", ui-sans-serif,
+    system-ui, sans-serif;
+  --font-sans: "DM Sans", "DM Sans Fallback", ui-sans-serif, system-ui,
+    sans-serif;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -287,4 +289,22 @@
     transition: none !important;
     animation: none !important;
   }
+}
+
+/* Metric-matched fallbacks so the webfont swap doesn't reflow headings/body. */
+@font-face {
+  font-family: "Space Grotesk Fallback";
+  src: local("Arial");
+  size-adjust: 97%;
+  ascent-override: 96%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "DM Sans Fallback";
+  src: local("Arial");
+  size-adjust: 100%;
+  ascent-override: 100%;
+  descent-override: 25%;
+  line-gap-override: 0%;
 }
