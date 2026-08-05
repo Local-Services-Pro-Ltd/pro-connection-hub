@@ -10,33 +10,128 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AreasRouteImport } from './routes/areas'
+import { Route as ForTradesmenRouteImport } from './routes/for-tradesmen'
+import { Route as PostJobRouteImport } from './routes/post-job'
+import { Route as SigninRouteImport } from './routes/signin'
+import { Route as ProIdRouteImport } from './routes/pro.$id'
+import { Route as TradesIndexRouteImport } from './routes/trades.index'
+import { Route as TradesTradeRouteImport } from './routes/trades.$trade'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AreasRoute = AreasRouteImport.update({
+  id: '/areas',
+  path: '/areas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForTradesmenRoute = ForTradesmenRouteImport.update({
+  id: '/for-tradesmen',
+  path: '/for-tradesmen',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PostJobRoute = PostJobRouteImport.update({
+  id: '/post-job',
+  path: '/post-job',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SigninRoute = SigninRouteImport.update({
+  id: '/signin',
+  path: '/signin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProIdRoute = ProIdRouteImport.update({
+  id: '/pro/$id',
+  path: '/pro/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TradesIndexRoute = TradesIndexRouteImport.update({
+  id: '/trades/',
+  path: '/trades/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TradesTradeRoute = TradesTradeRouteImport.update({
+  id: '/trades/$trade',
+  path: '/trades/$trade',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/areas': typeof AreasRoute
+  '/for-tradesmen': typeof ForTradesmenRoute
+  '/post-job': typeof PostJobRoute
+  '/signin': typeof SigninRoute
+  '/pro/$id': typeof ProIdRoute
+  '/trades/$trade': typeof TradesTradeRoute
+  '/trades/': typeof TradesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/areas': typeof AreasRoute
+  '/for-tradesmen': typeof ForTradesmenRoute
+  '/post-job': typeof PostJobRoute
+  '/signin': typeof SigninRoute
+  '/pro/$id': typeof ProIdRoute
+  '/trades/$trade': typeof TradesTradeRoute
+  '/trades': typeof TradesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/areas': typeof AreasRoute
+  '/for-tradesmen': typeof ForTradesmenRoute
+  '/post-job': typeof PostJobRoute
+  '/signin': typeof SigninRoute
+  '/pro/$id': typeof ProIdRoute
+  '/trades/$trade': typeof TradesTradeRoute
+  '/trades/': typeof TradesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/areas'
+    | '/for-tradesmen'
+    | '/post-job'
+    | '/signin'
+    | '/pro/$id'
+    | '/trades/$trade'
+    | '/trades/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/areas'
+    | '/for-tradesmen'
+    | '/post-job'
+    | '/signin'
+    | '/pro/$id'
+    | '/trades/$trade'
+    | '/trades'
+  id:
+    | '__root__'
+    | '/'
+    | '/areas'
+    | '/for-tradesmen'
+    | '/post-job'
+    | '/signin'
+    | '/pro/$id'
+    | '/trades/$trade'
+    | '/trades/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AreasRoute: typeof AreasRoute
+  ForTradesmenRoute: typeof ForTradesmenRoute
+  PostJobRoute: typeof PostJobRoute
+  SigninRoute: typeof SigninRoute
+  ProIdRoute: typeof ProIdRoute
+  TradesTradeRoute: typeof TradesTradeRoute
+  TradesIndexRoute: typeof TradesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,22 +143,68 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/areas': {
+      id: '/areas'
+      path: '/areas'
+      fullPath: '/areas'
+      preLoaderRoute: typeof AreasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/for-tradesmen': {
+      id: '/for-tradesmen'
+      path: '/for-tradesmen'
+      fullPath: '/for-tradesmen'
+      preLoaderRoute: typeof ForTradesmenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/post-job': {
+      id: '/post-job'
+      path: '/post-job'
+      fullPath: '/post-job'
+      preLoaderRoute: typeof PostJobRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signin': {
+      id: '/signin'
+      path: '/signin'
+      fullPath: '/signin'
+      preLoaderRoute: typeof SigninRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pro/$id': {
+      id: '/pro/$id'
+      path: '/pro/$id'
+      fullPath: '/pro/$id'
+      preLoaderRoute: typeof ProIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/trades/': {
+      id: '/trades/'
+      path: '/trades'
+      fullPath: '/trades/'
+      preLoaderRoute: typeof TradesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/trades/$trade': {
+      id: '/trades/$trade'
+      path: '/trades/$trade'
+      fullPath: '/trades/$trade'
+      preLoaderRoute: typeof TradesTradeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AreasRoute: AreasRoute,
+  ForTradesmenRoute: ForTradesmenRoute,
+  PostJobRoute: PostJobRoute,
+  SigninRoute: SigninRoute,
+  ProIdRoute: ProIdRoute,
+  TradesTradeRoute: TradesTradeRoute,
+  TradesIndexRoute: TradesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
