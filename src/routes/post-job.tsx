@@ -4,6 +4,7 @@ import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Check } from "lucide-react";
 import { PageHero, Section } from "@/components/layout-bits";
+import heroPostJob from "@/assets/hero-post-job.jpg";
 import { tradesQuery, budgetBands } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -141,7 +142,10 @@ function PostJob() {
         eyebrow="Post a job"
         title="Tell us what needs doing."
         sub="Two minutes. Free. Up to three vetted local trades will come back to you — usually the same day."
+        image={heroPostJob}
+        imageAlt="A kitchen mid-renovation with a notepad and tape measure on the worktop"
       />
+
 
       <Section>
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px]">

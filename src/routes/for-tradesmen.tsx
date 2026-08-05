@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Check } from "lucide-react";
 import { PageHero, Section, SectionHead } from "@/components/layout-bits";
+import heroForTradesmen from "@/assets/hero-for-tradesmen.jpg";
 
 export const Route = createFileRoute("/for-tradesmen")({
   head: () => ({
@@ -85,7 +86,10 @@ function ForTradesmen() {
         eyebrow="For tradesmen"
         title="Leads that are worth answering."
         sub="A flat monthly membership, a cap of three quotes per job, and homeowners who already know what they want. That's the whole model."
+        image={heroForTradesmen}
+        imageAlt="A tradesman checking his phone beside his van at sunrise"
       >
+
         <Link
           to="/signin"
           className="inline-flex rounded-sm bg-primary px-6 py-3.5 font-display font-semibold text-primary-foreground shadow-ember hover:brightness-110"
