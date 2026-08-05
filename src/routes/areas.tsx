@@ -1,12 +1,21 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { PageHero, Section, SectionHead } from "@/components/layout-bits";
-import { areas } from "@/lib/site-data";
+import { areasQuery, proCountsQuery } from "@/lib/queries";
 import street from "@/assets/street.jpg";
 
 export const Route = createFileRoute("/areas")({
+  loader: ({ context }) =>
+    Promise.all([
+      context.queryClient.ensureQueryData(areasQuery),
+      context.queryClient.ensureQueryData(proCountsQuery),
+    ]).then(() => null),
   head: () => ({
     meta: [
-      { title: "Areas we cover — local tradesmen across the UK | TradesmanFinder" },
+      {
+        title:
+          "Areas we cover — local tradesmen across the UK | TradesmanFinder",
+      },
       {
         name: "description",
         content:
@@ -17,12 +26,29 @@ export const Route = createFileRoute("/areas")({
         property: "og:description",
         content: "Vetted local trades across every UK region.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
+  errorComponent: ({ error }) => (
+    <Section>
+      <p role="alert" className="text-muted-foreground">
+        {error.message}
+      </p>
+    </Section>
+  ),
+  notFoundComponent: () => (
+    <Section>
+      <p className="text-muted-foreground">No areas found.</p>
+    </Section>
+  ),
   component: Areas,
 });
 
 function Areas() {
+  const { data: areas } = useSuspenseQuery(areasQuery);
+  const { data: counts } = useSuspenseQuery(proCountsQuery);
+
   return (
     <>
       <PageHero
@@ -34,13 +60,19 @@ function Areas() {
       <Section>
         <div className="grid gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
           {areas.map((a) => (
-            <div key={a.slug} className="bg-card p-7">
+            <Link
+              key={a.slug}
+              to="/trades/$trade"
+              params={{ trade: "builder" }}
+              search={{ area: a.slug }}
+              className="bg-card p-7 transition-colors hover:bg-surface"
+            >
               <h2 className="text-xl">{a.name}</h2>
               <p className="mt-2 text-sm text-muted-foreground">{a.note}</p>
               <p className="mt-6 font-display text-xs uppercase tracking-widest text-primary">
-                {a.pros} vetted pros
+                {counts.byArea[a.slug] ?? 0} vetted pros
               </p>
-            </div>
+            </Link>
           ))}
         </div>
       </Section>
@@ -63,6 +95,7 @@ function Areas() {
           <div>
             <Link
               to="/post-job"
+              search={{}}
               className="inline-flex rounded-sm bg-primary px-6 py-3.5 font-display font-semibold text-primary-foreground shadow-ember hover:brightness-110"
             >
               Check my postcode
