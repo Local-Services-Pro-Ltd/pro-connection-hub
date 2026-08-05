@@ -17,38 +17,58 @@ import heroVideo from "@/assets/hero.mp4.asset.json";
 import heroPoster from "@/assets/hero-poster.jpg";
 
 export const Route = createFileRoute("/")({
-  loader: ({ context }) => {
+  loader: async ({ context }) => {
     const qc = context.queryClient;
-    return Promise.all([
+    const [, , , , , , origin] = await Promise.all([
       qc.ensureQueryData(tradesQuery),
       qc.ensureQueryData(areasQuery),
       qc.ensureQueryData(prosQuery({ sort: "rating" })),
       qc.ensureQueryData(statsQuery),
       qc.ensureQueryData(latestReviewsQuery),
       qc.ensureQueryData(proCountsQuery),
-    ]).then(() => null);
+      getRequestOrigin(),
+    ]);
+    return { origin };
   },
-  head: () => ({
-    meta: [
-      { title: "TradesmanFinder — Find a vetted local tradesman in the UK" },
-      {
-        name: "description",
-        content:
-          "Post your job for free and compare quotes from vetted builders, plumbers, electricians, roofers and more near you. No obligation, real reviews.",
-      },
-      {
-        property: "og:title",
-        content: "Find a vetted local tradesman — TradesmanFinder",
-      },
-      {
-        property: "og:description",
-        content:
-          "Free to post, quotes usually within hours, every trade ID-checked and insured.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+  head: ({ loaderData }) => {
+    const title = "TradesmanFinder — Find a vetted local tradesman in the UK";
+    const description =
+      "Post your job for free and compare quotes from vetted builders, plumbers, electricians, roofers and more near you. No obligation, real reviews.";
+    const image = loaderData?.origin
+      ? `${loaderData.origin}/og/home.jpg`
+      : undefined;
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        {
+          property: "og:title",
+          content: "Find a vetted local tradesman — TradesmanFinder",
+        },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "website" },
+        { property: "og:url", content: "/" },
+        { name: "twitter:card", content: "summary_large_image" },
+        {
+          name: "twitter:title",
+          content: "Find a vetted local tradesman — TradesmanFinder",
+        },
+        { name: "twitter:description", content: description },
+        ...(image
+          ? [
+              { property: "og:image", content: image },
+              {
+                property: "og:image:alt",
+                content: "UK tradespeople on site at golden hour",
+              },
+              { name: "twitter:image", content: image },
+            ]
+          : []),
+      ],
+      links: [{ rel: "canonical", href: "/" }],
+    };
+  },
+
   errorComponent: ({ error }) => (
     <Section>
       <p role="alert" className="text-muted-foreground">
