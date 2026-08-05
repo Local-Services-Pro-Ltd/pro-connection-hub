@@ -52,7 +52,7 @@ function Home() {
   return (
     <>
       {/* Hero — cinematic video band */}
-      <section className="relative isolate min-h-[86vh] overflow-hidden border-b border-border">
+      <section className="relative isolate min-h-[88vh] max-h-[900px] overflow-hidden border-b border-border">
         <video
           className="absolute inset-0 h-full w-full object-cover"
           src={heroVideo.url}
@@ -63,7 +63,7 @@ function Home() {
           playsInline
           aria-hidden="true"
         />
-        <div className="absolute inset-0 bg-background/72" />
+        <div className="absolute inset-0 bg-background/55" />
         <div
           className="absolute inset-0"
           style={{
@@ -72,7 +72,7 @@ function Home() {
           }}
         />
 
-        <div className="relative mx-auto flex min-h-[86vh] max-w-7xl flex-col justify-end px-5 pb-16 pt-28 lg:px-8 lg:pb-24">
+        <div className="relative mx-auto flex min-h-[88vh] max-h-[900px] max-w-7xl flex-col justify-end px-5 pb-16 pt-28 lg:px-8 lg:pb-24">
           <p className="eyebrow">Vetted · Insured · Reviewed</p>
           <h1 className="mt-5 max-w-4xl text-[2.75rem] leading-[0.98] sm:text-6xl lg:text-[5.25rem]">
             The right trade,
