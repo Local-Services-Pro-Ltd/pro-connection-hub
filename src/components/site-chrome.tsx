@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { type ReactNode, useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, UserRound } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 
 const nav = [
   { to: "/trades", label: "Find a tradesman" },
@@ -23,6 +24,7 @@ export function Logo() {
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const { user } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/80 bg-background/85 backdrop-blur-xl">
@@ -43,13 +45,24 @@ export function SiteHeader() {
           </nav>
         </div>
         <div className="flex items-center gap-2">
-          <Link
-            to="/signin"
-            className="hidden rounded-sm px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground sm:block"
-          >
-            Sign in
-          </Link>
-          <Link to="/post-job" className="hidden sm:block">
+          {user ? (
+            <Link
+              to="/account"
+              className="hidden items-center gap-2 rounded-sm px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground sm:flex"
+            >
+              <UserRound className="h-4 w-4" />
+              My account
+            </Link>
+          ) : (
+            <Link
+              to="/signin"
+              search={{}}
+              className="hidden rounded-sm px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground sm:block"
+            >
+              Sign in
+            </Link>
+          )}
+          <Link to="/post-job" search={{}} className="hidden sm:block">
             <Action>Post a job</Action>
           </Link>
           <button
@@ -66,7 +79,12 @@ export function SiteHeader() {
       {open && (
         <div className="border-t border-border bg-background px-5 py-4 lg:hidden">
           <nav className="flex flex-col gap-1">
-            {[...nav, { to: "/signin", label: "Sign in" }].map((item) => (
+            {[
+              ...nav,
+              user
+                ? { to: "/account", label: "My account" }
+                : { to: "/signin", label: "Sign in" },
+            ].map((item) => (
               <Link
                 key={item.to}
                 to={item.to}
@@ -76,7 +94,12 @@ export function SiteHeader() {
                 {item.label}
               </Link>
             ))}
-            <Link to="/post-job" onClick={() => setOpen(false)} className="mt-2">
+            <Link
+              to="/post-job"
+              search={{}}
+              onClick={() => setOpen(false)}
+              className="mt-2"
+            >
               <Action className="w-full justify-center">Post a job</Action>
             </Link>
           </nav>
@@ -132,6 +155,7 @@ export function SiteFooter() {
                 <Link
                   to="/trades/$trade"
                   params={{ trade: slug }}
+                  search={{}}
                   className="capitalize transition-colors hover:text-foreground"
                 >
                   {slug.replace("-", " ")}
@@ -154,7 +178,7 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
-              <Link to="/post-job" className="hover:text-foreground">
+              <Link to="/post-job" search={{}} className="hover:text-foreground">
                 Post a job
               </Link>
             </li>

@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteHeader, SiteFooter } from "../components/site-chrome";
 import { Toaster } from "../components/ui/sonner";
+import { AuthProvider } from "../hooks/use-auth";
 
 
 
@@ -139,6 +140,7 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <AuthProvider>
       <div className="flex min-h-screen flex-col">
         <SiteHeader />
         <main className="flex-1">
@@ -149,6 +151,7 @@ function RootComponent() {
 
         <SiteFooter />
       </div>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
