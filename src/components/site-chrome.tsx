@@ -2,6 +2,8 @@ import { Link } from "@tanstack/react-router";
 import { type ReactNode, useState } from "react";
 import { Menu, X, UserRound } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { ThemeControl } from "@/components/theme-control";
+
 
 const nav = [
   { to: "/trades", label: "Find a tradesman" },
@@ -45,7 +47,9 @@ export function SiteHeader() {
           </nav>
         </div>
         <div className="flex items-center gap-2">
+          <ThemeControl />
           {user ? (
+
             <Link
               to="/account"
               className="hidden items-center gap-2 rounded-sm px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground sm:flex"
