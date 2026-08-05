@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ProCard } from "@/components/pro-card";
 import { PageHero, Section } from "@/components/layout-bits";
-import { trades, pros } from "@/lib/site-data";
+import { trades, pros, type Trade } from "@/lib/site-data";
 
 export const Route = createFileRoute("/trades/$trade")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -38,7 +38,7 @@ export const Route = createFileRoute("/trades/$trade")({
 });
 
 function TradePage() {
-  const { trade } = Route.useLoaderData();
+  const { trade } = Route.useLoaderData() as { trade: Trade };
   const { area } = Route.useSearch();
   const matches = pros.filter((p) => p.tradeSlug === trade.slug);
   const others = pros.filter((p) => p.tradeSlug !== trade.slug);

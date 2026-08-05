@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { Star, ShieldCheck, Clock, MapPin, ArrowLeft, Check } from "lucide-react";
-import { pros } from "@/lib/site-data";
+import { pros, type Pro } from "@/lib/site-data";
 import { Section } from "@/components/layout-bits";
 import pro1 from "@/assets/pro-1.jpg";
 import pro2 from "@/assets/pro-2.jpg";
@@ -39,7 +39,7 @@ export const Route = createFileRoute("/pro/$id")({
 });
 
 function ProProfile() {
-  const { pro } = Route.useLoaderData();
+  const { pro } = Route.useLoaderData() as { pro: Pro };
 
   return (
     <>
