@@ -14,7 +14,311 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      areas: {
+        Row: {
+          name: string
+          note: string
+          slug: string
+          sort_order: number
+        }
+        Insert: {
+          name: string
+          note?: string
+          slug: string
+          sort_order?: number
+        }
+        Update: {
+          name?: string
+          note?: string
+          slug?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      jobs: {
+        Row: {
+          budget_band: string
+          contact_email: string
+          contact_name: string
+          created_at: string
+          description: string
+          id: string
+          postcode: string
+          reference: string
+          status: Database["public"]["Enums"]["job_status"]
+          timing: string
+          title: string
+          trade_slug: string
+          user_id: string | null
+        }
+        Insert: {
+          budget_band?: string
+          contact_email: string
+          contact_name: string
+          created_at?: string
+          description: string
+          id?: string
+          postcode: string
+          reference?: string
+          status?: Database["public"]["Enums"]["job_status"]
+          timing?: string
+          title: string
+          trade_slug: string
+          user_id?: string | null
+        }
+        Update: {
+          budget_band?: string
+          contact_email?: string
+          contact_name?: string
+          created_at?: string
+          description?: string
+          id?: string
+          postcode?: string
+          reference?: string
+          status?: Database["public"]["Enums"]["job_status"]
+          timing?: string
+          title?: string
+          trade_slug?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jobs_trade_slug_fkey"
+            columns: ["trade_slug"]
+            isOneToOne: false
+            referencedRelation: "trades"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
+      pro_credentials: {
+        Row: {
+          created_at: string
+          expires_on: string | null
+          id: string
+          kind: string
+          label: string
+          pro_id: string
+          reference: string | null
+          verified: boolean
+          verified_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          expires_on?: string | null
+          id?: string
+          kind?: string
+          label: string
+          pro_id: string
+          reference?: string | null
+          verified?: boolean
+          verified_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          expires_on?: string | null
+          id?: string
+          kind?: string
+          label?: string
+          pro_id?: string
+          reference?: string | null
+          verified?: boolean
+          verified_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pro_credentials_pro_id_fkey"
+            columns: ["pro_id"]
+            isOneToOne: false
+            referencedRelation: "pros"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          account_type: Database["public"]["Enums"]["account_type"]
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          account_type?: Database["public"]["Enums"]["account_type"]
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          account_type?: Database["public"]["Enums"]["account_type"]
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      pros: {
+        Row: {
+          area: string
+          area_slug: string | null
+          availability: Database["public"]["Enums"]["availability"]
+          bio: string
+          company: string
+          created_at: string
+          day_rate: number | null
+          id: string
+          min_job_budget: number
+          name: string
+          photo: number
+          postcode: string | null
+          published: boolean
+          rating: number
+          response_mins: number
+          review_count: number
+          services: string[]
+          trade_slug: string
+          updated_at: string
+          user_id: string | null
+          years: number
+        }
+        Insert: {
+          area: string
+          area_slug?: string | null
+          availability?: Database["public"]["Enums"]["availability"]
+          bio?: string
+          company: string
+          created_at?: string
+          day_rate?: number | null
+          id: string
+          min_job_budget?: number
+          name: string
+          photo?: number
+          postcode?: string | null
+          published?: boolean
+          rating?: number
+          response_mins?: number
+          review_count?: number
+          services?: string[]
+          trade_slug: string
+          updated_at?: string
+          user_id?: string | null
+          years?: number
+        }
+        Update: {
+          area?: string
+          area_slug?: string | null
+          availability?: Database["public"]["Enums"]["availability"]
+          bio?: string
+          company?: string
+          created_at?: string
+          day_rate?: number | null
+          id?: string
+          min_job_budget?: number
+          name?: string
+          photo?: number
+          postcode?: string | null
+          published?: boolean
+          rating?: number
+          response_mins?: number
+          review_count?: number
+          services?: string[]
+          trade_slug?: string
+          updated_at?: string
+          user_id?: string | null
+          years?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pros_trade_slug_fkey"
+            columns: ["trade_slug"]
+            isOneToOne: false
+            referencedRelation: "trades"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
+      reviews: {
+        Row: {
+          author_id: string | null
+          author_name: string
+          author_place: string | null
+          body: string
+          created_at: string
+          id: string
+          job_type: string | null
+          pro_id: string
+          rating: number
+          status: Database["public"]["Enums"]["review_status"]
+          title: string
+        }
+        Insert: {
+          author_id?: string | null
+          author_name: string
+          author_place?: string | null
+          body: string
+          created_at?: string
+          id?: string
+          job_type?: string | null
+          pro_id: string
+          rating: number
+          status?: Database["public"]["Enums"]["review_status"]
+          title?: string
+        }
+        Update: {
+          author_id?: string | null
+          author_name?: string
+          author_place?: string | null
+          body?: string
+          created_at?: string
+          id?: string
+          job_type?: string | null
+          pro_id?: string
+          rating?: number
+          status?: Database["public"]["Enums"]["review_status"]
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_pro_id_fkey"
+            columns: ["pro_id"]
+            isOneToOne: false
+            referencedRelation: "pros"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trades: {
+        Row: {
+          blurb: string
+          name: string
+          slug: string
+          sort_order: number
+          typical_cost: string
+        }
+        Insert: {
+          blurb: string
+          name: string
+          slug: string
+          sort_order?: number
+          typical_cost: string
+        }
+        Update: {
+          blurb?: string
+          name?: string
+          slug?: string
+          sort_order?: number
+          typical_cost?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +327,10 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      account_type: "customer" | "tradesman"
+      availability: "immediate" | "within_week" | "within_month" | "booked"
+      job_status: "open" | "matched" | "closed"
+      review_status: "published" | "pending" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +457,11 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      account_type: ["customer", "tradesman"],
+      availability: ["immediate", "within_week", "within_month", "booked"],
+      job_status: ["open", "matched", "closed"],
+      review_status: ["published", "pending", "rejected"],
+    },
   },
 } as const
