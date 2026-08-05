@@ -1,10 +1,12 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { Search, MapPin } from "lucide-react";
-import { trades } from "@/lib/site-data";
+import { tradesQuery } from "@/lib/queries";
 
 export function SearchBar({ compact = false }: { compact?: boolean }) {
   const navigate = useNavigate();
+  const { data: trades } = useSuspenseQuery(tradesQuery);
   const [trade, setTrade] = useState("");
   const [place, setPlace] = useState("");
 
@@ -12,11 +14,15 @@ export function SearchBar({ compact = false }: { compact?: boolean }) {
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        navigate({
-          to: trade ? "/trades/$trade" : "/trades",
-          params: trade ? { trade } : undefined,
-          search: place ? { area: place } : undefined,
-        });
+        if (trade) {
+          navigate({
+            to: "/trades/$trade",
+            params: { trade },
+            search: place ? { area: place } : {},
+          });
+        } else {
+          navigate({ to: "/trades" });
+        }
       }}
       className={`grid gap-2 rounded-md border border-border bg-card/90 p-2 backdrop-blur-md sm:grid-cols-[1.1fr_1fr_auto] ${
         compact ? "" : "shadow-lift"

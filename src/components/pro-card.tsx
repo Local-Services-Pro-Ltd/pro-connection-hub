@@ -1,11 +1,11 @@
 import { Link } from "@tanstack/react-router";
 import { Star, Clock, ShieldCheck } from "lucide-react";
-import type { Pro } from "@/lib/site-data";
+import { availabilityLabels, type Pro } from "@/lib/queries";
 import pro1 from "@/assets/pro-1.jpg";
 import pro2 from "@/assets/pro-2.jpg";
 import pro3 from "@/assets/pro-3.jpg";
 
-const photos = { 1: pro1, 2: pro2, 3: pro3 };
+const photos: Record<number, string> = { 1: pro1, 2: pro2, 3: pro3 };
 
 export function ProCard({ pro }: { pro: Pro }) {
   return (
@@ -16,35 +16,41 @@ export function ProCard({ pro }: { pro: Pro }) {
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-muted">
         <img
-          src={photos[pro.photo]}
-          alt={`${pro.name}, ${pro.trade} in ${pro.area}`}
+          src={photos[pro.photo] ?? pro1}
+          alt={`${pro.name}, ${pro.trade_slug.replace("-", " ")} in ${pro.area}`}
           loading="lazy"
           width={800}
           height={800}
           className="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.04]"
         />
-        <span className="absolute left-3 top-3 rounded-sm bg-background/85 px-2 py-1 font-display text-[11px] font-semibold uppercase tracking-widest text-primary backdrop-blur">
-          {pro.trade}
+        <span className="absolute left-3 top-3 rounded-sm bg-background/85 px-2 py-1 font-display text-[11px] font-semibold uppercase tracking-widest text-primary capitalize backdrop-blur">
+          {pro.trade_slug.replace("-", " ")}
         </span>
+        {pro.availability === "immediate" && (
+          <span className="absolute right-3 top-3 rounded-sm bg-success px-2 py-1 font-display text-[11px] font-semibold uppercase tracking-widest text-background">
+            Free now
+          </span>
+        )}
       </div>
       <div className="p-5">
         <div className="flex items-baseline justify-between gap-3">
           <h3 className="truncate text-base">{pro.company}</h3>
           <span className="flex shrink-0 items-center gap-1 text-sm">
             <Star className="h-3.5 w-3.5 fill-accent text-accent" />
-            {pro.rating}
+            {pro.review_count > 0 ? pro.rating : "New"}
           </span>
         </div>
         <p className="mt-1 text-sm text-muted-foreground">
-          {pro.name} · {pro.area} · {pro.reviews} reviews
+          {pro.name} · {pro.area} · {pro.review_count} review
+          {pro.review_count === 1 ? "" : "s"}
         </p>
         <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
           <span className="flex items-center gap-1.5">
             <ShieldCheck className="h-3.5 w-3.5 text-success" />
-            {pro.verified[1]}
+            {availabilityLabels[pro.availability]}
           </span>
           <span className="flex items-center gap-1.5">
-            <Clock className="h-3.5 w-3.5" />~{pro.responseMins} min reply
+            <Clock className="h-3.5 w-3.5" />~{pro.response_mins} min reply
           </span>
         </div>
       </div>
