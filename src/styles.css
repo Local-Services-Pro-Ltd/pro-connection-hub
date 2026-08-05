@@ -240,3 +240,25 @@
 @utility hero-veil-bottom {
   background-image: var(--hero-veil-bottom);
 }
+
+/* On narrow screens text sits over the middle of the photo, so the
+   horizontal veil isn't enough — switch to a vertical-dominant veil. */
+@media (max-width: 767px) {
+  .hero-veil {
+    background-image: linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--background) 80%, transparent) 0%,
+      color-mix(in oklab, var(--background) 88%, transparent) 55%,
+      color-mix(in oklab, var(--background) 94%, transparent) 100%
+    );
+  }
+  .hero-veil-bottom {
+    background-image: linear-gradient(
+      to top,
+      var(--background) 0%,
+      color-mix(in oklab, var(--background) 60%, transparent) 60%,
+      transparent 100%
+    );
+  }
+}
+
