@@ -58,7 +58,7 @@ function Account() {
       <PageHero
         eyebrow="Your account"
         title="Jobs, quotes and reviews."
-        sub={user.email ?? undefined}
+        sub={user.email ?? "Signed in"}
       >
         <button
           onClick={async () => {
