@@ -27,3 +27,9 @@ const map: Record<string, string> = {
 export function tradeHero(slug: string): string {
   return map[slug] ?? street;
 }
+
+/** True when /og/trade-<slug>.jpg exists for social share previews. */
+export function hasTradeOgImage(slug: string): boolean {
+  return slug in map;
+}
+

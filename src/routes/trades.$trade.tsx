@@ -10,7 +10,7 @@ import {
   type Trade,
 } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
-import { tradeHero } from "@/lib/trade-media";
+import { tradeHero, hasTradeOgImage } from "@/lib/trade-media";
 import { getRequestOrigin } from "@/lib/origin.functions";
 
 
