@@ -11,6 +11,7 @@ import {
 } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
 import { tradeHero } from "@/lib/trade-media";
+import { getRequestOrigin } from "@/lib/origin.functions";
 
 
 type Search = {
@@ -42,13 +43,14 @@ export const Route = createFileRoute("/trades/$trade")({
       .eq("slug", params.trade)
       .maybeSingle();
     if (!data) throw notFound();
-    await Promise.all([
+    const [, , origin] = await Promise.all([
       context.queryClient.ensureQueryData(
         prosQuery({ trade: params.trade, ...deps }),
       ),
       context.queryClient.ensureQueryData(tradesQuery),
+      getRequestOrigin(),
     ]);
-    return { trade: data as Trade };
+    return { trade: data as Trade, origin };
   },
   head: ({ loaderData }) => {
     if (!loaderData) {
