@@ -77,6 +77,7 @@ export function PageHero({
           {/* Reserved by the content padding below, so no layout shift. */}
           <picture className="absolute inset-0 -z-10 block">
             <img
+              data-hero-media
               src={image}
               alt={imageAlt ?? ""}
               width={1600}

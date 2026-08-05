@@ -2,35 +2,54 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { PageHero, Section, SectionHead } from "@/components/layout-bits";
 import { areasQuery, proCountsQuery } from "@/lib/queries";
+import { getRequestOrigin } from "@/lib/origin.functions";
 import street from "@/assets/street.jpg";
 import heroAreas from "@/assets/hero-areas.jpg";
 
 export const Route = createFileRoute("/areas")({
-  loader: ({ context }) =>
-    Promise.all([
+  loader: async ({ context }) => {
+    const [, , origin] = await Promise.all([
       context.queryClient.ensureQueryData(areasQuery),
       context.queryClient.ensureQueryData(proCountsQuery),
-    ]).then(() => null),
-  head: () => ({
-    meta: [
-      {
-        title:
-          "Areas we cover — local tradesmen across the UK | TradesmanFinder",
-      },
-      {
-        name: "description",
-        content:
-          "Vetted tradesmen in London, Manchester, Birmingham, Bristol, Leeds, Glasgow, Cardiff and Newcastle — plus nationwide coverage by postcode.",
-      },
-      { property: "og:title", content: "Areas we cover — TradesmanFinder" },
-      {
-        property: "og:description",
-        content: "Vetted local trades across every UK region.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+      getRequestOrigin(),
+    ]);
+    return { origin };
+  },
+  head: ({ loaderData }) => {
+    const title =
+      "Areas we cover — local tradesmen across the UK | TradesmanFinder";
+    const description =
+      "Vetted tradesmen in London, Manchester, Birmingham, Bristol, Leeds, Glasgow, Cardiff and Newcastle — plus nationwide coverage by postcode.";
+    const base = loaderData?.origin ?? "";
+    const image = loaderData?.origin
+      ? `${loaderData.origin}/og/areas.jpg`
+      : undefined;
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: "Areas we cover — TradesmanFinder" },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "website" },
+        { property: "og:url", content: `${base}/areas` },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: "Areas we cover — TradesmanFinder" },
+        { name: "twitter:description", content: description },
+        ...(image
+          ? [
+              { property: "og:image", content: image },
+              {
+                property: "og:image:alt",
+                content: "UK terraced streets from above at golden hour",
+              },
+              { name: "twitter:image", content: image },
+            ]
+          : []),
+      ],
+      links: [{ rel: "canonical", href: `${base}/areas` }],
+    };
+  },
+
   errorComponent: ({ error }) => (
     <Section>
       <p role="alert" className="text-muted-foreground">

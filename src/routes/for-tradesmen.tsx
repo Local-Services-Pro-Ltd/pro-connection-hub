@@ -1,26 +1,48 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Check } from "lucide-react";
 import { PageHero, Section, SectionHead } from "@/components/layout-bits";
+import { getRequestOrigin } from "@/lib/origin.functions";
 import heroForTradesmen from "@/assets/hero-for-tradesmen.jpg";
 
 export const Route = createFileRoute("/for-tradesmen")({
-  head: () => ({
-    meta: [
-      { title: "Join as a tradesman — real leads, no lead fees | TradesmanFinder" },
-      {
-        name: "description",
-        content:
-          "Get matched to homeowners in your postcodes. One flat monthly membership, no per-lead charges, no bidding wars.",
-      },
-      { property: "og:title", content: "Join TradesmanFinder as a trade" },
-      {
-        property: "og:description",
-        content: "Flat monthly membership. No per-lead fees. Real local jobs.",
-      },
-    ],
-  }),
+  loader: async () => ({ origin: await getRequestOrigin() }),
+  head: ({ loaderData }) => {
+    const title =
+      "Join as a tradesman — real leads, no lead fees | TradesmanFinder";
+    const description =
+      "Get matched to homeowners in your postcodes. One flat monthly membership, no per-lead charges, no bidding wars.";
+    const base = loaderData?.origin ?? "";
+    const image = loaderData?.origin
+      ? `${loaderData.origin}/og/for-tradesmen.jpg`
+      : undefined;
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: "Join TradesmanFinder as a trade" },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "website" },
+        { property: "og:url", content: `${base}/for-tradesmen` },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: "Join TradesmanFinder as a trade" },
+        { name: "twitter:description", content: description },
+        ...(image
+          ? [
+              { property: "og:image", content: image },
+              {
+                property: "og:image:alt",
+                content: "A tradesman beside his van at sunrise",
+              },
+              { name: "twitter:image", content: image },
+            ]
+          : []),
+      ],
+      links: [{ rel: "canonical", href: `${base}/for-tradesmen` }],
+    };
+  },
   component: ForTradesmen,
 });
+
 
 const perks = [
   {
