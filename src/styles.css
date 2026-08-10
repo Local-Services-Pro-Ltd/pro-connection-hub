@@ -89,18 +89,19 @@
   /* Hero legibility veil — tuned per theme for WCAG AA text on photos. */
   --hero-veil: linear-gradient(
     to right,
-    var(--background) 0%,
-    color-mix(in oklab, var(--background) 92%, transparent) 38%,
-    color-mix(in oklab, var(--background) 55%, transparent) 68%,
-    color-mix(in oklab, var(--background) 18%, transparent) 100%
+    color-mix(in oklab, var(--background) 92%, transparent) 0%,
+    color-mix(in oklab, var(--background) 80%, transparent) 38%,
+    color-mix(in oklab, var(--background) 45%, transparent) 68%,
+    color-mix(in oklab, var(--background) 12%, transparent) 100%
   );
   --hero-veil-bottom: linear-gradient(
     to top,
     var(--background) 0%,
-    color-mix(in oklab, var(--background) 55%, transparent) 45%,
+    color-mix(in oklab, var(--background) 45%, transparent) 45%,
     transparent 100%
   );
-  --hero-image-opacity: 0.85;
+  --hero-image-opacity: 0.95;
+
 }
 
 /* ---------- Dark ---------- */
@@ -118,7 +119,7 @@
   --border-strong: oklch(0.56 0.013 60);
   --input: oklch(0.4 0.011 60);
 
-  --hero-image-opacity: 0.72;
+  --hero-image-opacity: 0.82;
 }
 
 /* ---------- Light ---------- */
@@ -154,7 +155,7 @@
     0 20px 50px -30px oklch(0.3 0.02 60 / 35%);
   --shadow-ember: 0 16px 36px -20px oklch(0.55 0.18 42 / 40%);
 
-  --hero-image-opacity: 0.9;
+  --hero-image-opacity: 0.97;
 }
 
 
@@ -249,16 +250,16 @@
   .hero-veil {
     background-image: linear-gradient(
       to bottom,
-      color-mix(in oklab, var(--background) 62%, transparent) 0%,
-      color-mix(in oklab, var(--background) 80%, transparent) 45%,
-      color-mix(in oklab, var(--background) 90%, transparent) 100%
+      color-mix(in oklab, var(--background) 48%, transparent) 0%,
+      color-mix(in oklab, var(--background) 66%, transparent) 45%,
+      color-mix(in oklab, var(--background) 78%, transparent) 100%
     );
   }
   .hero-veil-bottom {
     background-image: linear-gradient(
       to top,
       var(--background) 0%,
-      color-mix(in oklab, var(--background) 60%, transparent) 60%,
+      color-mix(in oklab, var(--background) 48%, transparent) 60%,
       transparent 100%
     );
   }

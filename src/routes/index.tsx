@@ -152,8 +152,9 @@ function Home() {
           />
         )}
 
-        <div className="absolute inset-0 bg-background/55" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+        <div className="absolute inset-0 bg-background/38" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/25 to-transparent" />
+
 
         <div className="relative mx-auto flex min-h-[88vh] max-w-7xl flex-col justify-center px-5 py-24 lg:px-8">
           <p className="eyebrow">Vetted UK trades</p>
