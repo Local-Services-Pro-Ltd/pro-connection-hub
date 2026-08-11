@@ -131,7 +131,8 @@ export function LiveMapHero({
   children?: ReactNode;
 }) {
   const reduced = usePrefersReducedMotion();
-  const { consent, fix, track, error, allow, deny, reset } = useGpsConsent();
+  const { consent, fix, smoothed, track, error, allow, deny, reset } =
+    useGpsConsent();
 
   // Live hub counts over a realtime WebSocket channel.
   const { counts, updatedAt, connected } = useHubCounts(
