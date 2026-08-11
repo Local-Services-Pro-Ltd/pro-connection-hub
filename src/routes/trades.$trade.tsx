@@ -127,31 +127,38 @@ function TradePage() {
       )
     : 0;
 
+  const copy = tradeHeroCopy(trade.slug, {
+    trade: trade.name,
+    tradePlural: `${trade.name}s`,
+    blurb: trade.blurb,
+    ...(search.area ? { area: search.area } : {}),
+  });
+
   return (
     <>
       <PageHero
-        eyebrow={search.area ? `Near ${search.area}` : "Trade"}
-        title={`${trade.name}s you can actually trust.`}
-        sub={trade.blurb}
+        eyebrow={copy.eyebrow}
+        title={copy.title}
+        sub={copy.sub}
         image={tradeHero(trade.slug)}
-        imageAlt={`A professional ${trade.name.toLowerCase()} at work on a UK job`}
+        imageAlt={copy.imageAlt}
         focal="50% 45%"
         focalMobile="60% 45%"
       >
 
         <dl className="flex flex-wrap gap-x-12 gap-y-4 border-t border-border pt-6">
           <div>
-            <dt className="eyebrow">Typical cost</dt>
+            <dt className="eyebrow">{copy.stats.cost}</dt>
             <dd className="mt-1 font-display text-xl">{trade.typical_cost}</dd>
           </div>
           <div>
-            <dt className="eyebrow">Free right now</dt>
+            <dt className="eyebrow">{copy.stats.available}</dt>
             <dd className="mt-1 font-display text-xl text-primary">
               {available} pro{available === 1 ? "" : "s"}
             </dd>
           </div>
           <div>
-            <dt className="eyebrow">Avg. response</dt>
+            <dt className="eyebrow">{copy.stats.response}</dt>
             <dd className="mt-1 font-display text-xl">
               {avg ? `~${avg} min` : "—"}
             </dd>
