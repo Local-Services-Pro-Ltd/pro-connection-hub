@@ -1,9 +1,22 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Pause, Play, MapPin, X, ShieldCheck } from "lucide-react";
+import {
+  Pause,
+  Play,
+  MapPin,
+  X,
+  ShieldCheck,
+  History,
+  Link2,
+  Check,
+  Radio,
+} from "lucide-react";
 import { usePrefersReducedMotion } from "@/hooks/use-reduced-motion";
 import { useGpsConsent } from "@/hooks/use-gps-consent";
+import { useHubCounts } from "@/hooks/use-hub-counts";
+import { encodeShare, SHARE_DURATIONS } from "@/lib/share-position";
 import heroVideo from "@/assets/hero.mp4.asset.json";
 import heroPoster from "@/assets/hero-poster.jpg";
+
 
 type Route = {
   id: string;
