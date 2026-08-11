@@ -115,6 +115,7 @@ export function useGpsConsent() {
   return {
     consent,
     fix,
+    smoothed,
     track,
     error,
     allow: () => choose("granted"),
