@@ -20,8 +20,16 @@ from PIL import Image, ImageChops
 from playwright.async_api import async_playwright
 
 BASE_URL = "http://localhost:8080"
-PAGES = ["/trades", "/areas", "/for-tradesmen", "/post-job"]
-THEMES = ["light", "dark"]
+PAGES = [
+    "/trades",
+    "/areas",
+    "/for-tradesmen",
+    "/post-job",
+    "/trades/builder",
+    "/trades/plumber",
+    "/trades/electrician",
+]
+THEMES = ["light", "dim", "dark"]
 VIEWPORTS = {"desktop": (1280, 900), "mobile": (390, 844)}
 # Fraction of pixels allowed to differ before a shot counts as a regression.
 THRESHOLD = 0.005
