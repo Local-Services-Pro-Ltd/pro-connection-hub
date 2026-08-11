@@ -600,9 +600,12 @@ export function LiveMapHero({
         {/* GPS consent / opt-out */}
         <div className="pointer-events-auto mt-8 max-w-xl">
           {consent === "unknown" ? (
-            <div className="rounded-md border border-border-strong bg-card/95 p-5 shadow-lift backdrop-blur">
-              <p className="eyebrow flex items-center gap-1.5">
-                <ShieldCheck className="h-3 w-3" /> Privacy
+            <section
+              aria-labelledby="gps-consent-title"
+              className="rounded-md border border-border-strong bg-card/95 p-5 shadow-lift backdrop-blur"
+            >
+              <p id="gps-consent-title" className="eyebrow flex items-center gap-1.5">
+                <ShieldCheck className="h-3 w-3" aria-hidden="true" /> Privacy — location consent
               </p>
               <p className="mt-2 text-sm text-muted-foreground">
                 We can plot your live position on the map to show trades working
@@ -613,22 +616,22 @@ export function LiveMapHero({
                 <button
                   type="button"
                   onClick={allow}
-                  className="rounded-sm bg-primary px-4 py-2 font-display text-sm font-semibold text-primary-foreground hover:brightness-110"
+                  className="rounded-sm bg-primary px-4 py-2 font-display text-sm font-semibold text-primary-foreground hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                 >
                   Use my location
                 </button>
                 <button
                   type="button"
                   onClick={deny}
-                  className="rounded-sm border border-border-strong px-4 py-2 font-display text-sm font-semibold hover:bg-surface"
+                  className="rounded-sm border border-border-strong px-4 py-2 font-display text-sm font-semibold hover:bg-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                 >
                   No thanks
                 </button>
               </div>
-            </div>
+            </section>
           ) : (
             <div className="flex flex-wrap items-center gap-3 rounded-md border border-border bg-card/80 px-4 py-3 text-sm backdrop-blur">
-              <span className="text-muted-foreground">
+              <span className="text-muted-foreground" role="status">
                 {consent === "granted"
                   ? error
                     ? `Live GPS unavailable: ${error}`
@@ -640,13 +643,137 @@ export function LiveMapHero({
               <button
                 type="button"
                 onClick={consent === "granted" ? deny : reset}
-                className="ml-auto rounded-sm border border-border-strong px-3 py-1.5 font-display text-xs font-semibold hover:bg-surface"
+                className="ml-auto rounded-sm border border-border-strong px-3 py-1.5 font-display text-xs font-semibold hover:bg-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
               >
                 {consent === "granted" ? "Turn off GPS" : "Change choice"}
               </button>
             </div>
           )}
         </div>
+
+        {/* Replay timeline + share link */}
+        {consent === "granted" && (
+          <div className="pointer-events-auto mt-6 grid max-w-3xl gap-4 sm:grid-cols-2">
+            <section
+              aria-labelledby="replay-title"
+              className="rounded-md border border-border-strong bg-card/90 p-4 backdrop-blur"
+            >
+              <p id="replay-title" className="eyebrow flex items-center gap-1.5">
+                <History className="h-3 w-3" aria-hidden="true" /> Replay last 30 minutes
+              </p>
+              {track.length < 2 ? (
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Collecting your movement — the replay unlocks once we have a
+                  couple of fixes.
+                </p>
+              ) : (
+                <>
+                  <div className="mt-3 flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (replaying) return setReplaying(false);
+                        setReplayIdx((i) =>
+                          i === null || i >= track.length - 1 ? 0 : i,
+                        );
+                        setReplaying(true);
+                      }}
+                      aria-pressed={replaying}
+                      aria-label={replaying ? "Pause GPS replay" : "Play GPS replay"}
+                      className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-sm bg-primary text-primary-foreground hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                    >
+                      {replaying ? (
+                        <Pause className="h-4 w-4" aria-hidden="true" />
+                      ) : (
+                        <Play className="h-4 w-4" aria-hidden="true" />
+                      )}
+                    </button>
+                    <input
+                      type="range"
+                      min={0}
+                      max={track.length - 1}
+                      step={1}
+                      value={replayIdx ?? track.length - 1}
+                      onChange={(e) => {
+                        setReplaying(false);
+                        setReplayIdx(Number(e.target.value));
+                      }}
+                      aria-label="Scrub through your recorded GPS positions"
+                      aria-valuetext={
+                        replayPoint
+                          ? `Position from ${relTime(replayPoint.at, now || Date.now())}`
+                          : "Latest position"
+                      }
+                      className="h-2 w-full cursor-pointer accent-[var(--color-primary)]"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setReplaying(false);
+                        setReplayIdx(null);
+                      }}
+                      className="shrink-0 rounded-sm border border-border-strong px-2.5 py-1.5 font-display text-xs font-semibold hover:bg-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                    >
+                      Live
+                    </button>
+                  </div>
+                  <p className="mt-2 text-xs text-muted-foreground" role="status">
+                    {replayPoint
+                      ? `Showing position from ${relTime(replayPoint.at, now || Date.now())} · ${track.length} fixes recorded`
+                      : `Following your live position · ${track.length} fixes recorded`}
+                  </p>
+                </>
+              )}
+            </section>
+
+            <section
+              aria-labelledby="share-title"
+              className="rounded-md border border-border-strong bg-card/90 p-4 backdrop-blur"
+            >
+              <p id="share-title" className="eyebrow flex items-center gap-1.5">
+                <Link2 className="h-3 w-3" aria-hidden="true" /> Temporary share link
+              </p>
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <label className="sr-only" htmlFor="share-expiry">
+                  Share link expiry
+                </label>
+                <select
+                  id="share-expiry"
+                  value={shareMs}
+                  onChange={(e) => setShareMs(Number(e.target.value))}
+                  className="rounded-sm border border-border-strong bg-surface px-2.5 py-2 font-display text-xs font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                >
+                  {SHARE_DURATIONS.map((d) => (
+                    <option key={d.ms} value={d.ms}>
+                      {d.label}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={makeShareLink}
+                  disabled={!fix}
+                  className="inline-flex items-center gap-2 rounded-sm bg-primary px-3.5 py-2 font-display text-xs font-semibold text-primary-foreground hover:brightness-110 disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                >
+                  {copied ? (
+                    <Check className="h-3.5 w-3.5" aria-hidden="true" />
+                  ) : (
+                    <Link2 className="h-3.5 w-3.5" aria-hidden="true" />
+                  )}
+                  {copied ? "Link copied" : "Generate link"}
+                </button>
+              </div>
+              <p className="mt-2 break-all text-xs text-muted-foreground" role="status">
+                {!fix
+                  ? "Waiting for a GPS fix before a link can be created."
+                  : share
+                    ? `Expires in ${Math.max(0, Math.ceil((share.exp - (now || Date.now())) / 60000))} min · ${share.url}`
+                    : "Creates a link that carries your current position and expires automatically. Nothing is stored on our servers."}
+              </p>
+            </section>
+          </div>
+        )}
+
       </div>
     </div>
   );
