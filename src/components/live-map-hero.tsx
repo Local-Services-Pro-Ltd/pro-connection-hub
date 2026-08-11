@@ -679,12 +679,35 @@ export function LiveMapHero({
             </section>
           ) : (
             <div className="flex flex-wrap items-center gap-3 rounded-md border border-border bg-card/80 px-4 py-3 text-sm backdrop-blur">
+              {consent === "granted" && band && (
+                <span
+                  className="flex shrink-0 items-end gap-[3px]"
+                  aria-hidden="true"
+                  title={`Signal ${band.label}`}
+                >
+                  {[1, 2, 3].map((b) => (
+                    <span
+                      key={b}
+                      className={`w-1 rounded-[1px] ${
+                        b <= band.bars
+                          ? band.tone === "good"
+                            ? "bg-primary"
+                            : band.tone === "fair"
+                              ? "bg-accent"
+                              : "bg-muted-foreground"
+                          : "bg-border-strong"
+                      }`}
+                      style={{ height: `${5 + b * 4}px` }}
+                    />
+                  ))}
+                </span>
+              )}
               <span className="text-muted-foreground" role="status">
                 {consent === "granted"
                   ? error
                     ? `Live GPS unavailable: ${error}`
-                    : fix
-                      ? `Live GPS on · accurate to ~${Math.round(fix.accuracy)}m · updated ${relTime(fix.at, now)}`
+                    : fix && band
+                      ? `Live GPS on · ${band.label} signal · accurate to ~${Math.round(fix.accuracy)}m · smoothed marker · updated ${relTime(fix.at, now)}`
                       : "Live GPS on · waiting for a fix…"
                   : "Live GPS off — showing the standard coverage map."}
               </span>
