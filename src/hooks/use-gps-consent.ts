@@ -16,11 +16,16 @@ export type GpsFix = {
  * Consent is remembered in localStorage; nothing is read from the device
  * until the visitor explicitly opts in, and opting out stops the watcher.
  */
+export const TRACK_WINDOW_MS = 30 * 60_000;
+
 export function useGpsConsent() {
   const [consent, setConsent] = useState<GpsConsent>("unknown");
   const [fix, setFix] = useState<GpsFix | null>(null);
+  /** Rolling buffer of fixes from the last 30 minutes (in-memory only). */
+  const [track, setTrack] = useState<GpsFix[]>([]);
   const [error, setError] = useState<string | null>(null);
   const watchId = useRef<number | null>(null);
+
 
   // Hydrate stored choice after mount so SSR markup matches.
   useEffect(() => {
