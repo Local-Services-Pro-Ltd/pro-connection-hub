@@ -174,13 +174,13 @@
     0 20px 50px -30px oklch(0.3 0.02 60 / 35%);
   --shadow-ember: 0 16px 36px -20px oklch(0.55 0.18 42 / 40%);
 
-  --hero-image-opacity: 0.9;
+  --hero-image-opacity: 1;
   --hero-veil: linear-gradient(
     to right,
-    color-mix(in oklab, var(--background) 95%, transparent) 0%,
-    color-mix(in oklab, var(--background) 88%, transparent) 40%,
-    color-mix(in oklab, var(--background) 60%, transparent) 70%,
-    color-mix(in oklab, var(--background) 20%, transparent) 100%
+    color-mix(in oklab, var(--background) 82%, transparent) 0%,
+    color-mix(in oklab, var(--background) 66%, transparent) 40%,
+    color-mix(in oklab, var(--background) 34%, transparent) 70%,
+    transparent 100%
   );
   --hero-copy-scrim: radial-gradient(
     120% 130% at 12% 50%,
