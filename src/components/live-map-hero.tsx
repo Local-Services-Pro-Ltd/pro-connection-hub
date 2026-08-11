@@ -445,7 +445,7 @@ export function LiveMapHero({
               }`}
             >
               {h.label}
-              <span className="ml-2 text-primary">{counts[h.label]}</span>
+              <span className={selected?.label === h.label ? "ml-2" : "ml-2 text-primary"}>{counts[h.label]}</span>
             </button>
           ))}
         </div>
