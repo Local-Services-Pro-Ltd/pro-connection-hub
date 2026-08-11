@@ -488,16 +488,21 @@ export function LiveMapHero({
           <button
             type="button"
             onClick={() => setPlaying((p) => !p)}
-            aria-label={playing ? "Pause live feed" : "Play live feed"}
-            className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-sm bg-primary text-primary-foreground hover:brightness-110"
+            aria-pressed={playing}
+            aria-label={playing ? "Pause live field feed" : "Play live field feed"}
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-sm bg-primary text-primary-foreground hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             {playing ? (
-              <Pause className="h-3.5 w-3.5" />
+              <Pause className="h-4 w-4" aria-hidden="true" />
             ) : (
-              <Play className="h-3.5 w-3.5" />
+              <Play className="h-4 w-4" aria-hidden="true" />
             )}
           </button>
         </div>
+        <p className="sr-only" role="status">
+          Live field feed {playing ? "playing" : "paused"}.
+        </p>
+
       </div>
 
       <div className="pointer-events-none relative z-[2] mx-auto max-w-7xl px-5 py-20 sm:py-24 lg:px-8 lg:py-36">
