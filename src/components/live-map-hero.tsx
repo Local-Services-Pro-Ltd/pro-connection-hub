@@ -128,7 +128,7 @@ export function LiveMapHero({
         const next = { ...prev };
         for (const h of hubs) {
           const drift = Math.round((Math.random() - 0.5) * 4);
-          next[h.label] = Math.max(3, prev[h.label] + drift);
+          next[h.label] = Math.max(3, (prev[h.label] ?? h.live) + drift);
         }
         return next;
       });
