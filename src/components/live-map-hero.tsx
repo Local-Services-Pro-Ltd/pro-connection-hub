@@ -150,6 +150,7 @@ export function LiveMapHero({
   // ---- 30-minute replay timeline -------------------------------------
   const [replayIdx, setReplayIdx] = useState<number | null>(null);
   const [replaying, setReplaying] = useState(false);
+  const [speed, setSpeed] = useState(1);
 
   useEffect(() => {
     if (!replaying || track.length < 2) return;
@@ -162,16 +163,35 @@ export function LiveMapHero({
         }
         return next;
       });
-    }, 600);
+    }, 600 / speed);
     return () => clearInterval(id);
-  }, [replaying, track.length]);
+  }, [replaying, track.length, speed]);
 
   const replayPoint =
     replayIdx !== null ? (track[Math.min(replayIdx, track.length - 1)] ?? null) : null;
 
+  function exportTrack(kind: "gpx" | "kml") {
+    if (track.length < 2) return;
+    const stamp = new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-");
+    if (kind === "gpx") {
+      downloadText(
+        `tradesman-finder-track-${stamp}.gpx`,
+        "application/gpx+xml",
+        toGpx(track),
+      );
+    } else {
+      downloadText(
+        `tradesman-finder-track-${stamp}.kml`,
+        "application/vnd.google-earth.kml+xml",
+        toKml(track),
+      );
+    }
+  }
+
   // ---- Temporary share link -------------------------------------------
   const [share, setShare] = useState<{ url: string; exp: number } | null>(null);
   const [copied, setCopied] = useState(false);
+  const [revoked, setRevoked] = useState(false);
   const [shareMs, setShareMs] = useState<number>(SHARE_DURATIONS[1].ms);
 
   useEffect(() => {
@@ -186,11 +206,29 @@ export function LiveMapHero({
     const url = `${window.location.origin}/areas?live=${token}`;
     setShare({ url, exp });
     setCopied(false);
+    setRevoked(false);
     void navigator.clipboard
       ?.writeText(url)
       .then(() => setCopied(true))
       .catch(() => setCopied(false));
   }
+
+  function revokeShareLink() {
+    setShare(null);
+    setCopied(false);
+    setRevoked(true);
+  }
+
+  function countdown(ms: number) {
+    const total = Math.max(0, Math.round(ms / 1000));
+    const h = Math.floor(total / 3600);
+    const m = Math.floor((total % 3600) / 60);
+    const s = total % 60;
+    return h > 0
+      ? `${h}h ${String(m).padStart(2, "0")}m`
+      : `${m}:${String(s).padStart(2, "0")}`;
+  }
+
 
 
   // Live video feed overlay
