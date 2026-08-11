@@ -21,6 +21,8 @@ export const TRACK_WINDOW_MS = 30 * 60_000;
 export function useGpsConsent() {
   const [consent, setConsent] = useState<GpsConsent>("unknown");
   const [fix, setFix] = useState<GpsFix | null>(null);
+  /** Accuracy-weighted smoothed position — steadier marker movement. */
+  const [smoothed, setSmoothed] = useState<GpsFix | null>(null);
   /** Rolling buffer of fixes from the last 30 minutes (in-memory only). */
   const [track, setTrack] = useState<GpsFix[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -48,6 +50,7 @@ export function useGpsConsent() {
     if (consent !== "granted") {
       stop();
       setFix(null);
+      setSmoothed(null);
       setTrack([]);
       return;
     }
@@ -65,6 +68,17 @@ export function useGpsConsent() {
           at: Date.now(),
         };
         setFix(next);
+        setSmoothed((prev) => {
+          if (!prev) return next;
+          // Exponential smoothing; trust precise fixes more than fuzzy ones.
+          const alpha = Math.min(0.9, Math.max(0.15, 25 / (25 + next.accuracy)));
+          return {
+            lat: prev.lat + (next.lat - prev.lat) * alpha,
+            lon: prev.lon + (next.lon - prev.lon) * alpha,
+            accuracy: prev.accuracy + (next.accuracy - prev.accuracy) * 0.4,
+            at: next.at,
+          };
+        });
         setTrack((prev) => {
           const cutoff = next.at - TRACK_WINDOW_MS;
           const last = prev[prev.length - 1];
@@ -101,6 +115,7 @@ export function useGpsConsent() {
   return {
     consent,
     fix,
+    smoothed,
     track,
     error,
     allow: () => choose("granted"),

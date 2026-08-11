@@ -9,11 +9,19 @@ import {
   Link2,
   Check,
   Radio,
+  Download,
+  Trash2,
 } from "lucide-react";
 import { usePrefersReducedMotion } from "@/hooks/use-reduced-motion";
 import { useGpsConsent } from "@/hooks/use-gps-consent";
 import { useHubCounts } from "@/hooks/use-hub-counts";
 import { encodeShare, SHARE_DURATIONS } from "@/lib/share-position";
+import {
+  accuracyBand,
+  downloadText,
+  toGpx,
+  toKml,
+} from "@/lib/track-export";
 import heroVideo from "@/assets/hero.mp4.asset.json";
 import heroPoster from "@/assets/hero-poster.jpg";
 
@@ -122,7 +130,8 @@ export function LiveMapHero({
   children?: ReactNode;
 }) {
   const reduced = usePrefersReducedMotion();
-  const { consent, fix, track, error, allow, deny, reset } = useGpsConsent();
+  const { consent, fix, smoothed, track, error, allow, deny, reset } =
+    useGpsConsent();
 
   // Live hub counts over a realtime WebSocket channel.
   const { counts, updatedAt, connected } = useHubCounts(
@@ -140,6 +149,7 @@ export function LiveMapHero({
   // ---- 30-minute replay timeline -------------------------------------
   const [replayIdx, setReplayIdx] = useState<number | null>(null);
   const [replaying, setReplaying] = useState(false);
+  const [speed, setSpeed] = useState(1);
 
   useEffect(() => {
     if (!replaying || track.length < 2) return;
@@ -152,16 +162,35 @@ export function LiveMapHero({
         }
         return next;
       });
-    }, 600);
+    }, 600 / speed);
     return () => clearInterval(id);
-  }, [replaying, track.length]);
+  }, [replaying, track.length, speed]);
 
   const replayPoint =
     replayIdx !== null ? (track[Math.min(replayIdx, track.length - 1)] ?? null) : null;
 
+  function exportTrack(kind: "gpx" | "kml") {
+    if (track.length < 2) return;
+    const stamp = new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-");
+    if (kind === "gpx") {
+      downloadText(
+        `tradesman-finder-track-${stamp}.gpx`,
+        "application/gpx+xml",
+        toGpx(track),
+      );
+    } else {
+      downloadText(
+        `tradesman-finder-track-${stamp}.kml`,
+        "application/vnd.google-earth.kml+xml",
+        toKml(track),
+      );
+    }
+  }
+
   // ---- Temporary share link -------------------------------------------
   const [share, setShare] = useState<{ url: string; exp: number } | null>(null);
   const [copied, setCopied] = useState(false);
+  const [revoked, setRevoked] = useState(false);
   const [shareMs, setShareMs] = useState<number>(SHARE_DURATIONS[1].ms);
 
   useEffect(() => {
@@ -176,11 +205,29 @@ export function LiveMapHero({
     const url = `${window.location.origin}/areas?live=${token}`;
     setShare({ url, exp });
     setCopied(false);
+    setRevoked(false);
     void navigator.clipboard
       ?.writeText(url)
       .then(() => setCopied(true))
       .catch(() => setCopied(false));
   }
+
+  function revokeShareLink() {
+    setShare(null);
+    setCopied(false);
+    setRevoked(true);
+  }
+
+  function countdown(ms: number) {
+    const total = Math.max(0, Math.round(ms / 1000));
+    const h = Math.floor(total / 3600);
+    const m = Math.floor((total % 3600) / 60);
+    const s = total % 60;
+    return h > 0
+      ? `${h}h ${String(m).padStart(2, "0")}m`
+      : `${m}:${String(s).padStart(2, "0")}`;
+  }
+
 
 
   // Live video feed overlay
@@ -198,7 +245,11 @@ export function LiveMapHero({
     if (reduced) setPlaying(false);
   }, [reduced]);
 
-  const me = fix ? project(fix.lat, fix.lon) : null;
+  const shown = smoothed ?? fix;
+  const me = shown ? project(shown.lat, shown.lon) : null;
+  const band = fix ? accuracyBand(fix.accuracy) : null;
+  // Accuracy halo in viewBox units (~0.00088 units per metre), kept visible.
+  const accuracyR = fix ? Math.min(90, Math.max(26, fix.accuracy * 0.00088 + 26)) : 0;
   const trackPts = track.map((f) => project(f.lat, f.lon));
   const trackPath = trackPts.length > 1 ? `M ${trackPts.map((p) => `${p.x} ${p.y}`).join(" L ")}` : null;
   const ghost = replayPoint ? project(replayPoint.lat, replayPoint.lon) : null;
@@ -416,37 +467,33 @@ export function LiveMapHero({
         {/* Your live GPS position */}
 
         {me && (
-          <g>
+          <g
+            style={{
+              transform: `translate(${me.x}px, ${me.y}px)`,
+              transition: reduced ? undefined : "transform 900ms ease-out",
+            }}
+          >
+            {/* Accuracy halo — bigger circle means a less certain fix */}
             <circle
-              cx={me.x}
-              cy={me.y}
-              r="46"
-              className="fill-accent"
-              opacity="0.18"
+              r={accuracyR}
+              className="fill-accent stroke-accent"
+              strokeWidth="2"
+              opacity="0.16"
+              style={{ transition: reduced ? undefined : "r 900ms ease-out" }}
             />
             {!reduced && (
               <circle
-                cx={me.x}
-                cy={me.y}
                 r="24"
                 className="fill-none stroke-accent"
                 strokeWidth="3"
-                style={{
-                  transformOrigin: `${me.x}px ${me.y}px`,
-                  animation: "map-ping 2.4s ease-out infinite",
-                }}
+                style={{ animation: "map-ping 2.4s ease-out infinite" }}
               />
             )}
-            <circle cx={me.x} cy={me.y} r="11" className="fill-accent" />
-            <circle
-              cx={me.x}
-              cy={me.y}
-              r="4"
-              className="fill-accent-foreground"
-            />
+            <circle r="11" className="fill-accent" />
+            <circle r="4" className="fill-accent-foreground" />
             <text
-              x={me.x + 20}
-              y={me.y + 6}
+              x={20}
+              y={6}
               className="fill-foreground font-display"
               fontSize="17"
               fontWeight="600"
@@ -631,12 +678,35 @@ export function LiveMapHero({
             </section>
           ) : (
             <div className="flex flex-wrap items-center gap-3 rounded-md border border-border bg-card/80 px-4 py-3 text-sm backdrop-blur">
+              {consent === "granted" && band && (
+                <span
+                  className="flex shrink-0 items-end gap-[3px]"
+                  aria-hidden="true"
+                  title={`Signal ${band.label}`}
+                >
+                  {[1, 2, 3].map((b) => (
+                    <span
+                      key={b}
+                      className={`w-1 rounded-[1px] ${
+                        b <= band.bars
+                          ? band.tone === "good"
+                            ? "bg-primary"
+                            : band.tone === "fair"
+                              ? "bg-accent"
+                              : "bg-muted-foreground"
+                          : "bg-border-strong"
+                      }`}
+                      style={{ height: `${5 + b * 4}px` }}
+                    />
+                  ))}
+                </span>
+              )}
               <span className="text-muted-foreground" role="status">
                 {consent === "granted"
                   ? error
                     ? `Live GPS unavailable: ${error}`
-                    : fix
-                      ? `Live GPS on · accurate to ~${Math.round(fix.accuracy)}m · updated ${relTime(fix.at, now)}`
+                    : fix && band
+                      ? `Live GPS on · ${band.label} signal · accurate to ~${Math.round(fix.accuracy)}m · smoothed marker · updated ${relTime(fix.at, now)}`
                       : "Live GPS on · waiting for a fix…"
                   : "Live GPS off — showing the standard coverage map."}
               </span>
@@ -717,10 +787,60 @@ export function LiveMapHero({
                       Live
                     </button>
                   </div>
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    <span
+                      className="text-xs text-muted-foreground"
+                      id="replay-speed-label"
+                    >
+                      Speed
+                    </span>
+                    <div
+                      role="group"
+                      aria-labelledby="replay-speed-label"
+                      className="flex overflow-hidden rounded-sm border border-border-strong"
+                    >
+                      {[0.5, 1, 2].map((s) => (
+                        <button
+                          key={s}
+                          type="button"
+                          onClick={() => setSpeed(s)}
+                          aria-pressed={speed === s}
+                          aria-label={`Play replay at ${s} times speed`}
+                          className={`px-2.5 py-1.5 font-display text-xs font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent ${
+                            speed === s
+                              ? "bg-primary text-primary-foreground"
+                              : "hover:bg-surface"
+                          }`}
+                        >
+                          {s}x
+                        </button>
+                      ))}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => exportTrack("gpx")}
+                      className="ml-auto inline-flex items-center gap-1.5 rounded-sm border border-border-strong px-2.5 py-1.5 font-display text-xs font-semibold hover:bg-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                    >
+                      <Download className="h-3.5 w-3.5" aria-hidden="true" />
+                      GPX
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => exportTrack("kml")}
+                      className="inline-flex items-center gap-1.5 rounded-sm border border-border-strong px-2.5 py-1.5 font-display text-xs font-semibold hover:bg-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                    >
+                      <Download className="h-3.5 w-3.5" aria-hidden="true" />
+                      KML
+                    </button>
+                  </div>
                   <p className="mt-2 text-xs text-muted-foreground" role="status">
                     {replayPoint
-                      ? `Showing position from ${relTime(replayPoint.at, now || Date.now())} · ${track.length} fixes recorded`
-                      : `Following your live position · ${track.length} fixes recorded`}
+                      ? `Showing position from ${relTime(replayPoint.at, now || Date.now())} · ${track.length} fixes recorded · ${speed}x`
+                      : `Following your live position · ${track.length} fixes recorded · ${speed}x`}
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Download the last 30 minutes as GPX or KML for maps and
+                    route apps.
                   </p>
                 </>
               )}
@@ -760,15 +880,42 @@ export function LiveMapHero({
                   ) : (
                     <Link2 className="h-3.5 w-3.5" aria-hidden="true" />
                   )}
-                  {copied ? "Link copied" : "Generate link"}
+                  {copied ? "Link copied" : share ? "New link" : "Generate link"}
                 </button>
+                {share && (
+                  <button
+                    type="button"
+                    onClick={revokeShareLink}
+                    aria-label="Revoke the share link now"
+                    className="inline-flex items-center gap-1.5 rounded-sm border border-border-strong px-3 py-2 font-display text-xs font-semibold hover:bg-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+                    Revoke now
+                  </button>
+                )}
               </div>
+              {share && (
+                <p className="mt-3 flex items-center gap-2 text-xs">
+                  <span className="rounded-sm bg-surface px-2 py-1 font-display font-semibold text-primary tabular-nums">
+                    {countdown(share.exp - (now || Date.now()))}
+                  </span>
+                  <span className="text-muted-foreground">
+                    remaining · expires{" "}
+                    {new Date(share.exp).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                </p>
+              )}
               <p className="mt-2 break-all text-xs text-muted-foreground" role="status">
                 {!fix
                   ? "Waiting for a GPS fix before a link can be created."
                   : share
-                    ? `Expires in ${Math.max(0, Math.ceil((share.exp - (now || Date.now())) / 60000))} min · ${share.url}`
-                    : "Creates a link that carries your current position and expires automatically. Nothing is stored on our servers."}
+                    ? share.url
+                    : revoked
+                      ? "Share link revoked — the old link no longer opens your position."
+                      : "Creates a link that carries your current position and expires automatically. Nothing is stored on our servers."}
               </p>
             </section>
           </div>
