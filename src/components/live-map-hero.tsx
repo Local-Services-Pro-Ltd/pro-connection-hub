@@ -384,6 +384,8 @@ export function LiveMapHero({
             loop
             playsInline
             autoPlay={!reduced}
+            onPlay={() => setPlaying(true)}
+            onPause={() => setPlaying(false)}
             aria-label="Live field feed from tradesmen on the road"
           />
           <span className="absolute left-2 top-2 flex items-center gap-1.5 rounded-sm bg-background/80 px-1.5 py-0.5 font-display text-[10px] font-semibold uppercase tracking-widest text-primary">
