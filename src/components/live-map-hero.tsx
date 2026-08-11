@@ -881,15 +881,42 @@ export function LiveMapHero({
                   ) : (
                     <Link2 className="h-3.5 w-3.5" aria-hidden="true" />
                   )}
-                  {copied ? "Link copied" : "Generate link"}
+                  {copied ? "Link copied" : share ? "New link" : "Generate link"}
                 </button>
+                {share && (
+                  <button
+                    type="button"
+                    onClick={revokeShareLink}
+                    aria-label="Revoke the share link now"
+                    className="inline-flex items-center gap-1.5 rounded-sm border border-border-strong px-3 py-2 font-display text-xs font-semibold hover:bg-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+                    Revoke now
+                  </button>
+                )}
               </div>
+              {share && (
+                <p className="mt-3 flex items-center gap-2 text-xs">
+                  <span className="rounded-sm bg-surface px-2 py-1 font-display font-semibold text-primary tabular-nums">
+                    {countdown(share.exp - (now || Date.now()))}
+                  </span>
+                  <span className="text-muted-foreground">
+                    remaining · expires{" "}
+                    {new Date(share.exp).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                </p>
+              )}
               <p className="mt-2 break-all text-xs text-muted-foreground" role="status">
                 {!fix
                   ? "Waiting for a GPS fix before a link can be created."
                   : share
-                    ? `Expires in ${Math.max(0, Math.ceil((share.exp - (now || Date.now())) / 60000))} min · ${share.url}`
-                    : "Creates a link that carries your current position and expires automatically. Nothing is stored on our servers."}
+                    ? share.url
+                    : revoked
+                      ? "Share link revoked — the old link no longer opens your position."
+                      : "Creates a link that carries your current position and expires automatically. Nothing is stored on our servers."}
               </p>
             </section>
           </div>
