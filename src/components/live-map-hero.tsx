@@ -10,7 +10,6 @@ import {
   Check,
   Radio,
   Download,
-  Signal,
   Trash2,
 } from "lucide-react";
 import { usePrefersReducedMotion } from "@/hooks/use-reduced-motion";
