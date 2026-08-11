@@ -71,6 +71,32 @@ export const Route = createFileRoute("/trades/")({
 function TradesIndex() {
   const { data: trades } = useSuspenseQuery(tradesQuery);
   const { data: counts } = useSuspenseQuery(proCountsQuery);
+  const [q, setQ] = useState("");
+  const [letter, setLetter] = useState<string>("all");
+
+  const letters = useMemo(
+    () => "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""),
+    [],
+  );
+  const available = useMemo(
+    () => new Set(trades.map((t) => t.name.charAt(0).toUpperCase())),
+    [trades],
+  );
+
+  const visible = useMemo(() => {
+    const needle = q.trim().toLowerCase();
+    return trades.filter((t) => {
+      const matchesLetter =
+        letter === "all" || t.name.charAt(0).toUpperCase() === letter;
+      const matchesQuery =
+        !needle ||
+        t.name.toLowerCase().includes(needle) ||
+        t.blurb.toLowerCase().includes(needle) ||
+        t.slug.includes(needle.replace(/\s+/g, "-"));
+      return matchesLetter && matchesQuery;
+    });
+  }, [trades, q, letter]);
+
 
   return (
     <>
