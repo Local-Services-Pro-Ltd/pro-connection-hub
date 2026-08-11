@@ -9,11 +9,20 @@ import {
   Link2,
   Check,
   Radio,
+  Download,
+  Signal,
+  Trash2,
 } from "lucide-react";
 import { usePrefersReducedMotion } from "@/hooks/use-reduced-motion";
 import { useGpsConsent } from "@/hooks/use-gps-consent";
 import { useHubCounts } from "@/hooks/use-hub-counts";
 import { encodeShare, SHARE_DURATIONS } from "@/lib/share-position";
+import {
+  accuracyBand,
+  downloadText,
+  toGpx,
+  toKml,
+} from "@/lib/track-export";
 import heroVideo from "@/assets/hero.mp4.asset.json";
 import heroPoster from "@/assets/hero-poster.jpg";
 
