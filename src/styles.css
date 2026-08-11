@@ -101,8 +101,18 @@
     transparent 100%
   );
   --hero-image-opacity: 0.95;
-
+  /* Soft scrim directly behind hero copy — keeps text legible without
+     washing out the whole photograph. */
+  --hero-copy-scrim: radial-gradient(
+    120% 130% at 12% 50%,
+    color-mix(in oklab, var(--background) 84%, transparent) 0%,
+    color-mix(in oklab, var(--background) 60%, transparent) 45%,
+    transparent 78%
+  );
+  --hero-on-media: oklch(0.97 0.01 80);
+  --hero-on-media-muted: oklch(0.93 0.012 75);
 }
+
 
 /* ---------- Dark ---------- */
 [data-theme="dark"] {
@@ -120,6 +130,8 @@
   --input: oklch(0.4 0.011 60);
 
   --hero-image-opacity: 0.82;
+  --hero-on-media: oklch(0.98 0.008 80);
+  --hero-on-media-muted: oklch(0.94 0.01 75);
 }
 
 /* ---------- Light ---------- */
@@ -151,11 +163,33 @@
   --input: oklch(0.82 0.008 80);
   --ring: oklch(0.55 0.18 42);
 
+  /* Darker ember stops so the gradient headline clears AA on light photos. */
+  --gradient-ember: linear-gradient(
+    135deg,
+    oklch(0.52 0.17 50),
+    oklch(0.43 0.18 33)
+  );
+
   --shadow-lift: 0 1px 0 oklch(1 0 0 / 60%) inset,
     0 20px 50px -30px oklch(0.3 0.02 60 / 35%);
   --shadow-ember: 0 16px 36px -20px oklch(0.55 0.18 42 / 40%);
 
-  --hero-image-opacity: 0.97;
+  --hero-image-opacity: 0.9;
+  --hero-veil: linear-gradient(
+    to right,
+    color-mix(in oklab, var(--background) 95%, transparent) 0%,
+    color-mix(in oklab, var(--background) 88%, transparent) 40%,
+    color-mix(in oklab, var(--background) 60%, transparent) 70%,
+    color-mix(in oklab, var(--background) 20%, transparent) 100%
+  );
+  --hero-copy-scrim: radial-gradient(
+    120% 130% at 12% 50%,
+    color-mix(in oklab, var(--background) 94%, transparent) 0%,
+    color-mix(in oklab, var(--background) 76%, transparent) 48%,
+    transparent 80%
+  );
+  --hero-on-media: oklch(0.2 0.012 60);
+  --hero-on-media-muted: oklch(0.33 0.015 60);
 }
 
 
@@ -244,6 +278,19 @@
   background-image: var(--hero-veil-bottom);
 }
 
+@utility hero-copy-scrim {
+  background-image: var(--hero-copy-scrim);
+}
+
+/* Hero copy sitting over photography/video: theme-aware high-contrast ink. */
+@utility hero-ink {
+  color: var(--hero-on-media);
+}
+
+@utility hero-ink-muted {
+  color: var(--hero-on-media-muted);
+}
+
 /* On narrow screens text sits over the middle of the photo, so the
    horizontal veil isn't enough — switch to a vertical-dominant veil. */
 @media (max-width: 767px) {
@@ -253,6 +300,14 @@
       color-mix(in oklab, var(--background) 48%, transparent) 0%,
       color-mix(in oklab, var(--background) 66%, transparent) 45%,
       color-mix(in oklab, var(--background) 78%, transparent) 100%
+    );
+  }
+  .hero-copy-scrim {
+    background-image: linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--background) 72%, transparent) 0%,
+      color-mix(in oklab, var(--background) 78%, transparent) 60%,
+      color-mix(in oklab, var(--background) 68%, transparent) 100%
     );
   }
   .hero-veil-bottom {

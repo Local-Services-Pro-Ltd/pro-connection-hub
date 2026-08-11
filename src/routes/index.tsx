@@ -152,17 +152,18 @@ function Home() {
           />
         )}
 
-        <div className="absolute inset-0 bg-background/38" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/25 to-transparent" />
+        <div className="absolute inset-0 bg-background/32" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/22 to-transparent" />
+        <div className="hero-copy-scrim pointer-events-none absolute inset-0" />
 
 
         <div className="relative mx-auto flex min-h-[88vh] max-w-7xl flex-col justify-center px-5 py-24 lg:px-8">
-          <p className="eyebrow">Vetted UK trades</p>
-          <h1 className="mt-4 max-w-3xl text-5xl leading-[1.05] sm:text-6xl lg:text-7xl">
+          <p className="eyebrow hero-ink-muted">Vetted UK trades</p>
+          <h1 className="mt-4 max-w-3xl hero-ink text-5xl leading-[1.05] sm:text-6xl lg:text-7xl">
             Find a tradesman who picks up{" "}
             <span className="ember-text">on the first call.</span>
           </h1>
-          <p className="mt-6 max-w-lg text-lg leading-relaxed text-muted-foreground">
+          <p className="mt-6 max-w-lg text-lg leading-relaxed hero-ink-muted">
             Post your job free and get quotes from ID-checked builders,
             plumbers and electricians in your area — usually within hours.
           </p>
@@ -171,7 +172,7 @@ function Home() {
             <SearchBar />
           </div>
 
-          <ul className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
+          <ul className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm hero-ink-muted">
             {["Free to post", "No obligation", "Written reviews only"].map(
               (item) => (
                 <li key={item} className="flex items-center gap-2">
