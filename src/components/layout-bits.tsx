@@ -98,6 +98,7 @@ export function PageHero({
           </picture>
           <div className="hero-veil pointer-events-none absolute inset-0 -z-10" />
           <div className="hero-veil-bottom pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-32" />
+          <div className="hero-copy-scrim pointer-events-none absolute inset-0 -z-10" />
         </>
       ) : (
         <div className="rule-grid pointer-events-none absolute inset-0 -z-10 opacity-40" />
@@ -106,17 +107,22 @@ export function PageHero({
       <div
         className={`relative mx-auto max-w-7xl px-5 lg:px-8 ${image ? "py-20 sm:py-24 lg:py-36" : "py-16 lg:py-24"}`}
       >
-        <p className="eyebrow">{eyebrow}</p>
-        <h1 className="mt-4 max-w-3xl text-4xl leading-[1.02] sm:text-5xl lg:text-6xl">
+        <p className={`eyebrow ${image ? "hero-ink-muted" : ""}`}>{eyebrow}</p>
+        <h1
+          className={`mt-4 max-w-3xl text-4xl leading-[1.02] sm:text-5xl lg:text-6xl ${image ? "hero-ink" : ""}`}
+        >
           {title}
         </h1>
         {sub && (
-          <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground">
+          <p
+            className={`mt-5 max-w-xl text-base leading-relaxed ${image ? "hero-ink-muted" : "text-muted-foreground"}`}
+          >
             {sub}
           </p>
         )}
         {children && <div className="mt-8 max-w-3xl">{children}</div>}
       </div>
+
     </div>
   );
 }
