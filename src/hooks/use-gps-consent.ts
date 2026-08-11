@@ -50,6 +50,7 @@ export function useGpsConsent() {
     if (consent !== "granted") {
       stop();
       setFix(null);
+      setSmoothed(null);
       setTrack([]);
       return;
     }
@@ -67,6 +68,17 @@ export function useGpsConsent() {
           at: Date.now(),
         };
         setFix(next);
+        setSmoothed((prev) => {
+          if (!prev) return next;
+          // Exponential smoothing; trust precise fixes more than fuzzy ones.
+          const alpha = Math.min(0.9, Math.max(0.15, 25 / (25 + next.accuracy)));
+          return {
+            lat: prev.lat + (next.lat - prev.lat) * alpha,
+            lon: prev.lon + (next.lon - prev.lon) * alpha,
+            accuracy: prev.accuracy + (next.accuracy - prev.accuracy) * 0.4,
+            at: next.at,
+          };
+        });
         setTrack((prev) => {
           const cutoff = next.at - TRACK_WINDOW_MS;
           const last = prev[prev.length - 1];
