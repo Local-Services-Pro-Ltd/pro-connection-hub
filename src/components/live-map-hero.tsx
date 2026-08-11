@@ -549,26 +549,33 @@ export function LiveMapHero({
         {selected && (
           <div
             role="dialog"
-            aria-label={`${selected.label} coverage`}
-            className="pointer-events-auto mt-8 max-w-sm rounded-md border border-border-strong bg-card/95 p-5 shadow-lift backdrop-blur animate-fade-in"
+            aria-labelledby="hub-panel-title"
+            tabIndex={-1}
+            ref={(el) => el?.focus()}
+            onKeyDown={(e) => {
+              if (e.key === "Escape") setSelected(null);
+            }}
+            className="pointer-events-auto mt-8 max-w-sm rounded-md border border-border-strong bg-card/95 p-5 shadow-lift backdrop-blur animate-fade-in focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="eyebrow flex items-center gap-1.5">
-                  <MapPin className="h-3 w-3" /> {selected.postcode} coverage
+                  <MapPin className="h-3 w-3" aria-hidden="true" /> {selected.postcode} coverage
                 </p>
-                <h2 className="mt-1 text-2xl">{selected.label}</h2>
+                <h2 id="hub-panel-title" className="mt-1 text-2xl">
+                  {selected.label}
+                </h2>
               </div>
               <button
                 type="button"
                 onClick={() => setSelected(null)}
-                aria-label="Close coverage panel"
-                className="rounded-sm p-1 text-muted-foreground hover:text-foreground"
+                aria-label={`Close ${selected.label} coverage panel`}
+                className="rounded-sm p-1.5 text-muted-foreground hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
               >
-                <X className="h-4 w-4" />
+                <X className="h-4 w-4" aria-hidden="true" />
               </button>
             </div>
-            <dl className="mt-4 grid grid-cols-2 gap-4 text-sm">
+            <dl className="mt-4 grid grid-cols-2 gap-4 text-sm" aria-live="polite">
               <div>
                 <dt className="text-muted-foreground">Live now</dt>
                 <dd className="font-display text-xl text-primary">
@@ -582,8 +589,13 @@ export function LiveMapHero({
                 </dd>
               </div>
             </dl>
+            <p className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
+              <Radio className="h-3 w-3" aria-hidden="true" />
+              {connected ? "Live over realtime connection" : "Reconnecting…"}
+            </p>
           </div>
         )}
+
 
         {/* GPS consent / opt-out */}
         <div className="pointer-events-auto mt-8 max-w-xl">
