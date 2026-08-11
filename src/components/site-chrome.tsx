@@ -190,8 +190,9 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="border-t border-border">
-        <div className="mx-auto max-w-7xl px-5 py-5 text-xs text-muted-foreground lg:px-8">
-          © {new Date().getFullYear()} TradesmanFinder. All rights reserved.
+        <div className="mx-auto max-w-7xl px-5 py-5 text-xs leading-relaxed text-muted-foreground lg:px-8">
+          © {new Date().getFullYear()} TradesmanFinder. Tradesman Finder is part
+          of Local Services Pro and All Care 4 U Group. All Rights Reserved.
         </div>
       </div>
     </footer>
