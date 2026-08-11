@@ -1,11 +1,14 @@
+import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Search } from "lucide-react";
 import { PageHero, Section } from "@/components/layout-bits";
 import { SearchBar } from "@/components/search-bar";
 import { tradesQuery, proCountsQuery } from "@/lib/queries";
 import { getRequestOrigin } from "@/lib/origin.functions";
+import { tradeHero, hasTradePhoto } from "@/lib/trade-media";
 import heroTrades from "@/assets/hero-trades.jpg";
+
 
 export const Route = createFileRoute("/trades/")({
   loader: async ({ context }) => {
