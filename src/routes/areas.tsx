@@ -72,15 +72,12 @@ function Areas() {
 
   return (
     <>
-      <PageHero
-        eyebrow="Coverage"
+      <LiveMapHero
+        eyebrow="Live coverage"
         title="Local means local."
-        sub="Trades are matched by the postcodes they actually work in — not by how far they're willing to drive for a lead."
-        image={heroAreas}
-        imageAlt="A misty UK city skyline of terraced streets at golden hour"
-        focal="50% 55%"
-        focalMobile="55% 60%"
+        sub="Trades are matched by the postcodes they actually work in — not by how far they're willing to drive for a lead. Watch jobs and vans move across the network in real time."
       />
+
 
 
       <Section>
