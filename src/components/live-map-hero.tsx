@@ -199,6 +199,10 @@ export function LiveMapHero({
   }, [reduced]);
 
   const me = fix ? project(fix.lat, fix.lon) : null;
+  const trackPts = track.map((f) => project(f.lat, f.lon));
+  const trackPath = trackPts.length > 1 ? `M ${trackPts.map((p) => `${p.x} ${p.y}`).join(" L ")}` : null;
+  const ghost = replayPoint ? project(replayPoint.lat, replayPoint.lon) : null;
+
 
   return (
     <div className="relative isolate overflow-hidden border-b border-border bg-surface">
