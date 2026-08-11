@@ -430,6 +430,26 @@ export function LiveMapHero({
         )}
         {children && <div className="pointer-events-auto mt-8 max-w-3xl">{children}</div>}
 
+        {/* Hub shortcuts — same panel as clicking a map node */}
+        <div className="pointer-events-auto mt-7 flex flex-wrap gap-2">
+          {hubs.map((h) => (
+            <button
+              key={`chip-${h.label}`}
+              type="button"
+              onClick={() => setSelected(h)}
+              aria-pressed={selected?.label === h.label}
+              className={`rounded-sm border px-3 py-1.5 font-display text-xs font-semibold backdrop-blur transition-colors ${
+                selected?.label === h.label
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-border-strong bg-card/80 hover:bg-surface"
+              }`}
+            >
+              {h.label}
+              <span className="ml-2 text-primary">{counts[h.label]}</span>
+            </button>
+          ))}
+        </div>
+
         {/* Hub detail panel */}
         {selected && (
           <div
