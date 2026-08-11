@@ -19,10 +19,17 @@ export function decodeShare(token: string): SharedPosition | null {
     const b64 = token.replace(/-/g, "+").replace(/_/g, "/");
     const parsed = JSON.parse(atob(b64)) as unknown;
     if (!Array.isArray(parsed) || parsed.length !== 3) return null;
-    const [lat, lon, exp] = parsed as number[];
-    if (![lat, lon, exp].every((n) => typeof n === "number" && Number.isFinite(n))) return null;
+    const [lat, lon, exp] = parsed as unknown[];
+    if (
+      typeof lat !== "number" ||
+      typeof lon !== "number" ||
+      typeof exp !== "number" ||
+      ![lat, lon, exp].every(Number.isFinite)
+    )
+      return null;
     if (exp <= Date.now()) return null;
     return { lat, lon, exp };
+
   } catch {
     return null;
   }
