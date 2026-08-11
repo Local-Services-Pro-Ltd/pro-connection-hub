@@ -41,7 +41,7 @@ export const Route = createFileRoute("/areas")({
               { property: "og:image", content: image },
               {
                 property: "og:image:alt",
-                content: "UK terraced streets from above at golden hour",
+                content: "Live map of UK areas covered by vetted tradesmen",
               },
               { name: "twitter:image", content: image },
             ]
