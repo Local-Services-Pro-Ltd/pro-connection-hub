@@ -129,7 +129,7 @@
   --border-strong: oklch(0.56 0.013 60);
   --input: oklch(0.4 0.011 60);
 
-  --hero-image-opacity: 0.82;
+  --hero-image-opacity: 0.95;
   --hero-on-media: oklch(0.98 0.008 80);
   --hero-on-media-muted: oklch(0.94 0.01 75);
 }
