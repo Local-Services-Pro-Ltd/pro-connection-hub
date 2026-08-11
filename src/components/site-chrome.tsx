@@ -152,7 +152,7 @@ export function SiteFooter() {
           </p>
         </div>
         <div>
-          <p className="eyebrow">Popular trades</p>
+          <p className="eyebrow">Popular trades and services</p>
           <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
             {["plumber", "electrician", "builder", "roofer"].map((slug) => (
               <li key={slug}>
