@@ -305,8 +305,9 @@ export function LiveMapHero({
             key={h.label}
             role="button"
             tabIndex={0}
-            aria-label={`${h.label}: ${counts[h.label]} tradesmen live now. Open coverage details.`}
-            className="pointer-events-auto cursor-pointer focus:outline-none"
+            aria-pressed={selected?.label === h.label}
+            aria-label={`${h.label} coverage hub: ${counts[h.label]} tradesmen live now. Activate to open coverage details.`}
+            className="pointer-events-auto cursor-pointer [&:focus-visible_.hub-ring]:opacity-100"
             onClick={() => setSelected(h)}
             onKeyDown={(e) => {
               if (e.key === "Enter" || e.key === " ") {
@@ -315,6 +316,15 @@ export function LiveMapHero({
               }
             }}
           >
+            <circle
+              cx={h.x}
+              cy={h.y}
+              r="26"
+              className="hub-ring fill-none stroke-accent opacity-0"
+              strokeWidth="4"
+              strokeDasharray="6 6"
+            />
+
             <circle cx={h.x} cy={h.y} r={h.r} fill="url(#map-glow)" />
             {!reduced && (
               <circle
