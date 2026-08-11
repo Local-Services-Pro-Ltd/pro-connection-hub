@@ -80,8 +80,20 @@ async def capture(target: Path) -> None:
                     await band.screenshot(
                         path=str(target / shot_name(path, theme, device))
                     )
+                    if path == "/trades":
+                        # Directory heading + first cards (hero/fallback imagery).
+                        grid = page.locator("main section").last
+                        await grid.scroll_into_view_if_needed()
+                        await page.wait_for_timeout(600)
+                        await grid.screenshot(
+                            path=str(
+                                target
+                                / shot_name("/trades-directory", theme, device)
+                            )
+                        )
             await context.close()
         await browser.close()
+
 
 
 async def main() -> int:
