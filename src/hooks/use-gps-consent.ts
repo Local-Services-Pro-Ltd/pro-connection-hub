@@ -16,11 +16,16 @@ export type GpsFix = {
  * Consent is remembered in localStorage; nothing is read from the device
  * until the visitor explicitly opts in, and opting out stops the watcher.
  */
+export const TRACK_WINDOW_MS = 30 * 60_000;
+
 export function useGpsConsent() {
   const [consent, setConsent] = useState<GpsConsent>("unknown");
   const [fix, setFix] = useState<GpsFix | null>(null);
+  /** Rolling buffer of fixes from the last 30 minutes (in-memory only). */
+  const [track, setTrack] = useState<GpsFix[]>([]);
   const [error, setError] = useState<string | null>(null);
   const watchId = useRef<number | null>(null);
+
 
   // Hydrate stored choice after mount so SSR markup matches.
   useEffect(() => {
@@ -43,6 +48,7 @@ export function useGpsConsent() {
     if (consent !== "granted") {
       stop();
       setFix(null);
+      setTrack([]);
       return;
     }
     if (typeof navigator === "undefined" || !("geolocation" in navigator)) {
@@ -52,11 +58,19 @@ export function useGpsConsent() {
     setError(null);
     watchId.current = navigator.geolocation.watchPosition(
       (pos) => {
-        setFix({
+        const next: GpsFix = {
           lat: pos.coords.latitude,
           lon: pos.coords.longitude,
           accuracy: pos.coords.accuracy,
           at: Date.now(),
+        };
+        setFix(next);
+        setTrack((prev) => {
+          const cutoff = next.at - TRACK_WINDOW_MS;
+          const last = prev[prev.length - 1];
+          // Throttle the trail to one point every ~5s to keep it scrubbable.
+          const merged = last && next.at - last.at < 5_000 ? [...prev.slice(0, -1), next] : [...prev, next];
+          return merged.filter((f) => f.at >= cutoff);
         });
       },
       (err) => setError(err.message || "Location unavailable."),
@@ -64,6 +78,7 @@ export function useGpsConsent() {
     );
     return stop;
   }, [consent, stop]);
+
 
   const choose = useCallback((next: Exclude<GpsConsent, "unknown">) => {
     try {
@@ -83,5 +98,14 @@ export function useGpsConsent() {
     setConsent("unknown");
   }, []);
 
-  return { consent, fix, error, allow: () => choose("granted"), deny: () => choose("denied"), reset };
+  return {
+    consent,
+    fix,
+    track,
+    error,
+    allow: () => choose("granted"),
+    deny: () => choose("denied"),
+    reset,
+  };
+
 }

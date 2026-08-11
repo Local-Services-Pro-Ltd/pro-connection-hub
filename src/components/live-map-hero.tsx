@@ -1,9 +1,22 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Pause, Play, MapPin, X, ShieldCheck } from "lucide-react";
+import {
+  Pause,
+  Play,
+  MapPin,
+  X,
+  ShieldCheck,
+  History,
+  Link2,
+  Check,
+  Radio,
+} from "lucide-react";
 import { usePrefersReducedMotion } from "@/hooks/use-reduced-motion";
 import { useGpsConsent } from "@/hooks/use-gps-consent";
+import { useHubCounts } from "@/hooks/use-hub-counts";
+import { encodeShare, SHARE_DURATIONS } from "@/lib/share-position";
 import heroVideo from "@/assets/hero.mp4.asset.json";
 import heroPoster from "@/assets/hero-poster.jpg";
+
 
 type Route = {
   id: string;
@@ -109,36 +122,66 @@ export function LiveMapHero({
   children?: ReactNode;
 }) {
   const reduced = usePrefersReducedMotion();
-  const { consent, fix, error, allow, deny, reset } = useGpsConsent();
+  const { consent, fix, track, error, allow, deny, reset } = useGpsConsent();
 
-  // Live hub counts + last-update clock (client-side only).
-  const [counts, setCounts] = useState(() =>
-    Object.fromEntries(hubs.map((h) => [h.label, h.live])) as Record<string, number>,
+  // Live hub counts over a realtime WebSocket channel.
+  const { counts, updatedAt, connected } = useHubCounts(
+    Object.fromEntries(hubs.map((h) => [h.label, h.live])),
   );
-  const [updatedAt, setUpdatedAt] = useState<number | null>(null);
   const [now, setNow] = useState(0);
   const [selected, setSelected] = useState<Hub | null>(null);
 
   useEffect(() => {
-    setUpdatedAt(Date.now());
     setNow(Date.now());
     const tick = setInterval(() => setNow(Date.now()), 1000);
-    const feed = setInterval(() => {
-      setCounts((prev) => {
-        const next = { ...prev };
-        for (const h of hubs) {
-          const drift = Math.round((Math.random() - 0.5) * 4);
-          next[h.label] = Math.max(3, (prev[h.label] ?? h.live) + drift);
+    return () => clearInterval(tick);
+  }, []);
+
+  // ---- 30-minute replay timeline -------------------------------------
+  const [replayIdx, setReplayIdx] = useState<number | null>(null);
+  const [replaying, setReplaying] = useState(false);
+
+  useEffect(() => {
+    if (!replaying || track.length < 2) return;
+    const id = setInterval(() => {
+      setReplayIdx((i) => {
+        const next = (i ?? -1) + 1;
+        if (next >= track.length - 1) {
+          setReplaying(false);
+          return track.length - 1;
         }
         return next;
       });
-      setUpdatedAt(Date.now());
-    }, 6000);
-    return () => {
-      clearInterval(tick);
-      clearInterval(feed);
-    };
-  }, []);
+    }, 600);
+    return () => clearInterval(id);
+  }, [replaying, track.length]);
+
+  const replayPoint =
+    replayIdx !== null ? (track[Math.min(replayIdx, track.length - 1)] ?? null) : null;
+
+  // ---- Temporary share link -------------------------------------------
+  const [share, setShare] = useState<{ url: string; exp: number } | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [shareMs, setShareMs] = useState<number>(SHARE_DURATIONS[1].ms);
+
+  useEffect(() => {
+    if (!share) return;
+    if (now && now >= share.exp) setShare(null);
+  }, [now, share]);
+
+  function makeShareLink() {
+    if (!fix) return;
+    const exp = Date.now() + shareMs;
+    const token = encodeShare({ lat: fix.lat, lon: fix.lon, exp });
+    const url = `${window.location.origin}/areas?live=${token}`;
+    setShare({ url, exp });
+    setCopied(false);
+    void navigator.clipboard
+      ?.writeText(url)
+      .then(() => setCopied(true))
+      .catch(() => setCopied(false));
+  }
+
 
   // Live video feed overlay
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -156,6 +199,10 @@ export function LiveMapHero({
   }, [reduced]);
 
   const me = fix ? project(fix.lat, fix.lon) : null;
+  const trackPts = track.map((f) => project(f.lat, f.lon));
+  const trackPath = trackPts.length > 1 ? `M ${trackPts.map((p) => `${p.x} ${p.y}`).join(" L ")}` : null;
+  const ghost = replayPoint ? project(replayPoint.lat, replayPoint.lon) : null;
+
 
   return (
     <div className="relative isolate overflow-hidden border-b border-border bg-surface">
@@ -258,8 +305,9 @@ export function LiveMapHero({
             key={h.label}
             role="button"
             tabIndex={0}
-            aria-label={`${h.label}: ${counts[h.label]} tradesmen live now. Open coverage details.`}
-            className="pointer-events-auto cursor-pointer focus:outline-none"
+            aria-pressed={selected?.label === h.label}
+            aria-label={`${h.label} coverage hub: ${counts[h.label]} tradesmen live now. Activate to open coverage details.`}
+            className="pointer-events-auto cursor-pointer [&:focus-visible_.hub-ring]:opacity-100"
             onClick={() => setSelected(h)}
             onKeyDown={(e) => {
               if (e.key === "Enter" || e.key === " ") {
@@ -268,6 +316,15 @@ export function LiveMapHero({
               }
             }}
           >
+            <circle
+              cx={h.x}
+              cy={h.y}
+              r="26"
+              className="hub-ring fill-none stroke-accent opacity-0"
+              strokeWidth="4"
+              strokeDasharray="6 6"
+            />
+
             <circle cx={h.x} cy={h.y} r={h.r} fill="url(#map-glow)" />
             {!reduced && (
               <circle
@@ -326,7 +383,38 @@ export function LiveMapHero({
           </g>
         ))}
 
+        {/* Last 30 minutes of movement */}
+        {trackPath && (
+          <path
+            d={trackPath}
+            fill="none"
+            className="stroke-accent"
+            strokeWidth="4"
+            strokeLinecap="round"
+            strokeDasharray="10 10"
+            opacity="0.55"
+          />
+        )}
+
+        {/* Replay ghost */}
+        {ghost && (
+          <g>
+            <circle cx={ghost.x} cy={ghost.y} r="20" className="fill-accent" opacity="0.25" />
+            <circle cx={ghost.x} cy={ghost.y} r="9" className="fill-accent" />
+            <text
+              x={ghost.x + 18}
+              y={ghost.y - 14}
+              className="fill-foreground font-display"
+              fontSize="15"
+              fontWeight="600"
+            >
+              Replay
+            </text>
+          </g>
+        )}
+
         {/* Your live GPS position */}
+
         {me && (
           <g>
             <circle
@@ -400,16 +488,21 @@ export function LiveMapHero({
           <button
             type="button"
             onClick={() => setPlaying((p) => !p)}
-            aria-label={playing ? "Pause live feed" : "Play live feed"}
-            className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-sm bg-primary text-primary-foreground hover:brightness-110"
+            aria-pressed={playing}
+            aria-label={playing ? "Pause live field feed" : "Play live field feed"}
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-sm bg-primary text-primary-foreground hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             {playing ? (
-              <Pause className="h-3.5 w-3.5" />
+              <Pause className="h-4 w-4" aria-hidden="true" />
             ) : (
-              <Play className="h-3.5 w-3.5" />
+              <Play className="h-4 w-4" aria-hidden="true" />
             )}
           </button>
         </div>
+        <p className="sr-only" role="status">
+          Live field feed {playing ? "playing" : "paused"}.
+        </p>
+
       </div>
 
       <div className="pointer-events-none relative z-[2] mx-auto max-w-7xl px-5 py-20 sm:py-24 lg:px-8 lg:py-36">
@@ -456,26 +549,33 @@ export function LiveMapHero({
         {selected && (
           <div
             role="dialog"
-            aria-label={`${selected.label} coverage`}
-            className="pointer-events-auto mt-8 max-w-sm rounded-md border border-border-strong bg-card/95 p-5 shadow-lift backdrop-blur animate-fade-in"
+            aria-labelledby="hub-panel-title"
+            tabIndex={-1}
+            ref={(el) => el?.focus()}
+            onKeyDown={(e) => {
+              if (e.key === "Escape") setSelected(null);
+            }}
+            className="pointer-events-auto mt-8 max-w-sm rounded-md border border-border-strong bg-card/95 p-5 shadow-lift backdrop-blur animate-fade-in focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="eyebrow flex items-center gap-1.5">
-                  <MapPin className="h-3 w-3" /> {selected.postcode} coverage
+                  <MapPin className="h-3 w-3" aria-hidden="true" /> {selected.postcode} coverage
                 </p>
-                <h2 className="mt-1 text-2xl">{selected.label}</h2>
+                <h2 id="hub-panel-title" className="mt-1 text-2xl">
+                  {selected.label}
+                </h2>
               </div>
               <button
                 type="button"
                 onClick={() => setSelected(null)}
-                aria-label="Close coverage panel"
-                className="rounded-sm p-1 text-muted-foreground hover:text-foreground"
+                aria-label={`Close ${selected.label} coverage panel`}
+                className="rounded-sm p-1.5 text-muted-foreground hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
               >
-                <X className="h-4 w-4" />
+                <X className="h-4 w-4" aria-hidden="true" />
               </button>
             </div>
-            <dl className="mt-4 grid grid-cols-2 gap-4 text-sm">
+            <dl className="mt-4 grid grid-cols-2 gap-4 text-sm" aria-live="polite">
               <div>
                 <dt className="text-muted-foreground">Live now</dt>
                 <dd className="font-display text-xl text-primary">
@@ -489,15 +589,23 @@ export function LiveMapHero({
                 </dd>
               </div>
             </dl>
+            <p className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
+              <Radio className="h-3 w-3" aria-hidden="true" />
+              {connected ? "Live over realtime connection" : "Reconnecting…"}
+            </p>
           </div>
         )}
+
 
         {/* GPS consent / opt-out */}
         <div className="pointer-events-auto mt-8 max-w-xl">
           {consent === "unknown" ? (
-            <div className="rounded-md border border-border-strong bg-card/95 p-5 shadow-lift backdrop-blur">
-              <p className="eyebrow flex items-center gap-1.5">
-                <ShieldCheck className="h-3 w-3" /> Privacy
+            <section
+              aria-labelledby="gps-consent-title"
+              className="rounded-md border border-border-strong bg-card/95 p-5 shadow-lift backdrop-blur"
+            >
+              <p id="gps-consent-title" className="eyebrow flex items-center gap-1.5">
+                <ShieldCheck className="h-3 w-3" aria-hidden="true" /> Privacy — location consent
               </p>
               <p className="mt-2 text-sm text-muted-foreground">
                 We can plot your live position on the map to show trades working
@@ -508,22 +616,22 @@ export function LiveMapHero({
                 <button
                   type="button"
                   onClick={allow}
-                  className="rounded-sm bg-primary px-4 py-2 font-display text-sm font-semibold text-primary-foreground hover:brightness-110"
+                  className="rounded-sm bg-primary px-4 py-2 font-display text-sm font-semibold text-primary-foreground hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                 >
                   Use my location
                 </button>
                 <button
                   type="button"
                   onClick={deny}
-                  className="rounded-sm border border-border-strong px-4 py-2 font-display text-sm font-semibold hover:bg-surface"
+                  className="rounded-sm border border-border-strong px-4 py-2 font-display text-sm font-semibold hover:bg-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                 >
                   No thanks
                 </button>
               </div>
-            </div>
+            </section>
           ) : (
             <div className="flex flex-wrap items-center gap-3 rounded-md border border-border bg-card/80 px-4 py-3 text-sm backdrop-blur">
-              <span className="text-muted-foreground">
+              <span className="text-muted-foreground" role="status">
                 {consent === "granted"
                   ? error
                     ? `Live GPS unavailable: ${error}`
@@ -535,13 +643,137 @@ export function LiveMapHero({
               <button
                 type="button"
                 onClick={consent === "granted" ? deny : reset}
-                className="ml-auto rounded-sm border border-border-strong px-3 py-1.5 font-display text-xs font-semibold hover:bg-surface"
+                className="ml-auto rounded-sm border border-border-strong px-3 py-1.5 font-display text-xs font-semibold hover:bg-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
               >
                 {consent === "granted" ? "Turn off GPS" : "Change choice"}
               </button>
             </div>
           )}
         </div>
+
+        {/* Replay timeline + share link */}
+        {consent === "granted" && (
+          <div className="pointer-events-auto mt-6 grid max-w-3xl gap-4 sm:grid-cols-2">
+            <section
+              aria-labelledby="replay-title"
+              className="rounded-md border border-border-strong bg-card/90 p-4 backdrop-blur"
+            >
+              <p id="replay-title" className="eyebrow flex items-center gap-1.5">
+                <History className="h-3 w-3" aria-hidden="true" /> Replay last 30 minutes
+              </p>
+              {track.length < 2 ? (
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Collecting your movement — the replay unlocks once we have a
+                  couple of fixes.
+                </p>
+              ) : (
+                <>
+                  <div className="mt-3 flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (replaying) return setReplaying(false);
+                        setReplayIdx((i) =>
+                          i === null || i >= track.length - 1 ? 0 : i,
+                        );
+                        setReplaying(true);
+                      }}
+                      aria-pressed={replaying}
+                      aria-label={replaying ? "Pause GPS replay" : "Play GPS replay"}
+                      className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-sm bg-primary text-primary-foreground hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                    >
+                      {replaying ? (
+                        <Pause className="h-4 w-4" aria-hidden="true" />
+                      ) : (
+                        <Play className="h-4 w-4" aria-hidden="true" />
+                      )}
+                    </button>
+                    <input
+                      type="range"
+                      min={0}
+                      max={track.length - 1}
+                      step={1}
+                      value={replayIdx ?? track.length - 1}
+                      onChange={(e) => {
+                        setReplaying(false);
+                        setReplayIdx(Number(e.target.value));
+                      }}
+                      aria-label="Scrub through your recorded GPS positions"
+                      aria-valuetext={
+                        replayPoint
+                          ? `Position from ${relTime(replayPoint.at, now || Date.now())}`
+                          : "Latest position"
+                      }
+                      className="h-2 w-full cursor-pointer accent-[var(--color-primary)]"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setReplaying(false);
+                        setReplayIdx(null);
+                      }}
+                      className="shrink-0 rounded-sm border border-border-strong px-2.5 py-1.5 font-display text-xs font-semibold hover:bg-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                    >
+                      Live
+                    </button>
+                  </div>
+                  <p className="mt-2 text-xs text-muted-foreground" role="status">
+                    {replayPoint
+                      ? `Showing position from ${relTime(replayPoint.at, now || Date.now())} · ${track.length} fixes recorded`
+                      : `Following your live position · ${track.length} fixes recorded`}
+                  </p>
+                </>
+              )}
+            </section>
+
+            <section
+              aria-labelledby="share-title"
+              className="rounded-md border border-border-strong bg-card/90 p-4 backdrop-blur"
+            >
+              <p id="share-title" className="eyebrow flex items-center gap-1.5">
+                <Link2 className="h-3 w-3" aria-hidden="true" /> Temporary share link
+              </p>
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <label className="sr-only" htmlFor="share-expiry">
+                  Share link expiry
+                </label>
+                <select
+                  id="share-expiry"
+                  value={shareMs}
+                  onChange={(e) => setShareMs(Number(e.target.value))}
+                  className="rounded-sm border border-border-strong bg-surface px-2.5 py-2 font-display text-xs font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                >
+                  {SHARE_DURATIONS.map((d) => (
+                    <option key={d.ms} value={d.ms}>
+                      {d.label}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={makeShareLink}
+                  disabled={!fix}
+                  className="inline-flex items-center gap-2 rounded-sm bg-primary px-3.5 py-2 font-display text-xs font-semibold text-primary-foreground hover:brightness-110 disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                >
+                  {copied ? (
+                    <Check className="h-3.5 w-3.5" aria-hidden="true" />
+                  ) : (
+                    <Link2 className="h-3.5 w-3.5" aria-hidden="true" />
+                  )}
+                  {copied ? "Link copied" : "Generate link"}
+                </button>
+              </div>
+              <p className="mt-2 break-all text-xs text-muted-foreground" role="status">
+                {!fix
+                  ? "Waiting for a GPS fix before a link can be created."
+                  : share
+                    ? `Expires in ${Math.max(0, Math.ceil((share.exp - (now || Date.now())) / 60000))} min · ${share.url}`
+                    : "Creates a link that carries your current position and expires automatically. Nothing is stored on our servers."}
+              </p>
+            </section>
+          </div>
+        )}
+
       </div>
     </div>
   );
