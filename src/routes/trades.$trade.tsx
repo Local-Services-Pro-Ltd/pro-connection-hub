@@ -11,6 +11,7 @@ import {
 } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
 import { tradeHero, hasTradeOgImage } from "@/lib/trade-media";
+import { tradeHeroCopy } from "@/lib/trade-copy";
 import { getRequestOrigin } from "@/lib/origin.functions";
 
 
