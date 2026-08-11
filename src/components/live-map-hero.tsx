@@ -160,7 +160,7 @@ export function LiveMapHero({
   return (
     <div className="relative isolate overflow-hidden border-b border-border bg-surface">
       <svg
-        className="absolute inset-0 -z-10 h-full w-full"
+        className="pointer-events-none absolute inset-0 z-0 h-full w-full"
         viewBox="0 0 1600 900"
         preserveAspectRatio="xMidYMid slice"
         role="img"
@@ -259,7 +259,7 @@ export function LiveMapHero({
             role="button"
             tabIndex={0}
             aria-label={`${h.label}: ${counts[h.label]} tradesmen live now. Open coverage details.`}
-            className="cursor-pointer focus:outline-none"
+            className="pointer-events-auto cursor-pointer focus:outline-none"
             onClick={() => setSelected(h)}
             onKeyDown={(e) => {
               if (e.key === "Enter" || e.key === " ") {
@@ -369,8 +369,8 @@ export function LiveMapHero({
         )}
       </svg>
 
-      <div className="hero-veil pointer-events-none absolute inset-0 -z-10" />
-      <div className="hero-copy-scrim pointer-events-none absolute inset-0 -z-10" />
+      <div className="hero-veil pointer-events-none absolute inset-0 z-[1]" />
+      <div className="hero-copy-scrim pointer-events-none absolute inset-0 z-[1]" />
 
       {/* Live video feed overlay */}
       <div className="absolute right-4 top-4 z-10 w-44 overflow-hidden rounded-md border border-border-strong bg-card/85 shadow-lift backdrop-blur sm:w-60 lg:w-72">
@@ -410,7 +410,7 @@ export function LiveMapHero({
         </div>
       </div>
 
-      <div className="relative mx-auto max-w-7xl px-5 py-20 sm:py-24 lg:px-8 lg:py-36">
+      <div className="pointer-events-none relative z-[2] mx-auto max-w-7xl px-5 py-20 sm:py-24 lg:px-8 lg:py-36">
         <p className="eyebrow hero-ink-muted flex items-center gap-2">
           <span className="relative flex h-2 w-2">
             {!reduced && (
@@ -428,14 +428,14 @@ export function LiveMapHero({
             {sub}
           </p>
         )}
-        {children && <div className="mt-8 max-w-3xl">{children}</div>}
+        {children && <div className="pointer-events-auto mt-8 max-w-3xl">{children}</div>}
 
         {/* Hub detail panel */}
         {selected && (
           <div
             role="dialog"
             aria-label={`${selected.label} coverage`}
-            className="mt-8 max-w-sm rounded-md border border-border-strong bg-card/95 p-5 shadow-lift backdrop-blur animate-fade-in"
+            className="pointer-events-auto mt-8 max-w-sm rounded-md border border-border-strong bg-card/95 p-5 shadow-lift backdrop-blur animate-fade-in"
           >
             <div className="flex items-start justify-between gap-4">
               <div>
@@ -471,7 +471,7 @@ export function LiveMapHero({
         )}
 
         {/* GPS consent / opt-out */}
-        <div className="mt-8 max-w-xl">
+        <div className="pointer-events-auto mt-8 max-w-xl">
           {consent === "unknown" ? (
             <div className="rounded-md border border-border-strong bg-card/95 p-5 shadow-lift backdrop-blur">
               <p className="eyebrow flex items-center gap-1.5">
