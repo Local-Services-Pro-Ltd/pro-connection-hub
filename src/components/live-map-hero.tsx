@@ -383,7 +383,38 @@ export function LiveMapHero({
           </g>
         ))}
 
+        {/* Last 30 minutes of movement */}
+        {trackPath && (
+          <path
+            d={trackPath}
+            fill="none"
+            className="stroke-accent"
+            strokeWidth="4"
+            strokeLinecap="round"
+            strokeDasharray="10 10"
+            opacity="0.55"
+          />
+        )}
+
+        {/* Replay ghost */}
+        {ghost && (
+          <g>
+            <circle cx={ghost.x} cy={ghost.y} r="20" className="fill-accent" opacity="0.25" />
+            <circle cx={ghost.x} cy={ghost.y} r="9" className="fill-accent" />
+            <text
+              x={ghost.x + 18}
+              y={ghost.y - 14}
+              className="fill-foreground font-display"
+              fontSize="15"
+              fontWeight="600"
+            >
+              Replay
+            </text>
+          </g>
+        )}
+
         {/* Your live GPS position */}
+
         {me && (
           <g>
             <circle
