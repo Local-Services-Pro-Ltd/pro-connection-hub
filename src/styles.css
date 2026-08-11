@@ -163,6 +163,13 @@
   --input: oklch(0.82 0.008 80);
   --ring: oklch(0.55 0.18 42);
 
+  /* Darker ember stops so the gradient headline clears AA on light photos. */
+  --gradient-ember: linear-gradient(
+    135deg,
+    oklch(0.52 0.17 50),
+    oklch(0.43 0.18 33)
+  );
+
   --shadow-lift: 0 1px 0 oklch(1 0 0 / 60%) inset,
     0 20px 50px -30px oklch(0.3 0.02 60 / 35%);
   --shadow-ember: 0 16px 36px -20px oklch(0.55 0.18 42 / 40%);
