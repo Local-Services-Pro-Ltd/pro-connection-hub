@@ -122,36 +122,66 @@ export function LiveMapHero({
   children?: ReactNode;
 }) {
   const reduced = usePrefersReducedMotion();
-  const { consent, fix, error, allow, deny, reset } = useGpsConsent();
+  const { consent, fix, track, error, allow, deny, reset } = useGpsConsent();
 
-  // Live hub counts + last-update clock (client-side only).
-  const [counts, setCounts] = useState(() =>
-    Object.fromEntries(hubs.map((h) => [h.label, h.live])) as Record<string, number>,
+  // Live hub counts over a realtime WebSocket channel.
+  const { counts, updatedAt, connected } = useHubCounts(
+    Object.fromEntries(hubs.map((h) => [h.label, h.live])),
   );
-  const [updatedAt, setUpdatedAt] = useState<number | null>(null);
   const [now, setNow] = useState(0);
   const [selected, setSelected] = useState<Hub | null>(null);
 
   useEffect(() => {
-    setUpdatedAt(Date.now());
     setNow(Date.now());
     const tick = setInterval(() => setNow(Date.now()), 1000);
-    const feed = setInterval(() => {
-      setCounts((prev) => {
-        const next = { ...prev };
-        for (const h of hubs) {
-          const drift = Math.round((Math.random() - 0.5) * 4);
-          next[h.label] = Math.max(3, (prev[h.label] ?? h.live) + drift);
+    return () => clearInterval(tick);
+  }, []);
+
+  // ---- 30-minute replay timeline -------------------------------------
+  const [replayIdx, setReplayIdx] = useState<number | null>(null);
+  const [replaying, setReplaying] = useState(false);
+
+  useEffect(() => {
+    if (!replaying || track.length < 2) return;
+    const id = setInterval(() => {
+      setReplayIdx((i) => {
+        const next = (i ?? -1) + 1;
+        if (next >= track.length - 1) {
+          setReplaying(false);
+          return track.length - 1;
         }
         return next;
       });
-      setUpdatedAt(Date.now());
-    }, 6000);
-    return () => {
-      clearInterval(tick);
-      clearInterval(feed);
-    };
-  }, []);
+    }, 600);
+    return () => clearInterval(id);
+  }, [replaying, track.length]);
+
+  const replayPoint =
+    replayIdx !== null ? (track[Math.min(replayIdx, track.length - 1)] ?? null) : null;
+
+  // ---- Temporary share link -------------------------------------------
+  const [share, setShare] = useState<{ url: string; exp: number } | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [shareMs, setShareMs] = useState<number>(SHARE_DURATIONS[1].ms);
+
+  useEffect(() => {
+    if (!share) return;
+    if (now && now >= share.exp) setShare(null);
+  }, [now, share]);
+
+  function makeShareLink() {
+    if (!fix) return;
+    const exp = Date.now() + shareMs;
+    const token = encodeShare({ lat: fix.lat, lon: fix.lon, exp });
+    const url = `${window.location.origin}/areas?live=${token}`;
+    setShare({ url, exp });
+    setCopied(false);
+    void navigator.clipboard
+      ?.writeText(url)
+      .then(() => setCopied(true))
+      .catch(() => setCopied(false));
+  }
+
 
   // Live video feed overlay
   const videoRef = useRef<HTMLVideoElement | null>(null);
