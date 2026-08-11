@@ -788,10 +788,60 @@ export function LiveMapHero({
                       Live
                     </button>
                   </div>
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    <span
+                      className="text-xs text-muted-foreground"
+                      id="replay-speed-label"
+                    >
+                      Speed
+                    </span>
+                    <div
+                      role="group"
+                      aria-labelledby="replay-speed-label"
+                      className="flex overflow-hidden rounded-sm border border-border-strong"
+                    >
+                      {[0.5, 1, 2].map((s) => (
+                        <button
+                          key={s}
+                          type="button"
+                          onClick={() => setSpeed(s)}
+                          aria-pressed={speed === s}
+                          aria-label={`Play replay at ${s} times speed`}
+                          className={`px-2.5 py-1.5 font-display text-xs font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent ${
+                            speed === s
+                              ? "bg-primary text-primary-foreground"
+                              : "hover:bg-surface"
+                          }`}
+                        >
+                          {s}x
+                        </button>
+                      ))}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => exportTrack("gpx")}
+                      className="ml-auto inline-flex items-center gap-1.5 rounded-sm border border-border-strong px-2.5 py-1.5 font-display text-xs font-semibold hover:bg-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                    >
+                      <Download className="h-3.5 w-3.5" aria-hidden="true" />
+                      GPX
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => exportTrack("kml")}
+                      className="inline-flex items-center gap-1.5 rounded-sm border border-border-strong px-2.5 py-1.5 font-display text-xs font-semibold hover:bg-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                    >
+                      <Download className="h-3.5 w-3.5" aria-hidden="true" />
+                      KML
+                    </button>
+                  </div>
                   <p className="mt-2 text-xs text-muted-foreground" role="status">
                     {replayPoint
-                      ? `Showing position from ${relTime(replayPoint.at, now || Date.now())} · ${track.length} fixes recorded`
-                      : `Following your live position · ${track.length} fixes recorded`}
+                      ? `Showing position from ${relTime(replayPoint.at, now || Date.now())} · ${track.length} fixes recorded · ${speed}x`
+                      : `Following your live position · ${track.length} fixes recorded · ${speed}x`}
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Download the last 30 minutes as GPX or KML for maps and
+                    route apps.
                   </p>
                 </>
               )}
