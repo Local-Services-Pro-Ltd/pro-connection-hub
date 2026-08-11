@@ -131,7 +131,7 @@ function TradePage() {
     <>
       <PageHero
         eyebrow={search.area ? `Near ${search.area}` : "Trade"}
-        title={`${trade.name}s you can actually book.`}
+        title={`${trade.name}s you can actually trust.`}
         sub={trade.blurb}
         image={tradeHero(trade.slug)}
         imageAlt={`A professional ${trade.name.toLowerCase()} at work on a UK job`}
