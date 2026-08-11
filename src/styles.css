@@ -101,8 +101,18 @@
     transparent 100%
   );
   --hero-image-opacity: 0.95;
-
+  /* Soft scrim directly behind hero copy — keeps text legible without
+     washing out the whole photograph. */
+  --hero-copy-scrim: radial-gradient(
+    120% 130% at 12% 50%,
+    color-mix(in oklab, var(--background) 84%, transparent) 0%,
+    color-mix(in oklab, var(--background) 60%, transparent) 45%,
+    transparent 78%
+  );
+  --hero-on-media: oklch(0.97 0.01 80);
+  --hero-on-media-muted: oklch(0.93 0.012 75);
 }
+
 
 /* ---------- Dark ---------- */
 [data-theme="dark"] {
