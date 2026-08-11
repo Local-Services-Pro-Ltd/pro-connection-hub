@@ -468,37 +468,33 @@ export function LiveMapHero({
         {/* Your live GPS position */}
 
         {me && (
-          <g>
+          <g
+            style={{
+              transform: `translate(${me.x}px, ${me.y}px)`,
+              transition: reduced ? undefined : "transform 900ms ease-out",
+            }}
+          >
+            {/* Accuracy halo — bigger circle means a less certain fix */}
             <circle
-              cx={me.x}
-              cy={me.y}
-              r="46"
-              className="fill-accent"
-              opacity="0.18"
+              r={accuracyR}
+              className="fill-accent stroke-accent"
+              strokeWidth="2"
+              opacity="0.16"
+              style={{ transition: reduced ? undefined : "r 900ms ease-out" }}
             />
             {!reduced && (
               <circle
-                cx={me.x}
-                cy={me.y}
                 r="24"
                 className="fill-none stroke-accent"
                 strokeWidth="3"
-                style={{
-                  transformOrigin: `${me.x}px ${me.y}px`,
-                  animation: "map-ping 2.4s ease-out infinite",
-                }}
+                style={{ animation: "map-ping 2.4s ease-out infinite" }}
               />
             )}
-            <circle cx={me.x} cy={me.y} r="11" className="fill-accent" />
-            <circle
-              cx={me.x}
-              cy={me.y}
-              r="4"
-              className="fill-accent-foreground"
-            />
+            <circle r="11" className="fill-accent" />
+            <circle r="4" className="fill-accent-foreground" />
             <text
-              x={me.x + 20}
-              y={me.y + 6}
+              x={20}
+              y={6}
               className="fill-foreground font-display"
               fontSize="17"
               fontWeight="600"
