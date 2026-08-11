@@ -90,6 +90,7 @@ export function PageHero({
               style={
                 {
                   opacity: "var(--hero-image-opacity)",
+                  filter: "saturate(1.12) contrast(1.06) brightness(1.05)",
                   "--focal": focal,
                   "--focal-mobile": mobileFocal,
                 } as CSSProperties
