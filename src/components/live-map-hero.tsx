@@ -246,7 +246,11 @@ export function LiveMapHero({
     if (reduced) setPlaying(false);
   }, [reduced]);
 
-  const me = fix ? project(fix.lat, fix.lon) : null;
+  const shown = smoothed ?? fix;
+  const me = shown ? project(shown.lat, shown.lon) : null;
+  const band = fix ? accuracyBand(fix.accuracy) : null;
+  // Accuracy halo in viewBox units (~0.00088 units per metre), kept visible.
+  const accuracyR = fix ? Math.min(90, Math.max(26, fix.accuracy * 0.00088 + 26)) : 0;
   const trackPts = track.map((f) => project(f.lat, f.lon));
   const trackPath = trackPts.length > 1 ? `M ${trackPts.map((p) => `${p.x} ${p.y}`).join(" L ")}` : null;
   const ghost = replayPoint ? project(replayPoint.lat, replayPoint.lon) : null;
