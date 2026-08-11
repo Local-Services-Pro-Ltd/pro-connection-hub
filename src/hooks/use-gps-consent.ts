@@ -48,6 +48,7 @@ export function useGpsConsent() {
     if (consent !== "granted") {
       stop();
       setFix(null);
+      setTrack([]);
       return;
     }
     if (typeof navigator === "undefined" || !("geolocation" in navigator)) {
@@ -57,11 +58,19 @@ export function useGpsConsent() {
     setError(null);
     watchId.current = navigator.geolocation.watchPosition(
       (pos) => {
-        setFix({
+        const next: GpsFix = {
           lat: pos.coords.latitude,
           lon: pos.coords.longitude,
           accuracy: pos.coords.accuracy,
           at: Date.now(),
+        };
+        setFix(next);
+        setTrack((prev) => {
+          const cutoff = next.at - TRACK_WINDOW_MS;
+          const last = prev[prev.length - 1];
+          // Throttle the trail to one point every ~5s to keep it scrubbable.
+          const merged = last && next.at - last.at < 5_000 ? [...prev.slice(0, -1), next] : [...prev, next];
+          return merged.filter((f) => f.at >= cutoff);
         });
       },
       (err) => setError(err.message || "Location unavailable."),
@@ -69,6 +78,7 @@ export function useGpsConsent() {
     );
     return stop;
   }, [consent, stop]);
+
 
   const choose = useCallback((next: Exclude<GpsConsent, "unknown">) => {
     try {
