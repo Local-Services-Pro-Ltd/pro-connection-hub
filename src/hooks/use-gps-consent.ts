@@ -98,5 +98,14 @@ export function useGpsConsent() {
     setConsent("unknown");
   }, []);
 
-  return { consent, fix, error, allow: () => choose("granted"), deny: () => choose("denied"), reset };
+  return {
+    consent,
+    fix,
+    track,
+    error,
+    allow: () => choose("granted"),
+    deny: () => choose("denied"),
+    reset,
+  };
+
 }
