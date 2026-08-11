@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { PageHero, Section, SectionHead } from "@/components/layout-bits";
+import { Section, SectionHead } from "@/components/layout-bits";
+import { LiveMapHero } from "@/components/live-map-hero";
 import { areasQuery, proCountsQuery } from "@/lib/queries";
 import { getRequestOrigin } from "@/lib/origin.functions";
 import street from "@/assets/street.jpg";
-import heroAreas from "@/assets/hero-areas.jpg";
+
 
 export const Route = createFileRoute("/areas")({
   loader: async ({ context }) => {
