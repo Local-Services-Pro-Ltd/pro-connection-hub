@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { PageHero, Section, SectionHead } from "@/components/layout-bits";
+import { Section, SectionHead } from "@/components/layout-bits";
+import { LiveMapHero } from "@/components/live-map-hero";
 import { areasQuery, proCountsQuery } from "@/lib/queries";
 import { getRequestOrigin } from "@/lib/origin.functions";
 import street from "@/assets/street.jpg";
-import heroAreas from "@/assets/hero-areas.jpg";
+
 
 export const Route = createFileRoute("/areas")({
   loader: async ({ context }) => {
@@ -40,7 +41,7 @@ export const Route = createFileRoute("/areas")({
               { property: "og:image", content: image },
               {
                 property: "og:image:alt",
-                content: "UK terraced streets from above at golden hour",
+                content: "Live map of UK areas covered by vetted tradesmen",
               },
               { name: "twitter:image", content: image },
             ]
@@ -71,15 +72,12 @@ function Areas() {
 
   return (
     <>
-      <PageHero
-        eyebrow="Coverage"
+      <LiveMapHero
+        eyebrow="Live coverage"
         title="Local means local."
-        sub="Trades are matched by the postcodes they actually work in — not by how far they're willing to drive for a lead."
-        image={heroAreas}
-        imageAlt="A misty UK city skyline of terraced streets at golden hour"
-        focal="50% 55%"
-        focalMobile="55% 60%"
+        sub="Trades are matched by the postcodes they actually work in — not by how far they're willing to drive for a lead. Watch jobs and vans move across the network in real time."
       />
+
 
 
       <Section>
