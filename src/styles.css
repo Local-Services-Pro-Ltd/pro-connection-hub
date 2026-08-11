@@ -364,3 +364,28 @@
   descent-override: 25%;
   line-gap-override: 0%;
 }
+
+/* Live map hero — GPS trail + coverage ping */
+@keyframes map-trail {
+  from {
+    stroke-dashoffset: 1540;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes map-ping {
+  0% {
+    transform: scale(0.35);
+    opacity: 0.85;
+  }
+  70% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+}
