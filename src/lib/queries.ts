@@ -244,3 +244,40 @@ export const myReviewsQuery = queryOptions({
         .order("created_at", { ascending: false }),
     ),
 });
+
+export type PlanVisibility =
+  Database["public"]["Tables"]["plan_visibility"]["Row"];
+
+/** Everything the admin plan-visibility screen needs, hidden tiers included. */
+export const adminPlansQuery = queryOptions({
+  queryKey: ["admin", "plans"],
+  queryFn: async () => {
+    const [plans, visibility] = await Promise.all([
+      supabase.from("plans").select("*").order("sort_order"),
+      supabase.from("plan_visibility").select("*").order("display_order"),
+    ]);
+    if (plans.error) throw plans.error;
+    if (visibility.error) throw visibility.error;
+    return {
+      plans: (plans.data ?? []) as Plan[],
+      visibility: (visibility.data ?? []) as PlanVisibility[],
+    };
+  },
+  staleTime: 0,
+});
+
+/** True when the signed-in account holds the admin role. */
+export function isAdminQuery(userId: string | undefined) {
+  return queryOptions({
+    queryKey: ["is-admin", userId ?? null],
+    queryFn: async () => {
+      if (!userId) return false;
+      const { data, error } = await supabase.rpc("has_role", {
+        _user_id: userId,
+        _role: "admin",
+      });
+      return error ? false : Boolean(data);
+    },
+    staleTime: 60_000,
+  });
+}
