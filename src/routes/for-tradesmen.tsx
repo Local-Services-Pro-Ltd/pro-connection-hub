@@ -113,10 +113,16 @@ function ForTradesmen() {
           title="One price. Cancel any month."
           sub="No commission on work won, no charge per enquiry, no minimum term."
         />
-        <div className="mt-10 grid gap-6 lg:grid-cols-3">
+        <div
+          className={`mt-10 grid gap-6 ${
+            tiers.length > 2
+              ? "lg:grid-cols-3"
+              : "mx-auto max-w-4xl sm:grid-cols-2"
+          }`}
+        >
           {tiers.map((t) => (
             <div
-              key={t.name}
+              key={t.slug}
               className={`flex flex-col rounded-md border bg-card p-8 ${
                 t.featured
                   ? "border-primary shadow-ember"
