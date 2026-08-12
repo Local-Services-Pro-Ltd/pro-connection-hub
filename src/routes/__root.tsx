@@ -15,6 +15,8 @@ import { SiteHeader, SiteFooter } from "../components/site-chrome";
 import { Toaster } from "../components/ui/sonner";
 import { AuthProvider } from "../hooks/use-auth";
 import { ThemeProvider, themeBootstrapScript } from "../hooks/use-theme";
+import { CookieConsent } from "../components/cookie-consent";
+
 
 
 
@@ -154,6 +156,8 @@ function RootComponent() {
         <Toaster position="bottom-right" />
 
         <SiteFooter />
+        <CookieConsent />
+
       </div>
       </AuthProvider>
       </ThemeProvider>
