@@ -6,6 +6,8 @@ import { Check } from "lucide-react";
 import { Section } from "@/components/layout-bits";
 import { supabase } from "@/integrations/supabase/client";
 
+const SITE = "https://tradesmanfinder.org";
+
 export const Route = createFileRoute("/enterprise")({
   head: () => {
     const description =
@@ -26,7 +28,9 @@ export const Route = createFileRoute("/enterprise")({
           content: "Contractor & multi-team plans — TradesmanFinder",
         },
         { name: "twitter:description", content: description },
+        { property: "og:url", content: `${SITE}/enterprise` },
       ],
+      links: [{ rel: "canonical", href: `${SITE}/enterprise` }],
     };
   },
   component: Enterprise,

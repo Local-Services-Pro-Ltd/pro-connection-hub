@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Section } from "@/components/layout-bits";
 
+const SITE = "https://tradesmanfinder.org";
+
 export const Route = createFileRoute("/waiting-list/thanks")({
   validateSearch: (search: Record<string, unknown>): { area?: string } =>
     typeof search["area"] === "string" && search["area"]
@@ -20,7 +22,9 @@ export const Route = createFileRoute("/waiting-list/thanks")({
         { name: "twitter:title", content: "You're on the list" },
         { name: "twitter:description", content: description },
         { name: "robots", content: "noindex" },
+        { property: "og:url", content: `${SITE}/waiting-list/thanks` },
       ],
+      links: [{ rel: "canonical", href: `${SITE}/waiting-list/thanks` }],
     };
   },
   component: WaitingListThanks,

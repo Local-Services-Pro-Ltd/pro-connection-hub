@@ -5,6 +5,8 @@ import { toast } from "sonner";
 import { Section } from "@/components/layout-bits";
 import { supabase } from "@/integrations/supabase/client";
 
+const SITE = "https://tradesmanfinder.org";
+
 type Search = { postcode?: string; role?: "homeowner" | "trader" };
 
 export const Route = createFileRoute("/waiting-list/")({
@@ -35,7 +37,9 @@ export const Route = createFileRoute("/waiting-list/")({
           content: "Join the TradesmanFinder waiting list",
         },
         { name: "twitter:description", content: description },
+        { property: "og:url", content: `${SITE}/waiting-list` },
       ],
+      links: [{ rel: "canonical", href: `${SITE}/waiting-list` }],
     };
   },
   errorComponent: ({ error }) => (

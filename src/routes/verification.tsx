@@ -96,10 +96,6 @@ const checks = [
   },
 ];
 
-export default function _unused() {
-  return null;
-}
-
 function Verification() {
   return (
     <>
