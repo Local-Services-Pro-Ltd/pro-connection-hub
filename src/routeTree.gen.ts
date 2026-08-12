@@ -20,6 +20,7 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as ProIdRouteImport } from './routes/pro.$id'
 import { Route as TradesIndexRouteImport } from './routes/trades.index'
 import { Route as TradesTradeRouteImport } from './routes/trades.$trade'
+import { Route as WaitingListIndexRouteImport } from './routes/waiting-list.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -76,6 +77,11 @@ const TradesTradeRoute = TradesTradeRouteImport.update({
   path: '/trades/$trade',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WaitingListIndexRoute = WaitingListIndexRouteImport.update({
+  id: '/waiting-list/',
+  path: '/waiting-list/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -89,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/pro/$id': typeof ProIdRoute
   '/trades/$trade': typeof TradesTradeRoute
   '/trades/': typeof TradesIndexRoute
+  '/waiting-list/': typeof WaitingListIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -102,6 +109,7 @@ export interface FileRoutesByTo {
   '/pro/$id': typeof ProIdRoute
   '/trades/$trade': typeof TradesTradeRoute
   '/trades': typeof TradesIndexRoute
+  '/waiting-list': typeof WaitingListIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -116,6 +124,7 @@ export interface FileRoutesById {
   '/pro/$id': typeof ProIdRoute
   '/trades/$trade': typeof TradesTradeRoute
   '/trades/': typeof TradesIndexRoute
+  '/waiting-list/': typeof WaitingListIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -131,6 +140,7 @@ export interface FileRouteTypes {
     | '/pro/$id'
     | '/trades/$trade'
     | '/trades/'
+    | '/waiting-list/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -144,6 +154,7 @@ export interface FileRouteTypes {
     | '/pro/$id'
     | '/trades/$trade'
     | '/trades'
+    | '/waiting-list'
   id:
     | '__root__'
     | '/'
@@ -157,6 +168,7 @@ export interface FileRouteTypes {
     | '/pro/$id'
     | '/trades/$trade'
     | '/trades/'
+    | '/waiting-list/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -171,6 +183,7 @@ export interface RootRouteChildren {
   ProIdRoute: typeof ProIdRoute
   TradesTradeRoute: typeof TradesTradeRoute
   TradesIndexRoute: typeof TradesIndexRoute
+  WaitingListIndexRoute: typeof WaitingListIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -252,6 +265,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TradesTradeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/waiting-list/': {
+      id: '/waiting-list/'
+      path: '/waiting-list'
+      fullPath: '/waiting-list/'
+      preLoaderRoute: typeof WaitingListIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -267,6 +287,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProIdRoute: ProIdRoute,
   TradesTradeRoute: TradesTradeRoute,
   TradesIndexRoute: TradesIndexRoute,
+  WaitingListIndexRoute: WaitingListIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

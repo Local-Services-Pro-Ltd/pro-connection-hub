@@ -74,7 +74,7 @@ function WaitingList() {
         p_email: email,
         p_postcode: postcode,
         p_role: role,
-        p_trade: role === "trader" ? trade || null : null,
+        p_trade: role === "trader" ? trade || undefined : undefined,
         p_source: search.postcode ? "post_job_gate" : "waiting_list_page",
       });
       if (error) {
