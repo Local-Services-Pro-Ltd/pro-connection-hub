@@ -421,12 +421,36 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       waiting_list: {
         Row: {
           created_at: string
           email: string
           id: string
           metadata: Json
+          name: string | null
+          note: string | null
+          phone: string | null
           postcode: string
           postcode_area: string | null
           role: string
@@ -438,6 +462,9 @@ export type Database = {
           email: string
           id?: string
           metadata?: Json
+          name?: string | null
+          note?: string | null
+          phone?: string | null
           postcode: string
           postcode_area?: string | null
           role: string
@@ -449,6 +476,9 @@ export type Database = {
           email?: string
           id?: string
           metadata?: Json
+          name?: string | null
+          note?: string | null
+          phone?: string | null
           postcode?: string
           postcode_area?: string | null
           role?: string
@@ -474,6 +504,9 @@ export type Database = {
       add_to_waiting_list: {
         Args: {
           p_email: string
+          p_name?: string
+          p_note?: string
+          p_phone?: string
           p_postcode: string
           p_role: string
           p_source?: string
@@ -481,9 +514,17 @@ export type Database = {
         }
         Returns: string
       }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
       account_type: "customer" | "tradesman"
+      app_role: "admin" | "moderator" | "user"
       availability: "immediate" | "within_week" | "within_month" | "booked"
       job_status: "open" | "matched" | "closed"
       review_status: "published" | "pending" | "rejected"
@@ -615,6 +656,7 @@ export const Constants = {
   public: {
     Enums: {
       account_type: ["customer", "tradesman"],
+      app_role: ["admin", "moderator", "user"],
       availability: ["immediate", "within_week", "within_month", "booked"],
       job_status: ["open", "matched", "closed"],
       review_status: ["published", "pending", "rejected"],
