@@ -2,11 +2,15 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Eye, EyeOff, Lock } from "lucide-react";
+import { Eye, EyeOff, History, Lock } from "lucide-react";
 import { Section, SectionHead } from "@/components/layout-bits";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
-import { adminPlansQuery, isAdminQuery } from "@/lib/queries";
+import {
+  adminPlansQuery,
+  isAdminQuery,
+  planVisibilityAuditQuery,
+} from "@/lib/queries";
 
 export const Route = createFileRoute("/admin/plans")({
   head: () => ({
@@ -128,6 +132,9 @@ function AdminPlansBoard() {
     onSuccess: async (next) => {
       await queryClient.invalidateQueries({ queryKey: ["admin", "plans"] });
       await queryClient.invalidateQueries({ queryKey: ["plan-visibility"] });
+      await queryClient.invalidateQueries({
+        queryKey: ["admin", "plan-visibility-audit"],
+      });
       toast.success(
         next ? "Tier is now visible on the pricing page" : "Tier is now hidden",
       );
@@ -234,6 +241,8 @@ function AdminPlansBoard() {
         })}
       </div>
 
+      <AuditLog />
+
       <p className="mt-8 text-sm text-muted-foreground">
         Changes go live on the{" "}
         <Link to="/for-tradesmen" className="text-primary hover:underline">
@@ -242,5 +251,89 @@ function AdminPlansBoard() {
         on the next page load — no redeploy needed.
       </p>
     </Section>
+  );
+}
+
+/**
+ * Append-only record of who changed what and when. Written by a database
+ * trigger, so it captures every change to tier visibility — including any made
+ * outside this screen.
+ */
+function AuditLog() {
+  const { data, isPending, error } = useQuery(planVisibilityAuditQuery);
+
+  return (
+    <section className="mt-16" aria-labelledby="audit-heading">
+      <div className="flex items-center gap-3">
+        <History className="h-5 w-5 text-primary" aria-hidden="true" />
+        <h2 id="audit-heading" className="text-2xl">
+          Change history
+        </h2>
+      </div>
+      <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+        Every visibility change is recorded automatically with the admin who
+        made it. Entries can't be edited or deleted by anyone.
+      </p>
+
+      {isPending ? (
+        <p className="mt-6 text-sm text-muted-foreground">Loading history…</p>
+      ) : error ? (
+        <p role="alert" className="mt-6 text-sm text-muted-foreground">
+          Couldn't load the change history.
+        </p>
+      ) : data.length === 0 ? (
+        <p className="mt-6 text-sm text-muted-foreground">
+          No changes recorded yet.
+        </p>
+      ) : (
+        <div className="mt-6 overflow-x-auto rounded-md border border-border">
+          <table className="w-full min-w-[640px] text-left text-sm">
+            <caption className="sr-only">
+              Plan visibility change history, newest first
+            </caption>
+            <thead className="bg-surface">
+              <tr className="text-xs uppercase tracking-widest text-muted-foreground">
+                <th scope="col" className="px-5 py-3 font-medium">
+                  When
+                </th>
+                <th scope="col" className="px-5 py-3 font-medium">
+                  Tier
+                </th>
+                <th scope="col" className="px-5 py-3 font-medium">
+                  Change
+                </th>
+                <th scope="col" className="px-5 py-3 font-medium">
+                  Admin
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((row) => (
+                <tr key={row.id} className="border-t border-border">
+                  <td className="whitespace-nowrap px-5 py-3 text-muted-foreground">
+                    {new Date(row.created_at).toLocaleString("en-GB")}
+                  </td>
+                  <td className="px-5 py-3">
+                    {row.display_name || row.plan_slug}
+                  </td>
+                  <td className="px-5 py-3">
+                    {row.action === "shown"
+                      ? "Made visible"
+                      : row.action === "hidden"
+                        ? "Hidden from pricing"
+                        : row.action === "created"
+                          ? `Added (${row.is_public ? "visible" : "hidden"})`
+                          : "Details edited"}
+                  </td>
+                  <td className="px-5 py-3 text-muted-foreground">
+                    {row.changed_by_email ?? "System"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </section>
   );
 }

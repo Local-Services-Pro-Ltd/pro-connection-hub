@@ -281,3 +281,21 @@ export function isAdminQuery(userId: string | undefined) {
     staleTime: 60_000,
   });
 }
+
+export type PlanVisibilityAudit =
+  Database["public"]["Tables"]["plan_visibility_audit"]["Row"];
+
+/** Append-only trail of every show/hide change, newest first. Admins only. */
+export const planVisibilityAuditQuery = queryOptions({
+  queryKey: ["admin", "plan-visibility-audit"],
+  queryFn: async () => {
+    const { data, error } = await supabase
+      .from("plan_visibility_audit")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(50);
+    if (error) throw error;
+    return (data ?? []) as PlanVisibilityAudit[];
+  },
+  staleTime: 0,
+});
