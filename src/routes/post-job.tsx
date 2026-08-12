@@ -8,6 +8,8 @@ import heroPostJob from "@/assets/hero-post-job.jpg";
 import { tradesQuery, budgetBands } from "@/lib/queries";
 import { getRequestOrigin } from "@/lib/origin.functions";
 import { isLiveArea } from "@/lib/postcode-gate";
+import { useServerFn } from "@tanstack/react-start";
+import { submitWaitingList } from "@/lib/waiting-list.functions";
 
 
 import { supabase } from "@/integrations/supabase/client";
@@ -428,5 +430,187 @@ function PostJob() {
         </div>
       </Section>
     </>
+  );
+}
+
+/**
+ * Shown when a homeowner's postcode falls outside our live areas. Rather than
+ * a dead end, we explain why in plain English and take their details so we can
+ * come back to them the day we open — the job details they already typed are
+ * carried over as the note.
+ */
+function OutOfAreaPanel({
+  postcode,
+  prefillName,
+  prefillEmail,
+  prefillNote,
+  onReset,
+}: {
+  postcode: string;
+  prefillName: string;
+  prefillEmail: string;
+  prefillNote: string;
+  onReset: () => void;
+}) {
+  const [name, setName] = useState(prefillName);
+  const [email, setEmail] = useState(prefillEmail);
+  const [phone, setPhone] = useState("");
+  const [note, setNote] = useState(prefillNote);
+  const [done, setDone] = useState(false);
+  const submit = useServerFn(submitWaitingList);
+
+  const mutation = useMutation({
+    mutationFn: async () =>
+      submit({
+        data: {
+          email: email.trim(),
+          postcode: postcode.trim(),
+          role: "homeowner" as const,
+          source: "post_job_gate",
+          ...(name.trim() ? { name: name.trim() } : {}),
+          ...(phone.trim() ? { phone: phone.trim() } : {}),
+          ...(note.trim() ? { note: note.trim() } : {}),
+        },
+      }),
+    onSuccess: () => {
+      setDone(true);
+      toast.success("Thanks — you're on the list for this postcode");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  if (done) {
+    return (
+      <div className="rounded-md border border-border bg-card p-10">
+        <div className="grid h-12 w-12 place-items-center rounded-sm bg-primary/15">
+          <Check className="h-6 w-6 text-primary" />
+        </div>
+        <h2 className="mt-6 text-2xl">
+          You're first in line for {postcode.toUpperCase()}.
+        </h2>
+        <p className="mt-3 max-w-md text-muted-foreground">
+          We've kept your job details with your request. The day we have vetted
+          trades covering your postcode, we'll email you and — if you left a
+          number — give you a ring.
+        </p>
+        <div className="mt-6 flex flex-wrap gap-3">
+          <button
+            onClick={onReset}
+            className="rounded-sm border border-border-strong px-5 py-2.5 font-display text-sm font-semibold hover:border-primary hover:text-primary"
+          >
+            Try another postcode
+          </button>
+          <Link
+            to="/areas"
+            className="rounded-sm bg-primary px-5 py-2.5 font-display text-sm font-semibold text-primary-foreground shadow-ember hover:brightness-110"
+          >
+            See where we're live
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-md border border-border bg-card p-6 lg:p-10">
+      <h2 className="text-2xl">
+        We're not in {postcode.toUpperCase()} just yet.
+      </h2>
+      <div className="mt-3 max-w-xl space-y-3 text-muted-foreground">
+        <p>
+          Right now we're live across Greater London, Kent and Surrey only. We
+          could take your job anyway and pass it to trades an hour up the
+          motorway — plenty of sites do — but you'd get slow replies, inflated
+          travel costs and quotes that quietly fall through.
+        </p>
+        <p>
+          So we'd rather be straight with you. Leave your details below and
+          we'll come back to you the day we have vetted trades covering{" "}
+          {postcode.toUpperCase()}. Nothing else, no spam, and you can ask us to
+          delete it at any time.
+        </p>
+      </div>
+
+      <form
+        className="mt-8 space-y-6"
+        onSubmit={(e) => {
+          e.preventDefault();
+          mutation.mutate();
+        }}
+      >
+        <div className="grid gap-6 sm:grid-cols-2">
+          <label className="block">
+            <span className="eyebrow">Your name</span>
+            <input
+              required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              maxLength={80}
+              placeholder="Jane Okafor"
+              className={`${field} mt-2`}
+            />
+          </label>
+          <label className="block">
+            <span className="eyebrow">Email</span>
+            <input
+              required
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              className={`${field} mt-2`}
+            />
+          </label>
+          <label className="block">
+            <span className="eyebrow">Phone (optional)</span>
+            <input
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              maxLength={40}
+              placeholder="07700 900123"
+              className={`${field} mt-2`}
+            />
+          </label>
+          <label className="block">
+            <span className="eyebrow">Postcode</span>
+            <input
+              readOnly
+              value={postcode.toUpperCase()}
+              aria-label="Your postcode"
+              className={`${field} mt-2 opacity-70`}
+            />
+          </label>
+        </div>
+
+        <label className="block">
+          <span className="eyebrow">What you need doing</span>
+          <textarea
+            rows={4}
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            maxLength={1000}
+            placeholder="We've carried over what you typed — edit it if you like."
+            className={`${field} mt-2`}
+          />
+        </label>
+
+        <div className="flex flex-wrap gap-3">
+          <button
+            type="submit"
+            disabled={mutation.isPending}
+            className="rounded-sm bg-primary px-6 py-3 font-display text-sm font-semibold text-primary-foreground shadow-ember hover:brightness-110 disabled:opacity-60"
+          >
+            {mutation.isPending ? "Saving…" : "Tell me when you're live here"}
+          </button>
+          <button
+            type="button"
+            onClick={onReset}
+            className="rounded-sm border border-border-strong px-6 py-3 font-display text-sm font-semibold hover:border-primary hover:text-primary"
+          >
+            Try another postcode
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }
