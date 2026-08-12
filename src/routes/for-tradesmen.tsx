@@ -71,45 +71,8 @@ const perks = [
   },
 ];
 
-const tiers = [
-  {
-    name: "Starter",
-    price: "£29",
-    per: "/month",
-    line: "Sole traders getting going.",
-    features: ["Up to 8 matched jobs", "1 trade category", "3 postcode areas", "Verified profile"],
-    featured: false,
-  },
-  {
-    name: "Trade",
-    price: "£59",
-    per: "/month",
-    line: "Established firms with a van or two.",
-    features: [
-      "Unlimited matched jobs",
-      "3 trade categories",
-      "10 postcode areas",
-      "Priority ranking",
-      "Photo portfolio",
-    ],
-    featured: true,
-  },
-  {
-    name: "Contractor",
-    price: "£129",
-    per: "/month",
-    line: "Multi-team outfits and larger works.",
-    features: [
-      "Everything in Trade",
-      "Unlimited categories & areas",
-      "Team profiles",
-      "Account manager",
-    ],
-    featured: false,
-  },
-];
-
 function ForTradesmen() {
+  const { data: tiers } = useSuspenseQuery(plansQuery);
   return (
     <>
       <PageHero
