@@ -1,11 +1,19 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { Check } from "lucide-react";
 import { PageHero, Section, SectionHead } from "@/components/layout-bits";
 import { getRequestOrigin } from "@/lib/origin.functions";
+import { plansQuery } from "@/lib/queries";
 import heroForTradesmen from "@/assets/hero-for-tradesmen.jpg";
 
 export const Route = createFileRoute("/for-tradesmen")({
-  loader: async () => ({ origin: await getRequestOrigin() }),
+  loader: async ({ context }) => {
+    const [, origin] = await Promise.all([
+      context.queryClient.ensureQueryData(plansQuery),
+      getRequestOrigin(),
+    ]);
+    return { origin };
+  },
   head: ({ loaderData }) => {
     const title =
       "Join as a tradesman — real leads, no lead fees | TradesmanFinder";
