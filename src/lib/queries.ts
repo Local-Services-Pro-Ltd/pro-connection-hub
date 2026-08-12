@@ -46,19 +46,39 @@ export const areasQuery = queryOptions({
 
 export type Plan = Database["public"]["Tables"]["plans"]["Row"];
 
-/** Membership tiers shown on /for-tradesmen. Hidden tiers are filtered by RLS. */
+/**
+ * Membership tiers shown on /for-tradesmen. Every tier is returned here —
+ * public display is decided by `planVisibilityQuery` below, so a hidden tier
+ * (currently Contractor) stays fully functional for direct signup links.
+ */
 export const plansQuery = queryOptions({
   queryKey: ["plans"],
   queryFn: async () =>
-    unwrap(
-      await supabase
-        .from("plans")
-        .select("*")
-        .eq("visible", true)
-        .order("sort_order"),
-    ),
+    unwrap(await supabase.from("plans").select("*").order("sort_order")),
   staleTime: 5 * 60_000,
 });
+
+/**
+ * Runtime display toggle for pricing tiers. Admins flip `is_public` in the
+ * backend and the pricing page follows on the next load — no deploy needed.
+ * Display-only: billing, entitlements and /signin?plan=<slug> are unaffected.
+ */
+export const planVisibilityQuery = queryOptions({
+  queryKey: ["plan-visibility"],
+  queryFn: async () => {
+    const { data, error } = await supabase
+      .from("plan_visibility")
+      .select("plan_slug, is_public, display_order");
+    // Never break the pricing page on a backend hiccup — the caller falls
+    // back to hard-coded defaults when this map is empty.
+    if (error || !data) return {} as Record<string, boolean>;
+    return Object.fromEntries(
+      data.map((r) => [r.plan_slug, r.is_public]),
+    ) as Record<string, boolean>;
+  },
+  staleTime: 60_000,
+});
+
 
 /** Live counts of published pros per trade slug and per area slug. */
 export const proCountsQuery = queryOptions({
