@@ -82,21 +82,35 @@ function Areas() {
 
       <Section>
         <div className="grid gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
-          {areas.map((a) => (
-            <Link
-              key={a.slug}
-              to="/trades/$trade"
-              params={{ trade: "builder" }}
-              search={{ area: a.slug }}
-              className="bg-card p-7 transition-colors hover:bg-surface"
-            >
-              <h2 className="text-xl">{a.name}</h2>
-              <p className="mt-2 text-sm text-muted-foreground">{a.note}</p>
-              <p className="mt-6 font-display text-xs uppercase tracking-widest text-primary">
-                {counts.byArea[a.slug] ?? 0} vetted pros
-              </p>
-            </Link>
-          ))}
+          {areas.map((a) =>
+            a.status === "live" ? (
+              <Link
+                key={a.slug}
+                to="/trades/$trade"
+                params={{ trade: "builder" }}
+                search={{ area: a.slug }}
+                className="bg-card p-7 transition-colors hover:bg-surface"
+              >
+                <h2 className="text-xl">{a.name}</h2>
+                <p className="mt-2 text-sm text-muted-foreground">{a.note}</p>
+                <p className="mt-6 font-display text-xs uppercase tracking-widest text-primary">
+                  {counts.byArea[a.slug] ?? 0} vetted pros
+                </p>
+              </Link>
+            ) : (
+              <div
+                key={a.slug}
+                aria-disabled="true"
+                className="bg-card p-7 opacity-70"
+              >
+                <h2 className="text-xl">{a.name}</h2>
+                <p className="mt-2 text-sm text-muted-foreground">{a.note}</p>
+                <p className="mt-6 font-display text-xs uppercase tracking-widest text-muted-foreground">
+                  Coming soon
+                </p>
+              </div>
+            ),
+          )}
         </div>
       </Section>
 

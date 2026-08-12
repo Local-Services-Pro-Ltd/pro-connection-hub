@@ -1,11 +1,19 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { Check } from "lucide-react";
 import { PageHero, Section, SectionHead } from "@/components/layout-bits";
 import { getRequestOrigin } from "@/lib/origin.functions";
+import { plansQuery } from "@/lib/queries";
 import heroForTradesmen from "@/assets/hero-for-tradesmen.jpg";
 
 export const Route = createFileRoute("/for-tradesmen")({
-  loader: async () => ({ origin: await getRequestOrigin() }),
+  loader: async ({ context }) => {
+    const [, origin] = await Promise.all([
+      context.queryClient.ensureQueryData(plansQuery),
+      getRequestOrigin(),
+    ]);
+    return { origin };
+  },
   head: ({ loaderData }) => {
     const title =
       "Join as a tradesman — real leads, no lead fees | TradesmanFinder";
@@ -63,45 +71,8 @@ const perks = [
   },
 ];
 
-const tiers = [
-  {
-    name: "Starter",
-    price: "£29",
-    per: "/month",
-    line: "Sole traders getting going.",
-    features: ["Up to 8 matched jobs", "1 trade category", "3 postcode areas", "Verified profile"],
-    featured: false,
-  },
-  {
-    name: "Trade",
-    price: "£59",
-    per: "/month",
-    line: "Established firms with a van or two.",
-    features: [
-      "Unlimited matched jobs",
-      "3 trade categories",
-      "10 postcode areas",
-      "Priority ranking",
-      "Photo portfolio",
-    ],
-    featured: true,
-  },
-  {
-    name: "Contractor",
-    price: "£129",
-    per: "/month",
-    line: "Multi-team outfits and larger works.",
-    features: [
-      "Everything in Trade",
-      "Unlimited categories & areas",
-      "Team profiles",
-      "Account manager",
-    ],
-    featured: false,
-  },
-];
-
 function ForTradesmen() {
+  const { data: tiers } = useSuspenseQuery(plansQuery);
   return (
     <>
       <PageHero
@@ -142,10 +113,16 @@ function ForTradesmen() {
           title="One price. Cancel any month."
           sub="No commission on work won, no charge per enquiry, no minimum term."
         />
-        <div className="mt-10 grid gap-6 lg:grid-cols-3">
+        <div
+          className={`mt-10 grid gap-6 ${
+            tiers.length > 2
+              ? "lg:grid-cols-3"
+              : "mx-auto max-w-4xl sm:grid-cols-2"
+          }`}
+        >
           {tiers.map((t) => (
             <div
-              key={t.name}
+              key={t.slug}
               className={`flex flex-col rounded-md border bg-card p-8 ${
                 t.featured
                   ? "border-primary shadow-ember"

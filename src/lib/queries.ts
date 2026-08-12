@@ -44,6 +44,22 @@ export const areasQuery = queryOptions({
   staleTime: 5 * 60_000,
 });
 
+export type Plan = Database["public"]["Tables"]["plans"]["Row"];
+
+/** Membership tiers shown on /for-tradesmen. Hidden tiers are filtered by RLS. */
+export const plansQuery = queryOptions({
+  queryKey: ["plans"],
+  queryFn: async () =>
+    unwrap(
+      await supabase
+        .from("plans")
+        .select("*")
+        .eq("visible", true)
+        .order("sort_order"),
+    ),
+  staleTime: 5 * 60_000,
+});
+
 /** Live counts of published pros per trade slug and per area slug. */
 export const proCountsQuery = queryOptions({
   queryKey: ["pro-counts"],
