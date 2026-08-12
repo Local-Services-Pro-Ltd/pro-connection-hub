@@ -114,6 +114,13 @@ function PostJob() {
   const set = (k: keyof typeof form) => (v: string) =>
     setForm((f) => ({ ...f, [k]: v }));
 
+  // Postcode gate: we only take jobs in areas that have enough vetted trades
+  // to answer them. Anything else is routed to the waiting list instead.
+  const postcodeLooksValid = ukPostcode.test(form.postcode.trim());
+  const postcodeIsCovered = isLiveArea(form.postcode);
+  const [outOfArea, setOutOfArea] = useState<string | null>(null);
+
+
   const mutation = useMutation({
     mutationFn: async () => {
       const errors: string[] = [];
