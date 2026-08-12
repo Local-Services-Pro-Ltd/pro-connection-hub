@@ -65,6 +65,27 @@ export type Database = {
         }
         Relationships: []
       }
+      form_rate_limit: {
+        Row: {
+          bucket: string
+          hits: number
+          updated_at: string
+          window_start: string
+        }
+        Insert: {
+          bucket: string
+          hits?: number
+          updated_at?: string
+          window_start?: string
+        }
+        Update: {
+          bucket?: string
+          hits?: number
+          updated_at?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
       jobs: {
         Row: {
           budget_band: string
@@ -148,6 +169,45 @@ export type Database = {
           plan_slug?: string
           updated_at?: string
           updated_by?: string | null
+        }
+        Relationships: []
+      }
+      plan_visibility_audit: {
+        Row: {
+          action: string
+          changed_by: string | null
+          changed_by_email: string | null
+          created_at: string
+          display_name: string
+          hidden_reason: string | null
+          id: string
+          is_public: boolean
+          plan_slug: string
+          was_public: boolean | null
+        }
+        Insert: {
+          action: string
+          changed_by?: string | null
+          changed_by_email?: string | null
+          created_at?: string
+          display_name?: string
+          hidden_reason?: string | null
+          id?: string
+          is_public: boolean
+          plan_slug: string
+          was_public?: boolean | null
+        }
+        Update: {
+          action?: string
+          changed_by?: string | null
+          changed_by_email?: string | null
+          created_at?: string
+          display_name?: string
+          hidden_reason?: string | null
+          id?: string
+          is_public?: boolean
+          plan_slug?: string
+          was_public?: boolean | null
         }
         Relationships: []
       }
@@ -519,6 +579,10 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      hit_rate_limit: {
+        Args: { p_bucket: string; p_limit: number; p_window_seconds: number }
         Returns: boolean
       }
     }
