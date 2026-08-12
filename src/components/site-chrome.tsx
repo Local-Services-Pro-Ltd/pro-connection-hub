@@ -1,8 +1,11 @@
 import { Link } from "@tanstack/react-router";
 import { type ReactNode, useState } from "react";
-import { Menu, X, UserRound } from "lucide-react";
+import { Menu, X, UserRound, Mail } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { ThemeControl } from "@/components/theme-control";
+import { openCookiePreferences } from "@/lib/cookie-consent";
+import { FeedbackForm } from "@/components/feedback-form";
+
 
 
 const nav = [
@@ -186,15 +189,92 @@ export function SiteFooter() {
                 Post a job
               </Link>
             </li>
+            <li>
+              <Link to="/privacy" className="hover:text-foreground">
+                Privacy Policy
+              </Link>
+            </li>
+            <li>
+              <Link to="/terms" className="hover:text-foreground">
+                Terms of Use
+              </Link>
+            </li>
+            <li>
+              <button
+                type="button"
+                onClick={openCookiePreferences}
+                className="text-left transition-colors hover:text-foreground"
+              >
+                Cookie preferences
+              </button>
+            </li>
           </ul>
         </div>
       </div>
+
       <div className="border-t border-border">
-        <div className="mx-auto max-w-7xl px-5 py-5 text-xs leading-relaxed text-muted-foreground lg:px-8">
-          © {new Date().getFullYear()} TradesmanFinder. Tradesman Finder is part
-          of Local Services Pro and All Care 4 U Group. All Rights Reserved.
+        <div className="mx-auto grid max-w-7xl gap-10 px-5 py-14 lg:grid-cols-[1.4fr_2fr] lg:px-8">
+          <div>
+            <p className="eyebrow">Contact us</p>
+            <h2 className="mt-3 font-display text-2xl font-bold tracking-tight">
+              Something to tell us?
+            </h2>
+            <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">
+              Whether it's a bug, a trade who let you down, or an idea we've
+              missed — we'd rather hear it.
+            </p>
+            <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+              <li className="flex items-center gap-2">
+                <Mail className="h-4 w-4 text-primary" />
+                <a
+                  href="mailto:hello@tradesmanfinder.org"
+                  className="transition-colors hover:text-foreground"
+                >
+                  hello@tradesmanfinder.org
+                </a>
+              </li>
+              <li className="flex items-center gap-2">
+                <Mail className="h-4 w-4 text-primary" />
+                <a
+                  href="mailto:privacy@tradesmanfinder.org"
+                  className="transition-colors hover:text-foreground"
+                >
+                  privacy@tradesmanfinder.org
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <FeedbackForm />
+          </div>
+        </div>
+      </div>
+
+      <div className="border-t border-border">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-5 py-5 text-xs leading-relaxed text-muted-foreground lg:px-8">
+          <p>
+            © {new Date().getFullYear()} TradesmanFinder. Tradesman Finder is
+            part of Local Services Pro and All Care 4 U Group. All Rights
+            Reserved.
+          </p>
+          <nav className="flex flex-wrap items-center gap-4">
+            <Link to="/privacy" className="hover:text-foreground">
+              Privacy
+            </Link>
+            <Link to="/terms" className="hover:text-foreground">
+              Terms
+            </Link>
+            <button
+              type="button"
+              onClick={openCookiePreferences}
+              className="hover:text-foreground"
+            >
+              Cookies
+            </button>
+          </nav>
         </div>
       </div>
     </footer>
   );
 }
+
