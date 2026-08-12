@@ -20,6 +20,7 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as VerificationRouteImport } from './routes/verification'
+import { Route as AdminPlansRouteImport } from './routes/admin.plans'
 import { Route as ProIdRouteImport } from './routes/pro.$id'
 import { Route as TradesIndexRouteImport } from './routes/trades.index'
 import { Route as TradesTradeRouteImport } from './routes/trades.$trade'
@@ -81,6 +82,11 @@ const VerificationRoute = VerificationRouteImport.update({
   path: '/verification',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminPlansRoute = AdminPlansRouteImport.update({
+  id: '/admin/plans',
+  path: '/admin/plans',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProIdRoute = ProIdRouteImport.update({
   id: '/pro/$id',
   path: '/pro/$id',
@@ -119,6 +125,7 @@ export interface FileRoutesByFullPath {
   '/signin': typeof SigninRoute
   '/terms': typeof TermsRoute
   '/verification': typeof VerificationRoute
+  '/admin/plans': typeof AdminPlansRoute
   '/pro/$id': typeof ProIdRoute
   '/trades/$trade': typeof TradesTradeRoute
   '/waiting-list/thanks': typeof WaitingListThanksRoute
@@ -137,6 +144,7 @@ export interface FileRoutesByTo {
   '/signin': typeof SigninRoute
   '/terms': typeof TermsRoute
   '/verification': typeof VerificationRoute
+  '/admin/plans': typeof AdminPlansRoute
   '/pro/$id': typeof ProIdRoute
   '/trades/$trade': typeof TradesTradeRoute
   '/waiting-list/thanks': typeof WaitingListThanksRoute
@@ -156,6 +164,7 @@ export interface FileRoutesById {
   '/signin': typeof SigninRoute
   '/terms': typeof TermsRoute
   '/verification': typeof VerificationRoute
+  '/admin/plans': typeof AdminPlansRoute
   '/pro/$id': typeof ProIdRoute
   '/trades/$trade': typeof TradesTradeRoute
   '/waiting-list/thanks': typeof WaitingListThanksRoute
@@ -176,6 +185,7 @@ export interface FileRouteTypes {
     | '/signin'
     | '/terms'
     | '/verification'
+    | '/admin/plans'
     | '/pro/$id'
     | '/trades/$trade'
     | '/waiting-list/thanks'
@@ -194,6 +204,7 @@ export interface FileRouteTypes {
     | '/signin'
     | '/terms'
     | '/verification'
+    | '/admin/plans'
     | '/pro/$id'
     | '/trades/$trade'
     | '/waiting-list/thanks'
@@ -212,6 +223,7 @@ export interface FileRouteTypes {
     | '/signin'
     | '/terms'
     | '/verification'
+    | '/admin/plans'
     | '/pro/$id'
     | '/trades/$trade'
     | '/waiting-list/thanks'
@@ -231,6 +243,7 @@ export interface RootRouteChildren {
   SigninRoute: typeof SigninRoute
   TermsRoute: typeof TermsRoute
   VerificationRoute: typeof VerificationRoute
+  AdminPlansRoute: typeof AdminPlansRoute
   ProIdRoute: typeof ProIdRoute
   TradesTradeRoute: typeof TradesTradeRoute
   WaitingListThanksRoute: typeof WaitingListThanksRoute
@@ -317,6 +330,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VerificationRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/plans': {
+      id: '/admin/plans'
+      path: '/admin/plans'
+      fullPath: '/admin/plans'
+      preLoaderRoute: typeof AdminPlansRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/pro/$id': {
       id: '/pro/$id'
       path: '/pro/$id'
@@ -367,6 +387,7 @@ const rootRouteChildren: RootRouteChildren = {
   SigninRoute: SigninRoute,
   TermsRoute: TermsRoute,
   VerificationRoute: VerificationRoute,
+  AdminPlansRoute: AdminPlansRoute,
   ProIdRoute: ProIdRoute,
   TradesTradeRoute: TradesTradeRoute,
   WaitingListThanksRoute: WaitingListThanksRoute,
@@ -376,13 +397,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
