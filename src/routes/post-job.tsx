@@ -129,6 +129,9 @@ function PostJob() {
       if (!form.trade_slug) errors.push("Choose a trade.");
       if (!ukPostcode.test(form.postcode.trim()))
         errors.push("Enter a valid UK postcode.");
+      else if (!isLiveArea(form.postcode))
+        errors.push("We're not live in that postcode yet.");
+
       if (form.title.trim().length < 6)
         errors.push("Give the job a clearer title.");
       if (form.description.trim().length < 25)
