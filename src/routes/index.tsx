@@ -302,7 +302,8 @@ function Home() {
       <Section>
         <SectionHead
           eyebrow="Areas"
-          title="Covering the whole of the UK."
+          title="Live in London, Kent and Surrey."
+          sub="We're opening one area at a time so every postcode has enough vetted trades to answer the jobs in it. More of the South East is next."
           aside={
             <Link
               to="/areas"
@@ -313,19 +314,23 @@ function Home() {
           }
         />
         <div className="mt-8 flex flex-wrap gap-2">
-          {areas.map((a) =>
-            a.status === "live" ? (
+          {areas
+            .filter((a) => a.status === "live")
+            .map((a) => (
               <Link
                 key={a.slug}
                 to="/trades"
-                className="rounded-sm border border-border px-4 py-2 text-sm text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+                className="rounded-sm border border-primary/40 bg-primary/8 px-4 py-2 text-sm text-foreground transition-colors hover:border-primary hover:text-primary"
               >
                 {a.name}
                 <span className="ml-2 text-xs text-primary">
-                  {counts.byArea[a.slug] ?? 0}
+                  {counts.byArea[a.slug] ?? 0} pros
                 </span>
               </Link>
-            ) : (
+            ))}
+          {areas
+            .filter((a) => a.status !== "live")
+            .map((a) => (
               <span
                 key={a.slug}
                 className="rounded-sm border border-dashed border-border px-4 py-2 text-sm text-muted-foreground/70"
@@ -333,9 +338,16 @@ function Home() {
                 {a.name}
                 <span className="ml-2 text-xs">Coming soon</span>
               </span>
-            ),
-          )}
+            ))}
         </div>
+        <p className="mt-6 text-sm text-muted-foreground">
+          Somewhere else?{" "}
+          <Link to="/waiting-list" search={{}} className="text-primary hover:underline">
+            Join the waiting list
+          </Link>{" "}
+          and we'll tell you the day we open your postcode.
+        </p>
+
 
         <div className="mt-16 overflow-hidden rounded-md border border-border bg-card p-8 lg:p-14">
           <div className="grid items-end gap-8 lg:grid-cols-[1.4fr_auto]">
