@@ -190,6 +190,16 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
+              <Link
+                to="/waiting-list"
+                search={{}}
+                className="hover:text-foreground"
+              >
+                Waiting list
+              </Link>
+            </li>
+
+            <li>
               <Link to="/privacy" className="hover:text-foreground">
                 Privacy Policy
               </Link>
