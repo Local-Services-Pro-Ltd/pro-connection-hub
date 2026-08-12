@@ -20,18 +20,21 @@ export type Database = {
           note: string
           slug: string
           sort_order: number
+          status: string
         }
         Insert: {
           name: string
           note?: string
           slug: string
           sort_order?: number
+          status?: string
         }
         Update: {
           name?: string
           note?: string
           slug?: string
           sort_order?: number
+          status?: string
         }
         Relationships: []
       }
@@ -117,6 +120,48 @@ export type Database = {
             referencedColumns: ["slug"]
           },
         ]
+      }
+      plans: {
+        Row: {
+          created_at: string
+          featured: boolean
+          features: string[]
+          line: string
+          name: string
+          per: string
+          price: string
+          slug: string
+          sort_order: number
+          updated_at: string
+          visible: boolean
+        }
+        Insert: {
+          created_at?: string
+          featured?: boolean
+          features?: string[]
+          line?: string
+          name: string
+          per?: string
+          price: string
+          slug: string
+          sort_order?: number
+          updated_at?: string
+          visible?: boolean
+        }
+        Update: {
+          created_at?: string
+          featured?: boolean
+          features?: string[]
+          line?: string
+          name?: string
+          per?: string
+          price?: string
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+          visible?: boolean
+        }
+        Relationships: []
       }
       pro_credentials: {
         Row: {
