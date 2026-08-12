@@ -254,10 +254,20 @@ function PostJob() {
                     required
                     value={form.postcode}
                     onChange={(e) => set("postcode")(e.target.value)}
-                    placeholder="e.g. BS1 4DJ"
+                    placeholder="e.g. SE1 7PB"
+                    aria-describedby="postcode-coverage"
                     className={`${field} mt-2`}
                   />
+                  <span
+                    id="postcode-coverage"
+                    className="mt-2 block text-xs text-muted-foreground"
+                  >
+                    {postcodeLooksValid && !postcodeIsCovered
+                      ? "We're not live in this postcode yet — you can still join the waiting list."
+                      : "We're live in Greater London, Kent and Surrey."}
+                  </span>
                 </label>
+
               </div>
 
               <label className="block">
