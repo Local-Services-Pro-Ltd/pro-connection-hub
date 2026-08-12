@@ -120,14 +120,25 @@ function SignIn() {
       <div className="flex items-center px-5 py-16 lg:px-16">
         <div className="mx-auto w-full max-w-sm">
           <p className="eyebrow">
-            {mode === "in" ? "Welcome back" : "Create an account"}
+            {search.intent === "claim"
+              ? "Claim your listing"
+              : search.plan
+                ? `${search.plan} membership`
+                : mode === "in"
+                  ? "Welcome back"
+                  : "Create an account"}
           </p>
           <h1 className="mt-3 text-4xl leading-tight">
             {mode === "in" ? "Sign in." : "Join up."}
           </h1>
           <p className="mt-3 text-sm text-muted-foreground">
-            Manage your jobs, quotes and reviews in one place.
+            {search.intent === "claim"
+              ? "Create an account with the email on your listing and we'll match it up, or sign in if you already have one."
+              : search.plan
+                ? "Create your account first — we'll set up your membership straight after."
+                : "Manage your jobs, quotes and reviews in one place."}
           </p>
+
 
           {checkEmail ? (
             <div className="mt-8 rounded-md border border-border bg-card p-6 text-sm">
