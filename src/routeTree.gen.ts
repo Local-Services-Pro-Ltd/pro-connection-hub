@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as AreasRouteImport } from './routes/areas'
+import { Route as ClaimRouteImport } from './routes/claim'
 import { Route as ForTradesmenRouteImport } from './routes/for-tradesmen'
 import { Route as PostJobRouteImport } from './routes/post-job'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -36,6 +37,11 @@ const AccountRoute = AccountRouteImport.update({
 const AreasRoute = AreasRouteImport.update({
   id: '/areas',
   path: '/areas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ClaimRoute = ClaimRouteImport.update({
+  id: '/claim',
+  path: '/claim',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ForTradesmenRoute = ForTradesmenRouteImport.update({
@@ -93,6 +99,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/areas': typeof AreasRoute
+  '/claim': typeof ClaimRoute
   '/for-tradesmen': typeof ForTradesmenRoute
   '/post-job': typeof PostJobRoute
   '/privacy': typeof PrivacyRoute
@@ -108,6 +115,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/areas': typeof AreasRoute
+  '/claim': typeof ClaimRoute
   '/for-tradesmen': typeof ForTradesmenRoute
   '/post-job': typeof PostJobRoute
   '/privacy': typeof PrivacyRoute
@@ -124,6 +132,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/areas': typeof AreasRoute
+  '/claim': typeof ClaimRoute
   '/for-tradesmen': typeof ForTradesmenRoute
   '/post-job': typeof PostJobRoute
   '/privacy': typeof PrivacyRoute
@@ -141,6 +150,7 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/areas'
+    | '/claim'
     | '/for-tradesmen'
     | '/post-job'
     | '/privacy'
@@ -156,6 +166,7 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/areas'
+    | '/claim'
     | '/for-tradesmen'
     | '/post-job'
     | '/privacy'
@@ -171,6 +182,7 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/areas'
+    | '/claim'
     | '/for-tradesmen'
     | '/post-job'
     | '/privacy'
@@ -187,6 +199,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRoute: typeof AccountRoute
   AreasRoute: typeof AreasRoute
+  ClaimRoute: typeof ClaimRoute
   ForTradesmenRoute: typeof ForTradesmenRoute
   PostJobRoute: typeof PostJobRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -220,6 +233,13 @@ declare module '@tanstack/react-router' {
       path: '/areas'
       fullPath: '/areas'
       preLoaderRoute: typeof AreasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/claim': {
+      id: '/claim'
+      path: '/claim'
+      fullPath: '/claim'
+      preLoaderRoute: typeof ClaimRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/for-tradesmen': {
@@ -299,6 +319,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
   AreasRoute: AreasRoute,
+  ClaimRoute: ClaimRoute,
   ForTradesmenRoute: ForTradesmenRoute,
   PostJobRoute: PostJobRoute,
   PrivacyRoute: PrivacyRoute,
