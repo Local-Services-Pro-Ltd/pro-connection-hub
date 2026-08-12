@@ -42,7 +42,7 @@ export const submitWaitingList = createServerFn({ method: "POST" })
       name: clean(input.name, 80),
       phone: clean(input.phone, 40),
       note: clean(input.note, 1000),
-    } satisfies WaitingListInput;
+    };
   })
   .handler(async ({ data }) => {
     const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
