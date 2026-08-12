@@ -18,6 +18,7 @@ import { Route as ForTradesmenRouteImport } from './routes/for-tradesmen'
 import { Route as PostJobRouteImport } from './routes/post-job'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as SigninRouteImport } from './routes/signin'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as VerificationRouteImport } from './routes/verification'
 import { Route as AdminPlansRouteImport } from './routes/admin.plans'
@@ -72,6 +73,11 @@ const SigninRoute = SigninRouteImport.update({
   path: '/signin',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
@@ -123,6 +129,7 @@ export interface FileRoutesByFullPath {
   '/post-job': typeof PostJobRoute
   '/privacy': typeof PrivacyRoute
   '/signin': typeof SigninRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/verification': typeof VerificationRoute
   '/admin/plans': typeof AdminPlansRoute
@@ -142,6 +149,7 @@ export interface FileRoutesByTo {
   '/post-job': typeof PostJobRoute
   '/privacy': typeof PrivacyRoute
   '/signin': typeof SigninRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/verification': typeof VerificationRoute
   '/admin/plans': typeof AdminPlansRoute
@@ -162,6 +170,7 @@ export interface FileRoutesById {
   '/post-job': typeof PostJobRoute
   '/privacy': typeof PrivacyRoute
   '/signin': typeof SigninRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/verification': typeof VerificationRoute
   '/admin/plans': typeof AdminPlansRoute
@@ -183,6 +192,7 @@ export interface FileRouteTypes {
     | '/post-job'
     | '/privacy'
     | '/signin'
+    | '/sitemap.xml'
     | '/terms'
     | '/verification'
     | '/admin/plans'
@@ -202,6 +212,7 @@ export interface FileRouteTypes {
     | '/post-job'
     | '/privacy'
     | '/signin'
+    | '/sitemap.xml'
     | '/terms'
     | '/verification'
     | '/admin/plans'
@@ -221,6 +232,7 @@ export interface FileRouteTypes {
     | '/post-job'
     | '/privacy'
     | '/signin'
+    | '/sitemap.xml'
     | '/terms'
     | '/verification'
     | '/admin/plans'
@@ -241,6 +253,7 @@ export interface RootRouteChildren {
   PostJobRoute: typeof PostJobRoute
   PrivacyRoute: typeof PrivacyRoute
   SigninRoute: typeof SigninRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
   VerificationRoute: typeof VerificationRoute
   AdminPlansRoute: typeof AdminPlansRoute
@@ -316,6 +329,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SigninRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/terms': {
       id: '/terms'
       path: '/terms'
@@ -385,6 +405,7 @@ const rootRouteChildren: RootRouteChildren = {
   PostJobRoute: PostJobRoute,
   PrivacyRoute: PrivacyRoute,
   SigninRoute: SigninRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
   VerificationRoute: VerificationRoute,
   AdminPlansRoute: AdminPlansRoute,

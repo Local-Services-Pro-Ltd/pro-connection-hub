@@ -12,3 +12,9 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /admin/
+Disallow: /account
+Disallow: /signin
+Disallow: /waiting-list/thanks
+
+Sitemap: https://tradesmanfinder.org/sitemap.xml
