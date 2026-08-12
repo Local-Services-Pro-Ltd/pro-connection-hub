@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Section } from "@/components/layout-bits";
 import { useServerFn } from "@tanstack/react-start";
 import { submitWaitingList } from "@/lib/waiting-list.functions";
+import { HumanCheck, useHumanCheck } from "@/components/human-check";
 
 const SITE = "https://tradesmanfinder.org";
 
@@ -74,6 +75,7 @@ function WaitingList() {
   const [trade, setTrade] = useState("");
 
   const submit = useServerFn(submitWaitingList);
+  const check = useHumanCheck();
 
   const mutation = useMutation({
     mutationFn: async () =>
@@ -84,6 +86,9 @@ function WaitingList() {
           role,
           ...(role === "trader" && trade ? { trade } : {}),
           source: search.postcode ? "post_job_gate" : "waiting_list_page",
+          checkToken: check.state.token,
+          checkAnswer: check.state.answer,
+          website: check.state.website,
         },
       }),
     onSuccess: (result) => {
@@ -92,7 +97,10 @@ function WaitingList() {
         search: { area: result.area },
       });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => {
+      toast.error(e.message);
+      check.refresh();
+    },
   });
 
   return (
@@ -179,6 +187,14 @@ function WaitingList() {
               />
             </div>
           )}
+
+          <HumanCheck
+            question={check.question}
+            state={check.state}
+            setState={check.setState}
+            refresh={check.refresh}
+            inputClassName={field.replace("mt-2 w-full", "w-full")}
+          />
 
           <button
             type="submit"

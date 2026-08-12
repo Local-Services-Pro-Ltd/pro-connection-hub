@@ -10,6 +10,7 @@ import { getRequestOrigin } from "@/lib/origin.functions";
 import { isLiveArea } from "@/lib/postcode-gate";
 import { useServerFn } from "@tanstack/react-start";
 import { submitWaitingList } from "@/lib/waiting-list.functions";
+import { HumanCheck, useHumanCheck } from "@/components/human-check";
 
 
 import { supabase } from "@/integrations/supabase/client";
@@ -458,6 +459,7 @@ function OutOfAreaPanel({
   const [note, setNote] = useState(prefillNote);
   const [done, setDone] = useState(false);
   const submit = useServerFn(submitWaitingList);
+  const check = useHumanCheck();
 
   const mutation = useMutation({
     mutationFn: async () =>
@@ -470,13 +472,19 @@ function OutOfAreaPanel({
           ...(name.trim() ? { name: name.trim() } : {}),
           ...(phone.trim() ? { phone: phone.trim() } : {}),
           ...(note.trim() ? { note: note.trim() } : {}),
+          checkToken: check.state.token,
+          checkAnswer: check.state.answer,
+          website: check.state.website,
         },
       }),
     onSuccess: () => {
       setDone(true);
       toast.success("Thanks — you're on the list for this postcode");
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => {
+      toast.error(e.message);
+      check.refresh();
+    },
   });
 
   if (done) {
@@ -593,6 +601,14 @@ function OutOfAreaPanel({
             className={`${field} mt-2`}
           />
         </label>
+
+        <HumanCheck
+          question={check.question}
+          state={check.state}
+          setState={check.setState}
+          refresh={check.refresh}
+          inputClassName={field}
+        />
 
         <div className="flex flex-wrap gap-3">
           <button
