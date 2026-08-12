@@ -236,35 +236,21 @@ function PostJob() {
               </div>
             </div>
           ) : outOfArea ? (
-            <div className="rounded-md border border-border bg-card p-10">
-              <h2 className="text-2xl">
-                We're not in {outOfArea.toUpperCase()} just yet.
-              </h2>
-              <p className="mt-3 max-w-md text-muted-foreground">
-                We're live across Greater London, Kent and Surrey, and we'd
-                rather tell you straight than pass your job to trades who can't
-                realistically get to you. Leave your postcode and we'll email
-                you the day we open.
-              </p>
-              <div className="mt-6 flex flex-wrap gap-3">
-                <Link
-                  to="/waiting-list"
-                  search={{
-                    postcode: outOfArea.toUpperCase(),
-                    role: "homeowner" as const,
-                  }}
-                  className="rounded-sm bg-primary px-5 py-2.5 font-display text-sm font-semibold text-primary-foreground shadow-ember hover:brightness-110"
-                >
-                  Join the waiting list
-                </Link>
-                <button
-                  onClick={() => setOutOfArea(null)}
-                  className="rounded-sm border border-border-strong px-5 py-2.5 font-display text-sm font-semibold hover:border-primary hover:text-primary"
-                >
-                  Try another postcode
-                </button>
-              </div>
-            </div>
+            <OutOfAreaPanel
+              postcode={outOfArea}
+              prefillName={form.contact_name}
+              prefillEmail={form.contact_email}
+              prefillNote={
+                form.title.trim()
+                  ? `${form.title.trim()} — ${form.description.trim()}`.slice(
+                      0,
+                      1000,
+                    )
+                  : ""
+              }
+              onReset={() => setOutOfArea(null)}
+            />
+
           ) : (
             <form
               onSubmit={(e) => {
