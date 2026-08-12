@@ -6,12 +6,27 @@ import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/hooks/use-auth";
 import heroPoster from "@/assets/hero-poster.jpg";
 
+type SignInSearch = {
+  redirect?: string;
+  /** Membership tier the trade picked on /for-tradesmen. Any slug is accepted,
+   *  including tiers currently hidden from the pricing grid (e.g. contractor). */
+  plan?: string;
+  /** "claim" = trade claiming an existing listing rather than a fresh signup. */
+  intent?: "claim";
+};
+
 export const Route = createFileRoute("/signin")({
-  validateSearch: (search: Record<string, unknown>): { redirect?: string } =>
-    typeof search["redirect"] === "string" &&
+  validateSearch: (search: Record<string, unknown>): SignInSearch => ({
+    ...(typeof search["redirect"] === "string" &&
     search["redirect"].startsWith("/")
       ? { redirect: search["redirect"] }
-      : {},
+      : {}),
+    ...(typeof search["plan"] === "string" && search["plan"]
+      ? { plan: search["plan"] }
+      : {}),
+    ...(search["intent"] === "claim" ? { intent: "claim" as const } : {}),
+  }),
+
   head: () => ({
     meta: [
       { title: "Sign in | TradesmanFinder" },
@@ -39,7 +54,11 @@ function SignIn() {
   const navigate = useNavigate();
   const search = Route.useSearch();
   const { user, loading } = useAuth();
-  const [mode, setMode] = useState<"in" | "up">("in");
+  // Arriving from a pricing tier or a "claim your listing" link means the
+  // trade almost certainly needs an account, so open on sign-up.
+  const isTradeIntent = Boolean(search.plan || search.intent === "claim");
+  const [mode, setMode] = useState<"in" | "up">(isTradeIntent ? "up" : "in");
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -101,14 +120,25 @@ function SignIn() {
       <div className="flex items-center px-5 py-16 lg:px-16">
         <div className="mx-auto w-full max-w-sm">
           <p className="eyebrow">
-            {mode === "in" ? "Welcome back" : "Create an account"}
+            {search.intent === "claim"
+              ? "Claim your listing"
+              : search.plan
+                ? `${search.plan} membership`
+                : mode === "in"
+                  ? "Welcome back"
+                  : "Create an account"}
           </p>
           <h1 className="mt-3 text-4xl leading-tight">
             {mode === "in" ? "Sign in." : "Join up."}
           </h1>
           <p className="mt-3 text-sm text-muted-foreground">
-            Manage your jobs, quotes and reviews in one place.
+            {search.intent === "claim"
+              ? "Create an account with the email on your listing and we'll match it up, or sign in if you already have one."
+              : search.plan
+                ? "Create your account first — we'll set up your membership straight after."
+                : "Manage your jobs, quotes and reviews in one place."}
           </p>
+
 
           {checkEmail ? (
             <div className="mt-8 rounded-md border border-border bg-card p-6 text-sm">

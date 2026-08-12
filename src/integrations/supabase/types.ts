@@ -121,6 +121,36 @@ export type Database = {
           },
         ]
       }
+      plan_visibility: {
+        Row: {
+          display_name: string
+          display_order: number
+          hidden_reason: string | null
+          is_public: boolean
+          plan_slug: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          display_name: string
+          display_order?: number
+          hidden_reason?: string | null
+          is_public?: boolean
+          plan_slug: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          display_name?: string
+          display_order?: number
+          hidden_reason?: string | null
+          is_public?: boolean
+          plan_slug?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       plans: {
         Row: {
           created_at: string
@@ -391,12 +421,66 @@ export type Database = {
         }
         Relationships: []
       }
+      waiting_list: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          metadata: Json
+          postcode: string
+          postcode_area: string | null
+          role: string
+          source: string
+          trade: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          metadata?: Json
+          postcode: string
+          postcode_area?: string | null
+          role: string
+          source?: string
+          trade?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          metadata?: Json
+          postcode?: string
+          postcode_area?: string | null
+          role?: string
+          source?: string
+          trade?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
-      [_ in never]: never
+      waiting_list_counts_by_area: {
+        Row: {
+          first_signup_at: string | null
+          latest_signup_at: string | null
+          postcode_area: string | null
+          role: string | null
+          signups: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
-      [_ in never]: never
+      add_to_waiting_list: {
+        Args: {
+          p_email: string
+          p_postcode: string
+          p_role: string
+          p_source?: string
+          p_trade?: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       account_type: "customer" | "tradesman"

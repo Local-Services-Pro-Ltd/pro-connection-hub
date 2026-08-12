@@ -12,14 +12,19 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as AreasRouteImport } from './routes/areas'
+import { Route as ClaimRouteImport } from './routes/claim'
+import { Route as EnterpriseRouteImport } from './routes/enterprise'
 import { Route as ForTradesmenRouteImport } from './routes/for-tradesmen'
 import { Route as PostJobRouteImport } from './routes/post-job'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as VerificationRouteImport } from './routes/verification'
 import { Route as ProIdRouteImport } from './routes/pro.$id'
 import { Route as TradesIndexRouteImport } from './routes/trades.index'
 import { Route as TradesTradeRouteImport } from './routes/trades.$trade'
+import { Route as WaitingListIndexRouteImport } from './routes/waiting-list.index'
+import { Route as WaitingListThanksRouteImport } from './routes/waiting-list.thanks'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,6 +39,16 @@ const AccountRoute = AccountRouteImport.update({
 const AreasRoute = AreasRouteImport.update({
   id: '/areas',
   path: '/areas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ClaimRoute = ClaimRouteImport.update({
+  id: '/claim',
+  path: '/claim',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EnterpriseRoute = EnterpriseRouteImport.update({
+  id: '/enterprise',
+  path: '/enterprise',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ForTradesmenRoute = ForTradesmenRouteImport.update({
@@ -61,6 +76,11 @@ const TermsRoute = TermsRouteImport.update({
   path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VerificationRoute = VerificationRouteImport.update({
+  id: '/verification',
+  path: '/verification',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProIdRoute = ProIdRouteImport.update({
   id: '/pro/$id',
   path: '/pro/$id',
@@ -76,46 +96,71 @@ const TradesTradeRoute = TradesTradeRouteImport.update({
   path: '/trades/$trade',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WaitingListIndexRoute = WaitingListIndexRouteImport.update({
+  id: '/waiting-list/',
+  path: '/waiting-list/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WaitingListThanksRoute = WaitingListThanksRouteImport.update({
+  id: '/waiting-list/thanks',
+  path: '/waiting-list/thanks',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/areas': typeof AreasRoute
+  '/claim': typeof ClaimRoute
+  '/enterprise': typeof EnterpriseRoute
   '/for-tradesmen': typeof ForTradesmenRoute
   '/post-job': typeof PostJobRoute
   '/privacy': typeof PrivacyRoute
   '/signin': typeof SigninRoute
   '/terms': typeof TermsRoute
+  '/verification': typeof VerificationRoute
   '/pro/$id': typeof ProIdRoute
   '/trades/$trade': typeof TradesTradeRoute
+  '/waiting-list/thanks': typeof WaitingListThanksRoute
   '/trades/': typeof TradesIndexRoute
+  '/waiting-list/': typeof WaitingListIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/areas': typeof AreasRoute
+  '/claim': typeof ClaimRoute
+  '/enterprise': typeof EnterpriseRoute
   '/for-tradesmen': typeof ForTradesmenRoute
   '/post-job': typeof PostJobRoute
   '/privacy': typeof PrivacyRoute
   '/signin': typeof SigninRoute
   '/terms': typeof TermsRoute
+  '/verification': typeof VerificationRoute
   '/pro/$id': typeof ProIdRoute
   '/trades/$trade': typeof TradesTradeRoute
+  '/waiting-list/thanks': typeof WaitingListThanksRoute
   '/trades': typeof TradesIndexRoute
+  '/waiting-list': typeof WaitingListIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/areas': typeof AreasRoute
+  '/claim': typeof ClaimRoute
+  '/enterprise': typeof EnterpriseRoute
   '/for-tradesmen': typeof ForTradesmenRoute
   '/post-job': typeof PostJobRoute
   '/privacy': typeof PrivacyRoute
   '/signin': typeof SigninRoute
   '/terms': typeof TermsRoute
+  '/verification': typeof VerificationRoute
   '/pro/$id': typeof ProIdRoute
   '/trades/$trade': typeof TradesTradeRoute
+  '/waiting-list/thanks': typeof WaitingListThanksRoute
   '/trades/': typeof TradesIndexRoute
+  '/waiting-list/': typeof WaitingListIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -123,54 +168,74 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/areas'
+    | '/claim'
+    | '/enterprise'
     | '/for-tradesmen'
     | '/post-job'
     | '/privacy'
     | '/signin'
     | '/terms'
+    | '/verification'
     | '/pro/$id'
     | '/trades/$trade'
+    | '/waiting-list/thanks'
     | '/trades/'
+    | '/waiting-list/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/account'
     | '/areas'
+    | '/claim'
+    | '/enterprise'
     | '/for-tradesmen'
     | '/post-job'
     | '/privacy'
     | '/signin'
     | '/terms'
+    | '/verification'
     | '/pro/$id'
     | '/trades/$trade'
+    | '/waiting-list/thanks'
     | '/trades'
+    | '/waiting-list'
   id:
     | '__root__'
     | '/'
     | '/account'
     | '/areas'
+    | '/claim'
+    | '/enterprise'
     | '/for-tradesmen'
     | '/post-job'
     | '/privacy'
     | '/signin'
     | '/terms'
+    | '/verification'
     | '/pro/$id'
     | '/trades/$trade'
+    | '/waiting-list/thanks'
     | '/trades/'
+    | '/waiting-list/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRoute: typeof AccountRoute
   AreasRoute: typeof AreasRoute
+  ClaimRoute: typeof ClaimRoute
+  EnterpriseRoute: typeof EnterpriseRoute
   ForTradesmenRoute: typeof ForTradesmenRoute
   PostJobRoute: typeof PostJobRoute
   PrivacyRoute: typeof PrivacyRoute
   SigninRoute: typeof SigninRoute
   TermsRoute: typeof TermsRoute
+  VerificationRoute: typeof VerificationRoute
   ProIdRoute: typeof ProIdRoute
   TradesTradeRoute: typeof TradesTradeRoute
+  WaitingListThanksRoute: typeof WaitingListThanksRoute
   TradesIndexRoute: typeof TradesIndexRoute
+  WaitingListIndexRoute: typeof WaitingListIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -194,6 +259,20 @@ declare module '@tanstack/react-router' {
       path: '/areas'
       fullPath: '/areas'
       preLoaderRoute: typeof AreasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/claim': {
+      id: '/claim'
+      path: '/claim'
+      fullPath: '/claim'
+      preLoaderRoute: typeof ClaimRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/enterprise': {
+      id: '/enterprise'
+      path: '/enterprise'
+      fullPath: '/enterprise'
+      preLoaderRoute: typeof EnterpriseRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/for-tradesmen': {
@@ -231,6 +310,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/verification': {
+      id: '/verification'
+      path: '/verification'
+      fullPath: '/verification'
+      preLoaderRoute: typeof VerificationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/pro/$id': {
       id: '/pro/$id'
       path: '/pro/$id'
@@ -252,6 +338,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TradesTradeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/waiting-list/': {
+      id: '/waiting-list/'
+      path: '/waiting-list'
+      fullPath: '/waiting-list/'
+      preLoaderRoute: typeof WaitingListIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/waiting-list/thanks': {
+      id: '/waiting-list/thanks'
+      path: '/waiting-list/thanks'
+      fullPath: '/waiting-list/thanks'
+      preLoaderRoute: typeof WaitingListThanksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -259,14 +359,19 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
   AreasRoute: AreasRoute,
+  ClaimRoute: ClaimRoute,
+  EnterpriseRoute: EnterpriseRoute,
   ForTradesmenRoute: ForTradesmenRoute,
   PostJobRoute: PostJobRoute,
   PrivacyRoute: PrivacyRoute,
   SigninRoute: SigninRoute,
   TermsRoute: TermsRoute,
+  VerificationRoute: VerificationRoute,
   ProIdRoute: ProIdRoute,
   TradesTradeRoute: TradesTradeRoute,
+  WaitingListThanksRoute: WaitingListThanksRoute,
   TradesIndexRoute: TradesIndexRoute,
+  WaitingListIndexRoute: WaitingListIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -7,6 +7,8 @@ import { PageHero, Section } from "@/components/layout-bits";
 import heroPostJob from "@/assets/hero-post-job.jpg";
 import { tradesQuery, budgetBands } from "@/lib/queries";
 import { getRequestOrigin } from "@/lib/origin.functions";
+import { isLiveArea } from "@/lib/postcode-gate";
+
 
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -114,12 +116,22 @@ function PostJob() {
   const set = (k: keyof typeof form) => (v: string) =>
     setForm((f) => ({ ...f, [k]: v }));
 
+  // Postcode gate: we only take jobs in areas that have enough vetted trades
+  // to answer them. Anything else is routed to the waiting list instead.
+  const postcodeLooksValid = ukPostcode.test(form.postcode.trim());
+  const postcodeIsCovered = isLiveArea(form.postcode);
+  const [outOfArea, setOutOfArea] = useState<string | null>(null);
+
+
   const mutation = useMutation({
     mutationFn: async () => {
       const errors: string[] = [];
       if (!form.trade_slug) errors.push("Choose a trade.");
       if (!ukPostcode.test(form.postcode.trim()))
         errors.push("Enter a valid UK postcode.");
+      else if (!isLiveArea(form.postcode))
+        errors.push("We're not live in that postcode yet.");
+
       if (form.title.trim().length < 6)
         errors.push("Give the job a clearer title.");
       if (form.description.trim().length < 25)
@@ -223,12 +235,47 @@ function PostJob() {
                 )}
               </div>
             </div>
+          ) : outOfArea ? (
+            <div className="rounded-md border border-border bg-card p-10">
+              <h2 className="text-2xl">
+                We're not in {outOfArea.toUpperCase()} just yet.
+              </h2>
+              <p className="mt-3 max-w-md text-muted-foreground">
+                We're live across Greater London, Kent and Surrey, and we'd
+                rather tell you straight than pass your job to trades who can't
+                realistically get to you. Leave your postcode and we'll email
+                you the day we open.
+              </p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Link
+                  to="/waiting-list"
+                  search={{
+                    postcode: outOfArea.toUpperCase(),
+                    role: "homeowner" as const,
+                  }}
+                  className="rounded-sm bg-primary px-5 py-2.5 font-display text-sm font-semibold text-primary-foreground shadow-ember hover:brightness-110"
+                >
+                  Join the waiting list
+                </Link>
+                <button
+                  onClick={() => setOutOfArea(null)}
+                  className="rounded-sm border border-border-strong px-5 py-2.5 font-display text-sm font-semibold hover:border-primary hover:text-primary"
+                >
+                  Try another postcode
+                </button>
+              </div>
+            </div>
           ) : (
             <form
               onSubmit={(e) => {
                 e.preventDefault();
+                if (postcodeLooksValid && !postcodeIsCovered) {
+                  setOutOfArea(form.postcode.trim());
+                  return;
+                }
                 mutation.mutate();
               }}
+
               className="space-y-6 rounded-md border border-border bg-card p-6 lg:p-9"
             >
               <div className="grid gap-6 sm:grid-cols-2">
@@ -254,10 +301,20 @@ function PostJob() {
                     required
                     value={form.postcode}
                     onChange={(e) => set("postcode")(e.target.value)}
-                    placeholder="e.g. BS1 4DJ"
+                    placeholder="e.g. SE1 7PB"
+                    aria-describedby="postcode-coverage"
                     className={`${field} mt-2`}
                   />
+                  <span
+                    id="postcode-coverage"
+                    className="mt-2 block text-xs text-muted-foreground"
+                  >
+                    {postcodeLooksValid && !postcodeIsCovered
+                      ? "We're not live in this postcode yet — you can still join the waiting list."
+                      : "We're live in Greater London, Kent and Surrey."}
+                  </span>
                 </label>
+
               </div>
 
               <label className="block">
