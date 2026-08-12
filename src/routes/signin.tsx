@@ -6,12 +6,27 @@ import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/hooks/use-auth";
 import heroPoster from "@/assets/hero-poster.jpg";
 
+type SignInSearch = {
+  redirect?: string;
+  /** Membership tier the trade picked on /for-tradesmen. Any slug is accepted,
+   *  including tiers currently hidden from the pricing grid (e.g. contractor). */
+  plan?: string;
+  /** "claim" = trade claiming an existing listing rather than a fresh signup. */
+  intent?: "claim";
+};
+
 export const Route = createFileRoute("/signin")({
-  validateSearch: (search: Record<string, unknown>): { redirect?: string } =>
-    typeof search["redirect"] === "string" &&
+  validateSearch: (search: Record<string, unknown>): SignInSearch => ({
+    ...(typeof search["redirect"] === "string" &&
     search["redirect"].startsWith("/")
       ? { redirect: search["redirect"] }
-      : {},
+      : {}),
+    ...(typeof search["plan"] === "string" && search["plan"]
+      ? { plan: search["plan"] }
+      : {}),
+    ...(search["intent"] === "claim" ? { intent: "claim" as const } : {}),
+  }),
+
   head: () => ({
     meta: [
       { title: "Sign in | TradesmanFinder" },
