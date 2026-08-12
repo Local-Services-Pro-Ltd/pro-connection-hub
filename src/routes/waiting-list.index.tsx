@@ -3,7 +3,8 @@ import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Section } from "@/components/layout-bits";
-import { supabase } from "@/integrations/supabase/client";
+import { useServerFn } from "@tanstack/react-start";
+import { submitWaitingList } from "@/lib/waiting-list.functions";
 
 const SITE = "https://tradesmanfinder.org";
 
@@ -72,29 +73,23 @@ function WaitingList() {
   const [role, setRole] = useState<Role>(search.role ?? "homeowner");
   const [trade, setTrade] = useState("");
 
-  const mutation = useMutation({
-    mutationFn: async () => {
-      const { error } = await supabase.rpc("add_to_waiting_list", {
-        p_email: email,
-        p_postcode: postcode,
-        p_role: role,
-        ...(role === "trader" && trade ? { p_trade: trade } : {}),
-        p_source: search.postcode ? "post_job_gate" : "waiting_list_page",
-      });
+  const submit = useServerFn(submitWaitingList);
 
-      if (error) {
-        const msg = error.message ?? "";
-        if (msg.includes("invalid_email"))
-          throw new Error("Please enter a valid email address.");
-        if (msg.includes("invalid_postcode"))
-          throw new Error("Please enter a valid UK postcode.");
-        throw new Error("Something went wrong. Please try again.");
-      }
-    },
-    onSuccess: () => {
+  const mutation = useMutation({
+    mutationFn: async () =>
+      submit({
+        data: {
+          email,
+          postcode,
+          role,
+          ...(role === "trader" && trade ? { trade } : {}),
+          source: search.postcode ? "post_job_gate" : "waiting_list_page",
+        },
+      }),
+    onSuccess: (result) => {
       navigate({
         to: "/waiting-list/thanks",
-        search: { area: postcode.split(" ")[0]?.replace(/[0-9]/g, "") ?? "" },
+        search: { area: result.area },
       });
     },
     onError: (e: Error) => toast.error(e.message),
