@@ -54,7 +54,11 @@ function SignIn() {
   const navigate = useNavigate();
   const search = Route.useSearch();
   const { user, loading } = useAuth();
-  const [mode, setMode] = useState<"in" | "up">("in");
+  // Arriving from a pricing tier or a "claim your listing" link means the
+  // trade almost certainly needs an account, so open on sign-up.
+  const isTradeIntent = Boolean(search.plan || search.intent === "claim");
+  const [mode, setMode] = useState<"in" | "up">(isTradeIntent ? "up" : "in");
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
