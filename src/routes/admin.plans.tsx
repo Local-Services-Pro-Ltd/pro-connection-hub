@@ -282,6 +282,10 @@ function AuditLog() {
         made it. Entries can't be edited or deleted by anyone.
       </p>
 
+      <ExportAudit />
+
+
+
       {isPending ? (
         <p className="mt-6 text-sm text-muted-foreground">Loading history…</p>
       ) : error ? (
