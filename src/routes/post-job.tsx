@@ -458,6 +458,7 @@ function OutOfAreaPanel({
   const [phone, setPhone] = useState("");
   const [note, setNote] = useState(prefillNote);
   const [done, setDone] = useState(false);
+  const [pending, setPending] = useState(false);
   const submit = useServerFn(submitWaitingList);
   const check = useHumanCheck();
 
