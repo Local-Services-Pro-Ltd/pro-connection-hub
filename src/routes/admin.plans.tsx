@@ -2,15 +2,19 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Eye, EyeOff, History, Lock } from "lucide-react";
+import { Download, Eye, EyeOff, History, Lock, ShieldAlert } from "lucide-react";
 import { Section, SectionHead } from "@/components/layout-bits";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { downloadText } from "@/lib/track-export";
 import {
   adminPlansQuery,
+  fetchAuditRange,
+  formBlockDailyQuery,
   isAdminQuery,
   planVisibilityAuditQuery,
 } from "@/lib/queries";
+
 
 export const Route = createFileRoute("/admin/plans")({
   head: () => ({
