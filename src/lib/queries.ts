@@ -299,3 +299,41 @@ export const planVisibilityAuditQuery = queryOptions({
   },
   staleTime: 0,
 });
+
+export type FormBlockDay = {
+  day: string;
+  form: string;
+  reason: string;
+  hits: number;
+};
+
+/**
+ * Daily counts of waiting-list / post-job submissions stopped by the spam
+ * gate (rate limit, human check, honeypot). Admins only — the underlying log
+ * is readable by admins alone.
+ */
+export function formBlockDailyQuery(days: number) {
+  return queryOptions({
+    queryKey: ["admin", "form-blocks", days],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("form_block_daily", {
+        p_days: days,
+      });
+      if (error) throw error;
+      return (data ?? []) as FormBlockDay[];
+    },
+    staleTime: 30_000,
+  });
+}
+
+/** Audit rows inside a date range, used by the CSV export. */
+export async function fetchAuditRange(fromISO: string, toISO: string) {
+  const { data, error } = await supabase
+    .from("plan_visibility_audit")
+    .select("*")
+    .gte("created_at", fromISO)
+    .lte("created_at", toISO)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return (data ?? []) as PlanVisibilityAudit[];
+}
