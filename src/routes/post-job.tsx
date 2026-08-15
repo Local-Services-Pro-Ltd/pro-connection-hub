@@ -477,9 +477,14 @@ function OutOfAreaPanel({
           website: check.state.website,
         },
       }),
-    onSuccess: () => {
+    onSuccess: (result) => {
       setDone(true);
-      toast.success("Thanks — you're on the list for this postcode");
+      setPending(Boolean(result?.pending));
+      toast.success(
+        result?.pending
+          ? "Almost there — confirm the link we've emailed you"
+          : "Thanks — you're on the list for this postcode",
+      );
     },
     onError: (e: Error) => {
       toast.error(e.message);
