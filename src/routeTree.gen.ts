@@ -28,6 +28,7 @@ import { Route as TradesTradeRouteImport } from './routes/trades.$trade'
 import { Route as WaitingListIndexRouteImport } from './routes/waiting-list.index'
 import { Route as WaitingListConfirmRouteImport } from './routes/waiting-list.confirm'
 import { Route as WaitingListThanksRouteImport } from './routes/waiting-list.thanks'
+import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -124,6 +125,12 @@ const WaitingListThanksRoute = WaitingListThanksRouteImport.update({
   path: '/waiting-list/thanks',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LovableEmailTransactionalPreviewRoute =
+  LovableEmailTransactionalPreviewRouteImport.update({
+    id: '/lovable/email/transactional/preview',
+    path: '/lovable/email/transactional/preview',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -145,6 +152,7 @@ export interface FileRoutesByFullPath {
   '/waiting-list/thanks': typeof WaitingListThanksRoute
   '/trades/': typeof TradesIndexRoute
   '/waiting-list/': typeof WaitingListIndexRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -166,6 +174,7 @@ export interface FileRoutesByTo {
   '/waiting-list/thanks': typeof WaitingListThanksRoute
   '/trades': typeof TradesIndexRoute
   '/waiting-list': typeof WaitingListIndexRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -188,6 +197,7 @@ export interface FileRoutesById {
   '/waiting-list/thanks': typeof WaitingListThanksRoute
   '/trades/': typeof TradesIndexRoute
   '/waiting-list/': typeof WaitingListIndexRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -211,6 +221,7 @@ export interface FileRouteTypes {
     | '/waiting-list/thanks'
     | '/trades/'
     | '/waiting-list/'
+    | '/lovable/email/transactional/preview'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -232,6 +243,7 @@ export interface FileRouteTypes {
     | '/waiting-list/thanks'
     | '/trades'
     | '/waiting-list'
+    | '/lovable/email/transactional/preview'
   id:
     | '__root__'
     | '/'
@@ -253,6 +265,7 @@ export interface FileRouteTypes {
     | '/waiting-list/thanks'
     | '/trades/'
     | '/waiting-list/'
+    | '/lovable/email/transactional/preview'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -275,6 +288,7 @@ export interface RootRouteChildren {
   WaitingListThanksRoute: typeof WaitingListThanksRoute
   TradesIndexRoute: typeof TradesIndexRoute
   WaitingListIndexRoute: typeof WaitingListIndexRoute
+  LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -412,6 +426,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WaitingListThanksRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lovable/email/transactional/preview': {
+      id: '/lovable/email/transactional/preview'
+      path: '/lovable/email/transactional/preview'
+      fullPath: '/lovable/email/transactional/preview'
+      preLoaderRoute: typeof LovableEmailTransactionalPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -435,6 +456,7 @@ const rootRouteChildren: RootRouteChildren = {
   WaitingListThanksRoute: WaitingListThanksRoute,
   TradesIndexRoute: TradesIndexRoute,
   WaitingListIndexRoute: WaitingListIndexRoute,
+  LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
