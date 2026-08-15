@@ -500,13 +500,16 @@ function OutOfAreaPanel({
           <Check className="h-6 w-6 text-primary" />
         </div>
         <h2 className="mt-6 text-2xl">
-          You're first in line for {postcode.toUpperCase()}.
+          {pending
+            ? "Check your inbox to finish."
+            : `You're first in line for ${postcode.toUpperCase()}.`}
         </h2>
         <p className="mt-3 max-w-md text-muted-foreground">
-          We've kept your job details with your request. The day we have vetted
-          trades covering your postcode, we'll email you and — if you left a
-          number — give you a ring.
+          {pending
+            ? `We've emailed you a confirmation link — click it and your place for ${postcode.toUpperCase()} is active. Your job details are saved with the request.`
+            : "We've kept your job details with your request. The day we have vetted trades covering your postcode, we'll email you and — if you left a number — give you a ring."}
         </p>
+
         <div className="mt-6 flex flex-wrap gap-3">
           <button
             onClick={onReset}
