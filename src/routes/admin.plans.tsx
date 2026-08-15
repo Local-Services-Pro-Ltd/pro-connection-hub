@@ -245,7 +245,10 @@ function AdminPlansBoard() {
         })}
       </div>
 
+      <BlockedSubmissions />
+
       <AuditLog />
+
 
       <p className="mt-8 text-sm text-muted-foreground">
         Changes go live on the{" "}
