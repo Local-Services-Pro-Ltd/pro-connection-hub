@@ -94,7 +94,10 @@ function WaitingList() {
     onSuccess: (result) => {
       navigate({
         to: "/waiting-list/thanks",
-        search: { area: result.area },
+        search: {
+          area: result.area,
+          ...(result.pending ? { pending: true } : {}),
+        },
       });
     },
     onError: (e: Error) => {

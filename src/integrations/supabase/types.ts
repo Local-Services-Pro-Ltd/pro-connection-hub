@@ -65,6 +65,27 @@ export type Database = {
         }
         Relationships: []
       }
+      form_block_events: {
+        Row: {
+          created_at: string
+          form: string
+          id: string
+          reason: string
+        }
+        Insert: {
+          created_at?: string
+          form: string
+          id?: string
+          reason: string
+        }
+        Update: {
+          created_at?: string
+          form?: string
+          id?: string
+          reason?: string
+        }
+        Relationships: []
+      }
       form_rate_limit: {
         Row: {
           bucket: string
@@ -504,6 +525,9 @@ export type Database = {
       }
       waiting_list: {
         Row: {
+          confirmation_sent_at: string | null
+          confirmation_token: string | null
+          confirmed_at: string | null
           created_at: string
           email: string
           id: string
@@ -518,6 +542,9 @@ export type Database = {
           trade: string | null
         }
         Insert: {
+          confirmation_sent_at?: string | null
+          confirmation_token?: string | null
+          confirmed_at?: string | null
           created_at?: string
           email: string
           id?: string
@@ -532,6 +559,9 @@ export type Database = {
           trade?: string | null
         }
         Update: {
+          confirmation_sent_at?: string | null
+          confirmation_token?: string | null
+          confirmed_at?: string | null
           created_at?: string
           email?: string
           id?: string
@@ -572,7 +602,17 @@ export type Database = {
           p_source?: string
           p_trade?: string
         }
-        Returns: string
+        Returns: Json
+      }
+      confirm_waiting_list: { Args: { p_token: string }; Returns: Json }
+      form_block_daily: {
+        Args: { p_days?: number }
+        Returns: {
+          day: string
+          form: string
+          hits: number
+          reason: string
+        }[]
       }
       has_role: {
         Args: {
@@ -584,6 +624,14 @@ export type Database = {
       hit_rate_limit: {
         Args: { p_bucket: string; p_limit: number; p_window_seconds: number }
         Returns: boolean
+      }
+      log_form_block: {
+        Args: { p_form: string; p_reason: string }
+        Returns: undefined
+      }
+      mark_waiting_list_email_sent: {
+        Args: { p_id: string }
+        Returns: undefined
       }
     }
     Enums: {

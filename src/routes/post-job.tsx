@@ -458,6 +458,7 @@ function OutOfAreaPanel({
   const [phone, setPhone] = useState("");
   const [note, setNote] = useState(prefillNote);
   const [done, setDone] = useState(false);
+  const [pending, setPending] = useState(false);
   const submit = useServerFn(submitWaitingList);
   const check = useHumanCheck();
 
@@ -477,9 +478,14 @@ function OutOfAreaPanel({
           website: check.state.website,
         },
       }),
-    onSuccess: () => {
+    onSuccess: (result) => {
       setDone(true);
-      toast.success("Thanks — you're on the list for this postcode");
+      setPending(Boolean(result?.pending));
+      toast.success(
+        result?.pending
+          ? "Almost there — confirm the link we've emailed you"
+          : "Thanks — you're on the list for this postcode",
+      );
     },
     onError: (e: Error) => {
       toast.error(e.message);
@@ -494,13 +500,16 @@ function OutOfAreaPanel({
           <Check className="h-6 w-6 text-primary" />
         </div>
         <h2 className="mt-6 text-2xl">
-          You're first in line for {postcode.toUpperCase()}.
+          {pending
+            ? "Check your inbox to finish."
+            : `You're first in line for ${postcode.toUpperCase()}.`}
         </h2>
         <p className="mt-3 max-w-md text-muted-foreground">
-          We've kept your job details with your request. The day we have vetted
-          trades covering your postcode, we'll email you and — if you left a
-          number — give you a ring.
+          {pending
+            ? `We've emailed you a confirmation link — click it and your place for ${postcode.toUpperCase()} is active. Your job details are saved with the request.`
+            : "We've kept your job details with your request. The day we have vetted trades covering your postcode, we'll email you and — if you left a number — give you a ring."}
         </p>
+
         <div className="mt-6 flex flex-wrap gap-3">
           <button
             onClick={onReset}

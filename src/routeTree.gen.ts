@@ -26,6 +26,7 @@ import { Route as ProIdRouteImport } from './routes/pro.$id'
 import { Route as TradesIndexRouteImport } from './routes/trades.index'
 import { Route as TradesTradeRouteImport } from './routes/trades.$trade'
 import { Route as WaitingListIndexRouteImport } from './routes/waiting-list.index'
+import { Route as WaitingListConfirmRouteImport } from './routes/waiting-list.confirm'
 import { Route as WaitingListThanksRouteImport } from './routes/waiting-list.thanks'
 
 const IndexRoute = IndexRouteImport.update({
@@ -113,6 +114,11 @@ const WaitingListIndexRoute = WaitingListIndexRouteImport.update({
   path: '/waiting-list/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WaitingListConfirmRoute = WaitingListConfirmRouteImport.update({
+  id: '/waiting-list/confirm',
+  path: '/waiting-list/confirm',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WaitingListThanksRoute = WaitingListThanksRouteImport.update({
   id: '/waiting-list/thanks',
   path: '/waiting-list/thanks',
@@ -135,6 +141,7 @@ export interface FileRoutesByFullPath {
   '/admin/plans': typeof AdminPlansRoute
   '/pro/$id': typeof ProIdRoute
   '/trades/$trade': typeof TradesTradeRoute
+  '/waiting-list/confirm': typeof WaitingListConfirmRoute
   '/waiting-list/thanks': typeof WaitingListThanksRoute
   '/trades/': typeof TradesIndexRoute
   '/waiting-list/': typeof WaitingListIndexRoute
@@ -155,6 +162,7 @@ export interface FileRoutesByTo {
   '/admin/plans': typeof AdminPlansRoute
   '/pro/$id': typeof ProIdRoute
   '/trades/$trade': typeof TradesTradeRoute
+  '/waiting-list/confirm': typeof WaitingListConfirmRoute
   '/waiting-list/thanks': typeof WaitingListThanksRoute
   '/trades': typeof TradesIndexRoute
   '/waiting-list': typeof WaitingListIndexRoute
@@ -176,6 +184,7 @@ export interface FileRoutesById {
   '/admin/plans': typeof AdminPlansRoute
   '/pro/$id': typeof ProIdRoute
   '/trades/$trade': typeof TradesTradeRoute
+  '/waiting-list/confirm': typeof WaitingListConfirmRoute
   '/waiting-list/thanks': typeof WaitingListThanksRoute
   '/trades/': typeof TradesIndexRoute
   '/waiting-list/': typeof WaitingListIndexRoute
@@ -198,6 +207,7 @@ export interface FileRouteTypes {
     | '/admin/plans'
     | '/pro/$id'
     | '/trades/$trade'
+    | '/waiting-list/confirm'
     | '/waiting-list/thanks'
     | '/trades/'
     | '/waiting-list/'
@@ -218,6 +228,7 @@ export interface FileRouteTypes {
     | '/admin/plans'
     | '/pro/$id'
     | '/trades/$trade'
+    | '/waiting-list/confirm'
     | '/waiting-list/thanks'
     | '/trades'
     | '/waiting-list'
@@ -238,6 +249,7 @@ export interface FileRouteTypes {
     | '/admin/plans'
     | '/pro/$id'
     | '/trades/$trade'
+    | '/waiting-list/confirm'
     | '/waiting-list/thanks'
     | '/trades/'
     | '/waiting-list/'
@@ -259,6 +271,7 @@ export interface RootRouteChildren {
   AdminPlansRoute: typeof AdminPlansRoute
   ProIdRoute: typeof ProIdRoute
   TradesTradeRoute: typeof TradesTradeRoute
+  WaitingListConfirmRoute: typeof WaitingListConfirmRoute
   WaitingListThanksRoute: typeof WaitingListThanksRoute
   TradesIndexRoute: typeof TradesIndexRoute
   WaitingListIndexRoute: typeof WaitingListIndexRoute
@@ -385,6 +398,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WaitingListIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/waiting-list/confirm': {
+      id: '/waiting-list/confirm'
+      path: '/waiting-list/confirm'
+      fullPath: '/waiting-list/confirm'
+      preLoaderRoute: typeof WaitingListConfirmRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/waiting-list/thanks': {
       id: '/waiting-list/thanks'
       path: '/waiting-list/thanks'
@@ -411,6 +431,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminPlansRoute: AdminPlansRoute,
   ProIdRoute: ProIdRoute,
   TradesTradeRoute: TradesTradeRoute,
+  WaitingListConfirmRoute: WaitingListConfirmRoute,
   WaitingListThanksRoute: WaitingListThanksRoute,
   TradesIndexRoute: TradesIndexRoute,
   WaitingListIndexRoute: WaitingListIndexRoute,
@@ -418,3 +439,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

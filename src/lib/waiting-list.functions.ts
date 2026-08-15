@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { getRequestHeader } from "@tanstack/react-start/server";
+import { getRequest, getRequestHeader } from "@tanstack/react-start/server";
 import { createHash } from "crypto";
 
 export type WaitingListInput = {
@@ -33,11 +33,39 @@ export const getHumanCheck = createServerFn({ method: "GET" }).handler(
 );
 
 /**
+ * Records a blocked attempt so the admin dashboard can show daily totals.
+ * Never throws — monitoring must not interfere with the request.
+ */
+async function logBlock(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  admin: any,
+  form: string,
+  reason: string,
+) {
+  try {
+    await admin.rpc("log_form_block", { p_form: form, p_reason: reason });
+  } catch (error) {
+    console.error("[waiting-list] block logging failed", error);
+  }
+}
+
+function requestOrigin() {
+  try {
+    const req = getRequest();
+    const proto = req.headers.get("x-forwarded-proto") ?? "https";
+    const host = req.headers.get("host");
+    return host ? `${proto}://${host}` : "https://tradesmanfinder.org";
+  } catch {
+    return "https://tradesmanfinder.org";
+  }
+}
+
+/**
  * Single entry point for waiting-list sign-ups (the /waiting-list page and the
  * out-of-area panel on /post-job both call this). Runs server-side so the
- * human check, rate limiting and confirmation email all happen in one trusted
- * place — the underlying database function is no longer callable from the
- * browser, so none of this can be side-stepped.
+ * human check, rate limiting, double opt-in and confirmation email all happen
+ * in one trusted place — the underlying database function is not callable from
+ * the browser, so none of this can be side-stepped.
  */
 export const submitWaitingList = createServerFn({ method: "POST" })
   .inputValidator((input: WaitingListInput) => {
@@ -64,18 +92,26 @@ export const submitWaitingList = createServerFn({ method: "POST" })
     };
   })
   .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import(
+      "@/integrations/supabase/client.server"
+    );
+    const form =
+      data.source === "post_job_gate" ? "post_job_out_of_area" : "waiting_list";
+
     // 1. Honeypot. Bots fill every field they find; humans never see this one.
     if (data.website) {
+      await logBlock(supabaseAdmin, form, "honeypot");
       throw new Error("Something went wrong. Please try again.");
     }
 
     // 2. Human check.
     const { verifyChallenge } = await import("@/lib/human-check.server");
-    verifyChallenge(data.checkToken, data.checkAnswer);
-
-    const { supabaseAdmin } = await import(
-      "@/integrations/supabase/client.server"
-    );
+    try {
+      verifyChallenge(data.checkToken, data.checkAnswer);
+    } catch (error) {
+      await logBlock(supabaseAdmin, form, "human_check");
+      throw error;
+    }
 
     // 3. Rate limit: per caller and per email address.
     const forwarded = getRequestHeader("x-forwarded-for") ?? "";
@@ -98,23 +134,27 @@ export const submitWaitingList = createServerFn({ method: "POST" })
       );
       // A rate-limiter outage must not block genuine sign-ups.
       if (!error && allowed === false) {
+        await logBlock(supabaseAdmin, form, "rate_limit");
         throw new Error(
           "That's a few requests in a short space of time. Please try again shortly.",
         );
       }
     }
 
-    // 4. Record the sign-up.
-    const { data: id, error } = await supabaseAdmin.rpc("add_to_waiting_list", {
-      p_email: data.email,
-      p_postcode: data.postcode,
-      p_role: data.role,
-      ...(data.trade ? { p_trade: data.trade } : {}),
-      p_source: data.source ?? "waiting_list_page",
-      ...(data.name ? { p_name: data.name } : {}),
-      ...(data.phone ? { p_phone: data.phone } : {}),
-      ...(data.note ? { p_note: data.note } : {}),
-    });
+    // 4. Record the sign-up (created unconfirmed, with a confirmation token).
+    const { data: result, error } = await supabaseAdmin.rpc(
+      "add_to_waiting_list",
+      {
+        p_email: data.email,
+        p_postcode: data.postcode,
+        p_role: data.role,
+        ...(data.trade ? { p_trade: data.trade } : {}),
+        p_source: data.source ?? "waiting_list_page",
+        ...(data.name ? { p_name: data.name } : {}),
+        ...(data.phone ? { p_phone: data.phone } : {}),
+        ...(data.note ? { p_note: data.note } : {}),
+      },
+    );
 
     if (error) {
       const message = error.message ?? "";
@@ -125,22 +165,64 @@ export const submitWaitingList = createServerFn({ method: "POST" })
       throw new Error("Something went wrong. Please try again.");
     }
 
+    const row = (result ?? {}) as {
+      id?: string;
+      token?: string;
+      confirmed?: boolean;
+    };
+    const id = String(row.id ?? "");
     const outward = data.postcode.split(" ")[0] ?? data.postcode;
+    const area = outward.replace(/\d/g, "");
 
-    // 5. Confirmation email (includes the manage-updates link).
-    try {
-      const mail = await import("@/lib/waiting-list-email.server");
-      await mail.sendWaitingListConfirmation({
-        email: data.email,
-        name: data.name,
-        postcode: data.postcode,
-        role: data.role,
-        id: String(id ?? ""),
-      });
-    } catch (mailError) {
-      // A failed confirmation email must never lose the sign-up.
-      console.error("[waiting-list] confirmation email failed", mailError);
+    // Already confirmed on an earlier sign-up — nothing more to do.
+    if (row.confirmed) return { id, area, pending: false };
+
+    // 5. Double opt-in: the entry stays inactive until this link is clicked.
+    const confirmUrl = `${requestOrigin()}/waiting-list/confirm?token=${encodeURIComponent(row.token ?? "")}`;
+    const mail = await import("@/lib/waiting-list-email.server");
+    const { sent } = await mail.sendWaitingListConfirmation({
+      email: data.email,
+      name: data.name,
+      postcode: data.postcode,
+      role: data.role,
+      confirmUrl,
+    });
+
+    if (sent) {
+      await supabaseAdmin.rpc("mark_waiting_list_email_sent", { p_id: id });
+      return { id, area, pending: true };
     }
 
-    return { id: String(id ?? ""), area: outward.replace(/\d/g, "") };
+    // No sender configured yet: confirm on the visitor's behalf rather than
+    // stranding a genuine sign-up in an unconfirmed state.
+    await supabaseAdmin.rpc("confirm_waiting_list", {
+      p_token: row.token ?? "",
+    });
+    return { id, area, pending: false };
+  });
+
+/** Completes double opt-in from the link in the confirmation email. */
+export const confirmWaitingList = createServerFn({ method: "POST" })
+  .inputValidator((input: { token: string }) => ({
+    token: (input.token ?? "").trim().slice(0, 128),
+  }))
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import(
+      "@/integrations/supabase/client.server"
+    );
+    const { data: result, error } = await supabaseAdmin.rpc(
+      "confirm_waiting_list",
+      { p_token: data.token },
+    );
+    if (error) throw new Error("We couldn't confirm that link. Please retry.");
+    const row = (result ?? {}) as {
+      ok?: boolean;
+      already?: boolean;
+      postcode?: string;
+    };
+    return {
+      ok: Boolean(row.ok),
+      already: Boolean(row.already),
+      postcode: row.postcode ?? "",
+    };
   });
