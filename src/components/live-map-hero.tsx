@@ -70,14 +70,13 @@ type Hub = {
   postcode: string;
 };
 
-/** Live "hubs" — pulsing coverage nodes. */
+/** Live "hubs" — pulsing coverage nodes for the areas we're actually live in. */
 const hubs: Hub[] = [
-  { x: 560, y: 400, r: 120, label: "Manchester", live: 34, postcode: "M1" },
-  { x: 1120, y: 330, r: 96, label: "Leeds", live: 21, postcode: "LS1" },
-  { x: 1240, y: 540, r: 150, label: "London", live: 78, postcode: "EC1" },
-  { x: 700, y: 600, r: 84, label: "Birmingham", live: 45, postcode: "B1" },
-  { x: 300, y: 250, r: 70, label: "Glasgow", live: 12, postcode: "G1" },
+  { x: 1240, y: 540, r: 150, label: "Greater London", live: 75, postcode: "EC1" },
+  { x: 1385, y: 605, r: 104, label: "Kent", live: 38, postcode: "ME14" },
+  { x: 1145, y: 640, r: 96, label: "Surrey", live: 31, postcode: "GU1" },
 ];
+
 
 /** Rough equirectangular projection of the UK onto the 1600x900 viewBox. */
 function project(lat: number, lon: number) {
