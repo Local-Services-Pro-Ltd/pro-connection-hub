@@ -4,10 +4,16 @@ import { Section } from "@/components/layout-bits";
 const SITE = "https://tradesmanfinder.org";
 
 export const Route = createFileRoute("/waiting-list/thanks")({
-  validateSearch: (search: Record<string, unknown>): { area?: string } =>
-    typeof search["area"] === "string" && search["area"]
+  validateSearch: (
+    search: Record<string, unknown>,
+  ): { area?: string; pending?: boolean } => ({
+    ...(typeof search["area"] === "string" && search["area"]
       ? { area: search["area"] }
-      : {},
+      : {}),
+    ...(search["pending"] === true || search["pending"] === "true"
+      ? { pending: true }
+      : {}),
+  }),
   head: () => {
     const description =
       "You're on the TradesmanFinder waiting list — we'll email you the moment we open in your area.";
