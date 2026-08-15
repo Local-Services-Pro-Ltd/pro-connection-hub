@@ -37,20 +37,33 @@ export const Route = createFileRoute("/waiting-list/thanks")({
 });
 
 function WaitingListThanks() {
-  const { area } = Route.useSearch();
+  const { area, pending } = Route.useSearch();
   return (
     <Section>
       <div className="mx-auto max-w-xl text-center">
-        <p className="eyebrow">You're on the list</p>
+        <p className="eyebrow">
+          {pending ? "One last step" : "You're on the list"}
+        </p>
         <h1 className="mt-3 text-4xl leading-tight sm:text-5xl">
-          Thanks — we'll be in touch.
+          {pending ? "Check your inbox." : "Thanks — we'll be in touch."}
         </h1>
         <p className="mt-5 text-muted-foreground">
-          We'll email you the moment TradesmanFinder opens
-          {area ? ` in ${area}` : " in your area"}. The more people join from
-          your postcode, the sooner that happens — feel free to share the
-          waiting list with a neighbour or a local trade.
+          {pending ? (
+            <>
+              We've emailed you a confirmation link. Click it and your place
+              {area ? ` in ${area}` : ""} is active — until then we won't send
+              you anything else. Can't see it? Check your spam folder.
+            </>
+          ) : (
+            <>
+              We'll email you the moment TradesmanFinder opens
+              {area ? ` in ${area}` : " in your area"}. The more people join
+              from your postcode, the sooner that happens — feel free to share
+              the waiting list with a neighbour or a local trade.
+            </>
+          )}
         </p>
+
         <div className="mt-10 flex flex-wrap justify-center gap-3">
           <Link
             to="/"
