@@ -5,7 +5,7 @@ import { Star, Quote, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
-import type { Review } from "@/lib/queries";
+import type { PublicReview } from "@/lib/queries";
 
 const field =
   "w-full rounded-sm border border-input bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/70 outline-none transition-colors focus:border-primary";
@@ -15,7 +15,7 @@ export function ReviewPanel({
   reviews,
 }: {
   proId: string;
-  reviews: Review[];
+  reviews: PublicReview[];
 }) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -88,11 +88,10 @@ export function ReviewPanel({
               <p className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-3 text-xs text-muted-foreground">
                 <ShieldCheck className="h-3.5 w-3.5 text-success" />
                 <span className="text-foreground">{r.author_name}</span>
-                {r.author_place ? `· ${r.author_place}` : ""}
                 {r.job_type ? `· ${r.job_type}` : ""}
                 <span>
                   ·{" "}
-                  {new Date(r.created_at).toLocaleDateString("en-GB", {
+                  {new Date(r.created_at ?? "").toLocaleDateString("en-GB", {
                     month: "long",
                     year: "numeric",
                   })}

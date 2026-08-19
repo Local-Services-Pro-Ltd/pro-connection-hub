@@ -579,6 +579,50 @@ export type Database = {
       }
     }
     Views: {
+      reviews_public: {
+        Row: {
+          author_name: string | null
+          body: string | null
+          created_at: string | null
+          id: string | null
+          job_type: string | null
+          pro_id: string | null
+          rating: number | null
+          status: Database["public"]["Enums"]["review_status"] | null
+          title: string | null
+        }
+        Insert: {
+          author_name?: string | null
+          body?: string | null
+          created_at?: string | null
+          id?: string | null
+          job_type?: string | null
+          pro_id?: string | null
+          rating?: number | null
+          status?: Database["public"]["Enums"]["review_status"] | null
+          title?: string | null
+        }
+        Update: {
+          author_name?: string | null
+          body?: string | null
+          created_at?: string | null
+          id?: string | null
+          job_type?: string | null
+          pro_id?: string | null
+          rating?: number | null
+          status?: Database["public"]["Enums"]["review_status"] | null
+          title?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_pro_id_fkey"
+            columns: ["pro_id"]
+            isOneToOne: false
+            referencedRelation: "pros"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       waiting_list_counts_by_area: {
         Row: {
           first_signup_at: string | null

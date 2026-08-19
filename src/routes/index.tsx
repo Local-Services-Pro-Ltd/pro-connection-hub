@@ -290,7 +290,6 @@ function Home() {
               </blockquote>
               <figcaption className="mt-6 border-t border-border pt-4 text-sm text-muted-foreground">
                 <span className="text-foreground">{r.author_name}</span>
-                {r.author_place ? ` · ${r.author_place}` : ""}
                 {r.job_type ? ` · ${r.job_type}` : ""}
               </figcaption>
             </figure>
