@@ -88,7 +88,6 @@ export function ReviewPanel({
               <p className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-3 text-xs text-muted-foreground">
                 <ShieldCheck className="h-3.5 w-3.5 text-success" />
                 <span className="text-foreground">{r.author_name}</span>
-                {r.author_place ? `· ${r.author_place}` : ""}
                 {r.job_type ? `· ${r.job_type}` : ""}
                 <span>
                   ·{" "}
