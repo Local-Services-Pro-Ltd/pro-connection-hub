@@ -272,11 +272,14 @@ export function isAdminQuery(userId: string | undefined) {
     queryKey: ["is-admin", userId ?? null],
     queryFn: async () => {
       if (!userId) return false;
-      const { data, error } = await supabase.rpc("has_role", {
-        _user_id: userId,
-        _role: "admin",
-      });
+      const { data, error } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", userId)
+        .eq("role", "admin")
+        .maybeSingle();
       return error ? false : Boolean(data);
+
     },
     staleTime: 60_000,
   });
