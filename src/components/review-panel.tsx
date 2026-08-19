@@ -91,7 +91,7 @@ export function ReviewPanel({
                 {r.job_type ? `· ${r.job_type}` : ""}
                 <span>
                   ·{" "}
-                  {new Date(r.created_at).toLocaleDateString("en-GB", {
+                  {new Date(r.created_at ?? "").toLocaleDateString("en-GB", {
                     month: "long",
                     year: "numeric",
                   })}
