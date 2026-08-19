@@ -7,6 +7,7 @@ export type Area = Database["public"]["Tables"]["areas"]["Row"];
 export type Pro = Database["public"]["Tables"]["pros"]["Row"];
 export type Credential = Database["public"]["Tables"]["pro_credentials"]["Row"];
 export type Review = Database["public"]["Tables"]["reviews"]["Row"];
+export type PublicReview = Database["public"]["Views"]["reviews_public"]["Row"];
 export type Job = Database["public"]["Tables"]["jobs"]["Row"];
 export type Availability = Database["public"]["Enums"]["availability"];
 
@@ -168,17 +169,16 @@ export function proQuery(id: string) {
           .eq("pro_id", id)
           .order("created_at"),
         supabase
-          .from("reviews")
+          .from("reviews_public")
           .select("*")
           .eq("pro_id", id)
-          .eq("status", "published")
           .order("created_at", { ascending: false }),
       ]);
       if (pro.error) throw pro.error;
       return {
         pro: pro.data as Pro | null,
         credentials: (credentials.data ?? []) as Credential[],
-        reviews: (reviews.data ?? []) as Review[],
+        reviews: (reviews.data ?? []) as PublicReview[],
       };
     },
   });
@@ -189,9 +189,8 @@ export const latestReviewsQuery = queryOptions({
   queryFn: async () =>
     unwrap(
       await supabase
-        .from("reviews")
+        .from("reviews_public")
         .select("*")
-        .eq("status", "published")
         .order("created_at", { ascending: false })
         .limit(6),
     ),
@@ -206,7 +205,7 @@ export const statsQuery = queryOptions({
         .from("pros")
         .select("response_mins", { count: "exact" })
         .eq("published", true),
-      supabase.from("reviews").select("id", { count: "exact", head: true }),
+      supabase.from("reviews_public").select("id", { count: "exact", head: true }),
       supabase.from("trades").select("slug", { count: "exact", head: true }),
     ]);
     const mins = (pros.data ?? []).map((p) => p.response_mins);
