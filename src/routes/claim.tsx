@@ -1,12 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { BadgeCheck, ShieldCheck, FileCheck2, Clock } from "lucide-react";
 import { Section, SectionHead } from "@/components/layout-bits";
 import { HumanCheck, useHumanCheck } from "@/components/human-check";
-import { submitProApplication } from "@/lib/applications.functions";
+import {
+  getApplicationStatus,
+  submitProApplication,
+} from "@/lib/applications.functions";
+import { DocumentTracker } from "@/components/application-documents";
 import { tradesQuery } from "@/lib/queries";
 
 const SITE = "https://tradesmanfinder.org";
@@ -78,6 +82,7 @@ function Claim() {
   const submit = useServerFn(submitProApplication);
   const check = useHumanCheck();
   const [done, setDone] = useState(false);
+  const loadStatus = useServerFn(getApplicationStatus);
 
   const [form, setForm] = useState({
     company: "",
@@ -138,6 +143,14 @@ function Claim() {
     },
   });
 
+  const token = mutation.data?.trackingToken ?? "";
+  const status = useQuery({
+    queryKey: ["claim-status", token],
+    enabled: Boolean(token),
+    retry: false,
+    queryFn: () => loadStatus({ data: { token } }),
+  });
+
   return (
     <>
       <Section>
@@ -178,6 +191,15 @@ function Claim() {
               <p className="mt-4 font-display text-sm font-semibold">
                 Reference {mutation.data.reference}
               </p>
+            )}
+            {token && (
+              <div className="mt-8 text-left">
+                <DocumentTracker
+                  token={token}
+                  documents={status.data?.documents ?? []}
+                  onChange={() => void status.refetch()}
+                />
+              </div>
             )}
             <div className="mt-6 flex flex-wrap justify-center gap-3">
               {mutation.data?.trackingToken && (
