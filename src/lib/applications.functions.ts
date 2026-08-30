@@ -52,6 +52,7 @@ export type ApplicationStatusEvent = {
   action: string;
   from_status: string | null;
   to_status: string;
+  reviewer_note?: string | null;
   created_at: string;
 };
 
@@ -65,6 +66,11 @@ export type ApplicationStatus = {
   submitted_at: string;
   updated_at: string;
   reviewed_at: string | null;
+  due_at: string | null;
+  requested_fields: string[];
+  verification: VerificationResult | Record<string, never>;
+  verified_at: string | null;
+  documents: ApplicationDocument[];
   timeline: ApplicationStatusEvent[];
 };
 
@@ -338,7 +344,14 @@ export const reviewProApplication = createServerFn({ method: "POST" })
       note?: string;
       notify?: boolean;
     }) => {
-    const allowed = ["pending", "in_review", "approved", "rejected"];
+    const allowed = [
+      "pending",
+      "in_review",
+      "changes_requested",
+      "resubmitted",
+      "approved",
+      "rejected",
+    ];
     if (!allowed.includes(input.status)) throw new Error("Unknown status.");
     if (!input.id) throw new Error("Missing application.");
       return {
