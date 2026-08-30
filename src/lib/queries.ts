@@ -429,3 +429,46 @@ export async function fetchProFeatureAuditAll() {
   if (error) throw error;
   return (data ?? []) as ProFeatureAudit[];
 }
+
+export type AccessMatrixRow = {
+  object_kind: string;
+  object_name: string;
+  rls_enabled: boolean | null;
+  policy_name: string | null;
+  command: string | null;
+  roles: string | null;
+  audience: string | null;
+  expression: string | null;
+};
+
+/**
+ * Admin-only summary of which RLS policies and views govern public vs
+ * admin-only access. The RPC itself refuses non-admin callers.
+ */
+export const accessMatrixQuery = queryOptions({
+  queryKey: ["admin", "access-matrix"],
+  queryFn: async () => {
+    const { data, error } = await supabase.rpc("security_access_matrix");
+    if (error) throw error;
+    return (data ?? []) as AccessMatrixRow[];
+  },
+  staleTime: 60_000,
+});
+
+export type SecurityCheckRow = {
+  suite: string;
+  check_name: string;
+  passed: boolean | null;
+  detail: string;
+};
+
+/** Admin-only live run of the security regression suites. */
+export const securityRegressionQuery = queryOptions({
+  queryKey: ["admin", "security-regression"],
+  queryFn: async () => {
+    const { data, error } = await supabase.rpc("security_regression_run");
+    if (error) throw error;
+    return (data ?? []) as SecurityCheckRow[];
+  },
+  staleTime: 0,
+});
