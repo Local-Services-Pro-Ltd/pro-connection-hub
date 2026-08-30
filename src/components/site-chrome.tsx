@@ -12,6 +12,7 @@ const nav = [
   { to: "/trades", label: "Find a tradesman" },
   { to: "/costs", label: "Cost guides" },
   { to: "/areas", label: "Areas" },
+  { to: "/ask", label: "Ask the pros" },
   { to: "/saved", label: "Shortlist" },
   { to: "/for-tradesmen", label: "For tradesmen" },
 

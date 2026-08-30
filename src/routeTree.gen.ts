@@ -30,7 +30,10 @@ import { Route as AdminFeaturedRouteImport } from './routes/admin.featured'
 import { Route as AdminGalleriesRouteImport } from './routes/admin.galleries'
 import { Route as AdminHeroImagesRouteImport } from './routes/admin.hero-images'
 import { Route as AdminPlansRouteImport } from './routes/admin.plans'
+import { Route as AdminQaRouteImport } from './routes/admin.qa'
 import { Route as AdminWaitingListRouteImport } from './routes/admin.waiting-list'
+import { Route as AskIndexRouteImport } from './routes/ask.index'
+import { Route as AskIdRouteImport } from './routes/ask.$id'
 import { Route as CostsIndexRouteImport } from './routes/costs.index'
 import { Route as CostsTradeRouteImport } from './routes/costs.$trade'
 import { Route as ProIdRouteImport } from './routes/pro.$id'
@@ -152,9 +155,24 @@ const AdminPlansRoute = AdminPlansRouteImport.update({
   path: '/admin/plans',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminQaRoute = AdminQaRouteImport.update({
+  id: '/admin/qa',
+  path: '/admin/qa',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminWaitingListRoute = AdminWaitingListRouteImport.update({
   id: '/admin/waiting-list',
   path: '/admin/waiting-list',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AskIndexRoute = AskIndexRouteImport.update({
+  id: '/ask/',
+  path: '/ask/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AskIdRoute = AskIdRouteImport.update({
+  id: '/ask/$id',
+  path: '/ask/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CostsIndexRoute = CostsIndexRouteImport.update({
@@ -256,13 +274,16 @@ export interface FileRoutesByFullPath {
   '/admin/galleries': typeof AdminGalleriesRoute
   '/admin/hero-images': typeof AdminHeroImagesRoute
   '/admin/plans': typeof AdminPlansRoute
+  '/admin/qa': typeof AdminQaRoute
   '/admin/waiting-list': typeof AdminWaitingListRoute
+  '/ask/$id': typeof AskIdRoute
   '/costs/$trade': typeof CostsTradeRoute
   '/pro/$id': typeof ProIdRoute
   '/trades/$trade': typeof TradesTradeRoute
   '/waiting-list/confirm': typeof WaitingListConfirmRoute
   '/waiting-list/manage': typeof WaitingListManageRoute
   '/waiting-list/thanks': typeof WaitingListThanksRoute
+  '/ask/': typeof AskIndexRoute
   '/costs/': typeof CostsIndexRoute
   '/trades/': typeof TradesIndexRoute
   '/waiting-list/': typeof WaitingListIndexRoute
@@ -295,13 +316,16 @@ export interface FileRoutesByTo {
   '/admin/galleries': typeof AdminGalleriesRoute
   '/admin/hero-images': typeof AdminHeroImagesRoute
   '/admin/plans': typeof AdminPlansRoute
+  '/admin/qa': typeof AdminQaRoute
   '/admin/waiting-list': typeof AdminWaitingListRoute
+  '/ask/$id': typeof AskIdRoute
   '/costs/$trade': typeof CostsTradeRoute
   '/pro/$id': typeof ProIdRoute
   '/trades/$trade': typeof TradesTradeRoute
   '/waiting-list/confirm': typeof WaitingListConfirmRoute
   '/waiting-list/manage': typeof WaitingListManageRoute
   '/waiting-list/thanks': typeof WaitingListThanksRoute
+  '/ask': typeof AskIndexRoute
   '/costs': typeof CostsIndexRoute
   '/trades': typeof TradesIndexRoute
   '/waiting-list': typeof WaitingListIndexRoute
@@ -335,13 +359,16 @@ export interface FileRoutesById {
   '/admin/galleries': typeof AdminGalleriesRoute
   '/admin/hero-images': typeof AdminHeroImagesRoute
   '/admin/plans': typeof AdminPlansRoute
+  '/admin/qa': typeof AdminQaRoute
   '/admin/waiting-list': typeof AdminWaitingListRoute
+  '/ask/$id': typeof AskIdRoute
   '/costs/$trade': typeof CostsTradeRoute
   '/pro/$id': typeof ProIdRoute
   '/trades/$trade': typeof TradesTradeRoute
   '/waiting-list/confirm': typeof WaitingListConfirmRoute
   '/waiting-list/manage': typeof WaitingListManageRoute
   '/waiting-list/thanks': typeof WaitingListThanksRoute
+  '/ask/': typeof AskIndexRoute
   '/costs/': typeof CostsIndexRoute
   '/trades/': typeof TradesIndexRoute
   '/waiting-list/': typeof WaitingListIndexRoute
@@ -376,13 +403,16 @@ export interface FileRouteTypes {
     | '/admin/galleries'
     | '/admin/hero-images'
     | '/admin/plans'
+    | '/admin/qa'
     | '/admin/waiting-list'
+    | '/ask/$id'
     | '/costs/$trade'
     | '/pro/$id'
     | '/trades/$trade'
     | '/waiting-list/confirm'
     | '/waiting-list/manage'
     | '/waiting-list/thanks'
+    | '/ask/'
     | '/costs/'
     | '/trades/'
     | '/waiting-list/'
@@ -415,13 +445,16 @@ export interface FileRouteTypes {
     | '/admin/galleries'
     | '/admin/hero-images'
     | '/admin/plans'
+    | '/admin/qa'
     | '/admin/waiting-list'
+    | '/ask/$id'
     | '/costs/$trade'
     | '/pro/$id'
     | '/trades/$trade'
     | '/waiting-list/confirm'
     | '/waiting-list/manage'
     | '/waiting-list/thanks'
+    | '/ask'
     | '/costs'
     | '/trades'
     | '/waiting-list'
@@ -454,13 +487,16 @@ export interface FileRouteTypes {
     | '/admin/galleries'
     | '/admin/hero-images'
     | '/admin/plans'
+    | '/admin/qa'
     | '/admin/waiting-list'
+    | '/ask/$id'
     | '/costs/$trade'
     | '/pro/$id'
     | '/trades/$trade'
     | '/waiting-list/confirm'
     | '/waiting-list/manage'
     | '/waiting-list/thanks'
+    | '/ask/'
     | '/costs/'
     | '/trades/'
     | '/waiting-list/'
@@ -494,13 +530,16 @@ export interface RootRouteChildren {
   AdminGalleriesRoute: typeof AdminGalleriesRoute
   AdminHeroImagesRoute: typeof AdminHeroImagesRoute
   AdminPlansRoute: typeof AdminPlansRoute
+  AdminQaRoute: typeof AdminQaRoute
   AdminWaitingListRoute: typeof AdminWaitingListRoute
+  AskIdRoute: typeof AskIdRoute
   CostsTradeRoute: typeof CostsTradeRoute
   ProIdRoute: typeof ProIdRoute
   TradesTradeRoute: typeof TradesTradeRoute
   WaitingListConfirmRoute: typeof WaitingListConfirmRoute
   WaitingListManageRoute: typeof WaitingListManageRoute
   WaitingListThanksRoute: typeof WaitingListThanksRoute
+  AskIndexRoute: typeof AskIndexRoute
   CostsIndexRoute: typeof CostsIndexRoute
   TradesIndexRoute: typeof TradesIndexRoute
   WaitingListIndexRoute: typeof WaitingListIndexRoute
@@ -661,11 +700,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPlansRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/qa': {
+      id: '/admin/qa'
+      path: '/admin/qa'
+      fullPath: '/admin/qa'
+      preLoaderRoute: typeof AdminQaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/waiting-list': {
       id: '/admin/waiting-list'
       path: '/admin/waiting-list'
       fullPath: '/admin/waiting-list'
       preLoaderRoute: typeof AdminWaitingListRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ask/': {
+      id: '/ask/'
+      path: '/ask'
+      fullPath: '/ask/'
+      preLoaderRoute: typeof AskIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ask/$id': {
+      id: '/ask/$id'
+      path: '/ask/$id'
+      fullPath: '/ask/$id'
+      preLoaderRoute: typeof AskIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/costs/': {
@@ -798,13 +858,16 @@ const rootRouteChildren: RootRouteChildren = {
   AdminGalleriesRoute: AdminGalleriesRoute,
   AdminHeroImagesRoute: AdminHeroImagesRoute,
   AdminPlansRoute: AdminPlansRoute,
+  AdminQaRoute: AdminQaRoute,
   AdminWaitingListRoute: AdminWaitingListRoute,
+  AskIdRoute: AskIdRoute,
   CostsTradeRoute: CostsTradeRoute,
   ProIdRoute: ProIdRoute,
   TradesTradeRoute: TradesTradeRoute,
   WaitingListConfirmRoute: WaitingListConfirmRoute,
   WaitingListManageRoute: WaitingListManageRoute,
   WaitingListThanksRoute: WaitingListThanksRoute,
+  AskIndexRoute: AskIndexRoute,
   CostsIndexRoute: CostsIndexRoute,
   TradesIndexRoute: TradesIndexRoute,
   WaitingListIndexRoute: WaitingListIndexRoute,
