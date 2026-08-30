@@ -30,8 +30,8 @@ skipped: list[str] = []
 # Each endpoint: path, per-window limit configured in the route, window seconds.
 ENDPOINTS = [
     ("/api/public/reviews?limit=1", 60, 60),
-    ("/api/public/vetting-status", 120, 60),
-    ("/api/public/featured", 120, 60),
+    ("/api/public/vetting-status", 60, 60),
+    ("/api/public/featured", 60, 60),
 ]
 
 
