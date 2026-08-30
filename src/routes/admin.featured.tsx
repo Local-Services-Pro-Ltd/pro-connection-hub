@@ -1,14 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Check, History, Lock, Star, StarOff, X } from "lucide-react";
+import { Check, Download, History, Lock, Star, StarOff, X } from "lucide-react";
 import { Section, SectionHead } from "@/components/layout-bits";
 import { supabase } from "@/integrations/supabase/client";
+import { downloadText } from "@/lib/track-export";
+import { notifyProVettingStatus } from "@/lib/pro-vetting.functions";
 import { useAuth } from "@/hooks/use-auth";
 import {
   adminProsQuery,
   isAdminQuery,
+  fetchProFeatureAuditAll,
   proFeatureAuditQuery,
   type AdminProRow,
 } from "@/lib/queries";
@@ -89,6 +93,11 @@ function AdminFeatured() {
   return <FeaturedBoard />;
 }
 
+function csvCell(value: unknown) {
+  const text = value == null ? "" : String(value);
+  return /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+}
+
 /** The checks a firm must pass before it can go on the homepage. */
 function checksFor(p: AdminProRow) {
   return [
@@ -104,6 +113,56 @@ function FeaturedBoard() {
   const { data: pros, isPending, error } = useQuery(adminProsQuery);
   const { data: audit } = useQuery(proFeatureAuditQuery);
   const [pendingId, setPendingId] = useState<string | null>(null);
+  const [exporting, setExporting] = useState(false);
+  const notify = useServerFn(notifyProVettingStatus);
+
+  /** Compliance export of every featuring / unfeaturing action. */
+  async function exportAuditCsv() {
+    setExporting(true);
+    try {
+      const rows = await fetchProFeatureAuditAll();
+      if (rows.length === 0) {
+        toast.info("No featuring actions recorded yet.");
+        return;
+      }
+      const header = [
+        "changed_at_utc",
+        "pro_id",
+        "pro_name",
+        "action",
+        "was_featured",
+        "is_featured",
+        "published",
+        "verified_credentials",
+        "admin_email",
+      ];
+      const body = rows.map((r) =>
+        [
+          r.created_at,
+          r.pro_id,
+          r.pro_name,
+          r.action,
+          r.was_featured ?? "",
+          r.is_featured,
+          r.published,
+          r.verified_credentials,
+          r.changed_by_email ?? "",
+        ]
+          .map(csvCell)
+          .join(","),
+      );
+      downloadText(
+        `featuring-audit_${new Date().toISOString().slice(0, 10)}.csv`,
+        "text/csv;charset=utf-8",
+        [header.join(","), ...body].join("\n"),
+      );
+      toast.success(`Exported ${rows.length} action${rows.length === 1 ? "" : "s"}.`);
+    } catch (e) {
+      toast.error((e as Error).message || "Couldn't export the audit log.");
+    } finally {
+      setExporting(false);
+    }
+  }
 
   const toggle = useMutation({
     mutationFn: async ({ id, next }: { id: string; next: boolean }) => {
@@ -113,6 +172,18 @@ function FeaturedBoard() {
         .update({ featured: next })
         .eq("id", id);
       if (e) throw e;
+      // Tell the firm what changed. A failed or impossible send never blocks
+      // the admin action — the audit log is the record of truth.
+      try {
+        const res = await notify({
+          data: { proId: id, outcome: next ? "featured" : "unfeatured" },
+        });
+        if (!res.sent && res.reason === "no_contact_email") {
+          toast.info("No claimed account on this listing — no email sent.");
+        }
+      } catch {
+        toast.warning("Status changed, but the notification email failed.");
+      }
       return next;
     },
     onSuccess: async (next) => {
@@ -220,9 +291,35 @@ function FeaturedBoard() {
                   )}
                 </button>
                 {!p.featured && !canFeature ? (
-                  <p className="mt-2 max-w-56 text-xs text-muted-foreground">
-                    Blocked: {blockers.map((b) => b.label.toLowerCase()).join("; ")}
-                  </p>
+                  <>
+                    <p className="mt-2 max-w-56 text-xs text-muted-foreground">
+                      Blocked:{" "}
+                      {blockers.map((b) => b.label.toLowerCase()).join("; ")}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        notify({
+                          data: {
+                            proId: p.id,
+                            outcome: "rejected",
+                            reason: blockers.map((b) => b.label).join("; "),
+                          },
+                        })
+                          .then((r) =>
+                            r.sent
+                              ? toast.success("Rejection email sent to the firm.")
+                              : toast.info(
+                                  "No claimed account on this listing — no email sent.",
+                                ),
+                          )
+                          .catch(() => toast.error("Couldn't send the email."))
+                      }
+                      className="mt-3 text-xs text-primary hover:underline"
+                    >
+                      Email the firm why it isn't featured
+                    </button>
+                  </>
                 ) : null}
               </div>
             </div>
@@ -231,10 +328,21 @@ function FeaturedBoard() {
       </div>
 
       <div className="mt-14">
-        <h2 className="flex items-center gap-2 text-2xl">
-          <History className="h-5 w-5 text-primary" aria-hidden="true" />
-          Featuring audit log
-        </h2>
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <h2 className="flex items-center gap-2 text-2xl">
+            <History className="h-5 w-5 text-primary" aria-hidden="true" />
+            Featuring audit log
+          </h2>
+          <button
+            type="button"
+            onClick={exportAuditCsv}
+            disabled={exporting}
+            className="inline-flex items-center gap-2 rounded-sm border border-border px-4 py-2.5 font-display text-sm font-semibold hover:border-primary disabled:opacity-60"
+          >
+            <Download className="h-4 w-4" aria-hidden="true" />
+            {exporting ? "Preparing…" : "Export CSV"}
+          </button>
+        </div>
         {audit && audit.length > 0 ? (
           <div className="mt-5 overflow-x-auto rounded-md border border-border">
             <table className="w-full text-left text-sm">

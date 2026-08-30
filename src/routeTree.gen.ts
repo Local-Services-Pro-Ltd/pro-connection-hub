@@ -30,6 +30,7 @@ import { Route as WaitingListIndexRouteImport } from './routes/waiting-list.inde
 import { Route as WaitingListConfirmRouteImport } from './routes/waiting-list.confirm'
 import { Route as WaitingListThanksRouteImport } from './routes/waiting-list.thanks'
 import { Route as ApiPublicSecurityScanRouteImport } from './routes/api/public/security-scan'
+import { Route as ApiPublicVettingStatusRouteImport } from './routes/api/public/vetting-status'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 
 const IndexRoute = IndexRouteImport.update({
@@ -137,6 +138,11 @@ const ApiPublicSecurityScanRoute = ApiPublicSecurityScanRouteImport.update({
   path: '/api/public/security-scan',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicVettingStatusRoute = ApiPublicVettingStatusRouteImport.update({
+  id: '/api/public/vetting-status',
+  path: '/api/public/vetting-status',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LovableEmailTransactionalPreviewRoute =
   LovableEmailTransactionalPreviewRouteImport.update({
     id: '/lovable/email/transactional/preview',
@@ -166,6 +172,7 @@ export interface FileRoutesByFullPath {
   '/trades/': typeof TradesIndexRoute
   '/waiting-list/': typeof WaitingListIndexRoute
   '/api/public/security-scan': typeof ApiPublicSecurityScanRoute
+  '/api/public/vetting-status': typeof ApiPublicVettingStatusRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRoutesByTo {
@@ -190,6 +197,7 @@ export interface FileRoutesByTo {
   '/trades': typeof TradesIndexRoute
   '/waiting-list': typeof WaitingListIndexRoute
   '/api/public/security-scan': typeof ApiPublicSecurityScanRoute
+  '/api/public/vetting-status': typeof ApiPublicVettingStatusRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRoutesById {
@@ -215,6 +223,7 @@ export interface FileRoutesById {
   '/trades/': typeof TradesIndexRoute
   '/waiting-list/': typeof WaitingListIndexRoute
   '/api/public/security-scan': typeof ApiPublicSecurityScanRoute
+  '/api/public/vetting-status': typeof ApiPublicVettingStatusRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRouteTypes {
@@ -241,6 +250,7 @@ export interface FileRouteTypes {
     | '/trades/'
     | '/waiting-list/'
     | '/api/public/security-scan'
+    | '/api/public/vetting-status'
     | '/lovable/email/transactional/preview'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -265,6 +275,7 @@ export interface FileRouteTypes {
     | '/trades'
     | '/waiting-list'
     | '/api/public/security-scan'
+    | '/api/public/vetting-status'
     | '/lovable/email/transactional/preview'
   id:
     | '__root__'
@@ -289,6 +300,7 @@ export interface FileRouteTypes {
     | '/trades/'
     | '/waiting-list/'
     | '/api/public/security-scan'
+    | '/api/public/vetting-status'
     | '/lovable/email/transactional/preview'
   fileRoutesById: FileRoutesById
 }
@@ -314,6 +326,7 @@ export interface RootRouteChildren {
   TradesIndexRoute: typeof TradesIndexRoute
   WaitingListIndexRoute: typeof WaitingListIndexRoute
   ApiPublicSecurityScanRoute: typeof ApiPublicSecurityScanRoute
+  ApiPublicVettingStatusRoute: typeof ApiPublicVettingStatusRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
 }
 
@@ -466,6 +479,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicSecurityScanRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/vetting-status': {
+      id: '/api/public/vetting-status'
+      path: '/api/public/vetting-status'
+      fullPath: '/api/public/vetting-status'
+      preLoaderRoute: typeof ApiPublicVettingStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/transactional/preview': {
       id: '/lovable/email/transactional/preview'
       path: '/lovable/email/transactional/preview'
@@ -498,6 +518,7 @@ const rootRouteChildren: RootRouteChildren = {
   TradesIndexRoute: TradesIndexRoute,
   WaitingListIndexRoute: WaitingListIndexRoute,
   ApiPublicSecurityScanRoute: ApiPublicSecurityScanRoute,
+  ApiPublicVettingStatusRoute: ApiPublicVettingStatusRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
 }
 export const routeTree = rootRouteImport

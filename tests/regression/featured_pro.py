@@ -114,6 +114,27 @@ async def main() -> int:
             ).json()
             check("featuring_is_audited", len(audit) == 1, f"audit rows={len(audit)}")
 
+            # --- State 3: unfeatured again -------------------------------
+            demoted = api("PATCH", f"pros?id=eq.{PROBE_ID}", json={"featured": False})
+            check("approved_firm_can_be_unfeatured", demoted.status_code < 300,
+                  demoted.text[:160])
+
+            unfeature_audit = api(
+                "GET",
+                f"pro_feature_audit?pro_id=eq.{PROBE_ID}&action=eq.unfeatured"
+                "&select=id,was_featured,is_featured",
+            ).json()
+            check("unfeaturing_is_audited",
+                  len(unfeature_audit) == 1
+                  and unfeature_audit[0]["was_featured"] is True
+                  and unfeature_audit[0]["is_featured"] is False,
+                  f"rows={unfeature_audit}")
+
+            vetting, grid, cards = await homepage_state(page)
+            check("unfeatured_reverts_to_vetting_panel",
+                  vetting and not grid,
+                  f"vetting={vetting} grid={grid} cards={cards}")
+
             await browser.close()
     finally:
         cleanup()
