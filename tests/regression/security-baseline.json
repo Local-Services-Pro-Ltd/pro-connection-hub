@@ -1,0 +1,4 @@
+{
+  "description": "Reviewed, accepted security findings. CI blocks a pull request only when a failing check is NOT listed here. Add an entry only with a written reason, and remove it once the finding is fixed.",
+  "accepted": []
+}
