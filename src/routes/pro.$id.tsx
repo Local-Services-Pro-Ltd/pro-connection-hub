@@ -181,8 +181,38 @@ function ProPage() {
               )}
             </ul>
 
+            <div className="mt-12">
+              <ProjectGallery
+                projects={projects ?? []}
+                heading="Recent work — before & after"
+                emptyNote={`${pro.name.split(" ")[0]} hasn't published project photos yet. Ask for examples when you request a quote — we only show verified, customer-approved work here.`}
+              />
+            </div>
+
             <ReviewPanel proId={pro.id} reviews={reviews} />
           </div>
+
+          <div className="space-y-6 lg:sticky lg:top-24 lg:h-fit">
+            {trust && (
+              <TrustBreakdown
+                score={trust.score ?? 0}
+                verified={trust.verified_credentials ?? 0}
+                total={trust.total_credentials ?? 0}
+                rating={pro.rating}
+                reviews={pro.review_count}
+                years={pro.years}
+                responseMins={pro.response_mins}
+              />
+            )}
+
+            <BookingPanel
+              proId={pro.id}
+              proName={pro.name}
+              postcode={pro.postcode ?? ""}
+            />
+
+            <aside className="rounded-md border border-border bg-card p-6">
+
 
           <aside className="h-fit rounded-md border border-border bg-card p-6 lg:sticky lg:top-24">
             <p className="eyebrow">Request a quote</p>
