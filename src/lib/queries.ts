@@ -472,3 +472,34 @@ export const securityRegressionQuery = queryOptions({
   },
   staleTime: 0,
 });
+
+export type ApiAccessEvent = {
+  id: string;
+  created_at: string;
+  endpoint: string;
+  bucket: string;
+  method: string;
+  outcome: string;
+  status: number;
+  ip_hash: string | null;
+  user_agent: string | null;
+  detail: string | null;
+};
+
+/**
+ * Recent denied requests (rate limits, wrong method, bad secret) against the
+ * public endpoints. Admin-only through RLS on `api_access_events`.
+ */
+export const apiAccessEventsQuery = queryOptions({
+  queryKey: ["admin", "api-access-events"],
+  queryFn: async () => {
+    const { data, error } = await supabase
+      .from("api_access_events")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(500);
+    if (error) throw error;
+    return (data ?? []) as ApiAccessEvent[];
+  },
+  staleTime: 0,
+});
