@@ -36,7 +36,8 @@ ENDPOINTS = [
 
 
 def check(name: str, ok: bool, detail: str = "") -> None:
-    print(f"{'PASS' if ok else 'FAIL'}  {name}{' — ' + detail if detail else ''}")
+    suffix = f" — {detail}" if detail and not ok else ""
+    print(f"{'PASS' if ok else 'FAIL'}  {name}{suffix}")
     if not ok:
         failures.append(f"{name}: {detail}")
 

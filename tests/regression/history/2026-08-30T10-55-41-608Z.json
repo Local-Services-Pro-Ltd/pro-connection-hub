@@ -1,0 +1,148 @@
+{
+  "ran_at": "2026-08-30T10:55:41.609Z",
+  "commit": null,
+  "source": "seed",
+  "total": 23,
+  "failed": 0,
+  "new_findings": [],
+  "checks": [
+    {
+      "suite": "posture",
+      "check_name": "rls_enabled_on_all_public_tables",
+      "passed": true,
+      "detail": "all tables protected"
+    },
+    {
+      "suite": "posture",
+      "check_name": "client_reachable_tables_have_policies",
+      "passed": true,
+      "detail": "all reachable tables have policies"
+    },
+    {
+      "suite": "posture",
+      "check_name": "pro_publish_approval_trigger",
+      "passed": true,
+      "detail": "pros: publish requires admin"
+    },
+    {
+      "suite": "posture",
+      "check_name": "credential_verification_trigger",
+      "passed": true,
+      "detail": "pro_credentials: verification requires admin"
+    },
+    {
+      "suite": "posture",
+      "check_name": "has_role_is_security_invoker",
+      "passed": true,
+      "detail": "public.has_role"
+    },
+    {
+      "suite": "posture",
+      "check_name": "reviews_public_hides_author",
+      "passed": true,
+      "detail": "no author identity columns"
+    },
+    {
+      "suite": "posture",
+      "check_name": "no_anon_writes_on_sensitive_tables",
+      "passed": true,
+      "detail": "anon is read-only"
+    },
+    {
+      "suite": "posture",
+      "check_name": "user_roles_not_client_writable",
+      "passed": true,
+      "detail": "roles are admin-managed only"
+    },
+    {
+      "suite": "posture",
+      "check_name": "job_leads_require_published_pro",
+      "passed": true,
+      "detail": "jobs trade read"
+    },
+    {
+      "suite": "rbac",
+      "check_name": "nonadmin_cannot_self_publish",
+      "passed": true,
+      "detail": "insert with published=true stored published=false"
+    },
+    {
+      "suite": "rbac",
+      "check_name": "nonadmin_cannot_flip_published",
+      "passed": true,
+      "detail": "update to published=true stored published=false"
+    },
+    {
+      "suite": "rbac",
+      "check_name": "nonadmin_cannot_self_verify_credential",
+      "passed": true,
+      "detail": "insert with verified=true stored verified=false"
+    },
+    {
+      "suite": "rbac",
+      "check_name": "admin_approval_path",
+      "passed": null,
+      "detail": "skipped: no admin account exists yet"
+    },
+    {
+      "suite": "privilege",
+      "check_name": "privileged_functions_not_client_executable",
+      "passed": true,
+      "detail": "no client role can execute privileged helpers"
+    },
+    {
+      "suite": "privilege",
+      "check_name": "admin_tables_not_client_writable",
+      "passed": true,
+      "detail": "audit and control tables are not client-writable"
+    },
+    {
+      "suite": "privilege",
+      "check_name": "reviews_public_published_only",
+      "passed": true,
+      "detail": " SELECT id, pro_id, author_name, rating, title, body, job_type, status, created_at FROM reviews WHERE status = 'published'::review_status;"
+    },
+    {
+      "suite": "privilege",
+      "check_name": "reviews_public_security_barrier",
+      "passed": true,
+      "detail": "view options"
+    },
+    {
+      "suite": "privilege",
+      "check_name": "reviews_public_read_only_for_clients",
+      "passed": true,
+      "detail": "insert/update privileges on the public review projection"
+    },
+    {
+      "suite": "privilege",
+      "check_name": "pros_public_policy_published_only",
+      "passed": true,
+      "detail": "anon SELECT policy on pros"
+    },
+    {
+      "suite": "featured",
+      "check_name": "featured_requires_admin_trigger",
+      "passed": true,
+      "detail": "non-admins cannot set pros.featured"
+    },
+    {
+      "suite": "featured",
+      "check_name": "feature_actions_are_audited",
+      "passed": true,
+      "detail": "pro_feature_audit trigger present"
+    },
+    {
+      "suite": "featured",
+      "check_name": "no_unvetted_featured_listing",
+      "passed": true,
+      "detail": "unvetted featured rows=0"
+    },
+    {
+      "suite": "featured",
+      "check_name": "unverified_firm_cannot_be_featured",
+      "passed": true,
+      "detail": "rejected: cannot feature a listing with no verified credential"
+    }
+  ]
+}
