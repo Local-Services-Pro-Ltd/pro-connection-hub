@@ -213,6 +213,12 @@ function PostJob() {
                 {form.postcode.toUpperCase()} now — you'll hear from up to three
                 of them.
               </p>
+              <MatchedPros
+                trade={form.trade_slug}
+                postcode={form.postcode}
+                budget={form.budget_band}
+              />
+
               <div className="mt-6 flex flex-wrap gap-3">
                 <button
                   onClick={() => setReference(null)}
