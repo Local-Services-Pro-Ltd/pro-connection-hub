@@ -5,6 +5,7 @@ import { template as proVettingStatus } from './pro-vetting-status'
 import { template as waitingListAreaLive } from './waiting-list-area-live'
 import { template as waitingListPositionChange } from './waiting-list-position-change'
 import { template as proApplicationStatus } from './pro-application-status'
+import { template as applicationReminder } from './application-reminder'
 
 
 export interface TemplateEntry {
@@ -27,4 +28,5 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'waiting-list-area-live': waitingListAreaLive,
   'waiting-list-position-change': waitingListPositionChange,
   'pro-application-status': proApplicationStatus,
+  'application-reminder': applicationReminder,
 }

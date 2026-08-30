@@ -19,6 +19,7 @@ import {
   formatBytes,
   type VerificationResult,
 } from "@/lib/application-verification";
+import { EvidencePackExport } from "@/components/evidence-pack-export";
 
 const outcomeClass: Record<string, string> = {
   pass: "text-success",
@@ -258,6 +259,23 @@ export function AdminApplicationReview({
           >
             {changesMutation.isPending ? "Sending…" : "Ask the firm"}
           </button>
+        </div>
+      </div>
+
+      {/* Evidence pack */}
+      <div>
+        <h3 className="font-display text-sm font-semibold uppercase tracking-widest">
+          Evidence pack
+        </h3>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Every check, document status, reminder and timeline entry for this
+          firm, as a spreadsheet or a printable record.
+        </p>
+        <div className="mt-3">
+          <EvidencePackExport
+            applicationId={application.id}
+            reference={application.reference ?? null}
+          />
         </div>
       </div>
 

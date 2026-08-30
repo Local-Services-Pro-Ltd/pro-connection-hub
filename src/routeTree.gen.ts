@@ -47,6 +47,7 @@ import { Route as WaitingListIndexRouteImport } from './routes/waiting-list.inde
 import { Route as WaitingListConfirmRouteImport } from './routes/waiting-list.confirm'
 import { Route as WaitingListManageRouteImport } from './routes/waiting-list.manage'
 import { Route as WaitingListThanksRouteImport } from './routes/waiting-list.thanks'
+import { Route as ApiPublicApplicationMaintenanceRouteImport } from './routes/api/public/application-maintenance'
 import { Route as ApiPublicFeaturedRouteImport } from './routes/api/public/featured'
 import { Route as ApiPublicReviewsRouteImport } from './routes/api/public/reviews'
 import { Route as ApiPublicSecurityAlertRouteImport } from './routes/api/public/security-alert'
@@ -244,6 +245,12 @@ const WaitingListThanksRoute = WaitingListThanksRouteImport.update({
   path: '/waiting-list/thanks',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicApplicationMaintenanceRoute =
+  ApiPublicApplicationMaintenanceRouteImport.update({
+    id: '/api/public/application-maintenance',
+    path: '/api/public/application-maintenance',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicFeaturedRoute = ApiPublicFeaturedRouteImport.update({
   id: '/api/public/featured',
   path: '/api/public/featured',
@@ -315,6 +322,7 @@ export interface FileRoutesByFullPath {
   '/costs/': typeof CostsIndexRoute
   '/trades/': typeof TradesIndexRoute
   '/waiting-list/': typeof WaitingListIndexRoute
+  '/api/public/application-maintenance': typeof ApiPublicApplicationMaintenanceRoute
   '/api/public/featured': typeof ApiPublicFeaturedRoute
   '/api/public/reviews': typeof ApiPublicReviewsRoute
   '/api/public/security-alert': typeof ApiPublicSecurityAlertRoute
@@ -361,6 +369,7 @@ export interface FileRoutesByTo {
   '/costs': typeof CostsIndexRoute
   '/trades': typeof TradesIndexRoute
   '/waiting-list': typeof WaitingListIndexRoute
+  '/api/public/application-maintenance': typeof ApiPublicApplicationMaintenanceRoute
   '/api/public/featured': typeof ApiPublicFeaturedRoute
   '/api/public/reviews': typeof ApiPublicReviewsRoute
   '/api/public/security-alert': typeof ApiPublicSecurityAlertRoute
@@ -408,6 +417,7 @@ export interface FileRoutesById {
   '/costs/': typeof CostsIndexRoute
   '/trades/': typeof TradesIndexRoute
   '/waiting-list/': typeof WaitingListIndexRoute
+  '/api/public/application-maintenance': typeof ApiPublicApplicationMaintenanceRoute
   '/api/public/featured': typeof ApiPublicFeaturedRoute
   '/api/public/reviews': typeof ApiPublicReviewsRoute
   '/api/public/security-alert': typeof ApiPublicSecurityAlertRoute
@@ -456,6 +466,7 @@ export interface FileRouteTypes {
     | '/costs/'
     | '/trades/'
     | '/waiting-list/'
+    | '/api/public/application-maintenance'
     | '/api/public/featured'
     | '/api/public/reviews'
     | '/api/public/security-alert'
@@ -502,6 +513,7 @@ export interface FileRouteTypes {
     | '/costs'
     | '/trades'
     | '/waiting-list'
+    | '/api/public/application-maintenance'
     | '/api/public/featured'
     | '/api/public/reviews'
     | '/api/public/security-alert'
@@ -548,6 +560,7 @@ export interface FileRouteTypes {
     | '/costs/'
     | '/trades/'
     | '/waiting-list/'
+    | '/api/public/application-maintenance'
     | '/api/public/featured'
     | '/api/public/reviews'
     | '/api/public/security-alert'
@@ -595,6 +608,7 @@ export interface RootRouteChildren {
   CostsIndexRoute: typeof CostsIndexRoute
   TradesIndexRoute: typeof TradesIndexRoute
   WaitingListIndexRoute: typeof WaitingListIndexRoute
+  ApiPublicApplicationMaintenanceRoute: typeof ApiPublicApplicationMaintenanceRoute
   ApiPublicFeaturedRoute: typeof ApiPublicFeaturedRoute
   ApiPublicReviewsRoute: typeof ApiPublicReviewsRoute
   ApiPublicSecurityAlertRoute: typeof ApiPublicSecurityAlertRoute
@@ -871,6 +885,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WaitingListThanksRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/application-maintenance': {
+      id: '/api/public/application-maintenance'
+      path: '/api/public/application-maintenance'
+      fullPath: '/api/public/application-maintenance'
+      preLoaderRoute: typeof ApiPublicApplicationMaintenanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/featured': {
       id: '/api/public/featured'
       path: '/api/public/featured'
@@ -955,6 +976,7 @@ const rootRouteChildren: RootRouteChildren = {
   CostsIndexRoute: CostsIndexRoute,
   TradesIndexRoute: TradesIndexRoute,
   WaitingListIndexRoute: WaitingListIndexRoute,
+  ApiPublicApplicationMaintenanceRoute: ApiPublicApplicationMaintenanceRoute,
   ApiPublicFeaturedRoute: ApiPublicFeaturedRoute,
   ApiPublicReviewsRoute: ApiPublicReviewsRoute,
   ApiPublicSecurityAlertRoute: ApiPublicSecurityAlertRoute,

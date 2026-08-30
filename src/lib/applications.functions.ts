@@ -7,13 +7,8 @@ import {
   DOCUMENT_KINDS,
   MAX_DOCUMENT_BYTES,
   REQUESTABLE_FIELD_LABEL,
-  checkInsurance,
-  isValidCompanyNumberFormat,
-  normaliseCompanyNumber,
-  overallOutcome,
   validateDocumentFile,
   type ApplicationDocument,
-  type VerificationCheck,
   type VerificationResult,
 } from "@/lib/application-verification";
 
@@ -700,138 +695,10 @@ export const runApplicationVerification = createServerFn({ method: "POST" })
   })
   .handler(async ({ data, context }) => {
     await assertAdmin(context as never);
-    const { data: row, error } = await context.supabase
-      .from("pro_applications")
-      .select("id, company, companies_house, insurance_provider, insurance_expiry")
-      .eq("id", data.id)
-      .maybeSingle();
-    if (error) throw new Error(error.message);
-    if (!row) throw new Error("Application not found.");
-
-    const checks: VerificationCheck[] = [];
-
-    const chNumber = (row.companies_house as string | null) ?? "";
-    if (!chNumber) {
-      checks.push({
-        key: "companies_house",
-        label: "Companies House",
-        outcome: "fail",
-        detail: "No company registration number supplied.",
-      });
-    } else if (!isValidCompanyNumberFormat(chNumber)) {
-      checks.push({
-        key: "companies_house",
-        label: "Companies House",
-        outcome: "fail",
-        detail: `"${chNumber}" isn't a valid registration number (8 digits, or 2 letters and 6 digits).`,
-      });
-    } else {
-      const normalised = normaliseCompanyNumber(chNumber);
-      const apiKey = process.env["COMPANIES_HOUSE_API_KEY"];
-      if (!apiKey) {
-        checks.push({
-          key: "companies_house",
-          label: "Companies House",
-          outcome: "warn",
-          detail: `${normalised} is a valid number format. Live register lookup is not configured, so confirm the company by hand.`,
-        });
-      } else {
-        try {
-          const response = await fetch(
-            `https://api.company-information.service.gov.uk/company/${normalised}`,
-            {
-              headers: {
-                Authorization: `Basic ${Buffer.from(`${apiKey}:`).toString("base64")}`,
-              },
-            },
-          );
-          if (response.status === 404) {
-            checks.push({
-              key: "companies_house",
-              label: "Companies House",
-              outcome: "fail",
-              detail: `No company found on the register for ${normalised}.`,
-            });
-          } else if (!response.ok) {
-            checks.push({
-              key: "companies_house",
-              label: "Companies House",
-              outcome: "warn",
-              detail: `Register lookup failed (HTTP ${response.status}). Check by hand.`,
-            });
-          } else {
-            const company = (await response.json()) as {
-              company_name?: string;
-              company_status?: string;
-            };
-            const status = company.company_status ?? "unknown";
-            const nameMatch =
-              (company.company_name ?? "")
-                .toLowerCase()
-                .replace(/[^a-z0-9]/g, "") ===
-              String(row.company).toLowerCase().replace(/[^a-z0-9]/g, "");
-            if (status !== "active") {
-              checks.push({
-                key: "companies_house",
-                label: "Companies House",
-                outcome: "fail",
-                detail: `${company.company_name ?? normalised} is "${status}" on the register.`,
-              });
-            } else {
-              checks.push({
-                key: "companies_house",
-                label: "Companies House",
-                outcome: nameMatch ? "pass" : "warn",
-                detail: nameMatch
-                  ? `${company.company_name} is active on the register.`
-                  : `${normalised} is active as "${company.company_name}", which doesn't match the applied name "${row.company}".`,
-              });
-            }
-          }
-        } catch (lookupError) {
-          console.error("[applications] CH lookup failed", lookupError);
-          checks.push({
-            key: "companies_house",
-            label: "Companies House",
-            outcome: "warn",
-            detail: "Register lookup couldn't be reached. Check by hand.",
-          });
-        }
-      }
-    }
-
-    checks.push(
-      checkInsurance(
-        (row.insurance_provider as string | null) ?? null,
-        (row.insurance_expiry as string | null) ?? null,
-      ),
+    const { runVerificationForApplication } = await import(
+      "@/lib/application-checks.server"
     );
-
-    const { count: docCount } = await context.supabase
-      .from("pro_application_documents")
-      .select("id", { count: "exact", head: true })
-      .eq("application_id", data.id)
-      .neq("status", "rejected");
-    checks.push({
-      key: "documents",
-      label: "Paperwork",
-      outcome: (docCount ?? 0) >= 2 ? "pass" : (docCount ?? 0) > 0 ? "warn" : "fail",
-      detail: `${docCount ?? 0} document${docCount === 1 ? "" : "s"} on file.`,
-    });
-
-    const result: VerificationResult = {
-      checked_at: new Date().toISOString(),
-      overall: overallOutcome(checks),
-      checks,
-    };
-
-    const { error: saveError } = await context.supabase
-      .from("pro_applications")
-      .update({ verification: result, verified_at: result.checked_at })
-      .eq("id", data.id);
-    if (saveError) throw new Error(saveError.message);
-
-    return result;
+    return runVerificationForApplication(context.supabase, data.id);
   });
 
 /** Ask the firm for specific missing fields and pause the clock. */
@@ -998,4 +865,152 @@ export const getApplicationSla = createServerFn({ method: "GET" })
     const { data, error } = await context.supabase.rpc("pro_application_sla");
     if (error) throw new Error(error.message);
     return data as ApplicationSla;
+  });
+
+/* ------------------------------------------------------------------ */
+/* Evidence pack + background job state                                */
+/* ------------------------------------------------------------------ */
+
+export type EvidencePack = {
+  application: {
+    reference: string | null;
+    company: string;
+    contact_name: string;
+    email: string;
+    phone: string | null;
+    trade_slug: string | null;
+    postcode: string;
+    years: number;
+    website: string | null;
+    companies_house: string | null;
+    insurance_provider: string | null;
+    insurance_expiry: string | null;
+    accreditations: string | null;
+    status: string;
+    priority: string;
+    created_at: string;
+    reviewed_at: string | null;
+    verified_at: string | null;
+  };
+  verification: VerificationResult | null;
+  documents: Array<{
+    kind: string;
+    file_name: string;
+    size_bytes: number;
+    status: string;
+    reviewer_note: string | null;
+    created_at: string;
+    reviewed_at: string | null;
+  }>;
+  timeline: Array<{
+    action: string;
+    from_status: string | null;
+    to_status: string;
+    reviewer_note: string | null;
+    changed_by_email: string | null;
+    created_at: string;
+  }>;
+  reminders: Array<{ kind: string; detail: string | null; created_at: string }>;
+  generated_at: string;
+};
+
+/** Everything an admin needs to evidence one certification decision. */
+export const getApplicationEvidencePack = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { id: string }) => {
+    if (!input.id) throw new Error("Missing application.");
+    return { id: input.id };
+  })
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context as never);
+    const { data: app, error } = await context.supabase
+      .from("pro_applications")
+      .select("*")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!app) throw new Error("Application not found.");
+
+    const [docs, audit, reminders] = await Promise.all([
+      context.supabase
+        .from("pro_application_documents")
+        .select("kind, file_name, size_bytes, status, reviewer_note, created_at, reviewed_at")
+        .eq("application_id", data.id)
+        .order("created_at", { ascending: true }),
+      context.supabase
+        .from("pro_application_audit")
+        .select("action, from_status, to_status, reviewer_note, changed_by_email, created_at")
+        .eq("application_id", data.id)
+        .order("created_at", { ascending: true }),
+      context.supabase
+        .from("application_reminders")
+        .select("kind, detail, created_at")
+        .eq("application_id", data.id)
+        .order("created_at", { ascending: true }),
+    ]);
+
+    const verification = app.verification as unknown;
+
+    return {
+      application: {
+        reference: app.reference,
+        company: app.company,
+        contact_name: app.contact_name,
+        email: app.email,
+        phone: app.phone,
+        trade_slug: app.trade_slug,
+        postcode: app.postcode,
+        years: app.years,
+        website: app.website,
+        companies_house: app.companies_house,
+        insurance_provider: app.insurance_provider,
+        insurance_expiry: app.insurance_expiry,
+        accreditations: app.accreditations,
+        status: app.status,
+        priority: app.priority,
+        created_at: app.created_at,
+        reviewed_at: app.reviewed_at,
+        verified_at: app.verified_at,
+      },
+      verification:
+        verification && typeof verification === "object" && "checks" in verification
+          ? (verification as VerificationResult)
+          : null,
+      documents: (docs.data ?? []) as EvidencePack["documents"],
+      timeline: (audit.data ?? []) as EvidencePack["timeline"],
+      reminders: (reminders.data ?? []) as EvidencePack["reminders"],
+      generated_at: new Date().toISOString(),
+    } satisfies EvidencePack;
+  });
+
+export type MaintenanceJobState = {
+  last_run_at: string | null;
+  last_result: { checked?: number; reminders?: number; failed?: number; at?: string };
+  last_error: string | null;
+  paused_reason: string | null;
+  reminders_7d: number;
+};
+
+/** Health of the nightly re-verification and reminder job. */
+export const getMaintenanceJobState = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context as never);
+    const { data: job } = await context.supabase
+      .from("background_jobs")
+      .select("last_run_at, last_result, last_error, paused_reason")
+      .eq("name", "application-maintenance")
+      .maybeSingle();
+    const since = new Date(Date.now() - 7 * 86_400_000).toISOString();
+    const { count } = await context.supabase
+      .from("application_reminders")
+      .select("id", { count: "exact", head: true })
+      .gte("created_at", since);
+    return {
+      last_run_at: job?.last_run_at ?? null,
+      last_result: (job?.last_result ?? {}) as MaintenanceJobState["last_result"],
+      last_error: job?.last_error ?? null,
+      paused_reason: job?.paused_reason ?? null,
+      reminders_7d: count ?? 0,
+    } satisfies MaintenanceJobState;
   });

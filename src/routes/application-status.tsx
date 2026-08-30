@@ -247,30 +247,45 @@ function ApplicationStatusPage() {
 
             {data.timeline.length > 0 && (
               <div className="mt-6 rounded-md border border-border bg-card p-7">
-                <h3 className="text-lg">History</h3>
-                <ul className="mt-4 grid gap-3">
-                  {data.timeline.map((event, i) => (
-                    <li
-                      key={`${event.created_at}-${i}`}
-                      className="flex flex-wrap items-baseline justify-between gap-2 border-b border-border pb-3 text-sm last:border-0 last:pb-0"
-                    >
-                      <span>
-                        {event.action === "submitted"
-                          ? "Application submitted"
-                          : event.action === "document_uploaded"
-                            ? `Document uploaded${event.reviewer_note ? ` — ${event.reviewer_note}` : ""}`
-                            : event.action === "resubmitted"
-                              ? "You resubmitted your details"
-                              : event.action === "escalated"
-                                ? "Escalated for a faster review"
-                                : `Moved to ${STATUS_LABEL[event.to_status] ?? event.to_status}`}
-                      </span>
-                      <span className="text-muted-foreground">
-                        {new Date(event.created_at).toLocaleString("en-GB")}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
+                <h3 className="text-lg">Activity</h3>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Every step recorded on your application, newest first.
+                </p>
+                <ol className="mt-5 grid gap-4">
+                  {[...data.timeline]
+                    .sort(
+                      (a, b) =>
+                        new Date(b.created_at).getTime() -
+                        new Date(a.created_at).getTime(),
+                    )
+                    .map((event, i) => {
+                      const label = describeEvent(event);
+                      return (
+                        <li
+                          key={`${event.created_at}-${i}`}
+                          className="relative border-l-2 border-border pl-5"
+                        >
+                          <span
+                            className="absolute -left-[5px] top-1.5 h-2 w-2 rounded-full bg-primary"
+                            aria-hidden="true"
+                          />
+                          <div className="flex flex-wrap items-baseline justify-between gap-2">
+                            <span className="font-display text-sm font-semibold">
+                              {label.title}
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              {new Date(event.created_at).toLocaleString("en-GB")}
+                            </span>
+                          </div>
+                          {label.body && (
+                            <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                              {label.body}
+                            </p>
+                          )}
+                        </li>
+                      );
+                    })}
+                </ol>
               </div>
             )}
           </div>
@@ -394,4 +409,60 @@ function ResubmitPanel({
       </button>
     </form>
   );
+}
+
+type TimelineEvent = {
+  action: string;
+  from_status: string | null;
+  to_status: string;
+  reviewer_note?: string | null;
+  created_at: string;
+};
+
+/** Plain-English label for one audit-log entry on the firm-facing feed. */
+function describeEvent(event: TimelineEvent): { title: string; body: string } {
+  const note = event.reviewer_note ?? "";
+  switch (event.action) {
+    case "submitted":
+      return {
+        title: "Application submitted",
+        body: "We've got your paperwork and put you in the review queue.",
+      };
+    case "document_uploaded":
+      return {
+        title: "Document uploaded",
+        body: note || "You sent us a supporting document.",
+      };
+    case "resubmitted":
+      return {
+        title: "You resubmitted your details",
+        body: note || "Your updated details went back to the reviewer.",
+      };
+    case "escalated":
+      return {
+        title: "Escalated for a faster review",
+        body: note,
+      };
+    case "reminder_sent":
+      return { title: "Reminder emailed to you", body: note };
+    case "changes_requested":
+      return {
+        title: "Reviewer asked for changes",
+        body: note || "See the list above and send the missing details.",
+      };
+    case "approved":
+      return { title: "Approved", body: note || "Your firm passed our checks." };
+    case "rejected":
+      return {
+        title: "Not certified yet",
+        body: note || "The reviewer explained what was missing.",
+      };
+    case "note_updated":
+      return { title: "Reviewer note updated", body: note };
+    default:
+      return {
+        title: `Moved to ${STATUS_LABEL[event.to_status] ?? event.to_status}`,
+        body: note,
+      };
+  }
 }
