@@ -508,6 +508,24 @@ export type Database = {
         }
         Relationships: []
       }
+      security_scan_secret: {
+        Row: {
+          created_at: string
+          id: boolean
+          token: string
+        }
+        Insert: {
+          created_at?: string
+          id?: boolean
+          token?: string
+        }
+        Update: {
+          created_at?: string
+          id?: boolean
+          token?: string
+        }
+        Relationships: []
+      }
       trades: {
         Row: {
           blurb: string
@@ -732,6 +750,10 @@ export type Database = {
           passed: boolean
           suite: string
         }[]
+      }
+      security_scan_token_matches: {
+        Args: { p_token: string }
+        Returns: boolean
       }
     }
     Enums: {
