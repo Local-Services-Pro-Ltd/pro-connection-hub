@@ -49,6 +49,12 @@ export function ProCard({ pro }: { pro: Pro }) {
           {pro.name} · {pro.area} · {pro.review_count} review
           {pro.review_count === 1 ? "" : "s"}
         </p>
+        {score !== null && (
+          <div className="mt-3">
+            <TrustBadge score={score} />
+          </div>
+        )}
+
         <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
           <span className="flex items-center gap-1.5">
             <ShieldCheck className="h-3.5 w-3.5 text-success" />
