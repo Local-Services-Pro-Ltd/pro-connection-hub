@@ -236,9 +236,35 @@ function FeaturedBoard() {
                   )}
                 </button>
                 {!p.featured && !canFeature ? (
-                  <p className="mt-2 max-w-56 text-xs text-muted-foreground">
-                    Blocked: {blockers.map((b) => b.label.toLowerCase()).join("; ")}
-                  </p>
+                  <>
+                    <p className="mt-2 max-w-56 text-xs text-muted-foreground">
+                      Blocked:{" "}
+                      {blockers.map((b) => b.label.toLowerCase()).join("; ")}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        notify({
+                          data: {
+                            proId: p.id,
+                            outcome: "rejected",
+                            reason: blockers.map((b) => b.label).join("; "),
+                          },
+                        })
+                          .then((r) =>
+                            r.sent
+                              ? toast.success("Rejection email sent to the firm.")
+                              : toast.info(
+                                  "No claimed account on this listing — no email sent.",
+                                ),
+                          )
+                          .catch(() => toast.error("Couldn't send the email."))
+                      }
+                      className="mt-3 text-xs text-primary hover:underline"
+                    >
+                      Email the firm why it isn't featured
+                    </button>
+                  </>
                 ) : null}
               </div>
             </div>
