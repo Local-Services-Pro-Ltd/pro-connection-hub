@@ -490,6 +490,56 @@ export type Database = {
         }
         Relationships: []
       }
+      pro_application_audit: {
+        Row: {
+          action: string
+          application_id: string
+          changed_by: string | null
+          changed_by_email: string | null
+          company: string
+          created_at: string
+          from_status: string | null
+          id: string
+          reference: string | null
+          reviewer_note: string | null
+          to_status: string
+        }
+        Insert: {
+          action: string
+          application_id: string
+          changed_by?: string | null
+          changed_by_email?: string | null
+          company: string
+          created_at?: string
+          from_status?: string | null
+          id?: string
+          reference?: string | null
+          reviewer_note?: string | null
+          to_status: string
+        }
+        Update: {
+          action?: string
+          application_id?: string
+          changed_by?: string | null
+          changed_by_email?: string | null
+          company?: string
+          created_at?: string
+          from_status?: string | null
+          id?: string
+          reference?: string | null
+          reviewer_note?: string | null
+          to_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pro_application_audit_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "pro_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pro_applications: {
         Row: {
           about: string
@@ -504,11 +554,14 @@ export type Database = {
           insurance_provider: string | null
           phone: string | null
           postcode: string
+          reference: string | null
           reviewed_at: string | null
           reviewed_by: string | null
           reviewer_note: string | null
           status: string
+          tracking_token: string | null
           trade_slug: string | null
+          updated_at: string
           website: string | null
           years: number
         }
@@ -525,11 +578,14 @@ export type Database = {
           insurance_provider?: string | null
           phone?: string | null
           postcode: string
+          reference?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           reviewer_note?: string | null
           status?: string
+          tracking_token?: string | null
           trade_slug?: string | null
+          updated_at?: string
           website?: string | null
           years?: number
         }
@@ -546,11 +602,14 @@ export type Database = {
           insurance_provider?: string | null
           phone?: string | null
           postcode?: string
+          reference?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           reviewer_note?: string | null
           status?: string
+          tracking_token?: string | null
           trade_slug?: string | null
+          updated_at?: string
           website?: string | null
           years?: number
         }
@@ -1353,6 +1412,7 @@ export type Database = {
           years: number
         }[]
       }
+      pro_application_status: { Args: { p_token: string }; Returns: Json }
       pro_booked_slots: {
         Args: { p_pro_id: string }
         Returns: {

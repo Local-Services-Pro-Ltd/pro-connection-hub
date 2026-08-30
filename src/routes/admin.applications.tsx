@@ -8,6 +8,7 @@ import { Section, SectionHead } from "@/components/layout-bits";
 import { isAdminQuery } from "@/lib/queries";
 import { useAuth } from "@/hooks/use-auth";
 import {
+  listProApplicationAudit,
   listProApplications,
   reviewProApplication,
 } from "@/lib/applications.functions";
@@ -44,8 +45,15 @@ function AdminApplications() {
   });
   const load = useServerFn(listProApplications);
   const review = useServerFn(reviewProApplication);
+  const auditLoad = useServerFn(listProApplicationAudit);
   const [filter, setFilter] = useState<string>("pending");
   const [notes, setNotes] = useState<Record<string, string>>({});
+  const [search, setSearch] = useState("");
+  const [tradeFilter, setTradeFilter] = useState("all");
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+  const [notify, setNotify] = useState(true);
+  const [openAudit, setOpenAudit] = useState<string | null>(null);
 
   const { data, refetch } = useQuery({
     queryKey: ["admin-applications"],
@@ -53,12 +61,30 @@ function AdminApplications() {
     enabled: isAdmin === true,
   });
 
+  const audit = useQuery({
+    queryKey: ["admin-applications", "audit", openAudit ?? "all"],
+    enabled: isAdmin === true,
+    queryFn: () =>
+      auditLoad({
+        data: openAudit ? { applicationId: openAudit } : {},
+      }),
+  });
+
   const mutation = useMutation({
-    mutationFn: (vars: { id: string; status: string; note?: string }) =>
-      review({ data: vars }),
-    onSuccess: () => {
-      toast.success("Application updated.");
+    mutationFn: (vars: {
+      id: string;
+      status: string;
+      note?: string;
+      notify?: boolean;
+    }) => review({ data: vars }),
+    onSuccess: (result) => {
+      toast.success(
+        result?.notified
+          ? "Application updated — the firm has been emailed."
+          : "Application updated.",
+      );
       void refetch();
+      void audit.refetch();
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -76,13 +102,37 @@ function AdminApplications() {
     );
   }
 
-  const rows = (data ?? []).filter(
-    (a) => filter === "all" || a.status === filter,
-  );
+  const term = search.trim().toLowerCase();
+  const rows = (data ?? []).filter((a) => {
+    if (filter !== "all" && a.status !== filter) return false;
+    if (tradeFilter !== "all" && (a.trade_slug ?? "") !== tradeFilter)
+      return false;
+    if (from && a.created_at.slice(0, 10) < from) return false;
+    if (to && a.created_at.slice(0, 10) > to) return false;
+    if (
+      term &&
+      ![a.company, a.contact_name, a.email, a.postcode, a.reference ?? ""]
+        .join(" ")
+        .toLowerCase()
+        .includes(term)
+    )
+      return false;
+    return true;
+  });
+
+  const trades = Array.from(
+    new Set((data ?? []).map((a) => a.trade_slug).filter(Boolean)),
+  ).sort() as string[];
+
+  const counts = (data ?? []).reduce<Record<string, number>>((acc, a) => {
+    acc[a.status] = (acc[a.status] ?? 0) + 1;
+    return acc;
+  }, {});
 
   const exportCsv = () => {
     const head = [
       "created_at",
+      "reference",
       "company",
       "contact_name",
       "email",
@@ -132,6 +182,7 @@ function AdminApplications() {
             }`}
           >
             {s.replace("_", " ")}
+            {s !== "all" && counts[s] ? ` (${counts[s]})` : ""}
           </button>
         ))}
         <button
@@ -142,12 +193,71 @@ function AdminApplications() {
         </button>
       </div>
 
+      <div className="mt-3 flex flex-wrap items-center gap-2">
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search company, contact, email, postcode, ref"
+          className="w-72 rounded-sm border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+        />
+        <select
+          value={tradeFilter}
+          onChange={(e) => setTradeFilter(e.target.value)}
+          className="rounded-sm border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+        >
+          <option value="all">All trades</option>
+          {trades.map((t) => (
+            <option key={t} value={t}>
+              {t}
+            </option>
+          ))}
+        </select>
+        <label className="text-xs text-muted-foreground">
+          From{" "}
+          <input
+            type="date"
+            value={from}
+            onChange={(e) => setFrom(e.target.value)}
+            className="rounded-sm border border-input bg-background px-2 py-1.5 text-sm outline-none focus:border-primary"
+          />
+        </label>
+        <label className="text-xs text-muted-foreground">
+          To{" "}
+          <input
+            type="date"
+            value={to}
+            onChange={(e) => setTo(e.target.value)}
+            className="rounded-sm border border-input bg-background px-2 py-1.5 text-sm outline-none focus:border-primary"
+          />
+        </label>
+        <label className="inline-flex items-center gap-2 text-xs text-muted-foreground">
+          <input
+            type="checkbox"
+            checked={notify}
+            onChange={(e) => setNotify(e.target.checked)}
+          />
+          Email the firm on decisions
+        </label>
+        <button
+          onClick={() => {
+            setSearch("");
+            setTradeFilter("all");
+            setFrom("");
+            setTo("");
+          }}
+          className="rounded-sm border border-border px-3 py-1.5 font-display text-xs font-semibold uppercase tracking-widest text-muted-foreground hover:border-primary hover:text-primary"
+        >
+          Clear
+        </button>
+      </div>
+
       <ul className="mt-6 grid gap-4">
         {rows.map((a) => (
           <li key={a.id} className="rounded-md border border-border bg-card p-6">
             <div className="flex flex-wrap items-baseline justify-between gap-3">
               <h2 className="text-xl">{a.company}</h2>
               <span className="eyebrow !mb-0">
+                {a.reference ? `${a.reference} · ` : ""}
                 {a.status.replace("_", " ")} ·{" "}
                 {new Date(a.created_at).toLocaleDateString("en-GB")}
               </span>
@@ -184,19 +294,67 @@ function AdminApplications() {
               {STATUSES.filter((s) => s !== a.status).map((s) => (
                 <button
                   key={s}
+                  disabled={mutation.isPending}
                   onClick={() =>
                     mutation.mutate({
                       id: a.id,
                       status: s,
+                      notify,
                       ...(notes[a.id] ? { note: notes[a.id] } : {}),
                     })
                   }
-                  className="rounded-sm border border-border-strong px-3 py-2 font-display text-xs font-semibold uppercase tracking-widest hover:border-primary hover:text-primary"
+                  className="rounded-sm border border-border-strong px-3 py-2 font-display text-xs font-semibold uppercase tracking-widest hover:border-primary hover:text-primary disabled:opacity-50"
                 >
                   {s.replace("_", " ")}
                 </button>
               ))}
+              <button
+                onClick={() =>
+                  setOpenAudit((cur) => (cur === a.id ? null : a.id))
+                }
+                className="rounded-sm border border-border px-3 py-2 font-display text-xs font-semibold uppercase tracking-widest text-muted-foreground hover:border-primary hover:text-primary"
+              >
+                {openAudit === a.id ? "Hide history" : "History"}
+              </button>
+              <a
+                href={`mailto:${a.email}?subject=${encodeURIComponent(
+                  `TradesmanFinder certification (${a.reference ?? ""})`,
+                )}`}
+                className="rounded-sm border border-border px-3 py-2 font-display text-xs font-semibold uppercase tracking-widest text-muted-foreground hover:border-primary hover:text-primary"
+              >
+                Email firm
+              </a>
             </div>
+
+            {openAudit === a.id && (
+              <ul className="mt-4 grid gap-2 border-t border-border pt-4 text-sm">
+                {(audit.data ?? []).map((entry) => (
+                  <li
+                    key={entry.id}
+                    className="flex flex-wrap items-baseline justify-between gap-2 text-muted-foreground"
+                  >
+                    <span>
+                      {entry.action.replace("_", " ")}
+                      {entry.from_status
+                        ? ` — from ${entry.from_status.replace("_", " ")}`
+                        : ""}
+                      {entry.changed_by_email
+                        ? ` · ${entry.changed_by_email}`
+                        : " · system"}
+                      {entry.reviewer_note ? ` · "${entry.reviewer_note}"` : ""}
+                    </span>
+                    <span>
+                      {new Date(entry.created_at).toLocaleString("en-GB")}
+                    </span>
+                  </li>
+                ))}
+                {(audit.data ?? []).length === 0 && (
+                  <li className="text-muted-foreground">
+                    {audit.isPending ? "Loading history…" : "No history yet."}
+                  </li>
+                )}
+              </ul>
+            )}
           </li>
         ))}
         {rows.length === 0 && (

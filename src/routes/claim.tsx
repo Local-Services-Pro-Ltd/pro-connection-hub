@@ -169,16 +169,33 @@ function Claim() {
             />
             <h2 className="mt-4 text-2xl">Application received</h2>
             <p className="mt-3 leading-relaxed text-muted-foreground">
-              We'll email {form.email} once a human has read it — usually within
-              two working days. If anything is missing we'll say exactly what,
-              rather than leaving you guessing.
+              We've emailed {form.email} a confirmation with your tracking link.
+              A human reads every application — usually within two working days.
+              If anything is missing we'll say exactly what, rather than leaving
+              you guessing.
             </p>
-            <Link
-              to="/verification"
-              className="mt-6 inline-flex rounded-sm border border-border-strong px-5 py-3 font-display text-sm font-semibold hover:border-primary hover:text-primary"
-            >
-              See what we check
-            </Link>
+            {mutation.data?.reference && (
+              <p className="mt-4 font-display text-sm font-semibold">
+                Reference {mutation.data.reference}
+              </p>
+            )}
+            <div className="mt-6 flex flex-wrap justify-center gap-3">
+              {mutation.data?.trackingToken && (
+                <Link
+                  to="/application-status"
+                  search={{ token: mutation.data.trackingToken }}
+                  className="inline-flex rounded-sm bg-primary px-5 py-3 font-display text-sm font-semibold text-primary-foreground"
+                >
+                  Track your application
+                </Link>
+              )}
+              <Link
+                to="/verification"
+                className="inline-flex rounded-sm border border-border-strong px-5 py-3 font-display text-sm font-semibold hover:border-primary hover:text-primary"
+              >
+                See what we check
+              </Link>
+            </div>
           </div>
         ) : (
           <form
