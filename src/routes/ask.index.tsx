@@ -5,8 +5,10 @@ import { useServerFn } from "@tanstack/react-start";
 import { MessagesSquare } from "lucide-react";
 import { Section, SectionHead } from "@/components/layout-bits";
 import { HumanCheck, useHumanCheck } from "@/components/human-check";
-import { tradesQuery, questionsQuery } from "@/lib/queries";
+import { AiAnswer } from "@/components/ai-answer";
+import { tradesQuery, questionsQuery, relatedQuestionsQuery } from "@/lib/queries";
 import { submitQuestion } from "@/lib/qa.functions";
+
 
 export const Route = createFileRoute("/ask/")({
   loader: async ({ context }) => {
