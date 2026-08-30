@@ -1,5 +1,7 @@
 import type { ComponentType } from 'react'
 import { template as waitingListConfirm } from './waiting-list-confirm'
+import { template as securityScanAlert } from './security-scan-alert'
+
 
 export interface TemplateEntry {
   component: ComponentType<any>
