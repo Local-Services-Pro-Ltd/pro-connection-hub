@@ -213,8 +213,6 @@ function ProPage() {
 
             <aside className="rounded-md border border-border bg-card p-6">
 
-
-          <aside className="h-fit rounded-md border border-border bg-card p-6 lg:sticky lg:top-24">
             <p className="eyebrow">Request a quote</p>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
               Describe your job and {pro.name.split(" ")[0]} will come back to
