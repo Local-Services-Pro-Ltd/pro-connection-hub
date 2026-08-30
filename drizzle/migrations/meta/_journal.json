@@ -134,6 +134,13 @@
       "when": 1788091267538,
       "tag": "0018_trade_hero_bucket_policies",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1788092599835,
+      "tag": "0019_pro_projects_bookings_trust",
+      "breakpoints": true
     }
   ]
 }
