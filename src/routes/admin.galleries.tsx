@@ -124,7 +124,7 @@ function GalleryManager() {
       <SectionHead
         eyebrow="Admin"
         title="Project galleries & availability"
-        blurb="Publish real before-and-after work and set the visit windows a tradesperson can actually be booked into. Nothing here is placeholder content — only upload photos the firm has approved."
+        sub="Publish real before-and-after work and set the visit windows a tradesperson can actually be booked into. Nothing here is placeholder content — only upload photos the firm has approved."
       />
 
       <label className="mt-8 block max-w-md">
