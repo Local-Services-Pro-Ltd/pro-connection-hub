@@ -31,6 +31,7 @@ import { Route as AdminGalleriesRouteImport } from './routes/admin.galleries'
 import { Route as AdminHeroImagesRouteImport } from './routes/admin.hero-images'
 import { Route as AdminPlansRouteImport } from './routes/admin.plans'
 import { Route as AdminWaitingListRouteImport } from './routes/admin.waiting-list'
+import { Route as AskIndexRouteImport } from './routes/ask.index'
 import { Route as CostsIndexRouteImport } from './routes/costs.index'
 import { Route as CostsTradeRouteImport } from './routes/costs.$trade'
 import { Route as ProIdRouteImport } from './routes/pro.$id'
@@ -157,6 +158,11 @@ const AdminWaitingListRoute = AdminWaitingListRouteImport.update({
   path: '/admin/waiting-list',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AskIndexRoute = AskIndexRouteImport.update({
+  id: '/ask/',
+  path: '/ask/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CostsIndexRoute = CostsIndexRouteImport.update({
   id: '/costs/',
   path: '/costs/',
@@ -263,6 +269,7 @@ export interface FileRoutesByFullPath {
   '/waiting-list/confirm': typeof WaitingListConfirmRoute
   '/waiting-list/manage': typeof WaitingListManageRoute
   '/waiting-list/thanks': typeof WaitingListThanksRoute
+  '/ask/': typeof AskIndexRoute
   '/costs/': typeof CostsIndexRoute
   '/trades/': typeof TradesIndexRoute
   '/waiting-list/': typeof WaitingListIndexRoute
@@ -302,6 +309,7 @@ export interface FileRoutesByTo {
   '/waiting-list/confirm': typeof WaitingListConfirmRoute
   '/waiting-list/manage': typeof WaitingListManageRoute
   '/waiting-list/thanks': typeof WaitingListThanksRoute
+  '/ask': typeof AskIndexRoute
   '/costs': typeof CostsIndexRoute
   '/trades': typeof TradesIndexRoute
   '/waiting-list': typeof WaitingListIndexRoute
@@ -342,6 +350,7 @@ export interface FileRoutesById {
   '/waiting-list/confirm': typeof WaitingListConfirmRoute
   '/waiting-list/manage': typeof WaitingListManageRoute
   '/waiting-list/thanks': typeof WaitingListThanksRoute
+  '/ask/': typeof AskIndexRoute
   '/costs/': typeof CostsIndexRoute
   '/trades/': typeof TradesIndexRoute
   '/waiting-list/': typeof WaitingListIndexRoute
@@ -383,6 +392,7 @@ export interface FileRouteTypes {
     | '/waiting-list/confirm'
     | '/waiting-list/manage'
     | '/waiting-list/thanks'
+    | '/ask/'
     | '/costs/'
     | '/trades/'
     | '/waiting-list/'
@@ -422,6 +432,7 @@ export interface FileRouteTypes {
     | '/waiting-list/confirm'
     | '/waiting-list/manage'
     | '/waiting-list/thanks'
+    | '/ask'
     | '/costs'
     | '/trades'
     | '/waiting-list'
@@ -461,6 +472,7 @@ export interface FileRouteTypes {
     | '/waiting-list/confirm'
     | '/waiting-list/manage'
     | '/waiting-list/thanks'
+    | '/ask/'
     | '/costs/'
     | '/trades/'
     | '/waiting-list/'
@@ -501,6 +513,7 @@ export interface RootRouteChildren {
   WaitingListConfirmRoute: typeof WaitingListConfirmRoute
   WaitingListManageRoute: typeof WaitingListManageRoute
   WaitingListThanksRoute: typeof WaitingListThanksRoute
+  AskIndexRoute: typeof AskIndexRoute
   CostsIndexRoute: typeof CostsIndexRoute
   TradesIndexRoute: typeof TradesIndexRoute
   WaitingListIndexRoute: typeof WaitingListIndexRoute
@@ -668,6 +681,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminWaitingListRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ask/': {
+      id: '/ask/'
+      path: '/ask'
+      fullPath: '/ask/'
+      preLoaderRoute: typeof AskIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/costs/': {
       id: '/costs/'
       path: '/costs'
@@ -805,6 +825,7 @@ const rootRouteChildren: RootRouteChildren = {
   WaitingListConfirmRoute: WaitingListConfirmRoute,
   WaitingListManageRoute: WaitingListManageRoute,
   WaitingListThanksRoute: WaitingListThanksRoute,
+  AskIndexRoute: AskIndexRoute,
   CostsIndexRoute: CostsIndexRoute,
   TradesIndexRoute: TradesIndexRoute,
   WaitingListIndexRoute: WaitingListIndexRoute,
