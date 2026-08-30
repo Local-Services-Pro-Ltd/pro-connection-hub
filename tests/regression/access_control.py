@@ -280,6 +280,22 @@ def test_public_endpoints() -> None:
         f"HTTP {res.status_code}",
     )
 
+    res = requests.get(f"{BASE_URL}/api/public/featured", timeout=20)
+    firms = res.json().get("firms", []) if res.status_code == 200 else []
+    leaky = [f for f in firms if any(k in f for k in ("user_id", "postcode", "day_rate"))]
+    check(
+        "/api/public/featured returns only vetted, non-sensitive firm data",
+        res.status_code == 200 and not leaky,
+        f"HTTP {res.status_code}, {len(firms)} firms",
+    )
+    res = requests.post(f"{BASE_URL}/api/public/featured", json={}, timeout=20)
+    check(
+        "/api/public/featured rejects writes",
+        res.status_code == 405,
+        f"HTTP {res.status_code}",
+    )
+
+
     res = requests.get(f"{BASE_URL}/api/public/security-scan", timeout=20)
     check(
         "/api/public/security-scan refuses unauthenticated callers",
