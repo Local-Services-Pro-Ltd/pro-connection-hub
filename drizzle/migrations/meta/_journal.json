@@ -57,6 +57,13 @@
       "when": 1788084857532,
       "tag": "0007_featured_pro_workflow",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1788085182882,
+      "tag": "0008_feature_approval_trusts_service_role",
+      "breakpoints": true
     }
   ]
 }
