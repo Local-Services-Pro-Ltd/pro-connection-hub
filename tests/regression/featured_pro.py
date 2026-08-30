@@ -1,20 +1,22 @@
 """Regression test for the homepage featured-tradesmen section.
 
-Guarantees two things:
+Guarantees three things:
 
 1. With no featured firm, the homepage renders the vetting-status panel and
    never a tradesman card.
-2. As soon as an approved firm (published + verified credential) is featured,
-   the homepage switches to the featured panel.
+2. A firm that isn't published with a verified credential cannot be featured
+   at all — the database refuses it.
+3. As soon as an approved firm is featured, the homepage switches to the
+   featured panel, and the action lands in the audit log.
 
-The test creates its own throwaway firm through a privileged database
-connection, then removes it again — it never leaves rows behind and never
-features one of the real listings.
+The test creates its own throwaway firm through the service-role API, then
+removes it again — it never leaves rows behind and never features one of the
+real listings.
 
 Usage:
     python3 tests/regression/featured_pro.py
 
-Exit code 1 means the homepage behaved incorrectly in one of the two states.
+Exit code 1 means the homepage behaved incorrectly in one of those states.
 """
 
 import asyncio
@@ -22,11 +24,18 @@ import os
 import sys
 import uuid
 
-import asyncpg
+import requests
 from playwright.async_api import async_playwright
 
 BASE_URL = "http://localhost:8080"
-DB_URL = os.environ["SUPABASE_DB_URL"]
+API = os.environ["SUPABASE_URL"].rstrip("/") + "/rest/v1"
+KEY = os.environ["SUPABASE_SERVICE_ROLE_KEY"]
+HEADERS = {
+    "apikey": KEY,
+    "Authorization": f"Bearer {KEY}",
+    "Content-Type": "application/json",
+    "Prefer": "return=representation",
+}
 PROBE_ID = f"regression-featured-{uuid.uuid4().hex[:8]}"
 
 failures: list[str] = []
@@ -38,18 +47,28 @@ def check(name: str, ok: bool, detail: str = "") -> None:
         failures.append(name)
 
 
+def api(method: str, path: str, **kw) -> requests.Response:
+    return requests.request(method, f"{API}/{path}", headers=HEADERS, timeout=30, **kw)
+
+
 async def homepage_state(page) -> tuple[bool, bool, int]:
     """Returns (vetting panel shown, featured grid shown, card count)."""
     await page.goto(BASE_URL, wait_until="networkidle")
     vetting = await page.locator('[data-testid="vetting-status"]').count()
     grid = page.locator('[data-testid="featured-pros"]')
-    cards = await grid.locator("article, a[href^='/pro/']").count() if await grid.count() else 0
-    return bool(vetting), bool(await grid.count()), cards
+    has_grid = bool(await grid.count())
+    cards = await grid.locator("a[href^='/pro/']").count() if has_grid else 0
+    return bool(vetting), has_grid, cards
+
+
+def cleanup() -> None:
+    api("DELETE", f"pro_credentials?pro_id=eq.{PROBE_ID}")
+    api("DELETE", f"pro_feature_audit?pro_id=eq.{PROBE_ID}")
+    api("DELETE", f"pros?id=eq.{PROBE_ID}")
 
 
 async def main() -> int:
-    conn = await asyncpg.connect(DB_URL, statement_cache_size=0)
-    trade = await conn.fetchval("select slug from public.trades order by sort_order limit 1")
+    trade = api("GET", "trades?select=slug&order=sort_order&limit=1").json()[0]["slug"]
     try:
         async with async_playwright() as pw:
             browser = await pw.chromium.launch(headless=True)
@@ -57,45 +76,47 @@ async def main() -> int:
             page = await context.new_page()
 
             # --- State 1: nothing featured -------------------------------
-            await conn.execute("update public.pros set featured = false where featured")
+            api("PATCH", "pros?featured=eq.true", json={"featured": False})
             vetting, grid, cards = await homepage_state(page)
             check("no_featured_shows_vetting_panel", vetting and not grid,
                   f"vetting={vetting} grid={grid} cards={cards}")
 
             # --- Guard: an unvetted firm cannot be featured --------------
-            await conn.execute(
-                """insert into public.pros (id, user_id, name, company, trade_slug, area, published)
-                   values ($1, null, 'Regression Probe', 'Regression Probe Ltd', $2, 'Probe Area', true)""",
-                PROBE_ID, trade)
-            rejected = False
-            try:
-                await conn.execute("update public.pros set featured = true where id = $1", PROBE_ID)
-            except Exception as exc:  # trigger must refuse
-                rejected = "verified credential" in str(exc)
-            check("unvetted_firm_cannot_be_featured", rejected)
+            created = api("POST", "pros", json={
+                "id": PROBE_ID, "name": "Regression Probe",
+                "company": "Regression Probe Ltd", "trade_slug": trade,
+                "area": "Probe Area", "published": True,
+            })
+            check("probe_listing_created", created.status_code < 300, created.text[:160])
+
+            blocked = api("PATCH", f"pros?id=eq.{PROBE_ID}", json={"featured": True})
+            check("unvetted_firm_cannot_be_featured",
+                  blocked.status_code >= 400 and "verified credential" in blocked.text,
+                  f"status={blocked.status_code}")
 
             # --- State 2: approved firm featured -------------------------
-            await conn.execute(
-                """insert into public.pro_credentials (pro_id, label, kind, verified, verified_at)
-                   values ($1, 'Regression credential', 'other', true, now())""",
-                PROBE_ID)
-            await conn.execute("update public.pros set featured = true where id = $1", PROBE_ID)
+            api("POST", "pro_credentials", json={
+                "pro_id": PROBE_ID, "label": "Regression credential",
+                "kind": "other", "verified": True,
+            })
+            promoted = api("PATCH", f"pros?id=eq.{PROBE_ID}", json={"featured": True})
+            check("approved_firm_can_be_featured", promoted.status_code < 300,
+                  promoted.text[:160])
 
             vetting, grid, cards = await homepage_state(page)
-            check("featured_firm_shows_featured_panel", grid and not vetting and cards > 0,
+            check("featured_firm_shows_featured_panel",
+                  grid and not vetting and cards > 0,
                   f"vetting={vetting} grid={grid} cards={cards}")
 
-            audited = await conn.fetchval(
-                "select count(*) from public.pro_feature_audit where pro_id = $1 and action = 'featured'",
-                PROBE_ID)
-            check("featuring_is_audited", audited == 1, f"audit rows={audited}")
+            audit = api(
+                "GET",
+                f"pro_feature_audit?pro_id=eq.{PROBE_ID}&action=eq.featured&select=id",
+            ).json()
+            check("featuring_is_audited", len(audit) == 1, f"audit rows={len(audit)}")
 
             await browser.close()
     finally:
-        await conn.execute("delete from public.pro_credentials where pro_id = $1", PROBE_ID)
-        await conn.execute("delete from public.pro_feature_audit where pro_id = $1", PROBE_ID)
-        await conn.execute("delete from public.pros where id = $1", PROBE_ID)
-        await conn.close()
+        cleanup()
 
     print()
     print("FAILED: " + ", ".join(failures) if failures else "All featured-pro checks passed.")
