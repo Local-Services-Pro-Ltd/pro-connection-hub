@@ -232,6 +232,13 @@
       "when": 1788104233819,
       "tag": "0032_application_documents_verification_sla",
       "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1788109049941,
+      "tag": "0033_qa_ai_assist",
+      "breakpoints": true
     }
   ]
 }
