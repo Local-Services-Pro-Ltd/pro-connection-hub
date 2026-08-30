@@ -169,6 +169,13 @@
       "when": 1788093574799,
       "tag": "0023_booking_authorization_and_rate_limits",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1788093595020,
+      "tag": "0024_pro_projects_publish_requires_admin",
+      "breakpoints": true
     }
   ]
 }
