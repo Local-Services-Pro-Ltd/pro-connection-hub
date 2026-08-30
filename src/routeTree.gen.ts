@@ -17,6 +17,7 @@ import { Route as EnterpriseRouteImport } from './routes/enterprise'
 import { Route as ForTradesmenRouteImport } from './routes/for-tradesmen'
 import { Route as PostJobRouteImport } from './routes/post-job'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as SavedRouteImport } from './routes/saved'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermsRouteImport } from './routes/terms'
@@ -81,6 +82,11 @@ const PostJobRoute = PostJobRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SavedRoute = SavedRouteImport.update({
+  id: '/saved',
+  path: '/saved',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SigninRoute = SigninRouteImport.update({
@@ -219,6 +225,7 @@ export interface FileRoutesByFullPath {
   '/for-tradesmen': typeof ForTradesmenRoute
   '/post-job': typeof PostJobRoute
   '/privacy': typeof PrivacyRoute
+  '/saved': typeof SavedRoute
   '/signin': typeof SigninRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
@@ -254,6 +261,7 @@ export interface FileRoutesByTo {
   '/for-tradesmen': typeof ForTradesmenRoute
   '/post-job': typeof PostJobRoute
   '/privacy': typeof PrivacyRoute
+  '/saved': typeof SavedRoute
   '/signin': typeof SigninRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
@@ -290,6 +298,7 @@ export interface FileRoutesById {
   '/for-tradesmen': typeof ForTradesmenRoute
   '/post-job': typeof PostJobRoute
   '/privacy': typeof PrivacyRoute
+  '/saved': typeof SavedRoute
   '/signin': typeof SigninRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
@@ -327,6 +336,7 @@ export interface FileRouteTypes {
     | '/for-tradesmen'
     | '/post-job'
     | '/privacy'
+    | '/saved'
     | '/signin'
     | '/sitemap.xml'
     | '/terms'
@@ -362,6 +372,7 @@ export interface FileRouteTypes {
     | '/for-tradesmen'
     | '/post-job'
     | '/privacy'
+    | '/saved'
     | '/signin'
     | '/sitemap.xml'
     | '/terms'
@@ -397,6 +408,7 @@ export interface FileRouteTypes {
     | '/for-tradesmen'
     | '/post-job'
     | '/privacy'
+    | '/saved'
     | '/signin'
     | '/sitemap.xml'
     | '/terms'
@@ -433,6 +445,7 @@ export interface RootRouteChildren {
   ForTradesmenRoute: typeof ForTradesmenRoute
   PostJobRoute: typeof PostJobRoute
   PrivacyRoute: typeof PrivacyRoute
+  SavedRoute: typeof SavedRoute
   SigninRoute: typeof SigninRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
@@ -516,6 +529,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/saved': {
+      id: '/saved'
+      path: '/saved'
+      fullPath: '/saved'
+      preLoaderRoute: typeof SavedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/signin': {
@@ -705,6 +725,7 @@ const rootRouteChildren: RootRouteChildren = {
   ForTradesmenRoute: ForTradesmenRoute,
   PostJobRoute: PostJobRoute,
   PrivacyRoute: PrivacyRoute,
+  SavedRoute: SavedRoute,
   SigninRoute: SigninRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
