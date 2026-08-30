@@ -1,9 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Download, Lock, RefreshCw, Users } from "lucide-react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { Download, Lock, RefreshCw, Send, Users } from "lucide-react";
 import { Section, SectionHead } from "@/components/layout-bits";
+import { useServerFn } from "@tanstack/react-start";
 import { downloadText } from "@/lib/track-export";
+import { listAreaWaiting, notifyAreaLive } from "@/lib/waiting-list.functions";
 import { useAuth } from "@/hooks/use-auth";
 import {
   isAdminQuery,
@@ -316,6 +318,148 @@ function Dashboard() {
           </tbody>
         </table>
       </div>
+
+      <LaunchNotifier />
     </Section>
+  );
+}
+
+/**
+ * Area launch announcements. Each email is sent individually to one confirmed
+ * person, with their queue position — no bulk blasts.
+ */
+function LaunchNotifier() {
+  const [area, setArea] = useState("");
+  const [areaName, setAreaName] = useState("");
+  const [busy, setBusy] = useState<string | null>(null);
+  const [sentIds, setSentIds] = useState<Record<string, string>>({});
+  const listFn = useServerFn(listAreaWaiting);
+  const notifyFn = useServerFn(notifyAreaLive);
+
+  const list = useMutation({
+    mutationFn: async () => listFn({ data: { area } }),
+  });
+
+  const send = async (id: string) => {
+    setBusy(id);
+    try {
+      const result = await notifyFn({
+        data: { id, ...(areaName ? { areaName } : {}) },
+      });
+      setSentIds((prev) => ({ ...prev, [id]: result.reason }));
+    } catch (error) {
+      setSentIds((prev) => ({
+        ...prev,
+        [id]: (error as Error).message,
+      }));
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const field =
+    "rounded-sm border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary";
+  const rows = list.data ?? [];
+
+  return (
+    <div className="mt-14 rounded-md border border-border bg-card p-7">
+      <p className="eyebrow">Area launch</p>
+      <h2 className="mt-2 text-2xl">Tell an area it's live.</h2>
+      <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+        Load the confirmed sign-ups for a postcode area, then send each person
+        their launch email — it includes their position in the queue. People who
+        opted out of launch emails are skipped automatically.
+      </p>
+
+      <div className="mt-6 flex flex-wrap items-center gap-3">
+        <input
+          value={area}
+          onChange={(e) => setArea(e.target.value.toUpperCase())}
+          placeholder="Postcode area (e.g. M)"
+          aria-label="Postcode area"
+          className={field}
+        />
+        <input
+          value={areaName}
+          onChange={(e) => setAreaName(e.target.value)}
+          placeholder="Area name in the email (e.g. Manchester)"
+          aria-label="Area name shown in the email"
+          className={`${field} min-w-[18rem]`}
+        />
+        <button
+          onClick={() => list.mutate()}
+          disabled={!area || list.isPending}
+          className="inline-flex items-center gap-2 rounded-sm bg-primary px-4 py-2 font-display text-sm font-semibold text-primary-foreground shadow-ember hover:brightness-110 disabled:opacity-60"
+        >
+          <Send className="h-4 w-4" aria-hidden="true" />
+          {list.isPending ? "Loading…" : "Load sign-ups"}
+        </button>
+      </div>
+
+      {list.isError && (
+        <p role="alert" className="mt-4 text-sm text-muted-foreground">
+          {(list.error as Error).message}
+        </p>
+      )}
+
+      {list.isSuccess && rows.length === 0 && (
+        <p className="mt-6 text-sm text-muted-foreground">
+          No confirmed sign-ups in that area yet.
+        </p>
+      )}
+
+      {rows.length > 0 && (
+        <div className="mt-6 overflow-x-auto rounded-md border border-border">
+          <table className="w-full min-w-[40rem] text-left text-sm">
+            <thead className="bg-surface font-display text-xs uppercase tracking-widest text-muted-foreground">
+              <tr>
+                <th className="px-4 py-3">#</th>
+                <th className="px-4 py-3">Email</th>
+                <th className="px-4 py-3">Postcode</th>
+                <th className="px-4 py-3">Role</th>
+                <th className="px-4 py-3">Launch emails</th>
+                <th className="px-4 py-3">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r) => (
+                <tr key={r.id} className="border-t border-border">
+                  <td className="px-4 py-3">{r.queue_position}</td>
+                  <td className="px-4 py-3">{r.email}</td>
+                  <td className="px-4 py-3">{r.postcode}</td>
+                  <td className="px-4 py-3">{r.role}</td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    {r.notify_launch ? "Opted in" : "Opted out"}
+                  </td>
+                  <td className="px-4 py-3">
+                    {r.launch_notified_at ? (
+                      <span className="text-muted-foreground">
+                        Sent{" "}
+                        {new Date(r.launch_notified_at).toLocaleDateString(
+                          "en-GB",
+                        )}
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() => void send(r.id)}
+                        disabled={busy === r.id || !r.notify_launch}
+                        className="rounded-sm border border-border-strong px-3 py-1.5 font-display text-xs font-semibold hover:border-primary hover:text-primary disabled:opacity-50"
+                      >
+                        {busy === r.id ? "Sending…" : "Send launch email"}
+                      </button>
+                    )}
+                    {sentIds[r.id] && (
+                      <span className="ml-2 text-xs text-muted-foreground">
+                        {sentIds[r.id]}
+                      </span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
   );
 }
