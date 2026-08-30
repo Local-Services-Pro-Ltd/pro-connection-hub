@@ -1,10 +1,21 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { BadgeCheck, Clock, Search, XCircle } from "lucide-react";
 import { Section, SectionHead } from "@/components/layout-bits";
-import { getApplicationStatus } from "@/lib/applications.functions";
+import { toast } from "sonner";
+import {
+  getApplicationStatus,
+  resubmitApplication,
+} from "@/lib/applications.functions";
+import { DocumentTracker } from "@/components/application-documents";
+import {
+  APPLICATION_STATUS_LABEL,
+  CHECK_OUTCOME_LABEL,
+  REQUESTABLE_FIELDS,
+  REQUESTABLE_FIELD_LABEL,
+} from "@/lib/application-verification";
 
 const SITE = "https://tradesmanfinder.org";
 
@@ -26,12 +37,7 @@ const STAGES = [
   },
 ];
 
-const STATUS_LABEL: Record<string, string> = {
-  pending: "In the queue",
-  in_review: "Being checked",
-  approved: "Approved",
-  rejected: "Not certified yet",
-};
+const STATUS_LABEL: Record<string, string> = APPLICATION_STATUS_LABEL;
 
 export const Route = createFileRoute("/application-status")({
   validateSearch: (search: Record<string, unknown>): { token?: string } =>
@@ -251,7 +257,13 @@ function ApplicationStatusPage() {
                       <span>
                         {event.action === "submitted"
                           ? "Application submitted"
-                          : `Moved to ${STATUS_LABEL[event.to_status] ?? event.to_status}`}
+                          : event.action === "document_uploaded"
+                            ? `Document uploaded${event.reviewer_note ? ` — ${event.reviewer_note}` : ""}`
+                            : event.action === "resubmitted"
+                              ? "You resubmitted your details"
+                              : event.action === "escalated"
+                                ? "Escalated for a faster review"
+                                : `Moved to ${STATUS_LABEL[event.to_status] ?? event.to_status}`}
                       </span>
                       <span className="text-muted-foreground">
                         {new Date(event.created_at).toLocaleString("en-GB")}
@@ -265,5 +277,121 @@ function ApplicationStatusPage() {
         ) : null}
       </Section>
     </>
+  );
+}
+
+const editableField =
+  "mt-2 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary";
+
+function ResubmitPanel({
+  token,
+  requestedFields,
+  status,
+  onDone,
+}: {
+  token: string;
+  requestedFields: string[];
+  status: string;
+  onDone: () => void;
+}) {
+  const send = useServerFn(resubmitApplication);
+  const [values, setValues] = useState<Record<string, string>>({});
+  const [message, setMessage] = useState("");
+
+  const asked = requestedFields.filter((f) => !f.startsWith("document_"));
+  const fields = (asked.length > 0
+    ? REQUESTABLE_FIELDS.filter((f) => asked.includes(f.key))
+    : REQUESTABLE_FIELDS.filter((f) => !f.key.startsWith("document_")));
+
+  const mutation = useMutation({
+    mutationFn: () =>
+      send({ data: { token, updates: values, message } }),
+    onSuccess: () => {
+      toast.success("Thanks — your updated details are back with the reviewer.");
+      setValues({});
+      setMessage("");
+      onDone();
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
+
+  return (
+    <form
+      className="mt-6 rounded-md border border-border bg-card p-7"
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (Object.values(values).every((v) => !v.trim()) && !message.trim()) {
+          toast.error("Fill in at least one field before resubmitting.");
+          return;
+        }
+        mutation.mutate();
+      }}
+    >
+      <h3 className="text-lg">
+        {status === "changes_requested"
+          ? "We need a few things from you"
+          : "Update your application"}
+      </h3>
+      {asked.length > 0 ? (
+        <p className="mt-2 text-sm text-muted-foreground">
+          Our reviewer asked for:{" "}
+          {requestedFields
+            .map((f) => REQUESTABLE_FIELD_LABEL[f] ?? f)
+            .join(", ")}
+          . Upload requests are handled in the documents panel above.
+        </p>
+      ) : (
+        <p className="mt-2 text-sm text-muted-foreground">
+          Anything you change here goes straight back to the reviewer, and every
+          change is recorded in your history below.
+        </p>
+      )}
+
+      <div className="mt-5 grid gap-4 sm:grid-cols-2">
+        {fields.map((f) => (
+          <label key={f.key} className="block">
+            <span className="eyebrow">{f.label}</span>
+            {f.key === "about" || f.key === "accreditations" ? (
+              <textarea
+                rows={3}
+                value={values[f.key] ?? ""}
+                onChange={(e) =>
+                  setValues((v) => ({ ...v, [f.key]: e.target.value }))
+                }
+                className={editableField}
+              />
+            ) : (
+              <input
+                type={f.key === "insurance_expiry" ? "date" : "text"}
+                value={values[f.key] ?? ""}
+                onChange={(e) =>
+                  setValues((v) => ({ ...v, [f.key]: e.target.value }))
+                }
+                className={editableField}
+              />
+            )}
+          </label>
+        ))}
+      </div>
+
+      <label className="mt-4 block">
+        <span className="eyebrow">Anything to tell the reviewer?</span>
+        <textarea
+          rows={3}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          className={editableField}
+          placeholder="Renewed cover attached, certificate number updated…"
+        />
+      </label>
+
+      <button
+        type="submit"
+        disabled={mutation.isPending}
+        className="mt-5 inline-flex rounded-sm bg-primary px-5 py-3 font-display text-sm font-semibold text-primary-foreground disabled:opacity-50"
+      >
+        {mutation.isPending ? "Sending…" : "Resubmit for review"}
+      </button>
+    </form>
   );
 }
