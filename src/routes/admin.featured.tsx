@@ -1,10 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Check, History, Lock, Star, StarOff, X } from "lucide-react";
+import { Check, Download, History, Lock, Star, StarOff, X } from "lucide-react";
 import { Section, SectionHead } from "@/components/layout-bits";
 import { supabase } from "@/integrations/supabase/client";
+import { downloadText } from "@/lib/track-export";
+import { notifyProVettingStatus } from "@/lib/pro-vetting.functions";
 import { useAuth } from "@/hooks/use-auth";
 import {
   adminProsQuery,
