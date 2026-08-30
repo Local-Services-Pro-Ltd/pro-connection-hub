@@ -71,6 +71,13 @@
       "when": 1788085214308,
       "tag": "0009_credential_verification_trusts_service_role",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1788085968102,
+      "tag": "0010_harden_definer_exec_and_public_views",
+      "breakpoints": true
     }
   ]
 }
