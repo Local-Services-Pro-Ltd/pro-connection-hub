@@ -15,6 +15,13 @@
       "when": 1788084074824,
       "tag": "0001_tighten_anon_grants_and_fix_checks",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1788084126098,
+      "tag": "0002_lock_down_user_roles_grants",
+      "breakpoints": true
     }
   ]
 }
