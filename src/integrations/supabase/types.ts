@@ -14,6 +14,61 @@ export type Database = {
   }
   public: {
     Tables: {
+      answers: {
+        Row: {
+          author_name: string
+          body: string
+          created_at: string
+          id: string
+          pro_id: string | null
+          published_at: string | null
+          question_id: string
+          status: string
+        }
+        Insert: {
+          author_name: string
+          body: string
+          created_at?: string
+          id?: string
+          pro_id?: string | null
+          published_at?: string | null
+          question_id: string
+          status?: string
+        }
+        Update: {
+          author_name?: string
+          body?: string
+          created_at?: string
+          id?: string
+          pro_id?: string | null
+          published_at?: string | null
+          question_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "answers_pro_id_fkey"
+            columns: ["pro_id"]
+            isOneToOne: false
+            referencedRelation: "pro_trust"
+            referencedColumns: ["pro_id"]
+          },
+          {
+            foreignKeyName: "answers_pro_id_fkey"
+            columns: ["pro_id"]
+            isOneToOne: false
+            referencedRelation: "pros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "answers_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       api_access_events: {
         Row: {
           bucket: string
@@ -753,6 +808,50 @@ export type Database = {
           },
         ]
       }
+      questions: {
+        Row: {
+          area: string | null
+          asker_name: string
+          body: string
+          created_at: string
+          id: string
+          published_at: string | null
+          status: string
+          title: string
+          trade_slug: string | null
+        }
+        Insert: {
+          area?: string | null
+          asker_name?: string
+          body: string
+          created_at?: string
+          id?: string
+          published_at?: string | null
+          status?: string
+          title: string
+          trade_slug?: string | null
+        }
+        Update: {
+          area?: string | null
+          asker_name?: string
+          body?: string
+          created_at?: string
+          id?: string
+          published_at?: string | null
+          status?: string
+          title?: string
+          trade_slug?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "questions_trade_slug_fkey"
+            columns: ["trade_slug"]
+            isOneToOne: false
+            referencedRelation: "trades"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
       reviews: {
         Row: {
           author_id: string | null
@@ -1103,6 +1202,20 @@ export type Database = {
         }
         Returns: Json
       }
+      answer_question: {
+        Args: { p_body: string; p_question_id: string; p_user_id: string }
+        Returns: string
+      }
+      ask_question: {
+        Args: {
+          p_area?: string
+          p_asker_name?: string
+          p_body: string
+          p_title: string
+          p_trade_slug?: string
+        }
+        Returns: string
+      }
       confirm_waiting_list: { Args: { p_token: string }; Returns: Json }
       featured_pro_regression: {
         Args: never
@@ -1173,6 +1286,19 @@ export type Database = {
         }[]
       }
       prune_api_access_events: { Args: never; Returns: undefined }
+      public_questions: {
+        Args: { p_limit?: number; p_trade?: string }
+        Returns: {
+          answer_count: number
+          area: string
+          asker_name: string
+          body: string
+          id: string
+          published_at: string
+          title: string
+          trade_slug: string
+        }[]
+      }
       request_booking: {
         Args: {
           p_contact_email: string
