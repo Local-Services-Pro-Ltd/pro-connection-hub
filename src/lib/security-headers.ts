@@ -59,7 +59,10 @@ export function applySecurityHeaders(response: Response): Response {
   const headers = new Headers(response.headers);
 
   const contentType = headers.get("content-type") ?? "";
-  if (contentType.includes("text/html")) {
+  // Dev/preview tooling (Vite HMR, the Lovable editor bridge) evaluates code
+  // strings, which a strict policy forbids — enforce CSP in production only.
+  const isProd = process.env["NODE_ENV"] === "production";
+  if (isProd && contentType.includes("text/html")) {
     headers.set("Content-Security-Policy", policy());
   }
 
