@@ -3,31 +3,51 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CalendarCheck, Check } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { bookedSlotsQuery } from "@/lib/queries";
+import {
+  bookedSlotsQuery,
+  proAvailabilityQuery,
+  type ProAvailability,
+} from "@/lib/queries";
 import { useAuth } from "@/hooks/use-auth";
 
 const HOURS = [8, 10, 13, 15];
 const DAYS = 10;
 
-/** Next N working days x fixed visit windows, from tomorrow onwards. */
-function buildSlots(): Date[] {
+/**
+ * Slot grid for the next N calendar days. When the tradesperson has declared
+ * their own windows we honour those exactly; otherwise we fall back to
+ * standard weekday visit times so the panel is never empty.
+ */
+function buildSlots(windows: ProAvailability[]): Date[] {
   const out: Date[] = [];
   const cursor = new Date();
   cursor.setHours(0, 0, 0, 0);
   cursor.setDate(cursor.getDate() + 1);
-  while (out.length < DAYS * HOURS.length) {
+
+  for (let i = 0; i < 21 && out.length < DAYS * HOURS.length; i += 1) {
     const day = cursor.getDay();
-    if (day !== 0 && day !== 6) {
+
+    if (windows.length > 0) {
+      for (const w of windows.filter((x) => x.weekday === day)) {
+        for (let m = w.start_minute; m + w.slot_minutes <= w.end_minute; m += w.slot_minutes) {
+          const d = new Date(cursor);
+          d.setHours(Math.floor(m / 60), m % 60, 0, 0);
+          out.push(d);
+        }
+      }
+    } else if (day !== 0 && day !== 6) {
       for (const h of HOURS) {
         const d = new Date(cursor);
         d.setHours(h, 0, 0, 0);
         out.push(d);
       }
     }
+
     cursor.setDate(cursor.getDate() + 1);
   }
   return out;
 }
+
 
 const reasons: Record<string, string> = {
   unknown_pro: "That tradesperson isn't taking bookings right now.",
