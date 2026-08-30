@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AccountRouteImport } from './routes/account'
+import { Route as ApplicationStatusRouteImport } from './routes/application-status'
 import { Route as AreasRouteImport } from './routes/areas'
 import { Route as ClaimRouteImport } from './routes/claim'
 import { Route as CoverageRouteImport } from './routes/coverage'
@@ -60,6 +61,11 @@ const IndexRoute = IndexRouteImport.update({
 const AccountRoute = AccountRouteImport.update({
   id: '/account',
   path: '/account',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApplicationStatusRoute = ApplicationStatusRouteImport.update({
+  id: '/application-status',
+  path: '/application-status',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AreasRoute = AreasRouteImport.update({
@@ -267,6 +273,7 @@ const LovableEmailTransactionalPreviewRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
+  '/application-status': typeof ApplicationStatusRoute
   '/areas': typeof AreasRoute
   '/claim': typeof ClaimRoute
   '/coverage': typeof CoverageRoute
@@ -311,6 +318,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
+  '/application-status': typeof ApplicationStatusRoute
   '/areas': typeof AreasRoute
   '/claim': typeof ClaimRoute
   '/coverage': typeof CoverageRoute
@@ -356,6 +364,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
+  '/application-status': typeof ApplicationStatusRoute
   '/areas': typeof AreasRoute
   '/claim': typeof ClaimRoute
   '/coverage': typeof CoverageRoute
@@ -402,6 +411,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/account'
+    | '/application-status'
     | '/areas'
     | '/claim'
     | '/coverage'
@@ -446,6 +456,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/account'
+    | '/application-status'
     | '/areas'
     | '/claim'
     | '/coverage'
@@ -490,6 +501,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/account'
+    | '/application-status'
     | '/areas'
     | '/claim'
     | '/coverage'
@@ -535,6 +547,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRoute: typeof AccountRoute
+  ApplicationStatusRoute: typeof ApplicationStatusRoute
   AreasRoute: typeof AreasRoute
   ClaimRoute: typeof ClaimRoute
   CoverageRoute: typeof CoverageRoute
@@ -591,6 +604,13 @@ declare module '@tanstack/react-router' {
       path: '/account'
       fullPath: '/account'
       preLoaderRoute: typeof AccountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/application-status': {
+      id: '/application-status'
+      path: '/application-status'
+      fullPath: '/application-status'
+      preLoaderRoute: typeof ApplicationStatusRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/areas': {
@@ -879,6 +899,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
+  ApplicationStatusRoute: ApplicationStatusRoute,
   AreasRoute: AreasRoute,
   ClaimRoute: ClaimRoute,
   CoverageRoute: CoverageRoute,
