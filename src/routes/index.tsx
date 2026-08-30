@@ -7,7 +7,7 @@ import { Section, SectionHead } from "@/components/layout-bits";
 import {
   tradesQuery,
   areasQuery,
-  prosQuery,
+  featuredProsQuery,
   statsQuery,
   latestReviewsQuery,
   proCountsQuery,
@@ -23,7 +23,7 @@ export const Route = createFileRoute("/")({
     const [, , , , , , origin] = await Promise.all([
       qc.ensureQueryData(tradesQuery),
       qc.ensureQueryData(areasQuery),
-      qc.ensureQueryData(prosQuery({ sort: "rating" })),
+      qc.ensureQueryData(featuredProsQuery),
       qc.ensureQueryData(statsQuery),
       qc.ensureQueryData(latestReviewsQuery),
       qc.ensureQueryData(proCountsQuery),
@@ -107,7 +107,7 @@ const steps = [
 function Home() {
   const { data: trades } = useSuspenseQuery(tradesQuery);
   const { data: areas } = useSuspenseQuery(areasQuery);
-  const { data: pros } = useSuspenseQuery(prosQuery({ sort: "rating" }));
+  const { data: featuredPros } = useSuspenseQuery(featuredProsQuery);
   const { data: stats } = useSuspenseQuery(statsQuery);
   const { data: reviews } = useSuspenseQuery(latestReviewsQuery);
   const { data: counts } = useSuspenseQuery(proCountsQuery);
@@ -258,19 +258,68 @@ function Home() {
         </div>
       </Section>
 
-      {/* Featured pros */}
+      {/* Featured pros — only ever real, hand-picked firms. Until an admin
+          features someone, we say what's actually happening instead. */}
       <Section>
-        <SectionHead
-          eyebrow="Featured tradesmen"
-          title="People who turn up."
-          sub="The highest-rated firms currently taking work."
-        />
-        <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {pros.slice(0, 6).map((p) => (
-            <ProCard key={p.id} pro={p} />
-          ))}
-        </div>
+        {featuredPros.length > 0 ? (
+          <>
+            <SectionHead
+              eyebrow="Featured tradesmen"
+              title="People who turn up."
+              sub="Hand-picked firms we've checked ourselves — insurance, trade bodies and past work."
+            />
+            <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {featuredPros.map((p) => (
+                <ProCard key={p.id} pro={p} />
+              ))}
+            </div>
+          </>
+        ) : (
+          <>
+            <SectionHead
+              eyebrow="Vetting in progress"
+              title="No featured firms yet — on purpose."
+              sub="We'd rather show you nobody than show you a name we haven't checked. A firm only appears here once we've seen its insurance, trade-body membership and recent work in person."
+            />
+            <div className="mt-8 grid gap-px overflow-hidden rounded-md border border-border bg-border md:grid-cols-2">
+              <div className="bg-card p-8">
+                <h3 className="text-xl">Need work doing now?</h3>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                  Post the job anyway. We match it by hand to vetted trades in
+                  your postcode and come back to you with names and quotes.
+                </p>
+                <Link
+                  to="/post-job"
+                  className="mt-6 inline-flex items-center gap-2 text-sm text-primary hover:underline"
+                >
+                  Post a job — free <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+              <div className="bg-card p-8">
+                <h3 className="text-xl">Run a trade business?</h3>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                  Apply to be listed. We're onboarding a small number of firms
+                  per area so every postcode has cover without spreading thin.
+                </p>
+                <Link
+                  to="/for-tradesmen"
+                  className="mt-6 inline-flex items-center gap-2 text-sm text-primary hover:underline"
+                >
+                  How membership works <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+            <p className="mt-6 text-sm text-muted-foreground">
+              You can still{" "}
+              <Link to="/trades" className="text-primary hover:underline">
+                browse every trade we cover
+              </Link>
+              .
+            </p>
+          </>
+        )}
       </Section>
+
 
       {/* Reviews */}
       <Section className="border-y border-border bg-surface">
