@@ -1,0 +1,48 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1788084003063,
+      "tag": "0000_security_regression_suite",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1788084074824,
+      "tag": "0001_tighten_anon_grants_and_fix_checks",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1788084126098,
+      "tag": "0002_lock_down_user_roles_grants",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1788084274170,
+      "tag": "0003_rbac_probe_trigger_phase",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1788084328784,
+      "tag": "0004_schedule_security_scans",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1788084487749,
+      "tag": "0005_protect_reviewer_location_and_feedback_reads",
+      "breakpoints": true
+    }
+  ]
+}

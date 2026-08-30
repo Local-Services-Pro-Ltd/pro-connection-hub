@@ -1,5 +1,7 @@
 import type { ComponentType } from 'react'
 import { template as waitingListConfirm } from './waiting-list-confirm'
+import { template as securityScanAlert } from './security-scan-alert'
+
 
 export interface TemplateEntry {
   component: ComponentType<any>
@@ -16,4 +18,5 @@ export interface TemplateEntry {
  */
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'waiting-list-confirm': waitingListConfirm,
+  'security-scan-alert': securityScanAlert,
 }

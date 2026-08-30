@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.15"
+    PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
@@ -478,6 +478,54 @@ export type Database = {
           },
         ]
       }
+      security_scan_runs: {
+        Row: {
+          alerted: boolean
+          created_at: string
+          failed: number
+          id: string
+          results: Json
+          source: string
+          total: number
+        }
+        Insert: {
+          alerted?: boolean
+          created_at?: string
+          failed?: number
+          id?: string
+          results?: Json
+          source?: string
+          total?: number
+        }
+        Update: {
+          alerted?: boolean
+          created_at?: string
+          failed?: number
+          id?: string
+          results?: Json
+          source?: string
+          total?: number
+        }
+        Relationships: []
+      }
+      security_scan_secret: {
+        Row: {
+          created_at: string
+          id: boolean
+          token: string
+        }
+        Insert: {
+          created_at?: string
+          id?: boolean
+          token?: string
+        }
+        Update: {
+          created_at?: string
+          id?: boolean
+          token?: string
+        }
+        Relationships: []
+      }
       trades: {
         Row: {
           blurb: string
@@ -676,6 +724,36 @@ export type Database = {
       mark_waiting_list_email_sent: {
         Args: { p_id: string }
         Returns: undefined
+      }
+      security_caller_is_admin: { Args: never; Returns: boolean }
+      security_posture_check: {
+        Args: never
+        Returns: {
+          check_name: string
+          detail: string
+          passed: boolean
+        }[]
+      }
+      security_rbac_probe: {
+        Args: never
+        Returns: {
+          check_name: string
+          detail: string
+          passed: boolean
+        }[]
+      }
+      security_regression_run: {
+        Args: never
+        Returns: {
+          check_name: string
+          detail: string
+          passed: boolean
+          suite: string
+        }[]
+      }
+      security_scan_token_matches: {
+        Args: { p_token: string }
+        Returns: boolean
       }
     }
     Enums: {
