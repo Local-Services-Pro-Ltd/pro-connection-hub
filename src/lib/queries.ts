@@ -793,3 +793,50 @@ export function waitingListTrendQuery(weeks = 8) {
     staleTime: 60_000,
   });
 }
+
+/* ---------- Ask the Pros (moderated public Q&A) ---------- */
+
+export type PublicQuestion = {
+  id: string;
+  title: string;
+  body: string;
+  trade_slug: string | null;
+  asker_name: string;
+  area: string | null;
+  published_at: string | null;
+  answer_count: number;
+};
+
+export const questionsQuery = (trade?: string) =>
+  queryOptions({
+    queryKey: ["questions", trade ?? "all"],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("public_questions", {
+        ...(trade ? { p_trade: trade } : {}),
+        p_limit: 100,
+      });
+      if (error) throw error;
+      return (data ?? []) as unknown as PublicQuestion[];
+    },
+    staleTime: 60_000,
+  });
+
+export const questionQuery = (id: string) =>
+  queryOptions({
+    queryKey: ["question", id],
+    queryFn: async () => {
+      const [{ data: question }, { data: answers }] = await Promise.all([
+        supabase.from("questions").select("*").eq("id", id).maybeSingle(),
+        supabase
+          .from("answers")
+          .select("*")
+          .eq("question_id", id)
+          .order("created_at"),
+      ]);
+      return {
+        question: question as Database["public"]["Tables"]["questions"]["Row"] | null,
+        answers: (answers ?? []) as Database["public"]["Tables"]["answers"]["Row"][],
+      };
+    },
+    staleTime: 60_000,
+  });
