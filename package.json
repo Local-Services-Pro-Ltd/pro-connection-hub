@@ -13,7 +13,8 @@
     "security:scan": "curl -sS -H \"x-security-scan-token: $SECURITY_SCAN_TOKEN\" \"${APP_URL:-http://localhost:8080}/api/public/security-scan?source=manual\"",
     "test:featured": "python3 tests/regression/featured_pro.py",
     "test:access": "python3 tests/regression/access_control.py",
-    "security:ci": "node scripts/security-ci.mjs"
+    "security:ci": "node scripts/security-ci.mjs",
+    "test:ratelimit": "python3 tests/regression/rate_limits.py"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

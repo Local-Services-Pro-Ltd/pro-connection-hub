@@ -5,6 +5,9 @@ on:
     branches: ["**"]
   push:
     branches: [main]
+  schedule:
+    # Nightly scan at 02:15 UTC — keeps a rolling history in the repository.
+    - cron: "15 2 * * *"
   workflow_dispatch:
 
 # Cancel superseded runs on the same PR.
@@ -17,6 +20,8 @@ jobs:
     name: Security scan and access-control tests
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -42,11 +47,17 @@ jobs:
 
       # Fails the job — and therefore blocks the merge — when the database
       # security suites report a finding that is not in the reviewed baseline.
+      # On the nightly run it also appends a snapshot to the rolling history.
       - name: Security regression scan
+        id: scan
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-        run: node scripts/security-ci.mjs
+          SCAN_SOURCE: ${{ github.event_name }}
+        run: |
+          node scripts/security-ci.mjs \
+            --json-out security-summary.json \
+            ${{ github.event_name == 'schedule' && '--history' || '' }}
 
       # Behavioural checks: an anonymous / non-admin caller must not reach
       # privileged functions, and public views must stay published-only.
@@ -56,3 +67,36 @@ jobs:
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: python3 tests/regression/access_control.py
+
+      # Rate limiting must actually block bursts on the public endpoints.
+      - name: Rate-limit tests
+        if: env.APP_URL != ''
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          BASE_URL: ${{ secrets.APP_URL }}
+        run: python3 tests/regression/rate_limits.py
+
+      - name: Commit rolling security history
+        if: github.event_name == 'schedule' && always()
+        run: |
+          if [ -n "$(git status --porcelain tests/regression/history)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add tests/regression/history
+            git commit -m "chore(security): nightly scan snapshot"
+            git push
+          else
+            echo "No history change."
+          fi
+
+      # Alert on any failure above: new findings, failed tests, or a broken job.
+      - name: Notify on failure
+        if: failure()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SECURITY_SLACK_WEBHOOK_URL }}
+          APP_URL: ${{ secrets.APP_URL }}
+          SECURITY_SCAN_TOKEN: ${{ secrets.SECURITY_SCAN_TOKEN }}
+          SCAN_SUMMARY_FILE: security-summary.json
+          ALERT_REASON: >-
+            security job failed on ${{ github.event_name }} (${{ github.ref_name }})
+        run: node scripts/notify-security.mjs

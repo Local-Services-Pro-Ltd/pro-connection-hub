@@ -46,6 +46,45 @@ function json(body: unknown, status: number, extra?: HeadersInit): Response {
   });
 }
 
+export type DenialOutcome =
+  | "rate_limited"
+  | "method_not_allowed"
+  | "unauthorized"
+  | "bad_request";
+
+/**
+ * Records a denied request so admins can review abuse patterns.
+ * Only a truncated hash of the caller IP is stored, never the address.
+ * Logging never blocks or fails a response.
+ */
+export async function logApiDenial(
+  request: Request,
+  args: {
+    bucket: string;
+    outcome: DenialOutcome;
+    status: number;
+    detail?: string;
+  },
+): Promise<void> {
+  try {
+    const { supabaseAdmin } = await import(
+      "@/integrations/supabase/client.server"
+    );
+    await supabaseAdmin.from("api_access_events").insert({
+      endpoint: new URL(request.url).pathname,
+      bucket: args.bucket,
+      method: request.method,
+      outcome: args.outcome,
+      status: args.status,
+      ip_hash: clientFingerprint(request),
+      user_agent: (request.headers.get("user-agent") ?? "").slice(0, 240),
+      detail: args.detail ?? null,
+    });
+  } catch (err) {
+    console.error("[api-guard] denial logging failed", err);
+  }
+}
+
 /**
  * Returns a `Response` when the request must be rejected, or `null` when the
  * handler may proceed.
@@ -56,6 +95,12 @@ export async function guardPublicRequest(
 ): Promise<Response | null> {
   const methods = options.methods ?? ["GET", "HEAD"];
   if (!methods.includes(request.method)) {
+    await logApiDenial(request, {
+      bucket: options.bucket,
+      outcome: "method_not_allowed",
+      status: 405,
+      detail: `allowed: ${methods.join(", ")}`,
+    });
     return json({ error: "method_not_allowed" }, 405, {
       allow: methods.join(", "),
     });
@@ -74,6 +119,12 @@ export async function guardPublicRequest(
     });
     // A limiter outage must not take the public endpoints down.
     if (!error && data === false) {
+      await logApiDenial(request, {
+        bucket: options.bucket,
+        outcome: "rate_limited",
+        status: 429,
+        detail: `limit ${options.limit}/${options.windowSeconds}s`,
+      });
       return json({ error: "rate_limited" }, 429, {
         "retry-after": String(options.windowSeconds),
       });
@@ -84,6 +135,7 @@ export async function guardPublicRequest(
 
   return null;
 }
+
 
 /** Constant-time comparison for shared-secret endpoints. */
 export function secretMatches(

@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      api_access_events: {
+        Row: {
+          bucket: string
+          created_at: string
+          detail: string | null
+          endpoint: string
+          id: string
+          ip_hash: string | null
+          method: string
+          outcome: string
+          status: number
+          user_agent: string | null
+        }
+        Insert: {
+          bucket: string
+          created_at?: string
+          detail?: string | null
+          endpoint: string
+          id?: string
+          ip_hash?: string | null
+          method: string
+          outcome: string
+          status: number
+          user_agent?: string | null
+        }
+        Update: {
+          bucket?: string
+          created_at?: string
+          detail?: string | null
+          endpoint?: string
+          id?: string
+          ip_hash?: string | null
+          method?: string
+          outcome?: string
+          status?: number
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       areas: {
         Row: {
           name: string
@@ -778,6 +817,7 @@ export type Database = {
         Args: { p_id: string }
         Returns: undefined
       }
+      prune_api_access_events: { Args: never; Returns: undefined }
       security_access_matrix: {
         Args: never
         Returns: {

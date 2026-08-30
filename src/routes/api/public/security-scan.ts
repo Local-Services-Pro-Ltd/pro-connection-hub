@@ -58,6 +58,13 @@ async function runScan(request: Request): Promise<Response> {
   }
 
   if (!allowed) {
+    const { logApiDenial } = await import("@/lib/api-guard.server");
+    await logApiDenial(request, {
+      bucket: "api:security-scan",
+      outcome: "unauthorized",
+      status: 401,
+      detail: "invalid or missing scan token",
+    });
     return new Response(JSON.stringify({ error: "unauthorized" }), {
       status: 401,
       headers: { "content-type": "application/json" },
@@ -80,18 +87,16 @@ async function runScan(request: Request): Promise<Response> {
   let alerted = false;
   if (failures.length > 0) {
     try {
-      const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
-      await sendTemplateEmail("security-scan-alert", "", {
-        templateData: {
-          failures,
-          total: rows.length,
-          ranAt: new Date().toISOString(),
-          environment: new URL(request.url).host,
-        },
+      const { sendSecurityAlert } = await import("@/lib/security-alerts.server");
+      const result = await sendSecurityAlert({
+        failures,
+        total: rows.length,
+        source,
+        environment: new URL(request.url).host,
       });
-      alerted = true;
+      alerted = result.email || result.slack;
     } catch (err) {
-      console.error("[security-scan] alert email failed", err);
+      console.error("[security-scan] alert fan-out failed", err);
     }
   }
 
