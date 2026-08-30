@@ -2,6 +2,20 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { getRequestHeader } from "@tanstack/react-start/server";
 import { createHash } from "crypto";
+import {
+  ALLOWED_DOCUMENT_TYPES,
+  DOCUMENT_KINDS,
+  MAX_DOCUMENT_BYTES,
+  REQUESTABLE_FIELD_LABEL,
+  checkInsurance,
+  isValidCompanyNumberFormat,
+  normaliseCompanyNumber,
+  overallOutcome,
+  validateDocumentFile,
+  type ApplicationDocument,
+  type VerificationCheck,
+  type VerificationResult,
+} from "@/lib/application-verification";
 
 /**
  * Certification applications from firms that want a TradesmanFinder listing.
