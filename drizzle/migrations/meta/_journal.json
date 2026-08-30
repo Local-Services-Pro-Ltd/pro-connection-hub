@@ -239,6 +239,13 @@
       "when": 1788109049941,
       "tag": "0033_qa_ai_assist",
       "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1788110382938,
+      "tag": "0034_application_reminders_and_jobs",
+      "breakpoints": true
     }
   ]
 }

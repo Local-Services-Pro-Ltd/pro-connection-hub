@@ -108,6 +108,41 @@ export type Database = {
         }
         Relationships: []
       }
+      application_reminders: {
+        Row: {
+          application_id: string
+          created_at: string
+          dedupe_key: string
+          detail: string | null
+          id: string
+          kind: string
+        }
+        Insert: {
+          application_id: string
+          created_at?: string
+          dedupe_key: string
+          detail?: string | null
+          id?: string
+          kind: string
+        }
+        Update: {
+          application_id?: string
+          created_at?: string
+          dedupe_key?: string
+          detail?: string | null
+          id?: string
+          kind?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "application_reminders_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "pro_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       areas: {
         Row: {
           name: string
@@ -129,6 +164,39 @@ export type Database = {
           slug?: string
           sort_order?: number
           status?: string
+        }
+        Relationships: []
+      }
+      background_jobs: {
+        Row: {
+          last_error: string | null
+          last_result: Json
+          last_run_at: string | null
+          locked_until: string | null
+          name: string
+          paused_at: string | null
+          paused_reason: string | null
+          updated_at: string
+        }
+        Insert: {
+          last_error?: string | null
+          last_result?: Json
+          last_run_at?: string | null
+          locked_until?: string | null
+          name: string
+          paused_at?: string | null
+          paused_reason?: string | null
+          updated_at?: string
+        }
+        Update: {
+          last_error?: string | null
+          last_result?: Json
+          last_run_at?: string | null
+          locked_until?: string | null
+          name?: string
+          paused_at?: string | null
+          paused_reason?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -1464,6 +1532,10 @@ export type Database = {
       }
     }
     Functions: {
+      acquire_job_lease: {
+        Args: { p_name: string; p_seconds: number }
+        Returns: boolean
+      }
       add_to_waiting_list: {
         Args: {
           p_email: string
@@ -1583,6 +1655,10 @@ export type Database = {
           title: string
           trade_slug: string
         }[]
+      }
+      release_job_lease: {
+        Args: { p_error?: string; p_name: string; p_result?: Json }
+        Returns: undefined
       }
       request_booking: {
         Args: {
