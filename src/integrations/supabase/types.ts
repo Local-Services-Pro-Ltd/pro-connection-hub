@@ -1027,8 +1027,50 @@ export type Database = {
           },
         ]
       }
+      question_ai_reviews: {
+        Row: {
+          created_at: string
+          question_id: string
+          reasons: string[]
+          risk: string
+          summary: string | null
+          verdict: string
+        }
+        Insert: {
+          created_at?: string
+          question_id: string
+          reasons?: string[]
+          risk?: string
+          summary?: string | null
+          verdict?: string
+        }
+        Update: {
+          created_at?: string
+          question_id?: string
+          reasons?: string[]
+          risk?: string
+          summary?: string | null
+          verdict?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "question_ai_reviews_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: true
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       questions: {
         Row: {
+          ai_answer: string | null
+          ai_answer_at: string | null
+          ai_safety: string
+          ai_safety_note: string | null
+          ai_suggested_trade: string | null
+          ai_tags: string[]
+          ai_urgency: string | null
           area: string | null
           asker_name: string
           body: string
@@ -1040,6 +1082,13 @@ export type Database = {
           trade_slug: string | null
         }
         Insert: {
+          ai_answer?: string | null
+          ai_answer_at?: string | null
+          ai_safety?: string
+          ai_safety_note?: string | null
+          ai_suggested_trade?: string | null
+          ai_tags?: string[]
+          ai_urgency?: string | null
           area?: string | null
           asker_name?: string
           body: string
@@ -1051,6 +1100,13 @@ export type Database = {
           trade_slug?: string | null
         }
         Update: {
+          ai_answer?: string | null
+          ai_answer_at?: string | null
+          ai_safety?: string
+          ai_safety_note?: string | null
+          ai_suggested_trade?: string | null
+          ai_tags?: string[]
+          ai_urgency?: string | null
           area?: string | null
           asker_name?: string
           body?: string
@@ -1540,6 +1596,15 @@ export type Database = {
         }
         Returns: Json
       }
+      search_questions: {
+        Args: { p_limit?: number; p_query: string }
+        Returns: {
+          answer_count: number
+          id: string
+          title: string
+          trade_slug: string
+        }[]
+      }
       security_access_matrix: {
         Args: never
         Returns: {
@@ -1590,6 +1655,22 @@ export type Database = {
       security_scan_token_matches: {
         Args: { p_token: string }
         Returns: boolean
+      }
+      set_question_ai: {
+        Args: {
+          p_answer?: string
+          p_question_id: string
+          p_reasons?: string[]
+          p_risk?: string
+          p_safety?: string
+          p_safety_note?: string
+          p_suggested_trade?: string
+          p_summary?: string
+          p_tags?: string[]
+          p_urgency?: string
+          p_verdict?: string
+        }
+        Returns: undefined
       }
       submit_pro_application: {
         Args: {

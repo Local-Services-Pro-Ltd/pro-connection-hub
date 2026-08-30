@@ -75,8 +75,11 @@ function AdminQa() {
 
   const questions = data?.questions ?? [];
   const answers = data?.answers ?? [];
+  const reviews = data?.reviews ?? [];
+  const reviewFor = (id: string) => reviews.find((r) => r.question_id === id);
   const questionTitle = (id: string) =>
     questions.find((q) => q.id === id)?.title ?? "Question";
+
 
   const Actions = ({
     target,
@@ -124,7 +127,55 @@ function AdminQa() {
             <p className="mt-2 whitespace-pre-line text-sm text-muted-foreground">
               {q.body}
             </p>
+
+            {(() => {
+              const r = reviewFor(q.id);
+              if (!r) return null;
+              const tone =
+                r.verdict === "reject"
+                  ? "border-destructive/40 text-destructive"
+                  : r.verdict === "publish"
+                    ? "border-border-strong"
+                    : "border-border";
+              return (
+                <div className={`mt-4 rounded-sm border ${tone} bg-surface p-4`}>
+                  <p className="eyebrow">
+                    AI suggests: {r.verdict} · {r.risk} risk
+                    {q.ai_safety && q.ai_safety !== "none"
+                      ? ` · ${q.ai_safety} safety`
+                      : ""}
+                    {q.ai_urgency ? ` · ${q.ai_urgency}` : ""}
+                  </p>
+                  {r.summary && <p className="mt-2 text-sm">{r.summary}</p>}
+                  {r.reasons.length > 0 && (
+                    <ul className="mt-2 list-disc pl-5 text-sm text-muted-foreground">
+                      {r.reasons.map((reason) => (
+                        <li key={reason}>{reason}</li>
+                      ))}
+                    </ul>
+                  )}
+                  {(q.ai_tags ?? []).length > 0 && (
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      Tags: {(q.ai_tags ?? []).join(", ")}
+                      {q.ai_suggested_trade
+                        ? ` · suggested trade: ${q.ai_suggested_trade}`
+                        : ""}
+                    </p>
+                  )}
+                  {q.ai_answer && (
+                    <details className="mt-3 text-sm">
+                      <summary className="cursor-pointer text-muted-foreground">
+                        AI first-pass answer shown to the homeowner
+                      </summary>
+                      <p className="mt-2 whitespace-pre-line">{q.ai_answer}</p>
+                    </details>
+                  )}
+                </div>
+              );
+            })()}
+
             <Actions target="question" id={q.id} />
+
           </li>
         ))}
       </ul>

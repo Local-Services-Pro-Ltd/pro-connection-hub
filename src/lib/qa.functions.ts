@@ -78,7 +78,7 @@ export const submitQuestion = createServerFn({ method: "POST" })
         "That's a few questions in a short space of time. Please try again shortly.",
       );
 
-    const { error } = await supabaseAdmin.rpc("ask_question", {
+    const { data: questionId, error } = await supabaseAdmin.rpc("ask_question", {
       p_title: data.title,
       p_body: data.body,
       ...(data.trade ? { p_trade_slug: data.trade } : {}),
@@ -87,8 +87,51 @@ export const submitQuestion = createServerFn({ method: "POST" })
     });
 
     if (error) throw new Error("Something went wrong. Please try again.");
-    return { pending: true as const };
+
+    // Best-effort AI pass: labelled first answer, safety gating, auto-tags and
+    // a private moderation suggestion. Never blocks or fails the submission.
+    let ai: Awaited<ReturnType<typeof import("@/lib/qa-ai.server").analyseQuestion>> =
+      null;
+    try {
+      const { analyseQuestion } = await import("@/lib/qa-ai.server");
+      const { data: trades } = await supabaseAdmin.from("trades").select("slug");
+      ai = await analyseQuestion(
+        {
+          title: data.title,
+          body: data.body,
+          ...(data.trade ? { trade: data.trade } : {}),
+          ...(data.area ? { area: data.area } : {}),
+        },
+        (trades ?? []).map((t: { slug: string }) => t.slug),
+      );
+      if (ai && questionId) {
+        await supabaseAdmin.rpc("set_question_ai", {
+          p_question_id: questionId,
+          p_answer: ai.answer,
+          p_safety: ai.safety,
+          ...(ai.safety_note ? { p_safety_note: ai.safety_note } : {}),
+          p_tags: ai.tags,
+          ...(ai.urgency ? { p_urgency: ai.urgency } : {}),
+          ...(ai.suggested_trade ? { p_suggested_trade: ai.suggested_trade } : {}),
+          p_verdict: ai.verdict,
+          p_risk: ai.risk,
+          p_reasons: ai.reasons,
+          ...(ai.summary ? { p_summary: ai.summary } : {}),
+
+        });
+      }
+    } catch {
+      ai = null;
+    }
+
+    return {
+      pending: true as const,
+      aiAnswer: ai?.answer ?? null,
+      aiSafety: ai?.safety ?? "none",
+      aiSafetyNote: ai?.safety_note ?? null,
+    };
   });
+
 
 export type AnswerInput = { questionId: string; body: string };
 
@@ -142,7 +185,7 @@ export const listPendingQa = createServerFn({ method: "GET" })
     });
     if (!isAdmin) throw new Error("Admins only.");
 
-    const [questions, answers] = await Promise.all([
+    const [questions, answers, reviews] = await Promise.all([
       context.supabase
         .from("questions")
         .select("*")
@@ -153,13 +196,16 @@ export const listPendingQa = createServerFn({ method: "GET" })
         .select("*")
         .order("created_at", { ascending: false })
         .limit(200),
+      context.supabase.from("question_ai_reviews").select("*").limit(200),
     ]);
 
     return {
       questions: questions.data ?? [],
       answers: answers.data ?? [],
+      reviews: reviews.data ?? [],
     };
   });
+
 
 export const moderateQa = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])

@@ -840,3 +840,27 @@ export const questionQuery = (id: string) =>
     },
     staleTime: 60_000,
   });
+
+export type RelatedQuestion = {
+  id: string;
+  title: string;
+  trade_slug: string | null;
+  answer_count: number;
+};
+
+/** Already-answered questions similar to what a homeowner is typing. */
+export const relatedQuestionsQuery = (query: string) =>
+  queryOptions({
+    queryKey: ["related-questions", query],
+    queryFn: async () => {
+      const trimmed = query.trim();
+      if (trimmed.length < 8) return [] as RelatedQuestion[];
+      const { data, error } = await supabase.rpc("search_questions", {
+        p_query: trimmed,
+        p_limit: 4,
+      });
+      if (error) throw error;
+      return (data ?? []) as unknown as RelatedQuestion[];
+    },
+    staleTime: 60_000,
+  });
