@@ -503,3 +503,34 @@ export const apiAccessEventsQuery = queryOptions({
   },
   staleTime: 0,
 });
+
+export type TradeHeroImage =
+  Database["public"]["Tables"]["trade_hero_images"]["Row"];
+
+/**
+ * Per-trade hero overrides set in /admin/hero-images. Publicly readable so a
+ * trade page can render an uploaded photo, focal point and alt text without a
+ * code change.
+ */
+export const tradeHeroImagesQuery = queryOptions({
+  queryKey: ["trade-hero-images"],
+  queryFn: async () => {
+    const { data, error } = await supabase
+      .from("trade_hero_images")
+      .select("*")
+      .order("slug");
+    if (error) throw error;
+    return (data ?? []) as TradeHeroImage[];
+  },
+  staleTime: 60_000,
+});
+
+/** Single trade's hero override, or null when the bundled photo is in use. */
+export async function fetchTradeHeroImage(slug: string) {
+  const { data } = await supabase
+    .from("trade_hero_images")
+    .select("*")
+    .eq("slug", slug)
+    .maybeSingle();
+  return (data as TradeHeroImage | null) ?? null;
+}
