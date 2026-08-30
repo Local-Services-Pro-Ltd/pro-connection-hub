@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { timingSafeEqual } from "crypto";
+import { guardPublicRequest } from "@/lib/api-guard.server";
 
 /**
  * Scheduled vulnerability / regression scan endpoint.
@@ -33,6 +34,16 @@ function matchesEnvToken(provided: string): boolean {
 }
 
 async function runScan(request: Request): Promise<Response> {
+  // Rate limit before any token comparison, so the shared secret cannot be
+  // brute-forced from a single origin.
+  const blocked = await guardPublicRequest(request, {
+    bucket: "api:security-scan",
+    limit: 10,
+    windowSeconds: 300,
+    methods: ["GET", "POST"],
+  });
+  if (blocked) return blocked;
+
   const token = presentedToken(request);
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
