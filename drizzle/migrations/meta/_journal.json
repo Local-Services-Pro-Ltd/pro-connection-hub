@@ -197,6 +197,13 @@
       "when": 1788095141868,
       "tag": "0027_waiting_list_prefs_trend_launch",
       "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1788097572999,
+      "tag": "0028_waiting_list_self_service_and_position_alerts",
+      "breakpoints": true
     }
   ]
 }

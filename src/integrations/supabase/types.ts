@@ -949,6 +949,7 @@ export type Database = {
           created_at: string
           email: string
           id: string
+          last_position_notified: number | null
           launch_notified_at: string | null
           metadata: Json
           name: string | null
@@ -969,6 +970,7 @@ export type Database = {
           created_at?: string
           email: string
           id?: string
+          last_position_notified?: number | null
           launch_notified_at?: string | null
           metadata?: Json
           name?: string | null
@@ -989,6 +991,7 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
+          last_position_notified?: number | null
           launch_notified_at?: string | null
           metadata?: Json
           name?: string | null
@@ -1250,12 +1253,14 @@ export type Database = {
         Returns: {
           email: string
           id: string
+          last_position_notified: number
           launch_notified_at: string
           name: string
           notify_launch: boolean
           postcode: string
           queue_position: number
           role: string
+          trade: string
         }[]
       }
       waiting_list_area_total: { Args: { p_area: string }; Returns: number }
@@ -1269,8 +1274,13 @@ export type Database = {
           traders: number
         }[]
       }
+      waiting_list_details: { Args: { p_token: string }; Returns: Json }
       waiting_list_mark_launch_notified: {
         Args: { p_id: string }
+        Returns: undefined
+      }
+      waiting_list_mark_position_notified: {
+        Args: { p_id: string; p_position: number }
         Returns: undefined
       }
       waiting_list_set_prefs: {
@@ -1289,6 +1299,10 @@ export type Database = {
           signups: number
           week: string
         }[]
+      }
+      waiting_list_update_details: {
+        Args: { p_postcode: string; p_token: string; p_trade: string }
+        Returns: Json
       }
     }
     Enums: {
