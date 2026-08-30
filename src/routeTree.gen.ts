@@ -16,6 +16,7 @@ import { Route as ClaimRouteImport } from './routes/claim'
 import { Route as CoverageRouteImport } from './routes/coverage'
 import { Route as EnterpriseRouteImport } from './routes/enterprise'
 import { Route as ForTradesmenRouteImport } from './routes/for-tradesmen'
+import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as PostJobRouteImport } from './routes/post-job'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as SavedRouteImport } from './routes/saved'
@@ -24,6 +25,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as VerificationRouteImport } from './routes/verification'
 import { Route as AdminAccessRouteImport } from './routes/admin.access'
+import { Route as AdminApplicationsRouteImport } from './routes/admin.applications'
 import { Route as AdminAuditRouteImport } from './routes/admin.audit'
 import { Route as AdminEventsRouteImport } from './routes/admin.events'
 import { Route as AdminFeaturedRouteImport } from './routes/admin.featured'
@@ -85,6 +87,11 @@ const ForTradesmenRoute = ForTradesmenRouteImport.update({
   path: '/for-tradesmen',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HowItWorksRoute = HowItWorksRouteImport.update({
+  id: '/how-it-works',
+  path: '/how-it-works',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PostJobRoute = PostJobRouteImport.update({
   id: '/post-job',
   path: '/post-job',
@@ -123,6 +130,11 @@ const VerificationRoute = VerificationRouteImport.update({
 const AdminAccessRoute = AdminAccessRouteImport.update({
   id: '/admin/access',
   path: '/admin/access',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminApplicationsRoute = AdminApplicationsRouteImport.update({
+  id: '/admin/applications',
+  path: '/admin/applications',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminAuditRoute = AdminAuditRouteImport.update({
@@ -260,6 +272,7 @@ export interface FileRoutesByFullPath {
   '/coverage': typeof CoverageRoute
   '/enterprise': typeof EnterpriseRoute
   '/for-tradesmen': typeof ForTradesmenRoute
+  '/how-it-works': typeof HowItWorksRoute
   '/post-job': typeof PostJobRoute
   '/privacy': typeof PrivacyRoute
   '/saved': typeof SavedRoute
@@ -268,6 +281,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/verification': typeof VerificationRoute
   '/admin/access': typeof AdminAccessRoute
+  '/admin/applications': typeof AdminApplicationsRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/featured': typeof AdminFeaturedRoute
@@ -302,6 +316,7 @@ export interface FileRoutesByTo {
   '/coverage': typeof CoverageRoute
   '/enterprise': typeof EnterpriseRoute
   '/for-tradesmen': typeof ForTradesmenRoute
+  '/how-it-works': typeof HowItWorksRoute
   '/post-job': typeof PostJobRoute
   '/privacy': typeof PrivacyRoute
   '/saved': typeof SavedRoute
@@ -310,6 +325,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/verification': typeof VerificationRoute
   '/admin/access': typeof AdminAccessRoute
+  '/admin/applications': typeof AdminApplicationsRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/featured': typeof AdminFeaturedRoute
@@ -345,6 +361,7 @@ export interface FileRoutesById {
   '/coverage': typeof CoverageRoute
   '/enterprise': typeof EnterpriseRoute
   '/for-tradesmen': typeof ForTradesmenRoute
+  '/how-it-works': typeof HowItWorksRoute
   '/post-job': typeof PostJobRoute
   '/privacy': typeof PrivacyRoute
   '/saved': typeof SavedRoute
@@ -353,6 +370,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/verification': typeof VerificationRoute
   '/admin/access': typeof AdminAccessRoute
+  '/admin/applications': typeof AdminApplicationsRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/featured': typeof AdminFeaturedRoute
@@ -389,6 +407,7 @@ export interface FileRouteTypes {
     | '/coverage'
     | '/enterprise'
     | '/for-tradesmen'
+    | '/how-it-works'
     | '/post-job'
     | '/privacy'
     | '/saved'
@@ -397,6 +416,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/verification'
     | '/admin/access'
+    | '/admin/applications'
     | '/admin/audit'
     | '/admin/events'
     | '/admin/featured'
@@ -431,6 +451,7 @@ export interface FileRouteTypes {
     | '/coverage'
     | '/enterprise'
     | '/for-tradesmen'
+    | '/how-it-works'
     | '/post-job'
     | '/privacy'
     | '/saved'
@@ -439,6 +460,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/verification'
     | '/admin/access'
+    | '/admin/applications'
     | '/admin/audit'
     | '/admin/events'
     | '/admin/featured'
@@ -473,6 +495,7 @@ export interface FileRouteTypes {
     | '/coverage'
     | '/enterprise'
     | '/for-tradesmen'
+    | '/how-it-works'
     | '/post-job'
     | '/privacy'
     | '/saved'
@@ -481,6 +504,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/verification'
     | '/admin/access'
+    | '/admin/applications'
     | '/admin/audit'
     | '/admin/events'
     | '/admin/featured'
@@ -516,6 +540,7 @@ export interface RootRouteChildren {
   CoverageRoute: typeof CoverageRoute
   EnterpriseRoute: typeof EnterpriseRoute
   ForTradesmenRoute: typeof ForTradesmenRoute
+  HowItWorksRoute: typeof HowItWorksRoute
   PostJobRoute: typeof PostJobRoute
   PrivacyRoute: typeof PrivacyRoute
   SavedRoute: typeof SavedRoute
@@ -524,6 +549,7 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   VerificationRoute: typeof VerificationRoute
   AdminAccessRoute: typeof AdminAccessRoute
+  AdminApplicationsRoute: typeof AdminApplicationsRoute
   AdminAuditRoute: typeof AdminAuditRoute
   AdminEventsRoute: typeof AdminEventsRoute
   AdminFeaturedRoute: typeof AdminFeaturedRoute
@@ -602,6 +628,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ForTradesmenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/how-it-works': {
+      id: '/how-it-works'
+      path: '/how-it-works'
+      fullPath: '/how-it-works'
+      preLoaderRoute: typeof HowItWorksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/post-job': {
       id: '/post-job'
       path: '/post-job'
@@ -656,6 +689,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/access'
       fullPath: '/admin/access'
       preLoaderRoute: typeof AdminAccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/applications': {
+      id: '/admin/applications'
+      path: '/admin/applications'
+      fullPath: '/admin/applications'
+      preLoaderRoute: typeof AdminApplicationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/audit': {
@@ -844,6 +884,7 @@ const rootRouteChildren: RootRouteChildren = {
   CoverageRoute: CoverageRoute,
   EnterpriseRoute: EnterpriseRoute,
   ForTradesmenRoute: ForTradesmenRoute,
+  HowItWorksRoute: HowItWorksRoute,
   PostJobRoute: PostJobRoute,
   PrivacyRoute: PrivacyRoute,
   SavedRoute: SavedRoute,
@@ -852,6 +893,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   VerificationRoute: VerificationRoute,
   AdminAccessRoute: AdminAccessRoute,
+  AdminApplicationsRoute: AdminApplicationsRoute,
   AdminAuditRoute: AdminAuditRoute,
   AdminEventsRoute: AdminEventsRoute,
   AdminFeaturedRoute: AdminFeaturedRoute,

@@ -13,6 +13,7 @@ const nav = [
   { to: "/costs", label: "Cost guides" },
   { to: "/areas", label: "Areas" },
   { to: "/ask", label: "Ask the pros" },
+  { to: "/how-it-works", label: "How it works" },
   { to: "/saved", label: "Shortlist" },
   { to: "/for-tradesmen", label: "For tradesmen" },
 
@@ -184,8 +185,18 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
+              <Link to="/how-it-works" className="hover:text-foreground">
+                How it works
+              </Link>
+            </li>
+            <li>
               <Link to="/for-tradesmen" className="hover:text-foreground">
                 Join as a tradesman
+              </Link>
+            </li>
+            <li>
+              <Link to="/claim" search={{}} className="hover:text-foreground">
+                Get certified
               </Link>
             </li>
             <li>

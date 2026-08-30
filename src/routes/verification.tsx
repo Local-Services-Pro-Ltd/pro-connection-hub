@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { BadgeCheck, FileCheck2, ShieldCheck, Star } from "lucide-react";
+import { BadgeCheck, FileCheck2, RefreshCw, ShieldCheck, Star } from "lucide-react";
 import { Section, SectionHead } from "@/components/layout-bits";
 
 const SITE = "https://tradesmanfinder.org";
@@ -94,6 +94,11 @@ const checks = [
     title: "Reviews",
     body: "Reviews are tied to a signed-in account and a real job. We publish the bad ones too — a profile with nothing but five stars tells you nothing.",
   },
+  {
+    icon: RefreshCw,
+    title: "Ongoing monitoring",
+    body: "Checks aren't a one-off. Every credential carries an expiry we watch, complaints are reviewed as they come in, and a firm that stops meeting the standard loses its badges — whatever it pays us.",
+  },
 ];
 
 function Verification() {
@@ -127,9 +132,16 @@ function Verification() {
         />
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
+            to="/claim"
+            search={{}}
+            className="inline-flex rounded-sm bg-primary px-6 py-3.5 font-display font-semibold text-primary-foreground shadow-ember hover:brightness-110"
+          >
+            Apply to be checked
+          </Link>
+          <Link
             to="/for-tradesmen"
             hash="verification"
-            className="inline-flex rounded-sm bg-primary px-6 py-3.5 font-display font-semibold text-primary-foreground shadow-ember hover:brightness-110"
+            className="inline-flex rounded-sm border border-border-strong px-6 py-3.5 font-display font-semibold hover:border-primary hover:text-primary"
           >
             Join as a tradesman
           </Link>

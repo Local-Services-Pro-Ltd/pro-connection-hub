@@ -490,6 +490,80 @@ export type Database = {
         }
         Relationships: []
       }
+      pro_applications: {
+        Row: {
+          about: string
+          accreditations: string | null
+          companies_house: string | null
+          company: string
+          contact_name: string
+          created_at: string
+          email: string
+          id: string
+          insurance_expiry: string | null
+          insurance_provider: string | null
+          phone: string | null
+          postcode: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          reviewer_note: string | null
+          status: string
+          trade_slug: string | null
+          website: string | null
+          years: number
+        }
+        Insert: {
+          about?: string
+          accreditations?: string | null
+          companies_house?: string | null
+          company: string
+          contact_name: string
+          created_at?: string
+          email: string
+          id?: string
+          insurance_expiry?: string | null
+          insurance_provider?: string | null
+          phone?: string | null
+          postcode: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          reviewer_note?: string | null
+          status?: string
+          trade_slug?: string | null
+          website?: string | null
+          years?: number
+        }
+        Update: {
+          about?: string
+          accreditations?: string | null
+          companies_house?: string | null
+          company?: string
+          contact_name?: string
+          created_at?: string
+          email?: string
+          id?: string
+          insurance_expiry?: string | null
+          insurance_provider?: string | null
+          phone?: string | null
+          postcode?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          reviewer_note?: string | null
+          status?: string
+          trade_slug?: string | null
+          website?: string | null
+          years?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pro_applications_trade_slug_fkey"
+            columns: ["trade_slug"]
+            isOneToOne: false
+            referencedRelation: "trades"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
       pro_availability: {
         Row: {
           active: boolean
@@ -1361,6 +1435,24 @@ export type Database = {
       security_scan_token_matches: {
         Args: { p_token: string }
         Returns: boolean
+      }
+      submit_pro_application: {
+        Args: {
+          p_about?: string
+          p_accreditations?: string
+          p_companies_house?: string
+          p_company: string
+          p_contact_name: string
+          p_email: string
+          p_insurance_expiry?: string
+          p_insurance_provider?: string
+          p_phone?: string
+          p_postcode: string
+          p_trade_slug?: string
+          p_website?: string
+          p_years?: number
+        }
+        Returns: string
       }
       waiting_list_admin_summary: {
         Args: never
