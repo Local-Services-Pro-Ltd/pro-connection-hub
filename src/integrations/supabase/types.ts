@@ -949,9 +949,12 @@ export type Database = {
           created_at: string
           email: string
           id: string
+          launch_notified_at: string | null
           metadata: Json
           name: string | null
           note: string | null
+          notify_launch: boolean
+          notify_updates: boolean
           phone: string | null
           postcode: string
           postcode_area: string | null
@@ -966,9 +969,12 @@ export type Database = {
           created_at?: string
           email: string
           id?: string
+          launch_notified_at?: string | null
           metadata?: Json
           name?: string | null
           note?: string | null
+          notify_launch?: boolean
+          notify_updates?: boolean
           phone?: string | null
           postcode: string
           postcode_area?: string | null
@@ -983,9 +989,12 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
+          launch_notified_at?: string | null
           metadata?: Json
           name?: string | null
           note?: string | null
+          notify_launch?: boolean
+          notify_updates?: boolean
           phone?: string | null
           postcode?: string
           postcode_area?: string | null
@@ -1236,6 +1245,19 @@ export type Database = {
           trades: string
         }[]
       }
+      waiting_list_area_recipients: {
+        Args: { p_area: string }
+        Returns: {
+          email: string
+          id: string
+          launch_notified_at: string
+          name: string
+          notify_launch: boolean
+          postcode: string
+          queue_position: number
+          role: string
+        }[]
+      }
       waiting_list_area_total: { Args: { p_area: string }; Returns: number }
       waiting_list_demand: {
         Args: never
@@ -1245,6 +1267,27 @@ export type Database = {
           postcode_area: string
           total: number
           traders: number
+        }[]
+      }
+      waiting_list_mark_launch_notified: {
+        Args: { p_id: string }
+        Returns: undefined
+      }
+      waiting_list_set_prefs: {
+        Args: {
+          p_notify_launch: boolean
+          p_notify_updates: boolean
+          p_token: string
+        }
+        Returns: Json
+      }
+      waiting_list_trend: {
+        Args: { p_weeks?: number }
+        Returns: {
+          cumulative: number
+          postcode_area: string
+          signups: number
+          week: string
         }[]
       }
     }

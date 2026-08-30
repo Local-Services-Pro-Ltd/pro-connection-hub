@@ -190,6 +190,13 @@
       "when": 1788094112614,
       "tag": "0026_waiting_list_demand_signals",
       "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1788095141868,
+      "tag": "0027_waiting_list_prefs_trend_launch",
+      "breakpoints": true
     }
   ]
 }
