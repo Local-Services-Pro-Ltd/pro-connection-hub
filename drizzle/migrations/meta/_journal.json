@@ -176,6 +176,13 @@
       "when": 1788093595020,
       "tag": "0024_pro_projects_publish_requires_admin",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1788093673601,
+      "tag": "0025_booked_slots_function_only",
+      "breakpoints": true
     }
   ]
 }
