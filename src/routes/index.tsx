@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { ArrowRight, ArrowUpRight, Check, Quote, Star } from "lucide-react";
 import { SearchBar } from "@/components/search-bar";
+import { VettingStatusPanel } from "@/components/vetting-status";
 import { ProCard } from "@/components/pro-card";
 import { Section, SectionHead } from "@/components/layout-bits";
 import {
@@ -268,7 +269,7 @@ function Home() {
               title="People who turn up."
               sub="Hand-picked firms we've checked ourselves — insurance, trade bodies and past work."
             />
-            <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div data-testid="featured-pros" className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {featuredPros.map((p) => (
                 <ProCard key={p.id} pro={p} />
               ))}
