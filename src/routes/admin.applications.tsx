@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -12,8 +12,17 @@ import {
   listProApplications,
   reviewProApplication,
 } from "@/lib/applications.functions";
+import { AdminApplicationReview } from "@/components/admin-application-review";
+import { OPEN_STATUSES } from "@/lib/application-verification";
 
-const STATUSES = ["pending", "in_review", "approved", "rejected"] as const;
+const STATUSES = [
+  "pending",
+  "in_review",
+  "changes_requested",
+  "resubmitted",
+  "approved",
+  "rejected",
+] as const;
 
 export const Route = createFileRoute("/admin/applications")({
   head: () => ({
@@ -54,6 +63,7 @@ function AdminApplications() {
   const [to, setTo] = useState("");
   const [notify, setNotify] = useState(true);
   const [openAudit, setOpenAudit] = useState<string | null>(null);
+  const [openReview, setOpenReview] = useState<string | null>(null);
 
   const { data, refetch } = useQuery({
     queryKey: ["admin-applications"],
@@ -185,9 +195,15 @@ function AdminApplications() {
             {s !== "all" && counts[s] ? ` (${counts[s]})` : ""}
           </button>
         ))}
+        <Link
+          to="/admin/sla"
+          className="ml-auto rounded-sm border border-border-strong px-3 py-1.5 font-display text-xs font-semibold uppercase tracking-widest hover:border-primary hover:text-primary"
+        >
+          SLA dashboard
+        </Link>
         <button
           onClick={exportCsv}
-          className="ml-auto rounded-sm border border-border-strong px-3 py-1.5 font-display text-xs font-semibold uppercase tracking-widest hover:border-primary hover:text-primary"
+          className="rounded-sm border border-border-strong px-3 py-1.5 font-display text-xs font-semibold uppercase tracking-widest hover:border-primary hover:text-primary"
         >
           Export CSV
         </button>
@@ -260,6 +276,21 @@ function AdminApplications() {
                 {a.reference ? `${a.reference} · ` : ""}
                 {a.status.replace("_", " ")} ·{" "}
                 {new Date(a.created_at).toLocaleDateString("en-GB")}
+                {a.due_at && OPEN_STATUSES.includes(a.status) && (
+                  <span
+                    className={
+                      new Date(a.due_at).getTime() < Date.now()
+                        ? " text-destructive"
+                        : " text-muted-foreground"
+                    }
+                  >
+                    {" "}
+                    · {new Date(a.due_at).getTime() < Date.now()
+                      ? "overdue"
+                      : `due ${new Date(a.due_at).toLocaleDateString("en-GB")}`}
+                  </span>
+                )}
+                {a.priority !== "normal" ? ` · ${a.priority}` : ""}
               </span>
             </div>
             <p className="mt-2 text-sm text-muted-foreground">
@@ -279,6 +310,16 @@ function AdminApplications() {
             {a.reviewer_note && (
               <p className="mt-3 text-sm text-muted-foreground">
                 Note: {a.reviewer_note}
+              </p>
+            )}
+            {(a.requested_fields ?? []).length > 0 && (
+              <p className="mt-2 text-sm text-primary">
+                Waiting on the firm for: {a.requested_fields.join(", ")}
+              </p>
+            )}
+            {a.applicant_message && (
+              <p className="mt-2 text-sm text-muted-foreground">
+                Firm replied: "{a.applicant_message}"
               </p>
             )}
 
@@ -310,6 +351,14 @@ function AdminApplications() {
               ))}
               <button
                 onClick={() =>
+                  setOpenReview((cur) => (cur === a.id ? null : a.id))
+                }
+                className="rounded-sm border border-border px-3 py-2 font-display text-xs font-semibold uppercase tracking-widest text-muted-foreground hover:border-primary hover:text-primary"
+              >
+                {openReview === a.id ? "Hide checks" : "Checks & documents"}
+              </button>
+              <button
+                onClick={() =>
                   setOpenAudit((cur) => (cur === a.id ? null : a.id))
                 }
                 className="rounded-sm border border-border px-3 py-2 font-display text-xs font-semibold uppercase tracking-widest text-muted-foreground hover:border-primary hover:text-primary"
@@ -325,6 +374,17 @@ function AdminApplications() {
                 Email firm
               </a>
             </div>
+
+            {openReview === a.id && (
+              <AdminApplicationReview
+                application={a}
+                notify={notify}
+                onChanged={() => {
+                  void refetch();
+                  void audit.refetch();
+                }}
+              />
+            )}
 
             {openAudit === a.id && (
               <ul className="mt-4 grid gap-2 border-t border-border pt-4 text-sm">

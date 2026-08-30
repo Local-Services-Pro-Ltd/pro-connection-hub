@@ -540,21 +540,83 @@ export type Database = {
           },
         ]
       }
+      pro_application_documents: {
+        Row: {
+          application_id: string
+          created_at: string
+          file_name: string
+          file_path: string
+          id: string
+          kind: string
+          mime_type: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          reviewer_note: string | null
+          size_bytes: number
+          status: string
+        }
+        Insert: {
+          application_id: string
+          created_at?: string
+          file_name: string
+          file_path: string
+          id?: string
+          kind: string
+          mime_type: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          reviewer_note?: string | null
+          size_bytes: number
+          status?: string
+        }
+        Update: {
+          application_id?: string
+          created_at?: string
+          file_name?: string
+          file_path?: string
+          id?: string
+          kind?: string
+          mime_type?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          reviewer_note?: string | null
+          size_bytes?: number
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pro_application_documents_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "pro_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pro_applications: {
         Row: {
           about: string
           accreditations: string | null
+          applicant_message: string | null
+          changes_requested_at: string | null
           companies_house: string | null
           company: string
           contact_name: string
           created_at: string
+          due_at: string | null
           email: string
+          escalated_at: string | null
+          escalation_note: string | null
+          first_reviewed_at: string | null
           id: string
           insurance_expiry: string | null
           insurance_provider: string | null
           phone: string | null
           postcode: string
+          priority: string
           reference: string | null
+          requested_fields: string[]
+          resubmitted_at: string | null
           reviewed_at: string | null
           reviewed_by: string | null
           reviewer_note: string | null
@@ -562,23 +624,34 @@ export type Database = {
           tracking_token: string | null
           trade_slug: string | null
           updated_at: string
+          verification: Json
+          verified_at: string | null
           website: string | null
           years: number
         }
         Insert: {
           about?: string
           accreditations?: string | null
+          applicant_message?: string | null
+          changes_requested_at?: string | null
           companies_house?: string | null
           company: string
           contact_name: string
           created_at?: string
+          due_at?: string | null
           email: string
+          escalated_at?: string | null
+          escalation_note?: string | null
+          first_reviewed_at?: string | null
           id?: string
           insurance_expiry?: string | null
           insurance_provider?: string | null
           phone?: string | null
           postcode: string
+          priority?: string
           reference?: string | null
+          requested_fields?: string[]
+          resubmitted_at?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           reviewer_note?: string | null
@@ -586,23 +659,34 @@ export type Database = {
           tracking_token?: string | null
           trade_slug?: string | null
           updated_at?: string
+          verification?: Json
+          verified_at?: string | null
           website?: string | null
           years?: number
         }
         Update: {
           about?: string
           accreditations?: string | null
+          applicant_message?: string | null
+          changes_requested_at?: string | null
           companies_house?: string | null
           company?: string
           contact_name?: string
           created_at?: string
+          due_at?: string | null
           email?: string
+          escalated_at?: string | null
+          escalation_note?: string | null
+          first_reviewed_at?: string | null
           id?: string
           insurance_expiry?: string | null
           insurance_provider?: string | null
           phone?: string | null
           postcode?: string
+          priority?: string
           reference?: string | null
+          requested_fields?: string[]
+          resubmitted_at?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           reviewer_note?: string | null
@@ -610,6 +694,8 @@ export type Database = {
           tracking_token?: string | null
           trade_slug?: string | null
           updated_at?: string
+          verification?: Json
+          verified_at?: string | null
           website?: string | null
           years?: number
         }
@@ -1412,6 +1498,15 @@ export type Database = {
           years: number
         }[]
       }
+      pro_application_id_for_token: {
+        Args: { p_token: string }
+        Returns: string
+      }
+      pro_application_resubmit: {
+        Args: { p_message?: string; p_token: string; p_updates: Json }
+        Returns: Json
+      }
+      pro_application_sla: { Args: never; Returns: Json }
       pro_application_status: { Args: { p_token: string }; Returns: Json }
       pro_booked_slots: {
         Args: { p_pro_id: string }
