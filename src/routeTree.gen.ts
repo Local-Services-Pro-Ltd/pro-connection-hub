@@ -16,6 +16,7 @@ import { Route as ClaimRouteImport } from './routes/claim'
 import { Route as CoverageRouteImport } from './routes/coverage'
 import { Route as EnterpriseRouteImport } from './routes/enterprise'
 import { Route as ForTradesmenRouteImport } from './routes/for-tradesmen'
+import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as PostJobRouteImport } from './routes/post-job'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as SavedRouteImport } from './routes/saved'
@@ -84,6 +85,11 @@ const EnterpriseRoute = EnterpriseRouteImport.update({
 const ForTradesmenRoute = ForTradesmenRouteImport.update({
   id: '/for-tradesmen',
   path: '/for-tradesmen',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HowItWorksRoute = HowItWorksRouteImport.update({
+  id: '/how-it-works',
+  path: '/how-it-works',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PostJobRoute = PostJobRouteImport.update({
@@ -266,6 +272,7 @@ export interface FileRoutesByFullPath {
   '/coverage': typeof CoverageRoute
   '/enterprise': typeof EnterpriseRoute
   '/for-tradesmen': typeof ForTradesmenRoute
+  '/how-it-works': typeof HowItWorksRoute
   '/post-job': typeof PostJobRoute
   '/privacy': typeof PrivacyRoute
   '/saved': typeof SavedRoute
@@ -309,6 +316,7 @@ export interface FileRoutesByTo {
   '/coverage': typeof CoverageRoute
   '/enterprise': typeof EnterpriseRoute
   '/for-tradesmen': typeof ForTradesmenRoute
+  '/how-it-works': typeof HowItWorksRoute
   '/post-job': typeof PostJobRoute
   '/privacy': typeof PrivacyRoute
   '/saved': typeof SavedRoute
@@ -353,6 +361,7 @@ export interface FileRoutesById {
   '/coverage': typeof CoverageRoute
   '/enterprise': typeof EnterpriseRoute
   '/for-tradesmen': typeof ForTradesmenRoute
+  '/how-it-works': typeof HowItWorksRoute
   '/post-job': typeof PostJobRoute
   '/privacy': typeof PrivacyRoute
   '/saved': typeof SavedRoute
@@ -398,6 +407,7 @@ export interface FileRouteTypes {
     | '/coverage'
     | '/enterprise'
     | '/for-tradesmen'
+    | '/how-it-works'
     | '/post-job'
     | '/privacy'
     | '/saved'
@@ -441,6 +451,7 @@ export interface FileRouteTypes {
     | '/coverage'
     | '/enterprise'
     | '/for-tradesmen'
+    | '/how-it-works'
     | '/post-job'
     | '/privacy'
     | '/saved'
@@ -484,6 +495,7 @@ export interface FileRouteTypes {
     | '/coverage'
     | '/enterprise'
     | '/for-tradesmen'
+    | '/how-it-works'
     | '/post-job'
     | '/privacy'
     | '/saved'
@@ -528,6 +540,7 @@ export interface RootRouteChildren {
   CoverageRoute: typeof CoverageRoute
   EnterpriseRoute: typeof EnterpriseRoute
   ForTradesmenRoute: typeof ForTradesmenRoute
+  HowItWorksRoute: typeof HowItWorksRoute
   PostJobRoute: typeof PostJobRoute
   PrivacyRoute: typeof PrivacyRoute
   SavedRoute: typeof SavedRoute
@@ -613,6 +626,13 @@ declare module '@tanstack/react-router' {
       path: '/for-tradesmen'
       fullPath: '/for-tradesmen'
       preLoaderRoute: typeof ForTradesmenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/how-it-works': {
+      id: '/how-it-works'
+      path: '/how-it-works'
+      fullPath: '/how-it-works'
+      preLoaderRoute: typeof HowItWorksRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/post-job': {
@@ -864,6 +884,7 @@ const rootRouteChildren: RootRouteChildren = {
   CoverageRoute: CoverageRoute,
   EnterpriseRoute: EnterpriseRoute,
   ForTradesmenRoute: ForTradesmenRoute,
+  HowItWorksRoute: HowItWorksRoute,
   PostJobRoute: PostJobRoute,
   PrivacyRoute: PrivacyRoute,
   SavedRoute: SavedRoute,
