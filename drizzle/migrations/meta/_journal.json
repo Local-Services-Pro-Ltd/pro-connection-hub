@@ -78,6 +78,13 @@
       "when": 1788085968102,
       "tag": "0010_harden_definer_exec_and_public_views",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1788086183941,
+      "tag": "0011_privilege_probe_and_access_matrix",
+      "breakpoints": true
     }
   ]
 }
