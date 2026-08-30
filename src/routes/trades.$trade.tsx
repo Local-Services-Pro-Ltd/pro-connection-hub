@@ -1,13 +1,15 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
 import { ProCard } from "@/components/pro-card";
 import { PageHero, Section } from "@/components/layout-bits";
 import { ProFiltersBar } from "@/components/pro-filters";
+import { ProjectGallery } from "@/components/project-gallery";
 import {
   tradesQuery,
   prosQuery,
   availabilityLabels,
   fetchTradeHeroImage,
+  tradeProjectsQuery,
   type Trade,
   type TradeHeroImage,
 } from "@/lib/queries";
@@ -133,6 +135,7 @@ function TradePage() {
   const { data: matches } = useSuspenseQuery(
     prosQuery({ trade: trade.slug, ...search }),
   );
+  const { data: tradeProjects } = useQuery(tradeProjectsQuery(trade.slug));
 
   const available = matches.filter((p) => p.availability === "immediate").length;
   const avg = matches.length
@@ -202,7 +205,17 @@ function TradePage() {
       </PageHero>
 
       <Section>
+        {(tradeProjects ?? []).length > 0 && (
+          <div className="mb-12">
+            <ProjectGallery
+              projects={tradeProjects ?? []}
+              heading={`${trade.name} projects — before & after`}
+            />
+          </div>
+        )}
+
         <ProFiltersBar />
+
 
         <p className="mt-8 eyebrow">
           {matches.length} {trade.name.toLowerCase()}

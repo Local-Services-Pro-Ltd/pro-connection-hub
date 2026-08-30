@@ -534,3 +534,122 @@ export async function fetchTradeHeroImage(slug: string) {
     .maybeSingle();
   return (data as TradeHeroImage | null) ?? null;
 }
+
+export type ProProject = Database["public"]["Tables"]["pro_projects"]["Row"];
+export type ProTrust = Database["public"]["Views"]["pro_trust"]["Row"];
+
+/** Published before/after projects for one tradesperson. */
+export function proProjectsQuery(proId: string) {
+  return queryOptions({
+    queryKey: ["pro-projects", proId],
+    queryFn: async () =>
+      unwrap(
+        await supabase
+          .from("pro_projects")
+          .select("*")
+          .eq("pro_id", proId)
+          .eq("published", true)
+          .order("sort_order")
+          .order("created_at", { ascending: false }),
+      ) as ProProject[],
+    staleTime: 60_000,
+  });
+}
+
+/** Recent published projects across every pro in a trade. */
+export function tradeProjectsQuery(trade: string) {
+  return queryOptions({
+    queryKey: ["trade-projects", trade],
+    queryFn: async () =>
+      unwrap(
+        await supabase
+          .from("pro_projects")
+          .select("*")
+          .eq("trade_slug", trade)
+          .eq("published", true)
+          .order("created_at", { ascending: false })
+          .limit(6),
+      ) as ProProject[],
+    staleTime: 60_000,
+  });
+}
+
+/** Composite trust scores keyed by pro id. */
+export const trustScoresQuery = queryOptions({
+  queryKey: ["pro-trust"],
+  queryFn: async () => {
+    const { data, error } = await supabase.from("pro_trust").select("*");
+    if (error) return {} as Record<string, ProTrust>;
+    return Object.fromEntries(
+      (data ?? []).map((r) => [r.pro_id as string, r as ProTrust]),
+    ) as Record<string, ProTrust>;
+  },
+  staleTime: 60_000,
+});
+
+export function proTrustQuery(proId: string) {
+  return queryOptions({
+    queryKey: ["pro-trust", proId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("pro_trust")
+        .select("*")
+        .eq("pro_id", proId)
+        .maybeSingle();
+      return (data as ProTrust | null) ?? null;
+    },
+    staleTime: 60_000,
+  });
+}
+
+/** Slots already taken for a pro, so the booking grid can grey them out. */
+export function bookedSlotsQuery(proId: string) {
+  return queryOptions({
+    queryKey: ["booked-slots", proId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("pro_booked_slots")
+        .select("slot_start")
+        .eq("pro_id", proId);
+      return new Set((data ?? []).map((r) => new Date(r.slot_start as string).toISOString()));
+    },
+    staleTime: 15_000,
+  });
+}
+
+export type MatchedPro = {
+  pro_id: string;
+  name: string;
+  company: string;
+  area: string;
+  trade_slug: string;
+  rating: number;
+  review_count: number;
+  response_mins: number;
+  years: number;
+  availability: Availability;
+  photo: number;
+  day_rate: number | null;
+  trust_score: number;
+  match_score: number;
+  reason: string;
+};
+
+/** Server-side matching: the three best-fitting vetted pros for a job. */
+export async function matchPros(args: {
+  trade: string;
+  postcode?: string | undefined;
+  budget?: string | undefined;
+  jobId?: string | undefined;
+  limit?: number;
+}): Promise<MatchedPro[]> {
+  const { data, error } = await supabase.rpc("match_pros", {
+    p_trade: args.trade,
+    p_limit: args.limit ?? 3,
+    ...(args.postcode ? { p_postcode: args.postcode } : {}),
+    ...(args.budget ? { p_budget: args.budget } : {}),
+    ...(args.jobId ? { p_job_id: args.jobId } : {}),
+  });
+  if (error) throw error;
+  return (data ?? []) as MatchedPro[];
+}

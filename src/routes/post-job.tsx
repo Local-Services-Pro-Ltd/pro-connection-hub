@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { MatchedPros } from "@/components/matched-pros";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Check } from "lucide-react";
@@ -213,6 +214,12 @@ function PostJob() {
                 {form.postcode.toUpperCase()} now — you'll hear from up to three
                 of them.
               </p>
+              <MatchedPros
+                trade={form.trade_slug}
+                postcode={form.postcode}
+                budget={form.budget_band}
+              />
+
               <div className="mt-6 flex flex-wrap gap-3">
                 <button
                   onClick={() => setReference(null)}

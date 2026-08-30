@@ -1,14 +1,23 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
 import { Star, Clock, ShieldCheck, MapPin, Hammer } from "lucide-react";
 import { Section } from "@/components/layout-bits";
 import { ReviewPanel } from "@/components/review-panel";
-import { proQuery, availabilityLabels } from "@/lib/queries";
+import { ProjectGallery } from "@/components/project-gallery";
+import { BookingPanel } from "@/components/booking-panel";
+import { TrustBadge, TrustBreakdown } from "@/components/trust-badge";
+import {
+  proQuery,
+  availabilityLabels,
+  proProjectsQuery,
+  proTrustQuery,
+} from "@/lib/queries";
 import pro1 from "@/assets/pro-1.jpg";
 import pro2 from "@/assets/pro-2.jpg";
 import pro3 from "@/assets/pro-3.jpg";
 
 const photos: Record<number, string> = { 1: pro1, 2: pro2, 3: pro3 };
+
 
 export const Route = createFileRoute("/pro/$id")({
   loader: async ({ params, context }) => {
@@ -63,7 +72,10 @@ export const Route = createFileRoute("/pro/$id")({
 function ProPage() {
   const { id } = Route.useParams();
   const { data } = useSuspenseQuery(proQuery(id));
+  const { data: projects } = useQuery(proProjectsQuery(id));
+  const { data: trust } = useQuery(proTrustQuery(id));
   const pro = data.pro!;
+
   const { credentials, reviews } = data;
 
   return (
@@ -85,6 +97,12 @@ function ProPage() {
               {pro.company}
             </h1>
             <p className="mt-3 text-lg text-muted-foreground">{pro.name}</p>
+            {trust && (
+              <div className="mt-4">
+                <TrustBadge score={trust.score ?? 0} size="lg" />
+              </div>
+            )}
+
 
             <div className="mt-7 flex flex-wrap gap-x-8 gap-y-4 border-t border-border pt-6 text-sm">
               <span className="flex items-center gap-2">
@@ -163,10 +181,38 @@ function ProPage() {
               )}
             </ul>
 
+            <div className="mt-12">
+              <ProjectGallery
+                projects={projects ?? []}
+                heading="Recent work — before & after"
+                emptyNote={`${pro.name.split(" ")[0]} hasn't published project photos yet. Ask for examples when you request a quote — we only show verified, customer-approved work here.`}
+              />
+            </div>
+
             <ReviewPanel proId={pro.id} reviews={reviews} />
           </div>
 
-          <aside className="h-fit rounded-md border border-border bg-card p-6 lg:sticky lg:top-24">
+          <div className="space-y-6 lg:sticky lg:top-24 lg:h-fit">
+            {trust && (
+              <TrustBreakdown
+                score={trust.score ?? 0}
+                verified={trust.verified_credentials ?? 0}
+                total={trust.total_credentials ?? 0}
+                rating={pro.rating}
+                reviews={pro.review_count}
+                years={pro.years}
+                responseMins={pro.response_mins}
+              />
+            )}
+
+            <BookingPanel
+              proId={pro.id}
+              proName={pro.name}
+              postcode={pro.postcode ?? ""}
+            />
+
+            <aside className="rounded-md border border-border bg-card p-6">
+
             <p className="eyebrow">Request a quote</p>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
               Describe your job and {pro.name.split(" ")[0]} will come back to
@@ -193,7 +239,9 @@ function ProPage() {
             >
               Compare similar pros
             </Link>
-          </aside>
+            </aside>
+          </div>
+
         </div>
       </Section>
     </>

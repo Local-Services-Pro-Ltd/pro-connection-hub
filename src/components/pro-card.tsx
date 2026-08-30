@@ -1,6 +1,8 @@
 import { Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { Star, Clock, ShieldCheck } from "lucide-react";
-import { availabilityLabels, type Pro } from "@/lib/queries";
+import { availabilityLabels, trustScoresQuery, type Pro } from "@/lib/queries";
+import { TrustBadge } from "@/components/trust-badge";
 import pro1 from "@/assets/pro-1.jpg";
 import pro2 from "@/assets/pro-2.jpg";
 import pro3 from "@/assets/pro-3.jpg";
@@ -8,6 +10,9 @@ import pro3 from "@/assets/pro-3.jpg";
 const photos: Record<number, string> = { 1: pro1, 2: pro2, 3: pro3 };
 
 export function ProCard({ pro }: { pro: Pro }) {
+  const { data: trust } = useQuery(trustScoresQuery);
+  const score = trust?.[pro.id]?.score ?? null;
+
   return (
     <Link
       to="/pro/$id"
@@ -44,6 +49,12 @@ export function ProCard({ pro }: { pro: Pro }) {
           {pro.name} · {pro.area} · {pro.review_count} review
           {pro.review_count === 1 ? "" : "s"}
         </p>
+        {score !== null && (
+          <div className="mt-3">
+            <TrustBadge score={score} />
+          </div>
+        )}
+
         <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
           <span className="flex items-center gap-1.5">
             <ShieldCheck className="h-3.5 w-3.5 text-success" />

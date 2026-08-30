@@ -77,6 +77,79 @@ export type Database = {
         }
         Relationships: []
       }
+      bookings: {
+        Row: {
+          contact_email: string
+          contact_name: string
+          contact_phone: string | null
+          created_at: string
+          duration_mins: number
+          id: string
+          job_id: string | null
+          notes: string
+          postcode: string | null
+          pro_id: string
+          reference: string
+          slot_start: string
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          contact_email: string
+          contact_name: string
+          contact_phone?: string | null
+          created_at?: string
+          duration_mins?: number
+          id?: string
+          job_id?: string | null
+          notes?: string
+          postcode?: string | null
+          pro_id: string
+          reference?: string
+          slot_start: string
+          status?: string
+          user_id?: string | null
+        }
+        Update: {
+          contact_email?: string
+          contact_name?: string
+          contact_phone?: string | null
+          created_at?: string
+          duration_mins?: number
+          id?: string
+          job_id?: string | null
+          notes?: string
+          postcode?: string | null
+          pro_id?: string
+          reference?: string
+          slot_start?: string
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_pro_id_fkey"
+            columns: ["pro_id"]
+            isOneToOne: false
+            referencedRelation: "pro_trust"
+            referencedColumns: ["pro_id"]
+          },
+          {
+            foreignKeyName: "bookings_pro_id_fkey"
+            columns: ["pro_id"]
+            isOneToOne: false
+            referencedRelation: "pros"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       feedback: {
         Row: {
           created_at: string
@@ -145,6 +218,55 @@ export type Database = {
           window_start?: string
         }
         Relationships: []
+      }
+      job_matches: {
+        Row: {
+          created_at: string
+          id: string
+          job_id: string | null
+          pro_id: string
+          rank: number
+          score: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          job_id?: string | null
+          pro_id: string
+          rank: number
+          score: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          job_id?: string | null
+          pro_id?: string
+          rank?: number
+          score?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_matches_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_matches_pro_id_fkey"
+            columns: ["pro_id"]
+            isOneToOne: false
+            referencedRelation: "pro_trust"
+            referencedColumns: ["pro_id"]
+          },
+          {
+            foreignKeyName: "job_matches_pro_id_fkey"
+            columns: ["pro_id"]
+            isOneToOne: false
+            referencedRelation: "pros"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       jobs: {
         Row: {
@@ -352,6 +474,13 @@ export type Database = {
             foreignKeyName: "pro_credentials_pro_id_fkey"
             columns: ["pro_id"]
             isOneToOne: false
+            referencedRelation: "pro_trust"
+            referencedColumns: ["pro_id"]
+          },
+          {
+            foreignKeyName: "pro_credentials_pro_id_fkey"
+            columns: ["pro_id"]
+            isOneToOne: false
             referencedRelation: "pros"
             referencedColumns: ["id"]
           },
@@ -398,6 +527,70 @@ export type Database = {
           was_featured?: boolean | null
         }
         Relationships: []
+      }
+      pro_projects: {
+        Row: {
+          after_url: string | null
+          before_url: string | null
+          completed_on: string | null
+          created_at: string
+          id: string
+          pro_id: string
+          published: boolean
+          sort_order: number
+          summary: string
+          title: string
+          trade_slug: string
+        }
+        Insert: {
+          after_url?: string | null
+          before_url?: string | null
+          completed_on?: string | null
+          created_at?: string
+          id?: string
+          pro_id: string
+          published?: boolean
+          sort_order?: number
+          summary?: string
+          title: string
+          trade_slug: string
+        }
+        Update: {
+          after_url?: string | null
+          before_url?: string | null
+          completed_on?: string | null
+          created_at?: string
+          id?: string
+          pro_id?: string
+          published?: boolean
+          sort_order?: number
+          summary?: string
+          title?: string
+          trade_slug?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pro_projects_pro_id_fkey"
+            columns: ["pro_id"]
+            isOneToOne: false
+            referencedRelation: "pro_trust"
+            referencedColumns: ["pro_id"]
+          },
+          {
+            foreignKeyName: "pro_projects_pro_id_fkey"
+            columns: ["pro_id"]
+            isOneToOne: false
+            referencedRelation: "pros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pro_projects_trade_slug_fkey"
+            columns: ["trade_slug"]
+            isOneToOne: false
+            referencedRelation: "trades"
+            referencedColumns: ["slug"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -553,6 +746,13 @@ export type Database = {
           title?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "reviews_pro_id_fkey"
+            columns: ["pro_id"]
+            isOneToOne: false
+            referencedRelation: "pro_trust"
+            referencedColumns: ["pro_id"]
+          },
           {
             foreignKeyName: "reviews_pro_id_fkey"
             columns: ["pro_id"]
@@ -749,6 +949,54 @@ export type Database = {
       }
     }
     Views: {
+      pro_booked_slots: {
+        Row: {
+          pro_id: string | null
+          slot_start: string | null
+        }
+        Insert: {
+          pro_id?: string | null
+          slot_start?: string | null
+        }
+        Update: {
+          pro_id?: string | null
+          slot_start?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_pro_id_fkey"
+            columns: ["pro_id"]
+            isOneToOne: false
+            referencedRelation: "pro_trust"
+            referencedColumns: ["pro_id"]
+          },
+          {
+            foreignKeyName: "bookings_pro_id_fkey"
+            columns: ["pro_id"]
+            isOneToOne: false
+            referencedRelation: "pros"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pro_trust: {
+        Row: {
+          pro_id: string | null
+          score: number | null
+          total_credentials: number | null
+          trade_slug: string | null
+          verified_credentials: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pros_trade_slug_fkey"
+            columns: ["trade_slug"]
+            isOneToOne: false
+            referencedRelation: "trades"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
       reviews_public: {
         Row: {
           author_name: string | null
@@ -784,6 +1032,13 @@ export type Database = {
           title?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "reviews_pro_id_fkey"
+            columns: ["pro_id"]
+            isOneToOne: false
+            referencedRelation: "pro_trust"
+            referencedColumns: ["pro_id"]
+          },
           {
             foreignKeyName: "reviews_pro_id_fkey"
             columns: ["pro_id"]
@@ -855,7 +1110,45 @@ export type Database = {
         Args: { p_id: string }
         Returns: undefined
       }
+      match_pros: {
+        Args: {
+          p_budget?: string
+          p_job_id?: string
+          p_limit?: number
+          p_postcode?: string
+          p_trade: string
+        }
+        Returns: {
+          area: string
+          availability: Database["public"]["Enums"]["availability"]
+          company: string
+          day_rate: number
+          match_score: number
+          name: string
+          photo: number
+          pro_id: string
+          rating: number
+          reason: string
+          response_mins: number
+          review_count: number
+          trade_slug: string
+          trust_score: number
+          years: number
+        }[]
+      }
       prune_api_access_events: { Args: never; Returns: undefined }
+      request_booking: {
+        Args: {
+          p_contact_email: string
+          p_contact_name: string
+          p_contact_phone?: string
+          p_notes?: string
+          p_postcode?: string
+          p_pro_id: string
+          p_slot_start: string
+        }
+        Returns: Json
+      }
       security_access_matrix: {
         Args: never
         Returns: {
