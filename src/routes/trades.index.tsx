@@ -210,12 +210,15 @@ function TradesIndex() {
                   src={tradeHero(t.slug)}
                   alt={
                     hasTradePhoto(t.slug)
-                      ? `A ${t.name.toLowerCase()} at work on a UK job`
+                      ? tradeAlt(t.slug, t.name)
                       : "A UK residential street where our tradespeople work"
                   }
                   loading="lazy"
                   width={1600}
                   height={900}
+                  style={{
+                    objectPosition: tradeFocal(t.slug).focal,
+                  }}
                   className="aspect-[16/9] w-full object-cover"
                 />
                 <div className="flex flex-1 flex-col p-7">
