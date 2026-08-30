@@ -1,3 +1,9 @@
+import airCon from "@/assets/trade-air-conditioning-engineer.jpg";
+import applianceRepair from "@/assets/trade-appliance-repair.jpg";
+import fencing from "@/assets/trade-fencing-gate-installer.jpg";
+import furnitureAssembly from "@/assets/trade-furniture-assembly.jpg";
+import mobileMechanic from "@/assets/trade-mobile-mechanic.jpg";
+import tvAerial from "@/assets/trade-tv-aerial-installer.jpg";
 import bathroomFitter from "@/assets/trade-bathroom-fitter.jpg";
 import blacksmith from "@/assets/trade-blacksmith.jpg";
 import bricklayer from "@/assets/trade-bricklayer.jpg";
@@ -33,6 +39,12 @@ import windowFitter from "@/assets/trade-window-fitter.jpg";
 import street from "@/assets/street.jpg";
 
 const map: Record<string, string> = {
+  "air-conditioning-engineer": airCon,
+  "appliance-repair": applianceRepair,
+  "fencing-gate-installer": fencing,
+  "furniture-assembly": furnitureAssembly,
+  "mobile-mechanic": mobileMechanic,
+  "tv-aerial-installer": tvAerial,
   "bathroom-fitter": bathroomFitter,
   blacksmith,
   bricklayer,
@@ -81,6 +93,12 @@ export type Focal = { focal: string; focalMobile: string };
  * hero crop is much tighter horizontally.
  */
 const focals: Record<string, Focal> = {
+  "air-conditioning-engineer": { focal: "62% 40%", focalMobile: "68% 38%" },
+  "appliance-repair": { focal: "62% 40%", focalMobile: "68% 38%" },
+  "fencing-gate-installer": { focal: "62% 40%", focalMobile: "66% 38%" },
+  "furniture-assembly": { focal: "52% 45%", focalMobile: "52% 45%" },
+  "mobile-mechanic": { focal: "65% 42%", focalMobile: "70% 40%" },
+  "tv-aerial-installer": { focal: "30% 45%", focalMobile: "25% 45%" },
   "bathroom-fitter": { focal: "62% 42%", focalMobile: "68% 42%" },
   blacksmith: { focal: "50% 38%", focalMobile: "55% 38%" },
   bricklayer: { focal: "45% 35%", focalMobile: "45% 32%" },
@@ -127,6 +145,18 @@ export function tradeFocal(slug: string): Focal {
  * in the photo (WCAG 1.1.1) rather than repeating the page heading.
  */
 const alts: Record<string, string> = {
+  "air-conditioning-engineer":
+    "An air conditioning engineer servicing a wall-mounted split unit in a living room",
+  "appliance-repair":
+    "An appliance engineer repairing a washing machine in a domestic kitchen",
+  "fencing-gate-installer":
+    "A fencing contractor fitting a timber fence panel in a suburban back garden",
+  "furniture-assembly":
+    "A fitter assembling a flat-pack wardrobe with a cordless drill in a bedroom",
+  "mobile-mechanic":
+    "A mobile mechanic working under the bonnet of a car on a residential driveway",
+  "tv-aerial-installer":
+    "An installer levelling a large flat-screen TV on a living room wall mount",
   "bathroom-fitter":
     "A bathroom fitter checking the pipework behind a newly installed basin",
   blacksmith: "A blacksmith striking hot metal on an anvil, sparks flying",
