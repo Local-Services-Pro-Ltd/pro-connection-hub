@@ -127,7 +127,7 @@ export const Route = createFileRoute("/trades/$trade")({
 });
 
 function TradePage() {
-  const { trade } = Route.useLoaderData();
+  const { trade, heroOverride } = Route.useLoaderData();
   const search = Route.useSearch();
   const { data: matches } = useSuspenseQuery(
     prosQuery({ trade: trade.slug, ...search }),
@@ -153,10 +153,10 @@ function TradePage() {
         eyebrow={copy.eyebrow}
         title={copy.title}
         sub={copy.sub}
-        image={tradeHero(trade.slug)}
-        imageAlt={copy.imageAlt}
-        focal="50% 45%"
-        focalMobile="60% 45%"
+        image={heroImage}
+        imageAlt={heroAlt}
+        focal={focal.focal}
+        focalMobile={focal.focalMobile}
       >
 
         <dl className="flex flex-wrap gap-x-12 gap-y-4 border-t border-border pt-6">
