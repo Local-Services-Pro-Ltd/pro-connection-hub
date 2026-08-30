@@ -92,6 +92,13 @@
       "when": 1788086532022,
       "tag": "0012_fix_admin_guard_effective_role",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1788086627349,
+      "tag": "0013_probe_runs_as_authenticated_and_policy_based_write_check",
+      "breakpoints": true
     }
   ]
 }
