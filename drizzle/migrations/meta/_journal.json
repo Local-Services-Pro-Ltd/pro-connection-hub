@@ -120,6 +120,20 @@
       "when": 1788087928287,
       "tag": "0016_log_pro_publish_approval_audit",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1788091239779,
+      "tag": "0017_trade_hero_images",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1788091267538,
+      "tag": "0018_trade_hero_bucket_policies",
+      "breakpoints": true
     }
   ]
 }

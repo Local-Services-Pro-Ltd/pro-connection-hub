@@ -610,6 +610,44 @@ export type Database = {
         }
         Relationships: []
       }
+      trade_hero_images: {
+        Row: {
+          alt_text: string | null
+          focal: string
+          focal_mobile: string
+          image_url: string | null
+          slug: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          alt_text?: string | null
+          focal?: string
+          focal_mobile?: string
+          image_url?: string | null
+          slug: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          alt_text?: string | null
+          focal?: string
+          focal_mobile?: string
+          image_url?: string | null
+          slug?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trade_hero_images_slug_fkey"
+            columns: ["slug"]
+            isOneToOne: true
+            referencedRelation: "trades"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
       trades: {
         Row: {
           blurb: string

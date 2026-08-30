@@ -7,10 +7,17 @@ import {
   tradesQuery,
   prosQuery,
   availabilityLabels,
+  fetchTradeHeroImage,
   type Trade,
+  type TradeHeroImage,
 } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
-import { tradeHero, hasTradeOgImage } from "@/lib/trade-media";
+import {
+  tradeHero,
+  tradeFocal,
+  tradeAlt,
+  hasTradeOgImage,
+} from "@/lib/trade-media";
 import { tradeHeroCopy } from "@/lib/trade-copy";
 import { getRequestOrigin } from "@/lib/origin.functions";
 
@@ -44,14 +51,19 @@ export const Route = createFileRoute("/trades/$trade")({
       .eq("slug", params.trade)
       .maybeSingle();
     if (!data) throw notFound();
-    const [, , origin] = await Promise.all([
+    const [, , origin, heroOverride] = await Promise.all([
       context.queryClient.ensureQueryData(
         prosQuery({ trade: params.trade, ...deps }),
       ),
       context.queryClient.ensureQueryData(tradesQuery),
       getRequestOrigin(),
+      fetchTradeHeroImage(params.trade),
     ]);
-    return { trade: data as Trade, origin };
+    return {
+      trade: data as Trade,
+      origin,
+      heroOverride: heroOverride as TradeHeroImage | null,
+    };
   },
   head: ({ loaderData }) => {
     if (!loaderData) {
@@ -115,7 +127,7 @@ export const Route = createFileRoute("/trades/$trade")({
 });
 
 function TradePage() {
-  const { trade } = Route.useLoaderData();
+  const { trade, heroOverride } = Route.useLoaderData();
   const search = Route.useSearch();
   const { data: matches } = useSuspenseQuery(
     prosQuery({ trade: trade.slug, ...search }),
@@ -135,16 +147,26 @@ function TradePage() {
     ...(search.area ? { area: search.area } : {}),
   });
 
+  // Admin overrides (/admin/hero-images) win over the bundled photo.
+  const heroImage = heroOverride?.image_url || tradeHero(trade.slug);
+  const heroAlt =
+    heroOverride?.alt_text?.trim() || tradeAlt(trade.slug, trade.name);
+  const base = tradeFocal(trade.slug);
+  const focal = {
+    focal: heroOverride?.focal || base.focal,
+    focalMobile: heroOverride?.focal_mobile || base.focalMobile,
+  };
+
   return (
     <>
       <PageHero
         eyebrow={copy.eyebrow}
         title={copy.title}
         sub={copy.sub}
-        image={tradeHero(trade.slug)}
-        imageAlt={copy.imageAlt}
-        focal="50% 45%"
-        focalMobile="60% 45%"
+        image={heroImage}
+        imageAlt={heroAlt}
+        focal={focal.focal}
+        focalMobile={focal.focalMobile}
       >
 
         <dl className="flex flex-wrap gap-x-12 gap-y-4 border-t border-border pt-6">

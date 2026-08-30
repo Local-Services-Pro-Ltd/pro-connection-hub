@@ -6,7 +6,12 @@ import { PageHero, Section } from "@/components/layout-bits";
 import { SearchBar } from "@/components/search-bar";
 import { tradesQuery, proCountsQuery } from "@/lib/queries";
 import { getRequestOrigin } from "@/lib/origin.functions";
-import { tradeHero, hasTradePhoto } from "@/lib/trade-media";
+import {
+  tradeHero,
+  hasTradePhoto,
+  tradeAlt,
+  tradeFocal,
+} from "@/lib/trade-media";
 import heroTrades from "@/assets/hero-trades.jpg";
 
 
@@ -210,12 +215,15 @@ function TradesIndex() {
                   src={tradeHero(t.slug)}
                   alt={
                     hasTradePhoto(t.slug)
-                      ? `A ${t.name.toLowerCase()} at work on a UK job`
+                      ? tradeAlt(t.slug, t.name)
                       : "A UK residential street where our tradespeople work"
                   }
                   loading="lazy"
                   width={1600}
                   height={900}
+                  style={{
+                    objectPosition: tradeFocal(t.slug).focal,
+                  }}
                   className="aspect-[16/9] w-full object-cover"
                 />
                 <div className="flex flex-1 flex-col p-7">
