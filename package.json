@@ -9,7 +9,8 @@
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "security:scan": "curl -sS -H \"x-security-scan-token: $SECURITY_SCAN_TOKEN\" \"${APP_URL:-http://localhost:8080}/api/public/security-scan?source=manual\""
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
