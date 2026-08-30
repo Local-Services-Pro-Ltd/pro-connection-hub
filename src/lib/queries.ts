@@ -239,10 +239,13 @@ export const myReviewsQuery = queryOptions({
     unwrap(
       await supabase
         .from("reviews")
-        .select("*")
+        // author_id / author_place are not client-readable — reviewer identity
+        // and location stay server-side.
+        .select("id, pro_id, author_name, rating, title, body, job_type, status, created_at")
         .order("created_at", { ascending: false }),
     ),
 });
+
 
 export type PlanVisibility =
   Database["public"]["Tables"]["plan_visibility"]["Row"];
