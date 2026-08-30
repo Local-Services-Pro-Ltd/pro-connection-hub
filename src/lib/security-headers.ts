@@ -55,7 +55,10 @@ function policy(): string {
   ].join("; ");
 }
 
-export function applySecurityHeaders(response: Response): Response {
+export function applySecurityHeaders(
+  response: Response,
+  request?: Request,
+): Response {
   const headers = new Headers(response.headers);
 
   const contentType = headers.get("content-type") ?? "";
@@ -68,7 +71,19 @@ export function applySecurityHeaders(response: Response): Response {
 
   headers.set("X-Content-Type-Options", "nosniff");
   headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
-  // No X-Frame-Options: frame-ancestors above is the modern, more precise control.
+  // frame-ancestors above is the precise control; X-Frame-Options is the
+  // legacy fallback for older browsers. It has no allow-list, so it is only
+  // safe on the live site — the Lovable editor legitimately frames previews.
+  const host = request ? new URL(request.url).hostname : "";
+  const isLovableHost =
+    host.endsWith(".lovable.app") ||
+    host.endsWith(".lovable.dev") ||
+    host.endsWith(".lovableproject.com") ||
+    host === "localhost";
+  if (isProd && !isLovableHost) {
+    headers.set("X-Frame-Options", "SAMEORIGIN");
+  }
+
   headers.set("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
   headers.set("Cross-Origin-Resource-Policy", "same-site");
   headers.set(
