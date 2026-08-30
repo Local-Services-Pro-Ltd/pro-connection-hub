@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Section } from "@/components/layout-bits";
+import { HumanCheck, useHumanCheck } from "@/components/human-check";
 import {
   confirmWaitingList,
   updateWaitingListPrefs,
@@ -37,24 +38,37 @@ export const Route = createFileRoute("/waiting-list/confirm")({
 });
 
 type State =
+  | { kind: "challenge" }
   | { kind: "working" }
   | { kind: "done"; postcode: string; already: boolean }
-  | { kind: "failed" };
+  | { kind: "failed"; message?: string };
+
+const field =
+  "w-full rounded-sm border border-input bg-background px-4 py-3 text-sm text-foreground outline-none transition-colors focus:border-primary";
 
 function ConfirmWaitingList() {
   const { token } = Route.useSearch();
   const confirm = useServerFn(confirmWaitingList);
-  const [state, setState] = useState<State>({ kind: "working" });
+  const check = useHumanCheck();
+  const [state, setState] = useState<State>(
+    token ? { kind: "challenge" } : { kind: "failed" },
+  );
 
   useEffect(() => {
-    let live = true;
-    if (!token) {
-      setState({ kind: "failed" });
-      return;
-    }
-    confirm({ data: { token } })
+    if (!token) setState({ kind: "failed" });
+  }, [token]);
+
+  const run = () => {
+    if (!token) return;
+    setState({ kind: "working" });
+    confirm({
+      data: {
+        token,
+        checkToken: check.state.token,
+        checkAnswer: check.state.answer,
+      },
+    })
       .then((result) => {
-        if (!live) return;
         setState(
           result.ok
             ? {
@@ -65,16 +79,49 @@ function ConfirmWaitingList() {
             : { kind: "failed" },
         );
       })
-      .catch(() => live && setState({ kind: "failed" }));
-    return () => {
-      live = false;
-    };
-  }, [token, confirm]);
+      .catch((e: Error) => {
+        check.refresh();
+        setState({ kind: "failed", message: e.message });
+      });
+  };
 
   return (
     <Section>
       <div className="mx-auto max-w-xl text-center">
         <p className="eyebrow">Waiting list</p>
+        {state.kind === "challenge" && (
+          <>
+            <h1 className="mt-3 text-4xl leading-tight sm:text-5xl">
+              One quick check.
+            </h1>
+            <p className="mt-5 text-muted-foreground">
+              Answer this and we'll activate your waiting-list place. It keeps
+              automated scripts away from confirmation links.
+            </p>
+            <form
+              className="mx-auto mt-8 max-w-sm space-y-5 text-left"
+              onSubmit={(e) => {
+                e.preventDefault();
+                run();
+              }}
+            >
+              <HumanCheck
+                question={check.question}
+                state={check.state}
+                setState={check.setState}
+                refresh={check.refresh}
+                inputClassName={field}
+              />
+              <button
+                type="submit"
+                className="w-full rounded-sm bg-primary px-6 py-3 font-display text-sm font-semibold text-primary-foreground shadow-ember hover:brightness-110"
+              >
+                Confirm my email
+              </button>
+            </form>
+          </>
+        )}
+
         {state.kind === "working" && (
           <>
             <h1 className="mt-3 text-4xl leading-tight sm:text-5xl">
@@ -100,7 +147,22 @@ function ConfirmWaitingList() {
           </>
         )}
 
-        {state.kind === "done" && token && <Prefs token={token} />}
+        {state.kind === "done" && token && (
+          <>
+            <Prefs token={token} />
+            <p className="mt-6 text-sm text-muted-foreground">
+              Moved house or changed your mind about the trade?{" "}
+              <Link
+                to="/waiting-list/manage"
+                search={{ token }}
+                className="font-medium text-primary underline underline-offset-4"
+              >
+                Update your details
+              </Link>
+              .
+            </p>
+          </>
+        )}
 
         {state.kind === "failed" && (
           <>
@@ -108,9 +170,18 @@ function ConfirmWaitingList() {
               That link didn't work.
             </h1>
             <p className="mt-5 text-muted-foreground" role="alert">
-              The confirmation link looks incomplete or has already been
-              replaced by a newer one. Join again and we'll send a fresh link.
+              {state.message ??
+                "The confirmation link looks incomplete or has already been replaced by a newer one. Join again and we'll send a fresh link."}
             </p>
+            {token && (
+              <button
+                type="button"
+                onClick={() => setState({ kind: "challenge" })}
+                className="mt-5 rounded-sm border border-border-strong px-5 py-2.5 font-display text-sm font-semibold hover:border-primary hover:text-primary"
+              >
+                Try again
+              </button>
+            )}
           </>
         )}
 
