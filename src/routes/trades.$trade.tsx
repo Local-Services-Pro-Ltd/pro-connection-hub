@@ -1,5 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
+import { WaitingListInline } from "@/components/waiting-list-inline";
 import { ProCard } from "@/components/pro-card";
 import { PageHero, Section } from "@/components/layout-bits";
 import { ProFiltersBar } from "@/components/pro-filters";
@@ -259,6 +260,32 @@ function TradePage() {
           Availability shown is what each firm last confirmed:{" "}
           {Object.values(availabilityLabels).join(", ").toLowerCase()}.
         </p>
+
+        <div className="mt-12 grid gap-8 border-t border-border pt-12 lg:grid-cols-2">
+          <div>
+            <p className="eyebrow">Outside our live areas?</p>
+            <h2 className="mt-3 text-2xl leading-tight sm:text-3xl">
+              Tell us where you need a {trade.name.toLowerCase()}.
+            </h2>
+            <p className="mt-3 leading-relaxed text-muted-foreground">
+              We're live across Greater London, Kent and Surrey. Leave your
+              postcode and we'll email you the day we have vetted{" "}
+              {trade.name.toLowerCase()}s covering it — you can{" "}
+              <Link
+                to="/coverage"
+                className="font-medium text-primary underline underline-offset-2"
+              >
+                watch your area's progress
+              </Link>{" "}
+              in the meantime.
+            </p>
+          </div>
+          <WaitingListInline
+            source="trade_page"
+            defaultTrade={trade.name}
+            compact
+          />
+        </div>
       </Section>
     </>
   );

@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as AreasRouteImport } from './routes/areas'
 import { Route as ClaimRouteImport } from './routes/claim'
+import { Route as CoverageRouteImport } from './routes/coverage'
 import { Route as EnterpriseRouteImport } from './routes/enterprise'
 import { Route as ForTradesmenRouteImport } from './routes/for-tradesmen'
 import { Route as PostJobRouteImport } from './routes/post-job'
@@ -29,6 +30,7 @@ import { Route as AdminFeaturedRouteImport } from './routes/admin.featured'
 import { Route as AdminGalleriesRouteImport } from './routes/admin.galleries'
 import { Route as AdminHeroImagesRouteImport } from './routes/admin.hero-images'
 import { Route as AdminPlansRouteImport } from './routes/admin.plans'
+import { Route as AdminWaitingListRouteImport } from './routes/admin.waiting-list'
 import { Route as CostsIndexRouteImport } from './routes/costs.index'
 import { Route as CostsTradeRouteImport } from './routes/costs.$trade'
 import { Route as ProIdRouteImport } from './routes/pro.$id'
@@ -62,6 +64,11 @@ const AreasRoute = AreasRouteImport.update({
 const ClaimRoute = ClaimRouteImport.update({
   id: '/claim',
   path: '/claim',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CoverageRoute = CoverageRouteImport.update({
+  id: '/coverage',
+  path: '/coverage',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EnterpriseRoute = EnterpriseRouteImport.update({
@@ -144,6 +151,11 @@ const AdminPlansRoute = AdminPlansRouteImport.update({
   path: '/admin/plans',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminWaitingListRoute = AdminWaitingListRouteImport.update({
+  id: '/admin/waiting-list',
+  path: '/admin/waiting-list',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CostsIndexRoute = CostsIndexRouteImport.update({
   id: '/costs/',
   path: '/costs/',
@@ -221,6 +233,7 @@ export interface FileRoutesByFullPath {
   '/account': typeof AccountRoute
   '/areas': typeof AreasRoute
   '/claim': typeof ClaimRoute
+  '/coverage': typeof CoverageRoute
   '/enterprise': typeof EnterpriseRoute
   '/for-tradesmen': typeof ForTradesmenRoute
   '/post-job': typeof PostJobRoute
@@ -237,6 +250,7 @@ export interface FileRoutesByFullPath {
   '/admin/galleries': typeof AdminGalleriesRoute
   '/admin/hero-images': typeof AdminHeroImagesRoute
   '/admin/plans': typeof AdminPlansRoute
+  '/admin/waiting-list': typeof AdminWaitingListRoute
   '/costs/$trade': typeof CostsTradeRoute
   '/pro/$id': typeof ProIdRoute
   '/trades/$trade': typeof TradesTradeRoute
@@ -257,6 +271,7 @@ export interface FileRoutesByTo {
   '/account': typeof AccountRoute
   '/areas': typeof AreasRoute
   '/claim': typeof ClaimRoute
+  '/coverage': typeof CoverageRoute
   '/enterprise': typeof EnterpriseRoute
   '/for-tradesmen': typeof ForTradesmenRoute
   '/post-job': typeof PostJobRoute
@@ -273,6 +288,7 @@ export interface FileRoutesByTo {
   '/admin/galleries': typeof AdminGalleriesRoute
   '/admin/hero-images': typeof AdminHeroImagesRoute
   '/admin/plans': typeof AdminPlansRoute
+  '/admin/waiting-list': typeof AdminWaitingListRoute
   '/costs/$trade': typeof CostsTradeRoute
   '/pro/$id': typeof ProIdRoute
   '/trades/$trade': typeof TradesTradeRoute
@@ -294,6 +310,7 @@ export interface FileRoutesById {
   '/account': typeof AccountRoute
   '/areas': typeof AreasRoute
   '/claim': typeof ClaimRoute
+  '/coverage': typeof CoverageRoute
   '/enterprise': typeof EnterpriseRoute
   '/for-tradesmen': typeof ForTradesmenRoute
   '/post-job': typeof PostJobRoute
@@ -310,6 +327,7 @@ export interface FileRoutesById {
   '/admin/galleries': typeof AdminGalleriesRoute
   '/admin/hero-images': typeof AdminHeroImagesRoute
   '/admin/plans': typeof AdminPlansRoute
+  '/admin/waiting-list': typeof AdminWaitingListRoute
   '/costs/$trade': typeof CostsTradeRoute
   '/pro/$id': typeof ProIdRoute
   '/trades/$trade': typeof TradesTradeRoute
@@ -332,6 +350,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/areas'
     | '/claim'
+    | '/coverage'
     | '/enterprise'
     | '/for-tradesmen'
     | '/post-job'
@@ -348,6 +367,7 @@ export interface FileRouteTypes {
     | '/admin/galleries'
     | '/admin/hero-images'
     | '/admin/plans'
+    | '/admin/waiting-list'
     | '/costs/$trade'
     | '/pro/$id'
     | '/trades/$trade'
@@ -368,6 +388,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/areas'
     | '/claim'
+    | '/coverage'
     | '/enterprise'
     | '/for-tradesmen'
     | '/post-job'
@@ -384,6 +405,7 @@ export interface FileRouteTypes {
     | '/admin/galleries'
     | '/admin/hero-images'
     | '/admin/plans'
+    | '/admin/waiting-list'
     | '/costs/$trade'
     | '/pro/$id'
     | '/trades/$trade'
@@ -404,6 +426,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/areas'
     | '/claim'
+    | '/coverage'
     | '/enterprise'
     | '/for-tradesmen'
     | '/post-job'
@@ -420,6 +443,7 @@ export interface FileRouteTypes {
     | '/admin/galleries'
     | '/admin/hero-images'
     | '/admin/plans'
+    | '/admin/waiting-list'
     | '/costs/$trade'
     | '/pro/$id'
     | '/trades/$trade'
@@ -441,6 +465,7 @@ export interface RootRouteChildren {
   AccountRoute: typeof AccountRoute
   AreasRoute: typeof AreasRoute
   ClaimRoute: typeof ClaimRoute
+  CoverageRoute: typeof CoverageRoute
   EnterpriseRoute: typeof EnterpriseRoute
   ForTradesmenRoute: typeof ForTradesmenRoute
   PostJobRoute: typeof PostJobRoute
@@ -457,6 +482,7 @@ export interface RootRouteChildren {
   AdminGalleriesRoute: typeof AdminGalleriesRoute
   AdminHeroImagesRoute: typeof AdminHeroImagesRoute
   AdminPlansRoute: typeof AdminPlansRoute
+  AdminWaitingListRoute: typeof AdminWaitingListRoute
   CostsTradeRoute: typeof CostsTradeRoute
   ProIdRoute: typeof ProIdRoute
   TradesTradeRoute: typeof TradesTradeRoute
@@ -501,6 +527,13 @@ declare module '@tanstack/react-router' {
       path: '/claim'
       fullPath: '/claim'
       preLoaderRoute: typeof ClaimRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/coverage': {
+      id: '/coverage'
+      path: '/coverage'
+      fullPath: '/coverage'
+      preLoaderRoute: typeof CoverageRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/enterprise': {
@@ -615,6 +648,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPlansRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/waiting-list': {
+      id: '/admin/waiting-list'
+      path: '/admin/waiting-list'
+      fullPath: '/admin/waiting-list'
+      preLoaderRoute: typeof AdminWaitingListRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/costs/': {
       id: '/costs/'
       path: '/costs'
@@ -721,6 +761,7 @@ const rootRouteChildren: RootRouteChildren = {
   AccountRoute: AccountRoute,
   AreasRoute: AreasRoute,
   ClaimRoute: ClaimRoute,
+  CoverageRoute: CoverageRoute,
   EnterpriseRoute: EnterpriseRoute,
   ForTradesmenRoute: ForTradesmenRoute,
   PostJobRoute: PostJobRoute,
@@ -737,6 +778,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminGalleriesRoute: AdminGalleriesRoute,
   AdminHeroImagesRoute: AdminHeroImagesRoute,
   AdminPlansRoute: AdminPlansRoute,
+  AdminWaitingListRoute: AdminWaitingListRoute,
   CostsTradeRoute: CostsTradeRoute,
   ProIdRoute: ProIdRoute,
   TradesTradeRoute: TradesTradeRoute,

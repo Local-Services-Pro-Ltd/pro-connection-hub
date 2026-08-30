@@ -174,8 +174,23 @@ export const submitWaitingList = createServerFn({ method: "POST" })
     const outward = data.postcode.split(" ")[0] ?? data.postcode;
     const area = outward.replace(/\d/g, "");
 
+    // Demand signal shown back to the visitor: how many confirmed sign-ups
+    // already exist in their postcode area. Aggregate only.
+    const waitingIn = async () => {
+      try {
+        const { data: total } = await supabaseAdmin.rpc(
+          "waiting_list_area_total",
+          { p_area: area },
+        );
+        return Number(total ?? 0);
+      } catch {
+        return 0;
+      }
+    };
+
     // Already confirmed on an earlier sign-up — nothing more to do.
-    if (row.confirmed) return { id, area, pending: false };
+    if (row.confirmed)
+      return { id, area, pending: false, waiting: await waitingIn() };
 
     // 5. Double opt-in: the entry stays inactive until this link is clicked.
     const confirmUrl = `${requestOrigin()}/waiting-list/confirm?token=${encodeURIComponent(row.token ?? "")}`;
@@ -190,7 +205,7 @@ export const submitWaitingList = createServerFn({ method: "POST" })
 
     if (sent) {
       await supabaseAdmin.rpc("mark_waiting_list_email_sent", { p_id: id });
-      return { id, area, pending: true };
+      return { id, area, pending: true, waiting: await waitingIn() };
     }
 
     // No sender configured yet: confirm on the visitor's behalf rather than
@@ -198,7 +213,7 @@ export const submitWaitingList = createServerFn({ method: "POST" })
     await supabaseAdmin.rpc("confirm_waiting_list", {
       p_token: row.token ?? "",
     });
-    return { id, area, pending: false };
+    return { id, area, pending: false, waiting: await waitingIn() };
   });
 
 /** Completes double opt-in from the link in the confirmation email. */

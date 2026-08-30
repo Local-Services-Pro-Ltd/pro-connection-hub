@@ -183,6 +183,13 @@
       "when": 1788093673601,
       "tag": "0025_booked_slots_function_only",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1788094112614,
+      "tag": "0026_waiting_list_demand_signals",
+      "breakpoints": true
     }
   ]
 }

@@ -6,12 +6,15 @@ const SITE = "https://tradesmanfinder.org";
 export const Route = createFileRoute("/waiting-list/thanks")({
   validateSearch: (
     search: Record<string, unknown>,
-  ): { area?: string; pending?: boolean } => ({
+  ): { area?: string; pending?: boolean; waiting?: number } => ({
     ...(typeof search["area"] === "string" && search["area"]
       ? { area: search["area"] }
       : {}),
     ...(search["pending"] === true || search["pending"] === "true"
       ? { pending: true }
+      : {}),
+    ...(Number(search["waiting"]) > 0
+      ? { waiting: Number(search["waiting"]) }
       : {}),
   }),
   head: () => {
@@ -37,7 +40,7 @@ export const Route = createFileRoute("/waiting-list/thanks")({
 });
 
 function WaitingListThanks() {
-  const { area, pending } = Route.useSearch();
+  const { area, pending, waiting } = Route.useSearch();
   return (
     <Section>
       <div className="mx-auto max-w-xl text-center">
@@ -63,6 +66,21 @@ function WaitingListThanks() {
             </>
           )}
         </p>
+
+        {waiting && waiting > 1 ? (
+          <p className="mt-6 rounded-md border border-border bg-card px-6 py-5 text-muted-foreground">
+            <strong className="text-foreground">{waiting} people</strong> are
+            now waiting in {area || "your postcode area"}. We open an area once
+            around 25 confirmed sign-ups are in — you can{" "}
+            <Link
+              to="/coverage"
+              className="font-medium text-primary underline underline-offset-2"
+            >
+              track the progress here
+            </Link>
+            .
+          </p>
+        ) : null}
 
         <div className="mt-10 flex flex-wrap justify-center gap-3">
           <Link

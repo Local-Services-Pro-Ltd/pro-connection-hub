@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { ArrowRight, MapPin } from "lucide-react";
+import { WaitingListInline } from "@/components/waiting-list-inline";
 import { Section, SectionHead } from "@/components/layout-bits";
 import { LiveMapHero } from "@/components/live-map-hero";
 import { areasQuery, proCountsQuery } from "@/lib/queries";
@@ -160,22 +161,27 @@ function Areas() {
               actually get to you. Leave your postcode and we'll email you the
               day we open — homeowners and trades both welcome.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link
-                to="/waiting-list"
-                search={{}}
-                className="inline-flex rounded-sm bg-primary px-6 py-3.5 font-display font-semibold text-primary-foreground shadow-ember hover:brightness-110"
-              >
-                Join the waiting list
-              </Link>
+            <div className="mt-8">
+              <WaitingListInline source="areas_page" />
+            </div>
+            <p className="mt-4 text-sm text-muted-foreground">
+              Already covered?{" "}
               <Link
                 to="/post-job"
                 search={{}}
-                className="inline-flex rounded-sm border border-border-strong px-6 py-3.5 font-display font-semibold hover:border-primary hover:text-primary"
+                className="font-medium text-primary underline underline-offset-2"
               >
                 Post a job
+              </Link>{" "}
+              or{" "}
+              <Link
+                to="/coverage"
+                className="font-medium text-primary underline underline-offset-2"
+              >
+                track which area opens next
               </Link>
-            </div>
+              .
+            </p>
           </div>
         </div>
       </Section>

@@ -1224,6 +1224,29 @@ export type Database = {
         Args: { p_token: string }
         Returns: boolean
       }
+      waiting_list_admin_summary: {
+        Args: never
+        Returns: {
+          confirmed: number
+          homeowners: number
+          last_signup: string
+          postcode_area: string
+          total: number
+          traders: number
+          trades: string
+        }[]
+      }
+      waiting_list_area_total: { Args: { p_area: string }; Returns: number }
+      waiting_list_demand: {
+        Args: never
+        Returns: {
+          first_signup: string
+          homeowners: number
+          postcode_area: string
+          total: number
+          traders: number
+        }[]
+      }
     }
     Enums: {
       account_type: "customer" | "tradesman"
