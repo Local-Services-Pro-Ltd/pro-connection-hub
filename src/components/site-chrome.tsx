@@ -10,6 +10,7 @@ import { FeedbackForm } from "@/components/feedback-form";
 
 const nav = [
   { to: "/trades", label: "Find a tradesman" },
+  { to: "/costs", label: "Cost guides" },
   { to: "/areas", label: "Areas" },
   { to: "/for-tradesmen", label: "For tradesmen" },
 ];
