@@ -21,6 +21,7 @@ import { Route as SigninRouteImport } from './routes/signin'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as VerificationRouteImport } from './routes/verification'
+import { Route as AdminFeaturedRouteImport } from './routes/admin.featured'
 import { Route as AdminPlansRouteImport } from './routes/admin.plans'
 import { Route as ProIdRouteImport } from './routes/pro.$id'
 import { Route as TradesIndexRouteImport } from './routes/trades.index'
@@ -91,6 +92,11 @@ const VerificationRoute = VerificationRouteImport.update({
   path: '/verification',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminFeaturedRoute = AdminFeaturedRouteImport.update({
+  id: '/admin/featured',
+  path: '/admin/featured',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminPlansRoute = AdminPlansRouteImport.update({
   id: '/admin/plans',
   path: '/admin/plans',
@@ -151,6 +157,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/verification': typeof VerificationRoute
+  '/admin/featured': typeof AdminFeaturedRoute
   '/admin/plans': typeof AdminPlansRoute
   '/pro/$id': typeof ProIdRoute
   '/trades/$trade': typeof TradesTradeRoute
@@ -174,6 +181,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/verification': typeof VerificationRoute
+  '/admin/featured': typeof AdminFeaturedRoute
   '/admin/plans': typeof AdminPlansRoute
   '/pro/$id': typeof ProIdRoute
   '/trades/$trade': typeof TradesTradeRoute
@@ -198,6 +206,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/verification': typeof VerificationRoute
+  '/admin/featured': typeof AdminFeaturedRoute
   '/admin/plans': typeof AdminPlansRoute
   '/pro/$id': typeof ProIdRoute
   '/trades/$trade': typeof TradesTradeRoute
@@ -223,6 +232,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/verification'
+    | '/admin/featured'
     | '/admin/plans'
     | '/pro/$id'
     | '/trades/$trade'
@@ -246,6 +256,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/verification'
+    | '/admin/featured'
     | '/admin/plans'
     | '/pro/$id'
     | '/trades/$trade'
@@ -269,6 +280,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/verification'
+    | '/admin/featured'
     | '/admin/plans'
     | '/pro/$id'
     | '/trades/$trade'
@@ -293,6 +305,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
   VerificationRoute: typeof VerificationRoute
+  AdminFeaturedRoute: typeof AdminFeaturedRoute
   AdminPlansRoute: typeof AdminPlansRoute
   ProIdRoute: typeof ProIdRoute
   TradesTradeRoute: typeof TradesTradeRoute
@@ -390,6 +403,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VerificationRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/featured': {
+      id: '/admin/featured'
+      path: '/admin/featured'
+      fullPath: '/admin/featured'
+      preLoaderRoute: typeof AdminFeaturedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/plans': {
       id: '/admin/plans'
       path: '/admin/plans'
@@ -469,6 +489,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
   VerificationRoute: VerificationRoute,
+  AdminFeaturedRoute: AdminFeaturedRoute,
   AdminPlansRoute: AdminPlansRoute,
   ProIdRoute: ProIdRoute,
   TradesTradeRoute: TradesTradeRoute,

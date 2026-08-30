@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "security:scan": "curl -sS -H \"x-security-scan-token: $SECURITY_SCAN_TOKEN\" \"${APP_URL:-http://localhost:8080}/api/public/security-scan?source=manual\""
+    "security:scan": "curl -sS -H \"x-security-scan-token: $SECURITY_SCAN_TOKEN\" \"${APP_URL:-http://localhost:8080}/api/public/security-scan?source=manual\"",
+    "test:featured": "python3 tests/regression/featured_pro.py"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

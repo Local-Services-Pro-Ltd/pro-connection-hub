@@ -318,6 +318,48 @@ export type Database = {
           },
         ]
       }
+      pro_feature_audit: {
+        Row: {
+          action: string
+          changed_by: string | null
+          changed_by_email: string | null
+          created_at: string
+          id: string
+          is_featured: boolean
+          pro_id: string
+          pro_name: string
+          published: boolean
+          verified_credentials: number
+          was_featured: boolean | null
+        }
+        Insert: {
+          action: string
+          changed_by?: string | null
+          changed_by_email?: string | null
+          created_at?: string
+          id?: string
+          is_featured: boolean
+          pro_id: string
+          pro_name?: string
+          published?: boolean
+          verified_credentials?: number
+          was_featured?: boolean | null
+        }
+        Update: {
+          action?: string
+          changed_by?: string | null
+          changed_by_email?: string | null
+          created_at?: string
+          id?: string
+          is_featured?: boolean
+          pro_id?: string
+          pro_name?: string
+          published?: boolean
+          verified_credentials?: number
+          was_featured?: boolean | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           account_type: Database["public"]["Enums"]["account_type"]
@@ -700,6 +742,14 @@ export type Database = {
         Returns: Json
       }
       confirm_waiting_list: { Args: { p_token: string }; Returns: Json }
+      featured_pro_regression: {
+        Args: never
+        Returns: {
+          check_name: string
+          detail: string
+          passed: boolean
+        }[]
+      }
       form_block_daily: {
         Args: { p_days?: number }
         Returns: {
