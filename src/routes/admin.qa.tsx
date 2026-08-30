@@ -75,8 +75,11 @@ function AdminQa() {
 
   const questions = data?.questions ?? [];
   const answers = data?.answers ?? [];
+  const reviews = data?.reviews ?? [];
+  const reviewFor = (id: string) => reviews.find((r) => r.question_id === id);
   const questionTitle = (id: string) =>
     questions.find((q) => q.id === id)?.title ?? "Question";
+
 
   const Actions = ({
     target,
