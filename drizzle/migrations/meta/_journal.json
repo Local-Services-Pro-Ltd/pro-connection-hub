@@ -211,6 +211,13 @@
       "when": 1788101969009,
       "tag": "0029_ask_the_pros_qa",
       "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1788102850302,
+      "tag": "0030_pro_applications",
+      "breakpoints": true
     }
   ]
 }
