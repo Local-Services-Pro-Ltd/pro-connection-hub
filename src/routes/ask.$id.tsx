@@ -108,6 +108,19 @@ function QuestionPage() {
         </p>
       )}
 
+      {question?.ai_answer && (
+        <div className="mt-6 max-w-3xl">
+          <AiAnswer
+            answer={question.ai_answer}
+            safety={question.ai_safety}
+            safetyNote={question.ai_safety_note}
+            tags={question.ai_tags}
+            urgency={question.ai_urgency}
+          />
+        </div>
+      )}
+
+
       <div className="mt-12 max-w-3xl border-t border-border pt-10">
         <h2 className="font-display text-2xl">Answer this question</h2>
         {user ? (
