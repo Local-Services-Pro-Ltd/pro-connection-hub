@@ -15,7 +15,7 @@ export interface VettingAction {
   key: string;
   title: string;
   body: string;
-  href: string;
+  href: "/post-job" | "/for-tradesmen";
   label: string;
 }
 
