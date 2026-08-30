@@ -1,14 +1,23 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
 import { Star, Clock, ShieldCheck, MapPin, Hammer } from "lucide-react";
 import { Section } from "@/components/layout-bits";
 import { ReviewPanel } from "@/components/review-panel";
-import { proQuery, availabilityLabels } from "@/lib/queries";
+import { ProjectGallery } from "@/components/project-gallery";
+import { BookingPanel } from "@/components/booking-panel";
+import { TrustBadge, TrustBreakdown } from "@/components/trust-badge";
+import {
+  proQuery,
+  availabilityLabels,
+  proProjectsQuery,
+  proTrustQuery,
+} from "@/lib/queries";
 import pro1 from "@/assets/pro-1.jpg";
 import pro2 from "@/assets/pro-2.jpg";
 import pro3 from "@/assets/pro-3.jpg";
 
 const photos: Record<number, string> = { 1: pro1, 2: pro2, 3: pro3 };
+
 
 export const Route = createFileRoute("/pro/$id")({
   loader: async ({ params, context }) => {
