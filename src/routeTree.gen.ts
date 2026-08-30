@@ -21,6 +21,7 @@ import { Route as SigninRouteImport } from './routes/signin'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as VerificationRouteImport } from './routes/verification'
+import { Route as AdminAccessRouteImport } from './routes/admin.access'
 import { Route as AdminFeaturedRouteImport } from './routes/admin.featured'
 import { Route as AdminPlansRouteImport } from './routes/admin.plans'
 import { Route as ProIdRouteImport } from './routes/pro.$id'
@@ -29,6 +30,7 @@ import { Route as TradesTradeRouteImport } from './routes/trades.$trade'
 import { Route as WaitingListIndexRouteImport } from './routes/waiting-list.index'
 import { Route as WaitingListConfirmRouteImport } from './routes/waiting-list.confirm'
 import { Route as WaitingListThanksRouteImport } from './routes/waiting-list.thanks'
+import { Route as ApiPublicReviewsRouteImport } from './routes/api/public/reviews'
 import { Route as ApiPublicSecurityScanRouteImport } from './routes/api/public/security-scan'
 import { Route as ApiPublicVettingStatusRouteImport } from './routes/api/public/vetting-status'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
@@ -93,6 +95,11 @@ const VerificationRoute = VerificationRouteImport.update({
   path: '/verification',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminAccessRoute = AdminAccessRouteImport.update({
+  id: '/admin/access',
+  path: '/admin/access',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminFeaturedRoute = AdminFeaturedRouteImport.update({
   id: '/admin/featured',
   path: '/admin/featured',
@@ -133,6 +140,11 @@ const WaitingListThanksRoute = WaitingListThanksRouteImport.update({
   path: '/waiting-list/thanks',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicReviewsRoute = ApiPublicReviewsRouteImport.update({
+  id: '/api/public/reviews',
+  path: '/api/public/reviews',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicSecurityScanRoute = ApiPublicSecurityScanRouteImport.update({
   id: '/api/public/security-scan',
   path: '/api/public/security-scan',
@@ -163,6 +175,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/verification': typeof VerificationRoute
+  '/admin/access': typeof AdminAccessRoute
   '/admin/featured': typeof AdminFeaturedRoute
   '/admin/plans': typeof AdminPlansRoute
   '/pro/$id': typeof ProIdRoute
@@ -171,6 +184,7 @@ export interface FileRoutesByFullPath {
   '/waiting-list/thanks': typeof WaitingListThanksRoute
   '/trades/': typeof TradesIndexRoute
   '/waiting-list/': typeof WaitingListIndexRoute
+  '/api/public/reviews': typeof ApiPublicReviewsRoute
   '/api/public/security-scan': typeof ApiPublicSecurityScanRoute
   '/api/public/vetting-status': typeof ApiPublicVettingStatusRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -188,6 +202,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/verification': typeof VerificationRoute
+  '/admin/access': typeof AdminAccessRoute
   '/admin/featured': typeof AdminFeaturedRoute
   '/admin/plans': typeof AdminPlansRoute
   '/pro/$id': typeof ProIdRoute
@@ -196,6 +211,7 @@ export interface FileRoutesByTo {
   '/waiting-list/thanks': typeof WaitingListThanksRoute
   '/trades': typeof TradesIndexRoute
   '/waiting-list': typeof WaitingListIndexRoute
+  '/api/public/reviews': typeof ApiPublicReviewsRoute
   '/api/public/security-scan': typeof ApiPublicSecurityScanRoute
   '/api/public/vetting-status': typeof ApiPublicVettingStatusRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -214,6 +230,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/verification': typeof VerificationRoute
+  '/admin/access': typeof AdminAccessRoute
   '/admin/featured': typeof AdminFeaturedRoute
   '/admin/plans': typeof AdminPlansRoute
   '/pro/$id': typeof ProIdRoute
@@ -222,6 +239,7 @@ export interface FileRoutesById {
   '/waiting-list/thanks': typeof WaitingListThanksRoute
   '/trades/': typeof TradesIndexRoute
   '/waiting-list/': typeof WaitingListIndexRoute
+  '/api/public/reviews': typeof ApiPublicReviewsRoute
   '/api/public/security-scan': typeof ApiPublicSecurityScanRoute
   '/api/public/vetting-status': typeof ApiPublicVettingStatusRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -241,6 +259,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/verification'
+    | '/admin/access'
     | '/admin/featured'
     | '/admin/plans'
     | '/pro/$id'
@@ -249,6 +268,7 @@ export interface FileRouteTypes {
     | '/waiting-list/thanks'
     | '/trades/'
     | '/waiting-list/'
+    | '/api/public/reviews'
     | '/api/public/security-scan'
     | '/api/public/vetting-status'
     | '/lovable/email/transactional/preview'
@@ -266,6 +286,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/verification'
+    | '/admin/access'
     | '/admin/featured'
     | '/admin/plans'
     | '/pro/$id'
@@ -274,6 +295,7 @@ export interface FileRouteTypes {
     | '/waiting-list/thanks'
     | '/trades'
     | '/waiting-list'
+    | '/api/public/reviews'
     | '/api/public/security-scan'
     | '/api/public/vetting-status'
     | '/lovable/email/transactional/preview'
@@ -291,6 +313,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/verification'
+    | '/admin/access'
     | '/admin/featured'
     | '/admin/plans'
     | '/pro/$id'
@@ -299,6 +322,7 @@ export interface FileRouteTypes {
     | '/waiting-list/thanks'
     | '/trades/'
     | '/waiting-list/'
+    | '/api/public/reviews'
     | '/api/public/security-scan'
     | '/api/public/vetting-status'
     | '/lovable/email/transactional/preview'
@@ -317,6 +341,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
   VerificationRoute: typeof VerificationRoute
+  AdminAccessRoute: typeof AdminAccessRoute
   AdminFeaturedRoute: typeof AdminFeaturedRoute
   AdminPlansRoute: typeof AdminPlansRoute
   ProIdRoute: typeof ProIdRoute
@@ -325,6 +350,7 @@ export interface RootRouteChildren {
   WaitingListThanksRoute: typeof WaitingListThanksRoute
   TradesIndexRoute: typeof TradesIndexRoute
   WaitingListIndexRoute: typeof WaitingListIndexRoute
+  ApiPublicReviewsRoute: typeof ApiPublicReviewsRoute
   ApiPublicSecurityScanRoute: typeof ApiPublicSecurityScanRoute
   ApiPublicVettingStatusRoute: typeof ApiPublicVettingStatusRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
@@ -416,6 +442,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VerificationRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/access': {
+      id: '/admin/access'
+      path: '/admin/access'
+      fullPath: '/admin/access'
+      preLoaderRoute: typeof AdminAccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/featured': {
       id: '/admin/featured'
       path: '/admin/featured'
@@ -472,6 +505,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WaitingListThanksRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/reviews': {
+      id: '/api/public/reviews'
+      path: '/api/public/reviews'
+      fullPath: '/api/public/reviews'
+      preLoaderRoute: typeof ApiPublicReviewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/security-scan': {
       id: '/api/public/security-scan'
       path: '/api/public/security-scan'
@@ -509,6 +549,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
   VerificationRoute: VerificationRoute,
+  AdminAccessRoute: AdminAccessRoute,
   AdminFeaturedRoute: AdminFeaturedRoute,
   AdminPlansRoute: AdminPlansRoute,
   ProIdRoute: ProIdRoute,
@@ -517,6 +558,7 @@ const rootRouteChildren: RootRouteChildren = {
   WaitingListThanksRoute: WaitingListThanksRoute,
   TradesIndexRoute: TradesIndexRoute,
   WaitingListIndexRoute: WaitingListIndexRoute,
+  ApiPublicReviewsRoute: ApiPublicReviewsRoute,
   ApiPublicSecurityScanRoute: ApiPublicSecurityScanRoute,
   ApiPublicVettingStatusRoute: ApiPublicVettingStatusRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,

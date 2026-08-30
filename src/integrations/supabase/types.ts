@@ -778,8 +778,29 @@ export type Database = {
         Args: { p_id: string }
         Returns: undefined
       }
+      security_access_matrix: {
+        Args: never
+        Returns: {
+          audience: string
+          command: string
+          expression: string
+          object_kind: string
+          object_name: string
+          policy_name: string
+          rls_enabled: boolean
+          roles: string
+        }[]
+      }
       security_caller_is_admin: { Args: never; Returns: boolean }
       security_posture_check: {
+        Args: never
+        Returns: {
+          check_name: string
+          detail: string
+          passed: boolean
+        }[]
+      }
+      security_privilege_probe: {
         Args: never
         Returns: {
           check_name: string
