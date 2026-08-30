@@ -653,3 +653,61 @@ export async function matchPros(args: {
   if (error) throw error;
   return (data ?? []) as MatchedPro[];
 }
+
+export type ProAvailability =
+  Database["public"]["Tables"]["pro_availability"]["Row"];
+
+/**
+ * Visit windows a tradesperson has declared for themselves. Empty means the
+ * booking panel falls back to standard weekday windows.
+ */
+export function proAvailabilityQuery(proId: string) {
+  return queryOptions({
+    queryKey: ["pro-availability", proId],
+    queryFn: async () =>
+      unwrap(
+        await supabase
+          .from("pro_availability")
+          .select("*")
+          .eq("pro_id", proId)
+          .eq("active", true)
+          .order("weekday")
+          .order("start_minute"),
+      ) as ProAvailability[],
+    staleTime: 60_000,
+  });
+}
+
+/** Every project row for one pro, drafts included. Admin/owner only via RLS. */
+export function adminProProjectsQuery(proId: string) {
+  return queryOptions({
+    queryKey: ["admin", "pro-projects", proId],
+    queryFn: async () =>
+      unwrap(
+        await supabase
+          .from("pro_projects")
+          .select("*")
+          .eq("pro_id", proId)
+          .order("sort_order")
+          .order("created_at", { ascending: false }),
+      ) as ProProject[],
+    staleTime: 0,
+  });
+}
+
+/** All declared windows for one pro, inactive ones included. */
+export function adminProAvailabilityQuery(proId: string) {
+  return queryOptions({
+    queryKey: ["admin", "pro-availability", proId],
+    queryFn: async () =>
+      unwrap(
+        await supabase
+          .from("pro_availability")
+          .select("*")
+          .eq("pro_id", proId)
+          .order("weekday")
+          .order("start_minute"),
+      ) as ProAvailability[],
+    staleTime: 0,
+  });
+}
