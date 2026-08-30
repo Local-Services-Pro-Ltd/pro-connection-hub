@@ -645,10 +645,10 @@ export async function matchPros(args: {
 }): Promise<MatchedPro[]> {
   const { data, error } = await supabase.rpc("match_pros", {
     p_trade: args.trade,
-    p_postcode: args.postcode ?? undefined,
-    p_budget: args.budget ?? undefined,
-    p_job_id: args.jobId ?? undefined,
     p_limit: args.limit ?? 3,
+    ...(args.postcode ? { p_postcode: args.postcode } : {}),
+    ...(args.budget ? { p_budget: args.budget } : {}),
+    ...(args.jobId ? { p_job_id: args.jobId } : {}),
   });
   if (error) throw error;
   return (data ?? []) as MatchedPro[];

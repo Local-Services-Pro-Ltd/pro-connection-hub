@@ -75,9 +75,9 @@ export function BookingPanel({
         p_slot_start: selected.toISOString(),
         p_contact_name: name.trim(),
         p_contact_email: email.trim(),
-        p_contact_phone: phone.trim() || undefined,
-        p_postcode: postcode || undefined,
         p_notes: notes.trim(),
+        ...(phone.trim() ? { p_contact_phone: phone.trim() } : {}),
+        ...(postcode ? { p_postcode: postcode } : {}),
       });
       if (error) throw error;
       const res = data as { ok: boolean; reason?: string; reference?: string };
