@@ -357,6 +357,7 @@ export type Database = {
           company: string
           created_at: string
           day_rate: number | null
+          featured: boolean
           id: string
           min_job_budget: number
           name: string
@@ -380,6 +381,7 @@ export type Database = {
           company: string
           created_at?: string
           day_rate?: number | null
+          featured?: boolean
           id: string
           min_job_budget?: number
           name: string
@@ -403,6 +405,7 @@ export type Database = {
           company?: string
           created_at?: string
           day_rate?: number | null
+          featured?: boolean
           id?: string
           min_job_budget?: number
           name?: string

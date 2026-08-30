@@ -43,6 +43,13 @@
       "when": 1788084487749,
       "tag": "0005_protect_reviewer_location_and_feedback_reads",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1788084620582,
+      "tag": "0006_add_pro_featured_flag",
+      "breakpoints": true
     }
   ]
 }
