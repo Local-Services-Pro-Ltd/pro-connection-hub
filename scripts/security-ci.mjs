@@ -59,8 +59,10 @@ lines.push("| Result | Suite | Check | Detail |");
 lines.push("| --- | --- | --- | --- |");
 for (const c of checks) {
   const state =
-    c.passed === true
-      ? "pass"
+    c.passed === null
+      ? "skipped"
+      : c.passed === true
+        ? "pass"
       : accepted.has(`${c.suite}:${c.check_name}`)
         ? "accepted"
         : "NEW FINDING";
