@@ -1,32 +1,26 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, CheckCircle2, Clock, ShieldCheck } from "lucide-react";
+import {
+  VETTING_ACTIONS,
+  VETTING_STAGES,
+  type VettingStage,
+} from "@/lib/vetting-status";
 
 /**
  * Shown on the homepage while no firm has been featured yet. It tells people
  * exactly where vetting has got to and what they can do meanwhile, instead of
- * padding the page with placeholder profiles.
+ * padding the page with placeholder profiles. The copy comes from
+ * `@/lib/vetting-status`, which /api/public/vetting-status also serves, so
+ * every surface stays in step.
  */
 
-const stages = [
-  {
-    icon: CheckCircle2,
-    state: "Done",
-    title: "Applications open",
-    body: "Trades in Greater London, Kent and Surrey can apply to be listed today.",
-  },
-  {
-    icon: Clock,
-    state: "In progress",
-    title: "Checks under way",
-    body: "We look at public liability insurance, trade-body membership, company records and recent jobs — in person where we can.",
-  },
-  {
-    icon: ShieldCheck,
-    state: "Next",
-    title: "Featured on the homepage",
-    body: "A firm appears here only once those checks pass and an admin signs it off. Nothing is featured automatically.",
-  },
-] as const;
+const ICONS: Record<VettingStage["state"], typeof CheckCircle2> = {
+  Done: CheckCircle2,
+  "In progress": Clock,
+  Next: ShieldCheck,
+};
+
+const stages = VETTING_STAGES.map((s) => ({ ...s, icon: ICONS[s.state] }));
 
 export function VettingStatusPanel() {
   return (
