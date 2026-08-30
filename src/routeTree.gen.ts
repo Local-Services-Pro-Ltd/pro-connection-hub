@@ -25,6 +25,7 @@ import { Route as AdminAccessRouteImport } from './routes/admin.access'
 import { Route as AdminAuditRouteImport } from './routes/admin.audit'
 import { Route as AdminEventsRouteImport } from './routes/admin.events'
 import { Route as AdminFeaturedRouteImport } from './routes/admin.featured'
+import { Route as AdminHeroImagesRouteImport } from './routes/admin.hero-images'
 import { Route as AdminPlansRouteImport } from './routes/admin.plans'
 import { Route as ProIdRouteImport } from './routes/pro.$id'
 import { Route as TradesIndexRouteImport } from './routes/trades.index'
@@ -119,6 +120,11 @@ const AdminFeaturedRoute = AdminFeaturedRouteImport.update({
   path: '/admin/featured',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminHeroImagesRoute = AdminHeroImagesRouteImport.update({
+  id: '/admin/hero-images',
+  path: '/admin/hero-images',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminPlansRoute = AdminPlansRouteImport.update({
   id: '/admin/plans',
   path: '/admin/plans',
@@ -203,6 +209,7 @@ export interface FileRoutesByFullPath {
   '/admin/audit': typeof AdminAuditRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/featured': typeof AdminFeaturedRoute
+  '/admin/hero-images': typeof AdminHeroImagesRoute
   '/admin/plans': typeof AdminPlansRoute
   '/pro/$id': typeof ProIdRoute
   '/trades/$trade': typeof TradesTradeRoute
@@ -234,6 +241,7 @@ export interface FileRoutesByTo {
   '/admin/audit': typeof AdminAuditRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/featured': typeof AdminFeaturedRoute
+  '/admin/hero-images': typeof AdminHeroImagesRoute
   '/admin/plans': typeof AdminPlansRoute
   '/pro/$id': typeof ProIdRoute
   '/trades/$trade': typeof TradesTradeRoute
@@ -266,6 +274,7 @@ export interface FileRoutesById {
   '/admin/audit': typeof AdminAuditRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/featured': typeof AdminFeaturedRoute
+  '/admin/hero-images': typeof AdminHeroImagesRoute
   '/admin/plans': typeof AdminPlansRoute
   '/pro/$id': typeof ProIdRoute
   '/trades/$trade': typeof TradesTradeRoute
@@ -299,6 +308,7 @@ export interface FileRouteTypes {
     | '/admin/audit'
     | '/admin/events'
     | '/admin/featured'
+    | '/admin/hero-images'
     | '/admin/plans'
     | '/pro/$id'
     | '/trades/$trade'
@@ -330,6 +340,7 @@ export interface FileRouteTypes {
     | '/admin/audit'
     | '/admin/events'
     | '/admin/featured'
+    | '/admin/hero-images'
     | '/admin/plans'
     | '/pro/$id'
     | '/trades/$trade'
@@ -361,6 +372,7 @@ export interface FileRouteTypes {
     | '/admin/audit'
     | '/admin/events'
     | '/admin/featured'
+    | '/admin/hero-images'
     | '/admin/plans'
     | '/pro/$id'
     | '/trades/$trade'
@@ -393,6 +405,7 @@ export interface RootRouteChildren {
   AdminAuditRoute: typeof AdminAuditRoute
   AdminEventsRoute: typeof AdminEventsRoute
   AdminFeaturedRoute: typeof AdminFeaturedRoute
+  AdminHeroImagesRoute: typeof AdminHeroImagesRoute
   AdminPlansRoute: typeof AdminPlansRoute
   ProIdRoute: typeof ProIdRoute
   TradesTradeRoute: typeof TradesTradeRoute
@@ -522,6 +535,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminFeaturedRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/hero-images': {
+      id: '/admin/hero-images'
+      path: '/admin/hero-images'
+      fullPath: '/admin/hero-images'
+      preLoaderRoute: typeof AdminHeroImagesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/plans': {
       id: '/admin/plans'
       path: '/admin/plans'
@@ -633,6 +653,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminAuditRoute: AdminAuditRoute,
   AdminEventsRoute: AdminEventsRoute,
   AdminFeaturedRoute: AdminFeaturedRoute,
+  AdminHeroImagesRoute: AdminHeroImagesRoute,
   AdminPlansRoute: AdminPlansRoute,
   ProIdRoute: ProIdRoute,
   TradesTradeRoute: TradesTradeRoute,
