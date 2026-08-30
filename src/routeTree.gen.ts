@@ -38,6 +38,7 @@ import { Route as TradesIndexRouteImport } from './routes/trades.index'
 import { Route as TradesTradeRouteImport } from './routes/trades.$trade'
 import { Route as WaitingListIndexRouteImport } from './routes/waiting-list.index'
 import { Route as WaitingListConfirmRouteImport } from './routes/waiting-list.confirm'
+import { Route as WaitingListManageRouteImport } from './routes/waiting-list.manage'
 import { Route as WaitingListThanksRouteImport } from './routes/waiting-list.thanks'
 import { Route as ApiPublicFeaturedRouteImport } from './routes/api/public/featured'
 import { Route as ApiPublicReviewsRouteImport } from './routes/api/public/reviews'
@@ -191,6 +192,11 @@ const WaitingListConfirmRoute = WaitingListConfirmRouteImport.update({
   path: '/waiting-list/confirm',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WaitingListManageRoute = WaitingListManageRouteImport.update({
+  id: '/waiting-list/manage',
+  path: '/waiting-list/manage',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WaitingListThanksRoute = WaitingListThanksRouteImport.update({
   id: '/waiting-list/thanks',
   path: '/waiting-list/thanks',
@@ -255,6 +261,7 @@ export interface FileRoutesByFullPath {
   '/pro/$id': typeof ProIdRoute
   '/trades/$trade': typeof TradesTradeRoute
   '/waiting-list/confirm': typeof WaitingListConfirmRoute
+  '/waiting-list/manage': typeof WaitingListManageRoute
   '/waiting-list/thanks': typeof WaitingListThanksRoute
   '/costs/': typeof CostsIndexRoute
   '/trades/': typeof TradesIndexRoute
@@ -293,6 +300,7 @@ export interface FileRoutesByTo {
   '/pro/$id': typeof ProIdRoute
   '/trades/$trade': typeof TradesTradeRoute
   '/waiting-list/confirm': typeof WaitingListConfirmRoute
+  '/waiting-list/manage': typeof WaitingListManageRoute
   '/waiting-list/thanks': typeof WaitingListThanksRoute
   '/costs': typeof CostsIndexRoute
   '/trades': typeof TradesIndexRoute
@@ -332,6 +340,7 @@ export interface FileRoutesById {
   '/pro/$id': typeof ProIdRoute
   '/trades/$trade': typeof TradesTradeRoute
   '/waiting-list/confirm': typeof WaitingListConfirmRoute
+  '/waiting-list/manage': typeof WaitingListManageRoute
   '/waiting-list/thanks': typeof WaitingListThanksRoute
   '/costs/': typeof CostsIndexRoute
   '/trades/': typeof TradesIndexRoute
@@ -372,6 +381,7 @@ export interface FileRouteTypes {
     | '/pro/$id'
     | '/trades/$trade'
     | '/waiting-list/confirm'
+    | '/waiting-list/manage'
     | '/waiting-list/thanks'
     | '/costs/'
     | '/trades/'
@@ -410,6 +420,7 @@ export interface FileRouteTypes {
     | '/pro/$id'
     | '/trades/$trade'
     | '/waiting-list/confirm'
+    | '/waiting-list/manage'
     | '/waiting-list/thanks'
     | '/costs'
     | '/trades'
@@ -448,6 +459,7 @@ export interface FileRouteTypes {
     | '/pro/$id'
     | '/trades/$trade'
     | '/waiting-list/confirm'
+    | '/waiting-list/manage'
     | '/waiting-list/thanks'
     | '/costs/'
     | '/trades/'
@@ -487,6 +499,7 @@ export interface RootRouteChildren {
   ProIdRoute: typeof ProIdRoute
   TradesTradeRoute: typeof TradesTradeRoute
   WaitingListConfirmRoute: typeof WaitingListConfirmRoute
+  WaitingListManageRoute: typeof WaitingListManageRoute
   WaitingListThanksRoute: typeof WaitingListThanksRoute
   CostsIndexRoute: typeof CostsIndexRoute
   TradesIndexRoute: typeof TradesIndexRoute
@@ -704,6 +717,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WaitingListConfirmRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/waiting-list/manage': {
+      id: '/waiting-list/manage'
+      path: '/waiting-list/manage'
+      fullPath: '/waiting-list/manage'
+      preLoaderRoute: typeof WaitingListManageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/waiting-list/thanks': {
       id: '/waiting-list/thanks'
       path: '/waiting-list/thanks'
@@ -783,6 +803,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProIdRoute: ProIdRoute,
   TradesTradeRoute: TradesTradeRoute,
   WaitingListConfirmRoute: WaitingListConfirmRoute,
+  WaitingListManageRoute: WaitingListManageRoute,
   WaitingListThanksRoute: WaitingListThanksRoute,
   CostsIndexRoute: CostsIndexRoute,
   TradesIndexRoute: TradesIndexRoute,

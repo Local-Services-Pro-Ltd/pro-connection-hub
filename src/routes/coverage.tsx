@@ -46,6 +46,48 @@ export const Route = createFileRoute("/coverage")({
   component: Coverage,
 });
 
+/**
+ * Weekly confirmed sign-ups per area over the recent trend window, used to
+ * project when an area is likely to reach the launch threshold. Aggregate
+ * figures only — nothing personal is involved.
+ */
+function weeklyRates(
+  trend: { postcode_area: string; week: string; signups: number }[],
+) {
+  const byArea = new Map<string, number[]>();
+  for (const p of trend) {
+    const list = byArea.get(p.postcode_area) ?? [];
+    list.push(Number(p.signups));
+    byArea.set(p.postcode_area, list);
+  }
+  const rates = new Map<string, number>();
+  for (const [area, weeks] of byArea) {
+    const recent = weeks.slice(-4);
+    const sum = recent.reduce((a, b) => a + b, 0);
+    rates.set(area, recent.length ? sum / recent.length : 0);
+  }
+  return rates;
+}
+
+/** Human-readable launch window for an area, or null when it's too early. */
+function launchWindow(total: number, perWeek: number) {
+  if (total >= TARGET) return "Opening next — final checks under way";
+  if (perWeek <= 0.25) return null;
+  const weeks = Math.ceil((TARGET - total) / perWeek);
+  if (weeks > 78) return null;
+
+  const from = new Date();
+  from.setDate(from.getDate() + weeks * 7);
+  const to = new Date(from);
+  to.setDate(to.getDate() + Math.max(14, Math.round(weeks * 0.4) * 7));
+
+  const fmt = (d: Date) =>
+    d.toLocaleDateString("en-GB", { month: "long", year: "numeric" });
+  const a = fmt(from);
+  const b = fmt(to);
+  return a === b ? `Estimated launch: ${a}` : `Estimated launch: ${a}–${b}`;
+}
+
 function statusFor(total: number) {
   if (total >= TARGET)
     return { label: "Nearly there", tone: "text-primary" as const };
@@ -61,6 +103,7 @@ function Coverage() {
 
   const live = areas.filter((a) => a.status === "live");
   const queue = demand.slice(0, 12);
+  const rates = weeklyRates(trend);
 
   return (
     <>
@@ -157,6 +200,10 @@ function Coverage() {
                     {d.homeowners === 1 ? "" : "s"}, {d.traders} trade
                     {d.traders === 1 ? "" : "s"}
                   </p>
+                  <p className="mt-2 text-sm font-medium text-foreground">
+                    {launchWindow(d.total, rates.get(d.postcode_area) ?? 0) ??
+                      "Estimated launch: not enough demand yet to call it"}
+                  </p>
                 </li>
               );
             })}
@@ -168,7 +215,7 @@ function Coverage() {
         <SectionHead
           eyebrow="Demand over time"
           title="How fast each area is growing."
-          sub="Confirmed sign-ups per week over the last eight weeks, and the running total. Aggregate figures only."
+          sub="Confirmed sign-ups per week over the last eight weeks, and the running total. Launch estimates above project the recent four-week rate onto our ~25 sign-up threshold — a guide, not a promise."
         />
         <TrendBoard trend={trend} />
       </Section>

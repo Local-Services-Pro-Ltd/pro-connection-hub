@@ -229,15 +229,69 @@ export const submitWaitingList = createServerFn({ method: "POST" })
     return { id, area, pending: false, waiting: await waitingIn() };
   });
 
+/** Hashed caller fingerprint used for rate-limit buckets. */
+function callerKey() {
+  const forwarded = getRequestHeader("x-forwarded-for") ?? "";
+  const ip = (forwarded.split(",")[0] ?? "").trim() || "unknown";
+  return createHash("sha256").update(ip).digest("hex").slice(0, 32);
+}
+
+/**
+ * Applies rate-limit buckets in Postgres so limits hold across workers.
+ * Returns true when the caller has been blocked.
+ */
+async function rateLimited(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  admin: any,
+  buckets: Array<[string, number, number]>,
+) {
+  for (const [bucket, limit, windowSeconds] of buckets) {
+    const { data: allowed, error } = await admin.rpc("hit_rate_limit", {
+      p_bucket: bucket,
+      p_limit: limit,
+      p_window_seconds: windowSeconds,
+    });
+    if (!error && allowed === false) return true;
+  }
+  return false;
+}
+
 /** Completes double opt-in from the link in the confirmation email. */
 export const confirmWaitingList = createServerFn({ method: "POST" })
-  .inputValidator((input: { token: string }) => ({
-    token: (input.token ?? "").trim().slice(0, 128),
-  }))
+  .inputValidator(
+    (input: { token: string; checkToken?: string; checkAnswer?: string }) => ({
+      token: (input.token ?? "").trim().slice(0, 128),
+      checkToken: (input.checkToken ?? "").trim(),
+      checkAnswer: (input.checkAnswer ?? "").trim(),
+    }),
+  )
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import(
       "@/integrations/supabase/client.server"
     );
+
+    // Human check first: stops scripted token guessing outright.
+    const { verifyChallenge } = await import("@/lib/human-check.server");
+    try {
+      verifyChallenge(data.checkToken, data.checkAnswer);
+    } catch (error) {
+      await logBlock(supabaseAdmin, "waiting_list_confirm", "human_check");
+      throw error;
+    }
+
+    const key = callerKey();
+    if (
+      await rateLimited(supabaseAdmin, [
+        [`wlc:ip:${key}`, 10, 600], // 10 confirmation attempts per 10 minutes
+        [`wlc:token:${data.token.slice(0, 24)}`, 5, 3600],
+      ])
+    ) {
+      await logBlock(supabaseAdmin, "waiting_list_confirm", "rate_limit");
+      throw new Error(
+        "Too many attempts just now. Please wait a minute and try again.",
+      );
+    }
+
     const { data: result, error } = await supabaseAdmin.rpc(
       "confirm_waiting_list",
       { p_token: data.token },
@@ -254,6 +308,121 @@ export const confirmWaitingList = createServerFn({ method: "POST" })
       postcode: row.postcode ?? "",
     };
   });
+
+/**
+ * Token-gated read of a member's own editable details, used to prefill the
+ * "manage your place" form. Rate limited so the token can't be brute forced.
+ */
+export const getWaitingListEntry = createServerFn({ method: "POST" })
+  .inputValidator((input: { token: string }) => ({
+    token: (input.token ?? "").trim().slice(0, 128),
+  }))
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import(
+      "@/integrations/supabase/client.server"
+    );
+    if (
+      await rateLimited(supabaseAdmin, [[`wlr:ip:${callerKey()}`, 20, 600]])
+    ) {
+      throw new Error("Too many attempts just now. Please try again shortly.");
+    }
+    const { data: result, error } = await supabaseAdmin.rpc(
+      "waiting_list_details",
+      { p_token: data.token },
+    );
+    if (error) throw new Error("We couldn't load that link.");
+    const row = (result ?? {}) as {
+      ok?: boolean;
+      postcode?: string;
+      trade?: string | null;
+      role?: string;
+      confirmed?: boolean;
+      notify_launch?: boolean;
+      notify_updates?: boolean;
+    };
+    if (!row.ok) throw new Error("That link is no longer valid.");
+    return {
+      postcode: row.postcode ?? "",
+      trade: row.trade ?? "",
+      role: row.role ?? "homeowner",
+      confirmed: Boolean(row.confirmed),
+      notifyLaunch: Boolean(row.notify_launch),
+      notifyUpdates: Boolean(row.notify_updates),
+    };
+  });
+
+/** Token-gated update of postcode area and trade type after signing up. */
+export const updateWaitingListEntry = createServerFn({ method: "POST" })
+  .inputValidator(
+    (input: {
+      token: string;
+      postcode: string;
+      trade?: string;
+      checkToken?: string;
+      checkAnswer?: string;
+      website?: string;
+    }) => ({
+      token: (input.token ?? "").trim().slice(0, 128),
+      postcode: (input.postcode ?? "").trim().toUpperCase().slice(0, 12),
+      trade: clean(input.trade, 80) ?? "",
+      checkToken: (input.checkToken ?? "").trim(),
+      checkAnswer: (input.checkAnswer ?? "").trim(),
+      website: (input.website ?? "").trim(),
+    }),
+  )
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import(
+      "@/integrations/supabase/client.server"
+    );
+    if (data.website) {
+      await logBlock(supabaseAdmin, "waiting_list_edit", "honeypot");
+      throw new Error("Something went wrong. Please try again.");
+    }
+    const { verifyChallenge } = await import("@/lib/human-check.server");
+    try {
+      verifyChallenge(data.checkToken, data.checkAnswer);
+    } catch (error) {
+      await logBlock(supabaseAdmin, "waiting_list_edit", "human_check");
+      throw error;
+    }
+    if (
+      await rateLimited(supabaseAdmin, [
+        [`wle:ip:${callerKey()}`, 10, 600],
+        [`wle:token:${data.token.slice(0, 24)}`, 8, 3600],
+      ])
+    ) {
+      await logBlock(supabaseAdmin, "waiting_list_edit", "rate_limit");
+      throw new Error("Too many changes just now. Please try again shortly.");
+    }
+
+    const { data: result, error } = await supabaseAdmin.rpc(
+      "waiting_list_update_details",
+      {
+        p_token: data.token,
+        p_postcode: data.postcode,
+        p_trade: data.trade,
+      },
+    );
+    if (error) throw new Error("We couldn't save that. Please try again.");
+    const row = (result ?? {}) as {
+      ok?: boolean;
+      reason?: string;
+      postcode?: string;
+      area?: string;
+      trade?: string | null;
+    };
+    if (!row.ok) {
+      if (row.reason === "invalid_postcode")
+        throw new Error("Please enter a valid UK postcode.");
+      throw new Error("That link is no longer valid.");
+    }
+    return {
+      postcode: row.postcode ?? "",
+      area: row.area ?? "",
+      trade: row.trade ?? "",
+    };
+  });
+
 
 /**
  * Updates one person's email preferences. Gated by the secret token from
@@ -333,6 +502,9 @@ export type AreaWaiter = {
   queue_position: number;
   notify_launch: boolean;
   launch_notified_at: string | null;
+  trade: string | null;
+  last_position_notified: number | null;
+
 };
 
 /** Admin-only: who is waiting in a postcode area, with their queue position. */
@@ -429,6 +601,91 @@ export const notifyAreaLive = createServerFn({ method: "POST" })
       };
     } catch (err) {
       console.error("[waiting-list] launch email failed", err);
+      return { sent: false, reason: "send_failed" };
+    }
+  });
+
+/**
+ * Admin-only: tells one member their queue position changed after their area
+ * went live. Only sent to people who already had the launch email, are opted
+ * in, and whose position actually moved — the last notified position is
+ * stored, so repeat runs are idempotent.
+ */
+export const notifyQueuePositionChange = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { id: string; areaName?: string }) => ({
+    id: (input.id ?? "").trim(),
+    areaName: (input.areaName ?? "").trim().slice(0, 80),
+  }))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context as never);
+    if (!data.id) throw new Error("Missing sign-up id");
+
+    const { supabaseAdmin } = await import(
+      "@/integrations/supabase/client.server"
+    );
+    const { data: row, error } = await supabaseAdmin
+      .from("waiting_list")
+      .select(
+        "id, email, name, postcode, role, confirmed_at, notify_launch, launch_notified_at, last_position_notified",
+      )
+      .eq("id", data.id)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!row) throw new Error("Sign-up not found");
+    if (!row.confirmed_at) return { sent: false, reason: "unconfirmed" };
+    if (!row.notify_launch) return { sent: false, reason: "opted_out" };
+    if (!row.launch_notified_at) return { sent: false, reason: "not_launched" };
+
+    const outward = row.postcode.split(" ")[0] ?? row.postcode;
+    const area = outward.replace(/[^A-Z]/g, "");
+    const { data: recipients } = await supabaseAdmin.rpc(
+      "waiting_list_area_recipients",
+      { p_area: area },
+    );
+    const position =
+      ((recipients ?? []) as AreaWaiter[]).find((r) => r.id === row.id)
+        ?.queue_position ?? 1;
+    const previous = row.last_position_notified;
+    if (previous === position) return { sent: false, reason: "unchanged" };
+
+    const origin =
+      process.env["PUBLIC_SITE_URL"] ?? "https://www.tradesmanfinder.org";
+
+    try {
+      const { sendTemplateEmail } = await import(
+        "@/lib/email-templates/send-email"
+      );
+      const result = await sendTemplateEmail(
+        "waiting-list-position-change",
+        row.email,
+        {
+          templateData: {
+            ...(row.name ? { name: row.name } : {}),
+            areaName: data.areaName || area,
+            postcode: row.postcode,
+            role: row.role,
+            queuePosition: position,
+            ...(typeof previous === "number"
+              ? { previousPosition: previous }
+              : {}),
+            actionUrl:
+              row.role === "trader"
+                ? `${origin}/for-tradesmen`
+                : `${origin}/post-job`,
+          },
+          idempotencyKey: `waiting-list-position-${row.id}-${position}`,
+        },
+      );
+      if (result.sent) {
+        await supabaseAdmin.rpc("waiting_list_mark_position_notified", {
+          p_id: row.id,
+          p_position: position,
+        });
+      }
+      return { sent: result.sent, reason: result.sent ? "sent" : "suppressed" };
+    } catch (err) {
+      console.error("[waiting-list] position email failed", err);
       return { sent: false, reason: "send_failed" };
     }
   });

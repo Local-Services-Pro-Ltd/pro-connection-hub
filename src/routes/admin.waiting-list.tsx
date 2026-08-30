@@ -5,7 +5,11 @@ import { Download, Lock, RefreshCw, Send, Users } from "lucide-react";
 import { Section, SectionHead } from "@/components/layout-bits";
 import { useServerFn } from "@tanstack/react-start";
 import { downloadText } from "@/lib/track-export";
-import { listAreaWaiting, notifyAreaLive } from "@/lib/waiting-list.functions";
+import {
+  listAreaWaiting,
+  notifyAreaLive,
+  notifyQueuePositionChange,
+} from "@/lib/waiting-list.functions";
 import { useAuth } from "@/hooks/use-auth";
 import {
   isAdminQuery,
@@ -335,6 +339,7 @@ function LaunchNotifier() {
   const [sentIds, setSentIds] = useState<Record<string, string>>({});
   const listFn = useServerFn(listAreaWaiting);
   const notifyFn = useServerFn(notifyAreaLive);
+  const positionFn = useServerFn(notifyQueuePositionChange);
 
   const list = useMutation({
     mutationFn: async () => listFn({ data: { area } }),
@@ -352,6 +357,21 @@ function LaunchNotifier() {
         ...prev,
         [id]: (error as Error).message,
       }));
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  /** Queue-position update after launch — skipped when nothing moved. */
+  const sendPosition = async (id: string) => {
+    setBusy(id);
+    try {
+      const result = await positionFn({
+        data: { id, ...(areaName ? { areaName } : {}) },
+      });
+      setSentIds((prev) => ({ ...prev, [id]: result.reason }));
+    } catch (error) {
+      setSentIds((prev) => ({ ...prev, [id]: (error as Error).message }));
     } finally {
       setBusy(null);
     }
@@ -418,6 +438,7 @@ function LaunchNotifier() {
                 <th className="px-4 py-3">Postcode</th>
                 <th className="px-4 py-3">Role</th>
                 <th className="px-4 py-3">Launch emails</th>
+                <th className="px-4 py-3">Last told</th>
                 <th className="px-4 py-3">Action</th>
               </tr>
             </thead>
@@ -431,13 +452,29 @@ function LaunchNotifier() {
                   <td className="px-4 py-3 text-muted-foreground">
                     {r.notify_launch ? "Opted in" : "Opted out"}
                   </td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    {r.last_position_notified ?? "—"}
+                  </td>
                   <td className="px-4 py-3">
                     {r.launch_notified_at ? (
-                      <span className="text-muted-foreground">
-                        Sent{" "}
-                        {new Date(r.launch_notified_at).toLocaleDateString(
-                          "en-GB",
-                        )}
+                      <span className="inline-flex items-center gap-2">
+                        <span className="text-muted-foreground">
+                          Sent{" "}
+                          {new Date(r.launch_notified_at).toLocaleDateString(
+                            "en-GB",
+                          )}
+                        </span>
+                        <button
+                          onClick={() => void sendPosition(r.id)}
+                          disabled={
+                            busy === r.id ||
+                            !r.notify_launch ||
+                            r.last_position_notified === r.queue_position
+                          }
+                          className="rounded-sm border border-border-strong px-3 py-1.5 font-display text-xs font-semibold hover:border-primary hover:text-primary disabled:opacity-50"
+                        >
+                          {busy === r.id ? "Sending…" : "Send position update"}
+                        </button>
                       </span>
                     ) : (
                       <button

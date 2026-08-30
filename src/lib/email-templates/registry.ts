@@ -3,6 +3,7 @@ import { template as waitingListConfirm } from './waiting-list-confirm'
 import { template as securityScanAlert } from './security-scan-alert'
 import { template as proVettingStatus } from './pro-vetting-status'
 import { template as waitingListAreaLive } from './waiting-list-area-live'
+import { template as waitingListPositionChange } from './waiting-list-position-change'
 
 
 export interface TemplateEntry {
@@ -23,4 +24,5 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'security-scan-alert': securityScanAlert,
   'pro-vetting-status': proVettingStatus,
   'waiting-list-area-live': waitingListAreaLive,
+  'waiting-list-position-change': waitingListPositionChange,
 }
