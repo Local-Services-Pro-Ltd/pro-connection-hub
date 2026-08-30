@@ -28,4 +28,5 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'waiting-list-area-live': waitingListAreaLive,
   'waiting-list-position-change': waitingListPositionChange,
   'pro-application-status': proApplicationStatus,
+  'application-reminder': applicationReminder,
 }
