@@ -6,6 +6,7 @@ import { ReviewPanel } from "@/components/review-panel";
 import { ProjectGallery } from "@/components/project-gallery";
 import { BookingPanel } from "@/components/booking-panel";
 import { TrustBadge, TrustBreakdown } from "@/components/trust-badge";
+import { SaveProButton } from "@/components/save-pro-button";
 import {
   proQuery,
   availabilityLabels,
