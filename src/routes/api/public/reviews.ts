@@ -66,5 +66,16 @@ async function handler({ request }: { request: Request }): Promise<Response> {
 }
 
 export const Route = createFileRoute("/api/public/reviews")({
-  server: { handlers: { GET: handler, HEAD: handler } },
+  server: {
+    handlers: {
+      GET: handler,
+      HEAD: handler,
+      // Registered only so writes get an explicit 405 from the guard rather
+      // than falling through to the SPA renderer.
+      POST: handler,
+      PUT: handler,
+      PATCH: handler,
+      DELETE: handler,
+    },
+  },
 });

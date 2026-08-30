@@ -61,5 +61,14 @@ async function handler({ request }: { request: Request }): Promise<Response> {
 }
 
 export const Route = createFileRoute("/api/public/vetting-status")({
-  server: { handlers: { GET: handler, HEAD: handler } },
+  server: {
+    handlers: {
+      GET: handler,
+      HEAD: handler,
+      POST: handler,
+      PUT: handler,
+      PATCH: handler,
+      DELETE: handler,
+    },
+  },
 });
