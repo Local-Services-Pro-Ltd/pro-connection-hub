@@ -12,6 +12,7 @@ import { useAuth } from "@/hooks/use-auth";
 import {
   adminProsQuery,
   isAdminQuery,
+  fetchProFeatureAuditAll,
   proFeatureAuditQuery,
   type AdminProRow,
 } from "@/lib/queries";
@@ -90,6 +91,11 @@ function AdminFeatured() {
     );
   }
   return <FeaturedBoard />;
+}
+
+function csvCell(value: unknown) {
+  const text = value == null ? "" : String(value);
+  return /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
 }
 
 /** The checks a firm must pass before it can go on the homepage. */
