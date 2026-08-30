@@ -25,6 +25,7 @@ import { Route as AdminAccessRouteImport } from './routes/admin.access'
 import { Route as AdminAuditRouteImport } from './routes/admin.audit'
 import { Route as AdminEventsRouteImport } from './routes/admin.events'
 import { Route as AdminFeaturedRouteImport } from './routes/admin.featured'
+import { Route as AdminGalleriesRouteImport } from './routes/admin.galleries'
 import { Route as AdminHeroImagesRouteImport } from './routes/admin.hero-images'
 import { Route as AdminPlansRouteImport } from './routes/admin.plans'
 import { Route as CostsIndexRouteImport } from './routes/costs.index'
@@ -120,6 +121,11 @@ const AdminEventsRoute = AdminEventsRouteImport.update({
 const AdminFeaturedRoute = AdminFeaturedRouteImport.update({
   id: '/admin/featured',
   path: '/admin/featured',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminGalleriesRoute = AdminGalleriesRouteImport.update({
+  id: '/admin/galleries',
+  path: '/admin/galleries',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminHeroImagesRoute = AdminHeroImagesRouteImport.update({
@@ -221,6 +227,7 @@ export interface FileRoutesByFullPath {
   '/admin/audit': typeof AdminAuditRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/featured': typeof AdminFeaturedRoute
+  '/admin/galleries': typeof AdminGalleriesRoute
   '/admin/hero-images': typeof AdminHeroImagesRoute
   '/admin/plans': typeof AdminPlansRoute
   '/costs/$trade': typeof CostsTradeRoute
@@ -255,6 +262,7 @@ export interface FileRoutesByTo {
   '/admin/audit': typeof AdminAuditRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/featured': typeof AdminFeaturedRoute
+  '/admin/galleries': typeof AdminGalleriesRoute
   '/admin/hero-images': typeof AdminHeroImagesRoute
   '/admin/plans': typeof AdminPlansRoute
   '/costs/$trade': typeof CostsTradeRoute
@@ -290,6 +298,7 @@ export interface FileRoutesById {
   '/admin/audit': typeof AdminAuditRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/featured': typeof AdminFeaturedRoute
+  '/admin/galleries': typeof AdminGalleriesRoute
   '/admin/hero-images': typeof AdminHeroImagesRoute
   '/admin/plans': typeof AdminPlansRoute
   '/costs/$trade': typeof CostsTradeRoute
@@ -326,6 +335,7 @@ export interface FileRouteTypes {
     | '/admin/audit'
     | '/admin/events'
     | '/admin/featured'
+    | '/admin/galleries'
     | '/admin/hero-images'
     | '/admin/plans'
     | '/costs/$trade'
@@ -360,6 +370,7 @@ export interface FileRouteTypes {
     | '/admin/audit'
     | '/admin/events'
     | '/admin/featured'
+    | '/admin/galleries'
     | '/admin/hero-images'
     | '/admin/plans'
     | '/costs/$trade'
@@ -394,6 +405,7 @@ export interface FileRouteTypes {
     | '/admin/audit'
     | '/admin/events'
     | '/admin/featured'
+    | '/admin/galleries'
     | '/admin/hero-images'
     | '/admin/plans'
     | '/costs/$trade'
@@ -429,6 +441,7 @@ export interface RootRouteChildren {
   AdminAuditRoute: typeof AdminAuditRoute
   AdminEventsRoute: typeof AdminEventsRoute
   AdminFeaturedRoute: typeof AdminFeaturedRoute
+  AdminGalleriesRoute: typeof AdminGalleriesRoute
   AdminHeroImagesRoute: typeof AdminHeroImagesRoute
   AdminPlansRoute: typeof AdminPlansRoute
   CostsTradeRoute: typeof CostsTradeRoute
@@ -559,6 +572,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/featured'
       fullPath: '/admin/featured'
       preLoaderRoute: typeof AdminFeaturedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/galleries': {
+      id: '/admin/galleries'
+      path: '/admin/galleries'
+      fullPath: '/admin/galleries'
+      preLoaderRoute: typeof AdminGalleriesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/hero-images': {
@@ -693,6 +713,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminAuditRoute: AdminAuditRoute,
   AdminEventsRoute: AdminEventsRoute,
   AdminFeaturedRoute: AdminFeaturedRoute,
+  AdminGalleriesRoute: AdminGalleriesRoute,
   AdminHeroImagesRoute: AdminHeroImagesRoute,
   AdminPlansRoute: AdminPlansRoute,
   CostsTradeRoute: CostsTradeRoute,
