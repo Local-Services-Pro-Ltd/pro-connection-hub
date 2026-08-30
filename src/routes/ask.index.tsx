@@ -149,13 +149,21 @@ function AskIndex() {
           </p>
 
           {done ? (
-            <p
-              role="status"
-              className="mt-6 rounded-sm border border-border bg-surface p-4 text-sm"
-            >
-              Thanks — your question is with our team for review. It'll appear
-              here once published, and vetted firms can answer from then on.
-            </p>
+            <div className="mt-6 grid gap-4">
+              <p
+                role="status"
+                className="rounded-sm border border-border bg-surface p-4 text-sm"
+              >
+                Thanks — your question is with our team for review. It'll appear
+                here once published, and vetted firms can answer from then on.
+              </p>
+              <AiAnswer
+                compact
+                answer={mutation.data?.aiAnswer}
+                safety={mutation.data?.aiSafety}
+                safetyNote={mutation.data?.aiSafetyNote}
+              />
+            </div>
           ) : (
             <form
               className="mt-6 grid gap-4"
@@ -176,6 +184,30 @@ function AskIndex() {
                   className={`${input} mt-2`}
                 />
               </label>
+
+              {(related ?? []).length > 0 && (
+                <div className="rounded-sm border border-border bg-surface p-4">
+                  <p className="eyebrow">Already answered</p>
+                  <ul className="mt-2 grid gap-2">
+                    {(related ?? []).map((r) => (
+                      <li key={r.id}>
+                        <Link
+                          to="/ask/$id"
+                          params={{ id: r.id }}
+                          className="text-sm text-primary hover:underline"
+                        >
+                          {r.title}
+                        </Link>{" "}
+                        <span className="text-xs text-muted-foreground">
+                          · {Number(r.answer_count)} answer
+                          {Number(r.answer_count) === 1 ? "" : "s"}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
 
               <label className="block">
                 <span className="eyebrow">Detail</span>
