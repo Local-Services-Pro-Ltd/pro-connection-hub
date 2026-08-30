@@ -191,17 +191,19 @@ export function proQuery(id: string) {
  */
 export const featuredProsQuery = queryOptions({
   queryKey: ["featured-pros"],
-  queryFn: async () =>
-    unwrap(
-      await supabase
-        .from("pros")
-        .select("*")
-        .eq("published", true)
-        .eq("featured", true)
-        .order("rating", { ascending: false })
-        .order("review_count", { ascending: false })
-        .limit(6),
-    ) as Pro[],
+  queryFn: async (): Promise<Pro[]> => {
+    const { data, error } = await supabase
+      .from("pros")
+      .select("*")
+      .eq("published", true)
+      .eq("featured", true)
+      .order("rating", { ascending: false })
+      .order("review_count", { ascending: false })
+      .limit(6);
+    if (error) throw error;
+    return (data ?? []) as Pro[];
+  },
+
   staleTime: 5 * 60_000,
 });
 
