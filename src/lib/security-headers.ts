@@ -65,7 +65,7 @@ export function applySecurityHeaders(response: Response): Response {
 
   headers.set("X-Content-Type-Options", "nosniff");
   headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
-  headers.set("X-Frame-Options", "SAMEORIGIN");
+  // No X-Frame-Options: frame-ancestors above is the modern, more precise control.
   headers.set("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
   headers.set("Cross-Origin-Resource-Policy", "same-site");
   headers.set(
