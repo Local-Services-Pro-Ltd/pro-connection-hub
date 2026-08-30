@@ -1,11 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Section } from "@/components/layout-bits";
 import { useServerFn } from "@tanstack/react-start";
 import { submitWaitingList } from "@/lib/waiting-list.functions";
 import { HumanCheck, useHumanCheck } from "@/components/human-check";
+import { tradesQuery } from "@/lib/queries";
 
 const SITE = "https://tradesmanfinder.org";
 
@@ -73,6 +74,8 @@ function WaitingList() {
   );
   const [role, setRole] = useState<Role>(search.role ?? "homeowner");
   const [trade, setTrade] = useState("");
+  const [notifyUpdates, setNotifyUpdates] = useState(false);
+  const { data: trades = [] } = useQuery(tradesQuery);
 
   const submit = useServerFn(submitWaitingList);
   const check = useHumanCheck();
@@ -84,7 +87,8 @@ function WaitingList() {
           email,
           postcode,
           role,
-          ...(role === "trader" && trade ? { trade } : {}),
+          ...(trade ? { trade } : {}),
+          notifyUpdates,
           source: search.postcode ? "post_job_gate" : "waiting_list_page",
           checkToken: check.state.token,
           checkAnswer: check.state.answer,
@@ -177,20 +181,42 @@ function WaitingList() {
             />
           </div>
 
-          {role === "trader" && (
-            <div>
-              <label htmlFor="wl-trade" className="text-sm font-medium">
-                Your trade (optional)
-              </label>
-              <input
-                id="wl-trade"
-                value={trade}
-                onChange={(e) => setTrade(e.target.value)}
-                placeholder="e.g. plumber, electrician, roofer"
-                className={field}
-              />
-            </div>
-          )}
+          <div>
+            <label htmlFor="wl-trade" className="text-sm font-medium">
+              {role === "trader"
+                ? "Your trade (optional)"
+                : "Trade you're likely to need (optional)"}
+            </label>
+            <select
+              id="wl-trade"
+              value={trade}
+              onChange={(e) => setTrade(e.target.value)}
+              className={field}
+            >
+              <option value="">
+                {role === "trader" ? "Select your trade" : "Any trade"}
+              </option>
+              {trades.map((t) => (
+                <option key={t.slug} value={t.slug}>
+                  {t.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <label className="flex items-start gap-3 text-sm text-muted-foreground">
+            <input
+              type="checkbox"
+              checked={notifyUpdates}
+              onChange={(e) => setNotifyUpdates(e.target.checked)}
+              className="mt-1 h-4 w-4 rounded-sm border-input accent-[var(--color-primary)]"
+            />
+            <span>
+              Also send me occasional progress updates on my area before it
+              opens. You can change this any time from the link in your
+              confirmation email.
+            </span>
+          </label>
 
           <HumanCheck
             question={check.question}
