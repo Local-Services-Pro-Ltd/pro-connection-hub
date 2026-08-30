@@ -22,6 +22,7 @@ read leaked an unpublished row.
 """
 
 import os
+import time
 import sys
 import uuid
 
@@ -241,6 +242,14 @@ def test_suites_with_live_nonadmin() -> None:
 
 def test_public_endpoints() -> None:
     try:
+        # A previous run's rate-limit window may still be open; wait it out so
+        # the functional checks below measure behaviour, not leftover throttling.
+        for _ in range(15):
+            probe = requests.get(f"{BASE_URL}/api/public/reviews?limit=1", timeout=20)
+            if probe.status_code != 429:
+                break
+            time.sleep(5)
+
         res = requests.get(f"{BASE_URL}/api/public/reviews?limit=5", timeout=20)
     except requests.RequestException as exc:
         print(f"  (skipping HTTP endpoint checks: {exc})")
@@ -279,6 +288,22 @@ def test_public_endpoints() -> None:
         ),
         f"HTTP {res.status_code}",
     )
+
+    res = requests.get(f"{BASE_URL}/api/public/featured", timeout=20)
+    firms = res.json().get("firms", []) if res.status_code == 200 else []
+    leaky = [f for f in firms if any(k in f for k in ("user_id", "postcode", "day_rate"))]
+    check(
+        "/api/public/featured returns only vetted, non-sensitive firm data",
+        res.status_code == 200 and not leaky,
+        f"HTTP {res.status_code}, {len(firms)} firms",
+    )
+    res = requests.post(f"{BASE_URL}/api/public/featured", json={}, timeout=20)
+    check(
+        "/api/public/featured rejects writes",
+        res.status_code == 405,
+        f"HTTP {res.status_code}",
+    )
+
 
     res = requests.get(f"{BASE_URL}/api/public/security-scan", timeout=20)
     check(

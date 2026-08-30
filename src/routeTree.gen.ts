@@ -30,6 +30,7 @@ import { Route as TradesTradeRouteImport } from './routes/trades.$trade'
 import { Route as WaitingListIndexRouteImport } from './routes/waiting-list.index'
 import { Route as WaitingListConfirmRouteImport } from './routes/waiting-list.confirm'
 import { Route as WaitingListThanksRouteImport } from './routes/waiting-list.thanks'
+import { Route as ApiPublicFeaturedRouteImport } from './routes/api/public/featured'
 import { Route as ApiPublicReviewsRouteImport } from './routes/api/public/reviews'
 import { Route as ApiPublicSecurityScanRouteImport } from './routes/api/public/security-scan'
 import { Route as ApiPublicVettingStatusRouteImport } from './routes/api/public/vetting-status'
@@ -140,6 +141,11 @@ const WaitingListThanksRoute = WaitingListThanksRouteImport.update({
   path: '/waiting-list/thanks',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicFeaturedRoute = ApiPublicFeaturedRouteImport.update({
+  id: '/api/public/featured',
+  path: '/api/public/featured',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicReviewsRoute = ApiPublicReviewsRouteImport.update({
   id: '/api/public/reviews',
   path: '/api/public/reviews',
@@ -184,6 +190,7 @@ export interface FileRoutesByFullPath {
   '/waiting-list/thanks': typeof WaitingListThanksRoute
   '/trades/': typeof TradesIndexRoute
   '/waiting-list/': typeof WaitingListIndexRoute
+  '/api/public/featured': typeof ApiPublicFeaturedRoute
   '/api/public/reviews': typeof ApiPublicReviewsRoute
   '/api/public/security-scan': typeof ApiPublicSecurityScanRoute
   '/api/public/vetting-status': typeof ApiPublicVettingStatusRoute
@@ -211,6 +218,7 @@ export interface FileRoutesByTo {
   '/waiting-list/thanks': typeof WaitingListThanksRoute
   '/trades': typeof TradesIndexRoute
   '/waiting-list': typeof WaitingListIndexRoute
+  '/api/public/featured': typeof ApiPublicFeaturedRoute
   '/api/public/reviews': typeof ApiPublicReviewsRoute
   '/api/public/security-scan': typeof ApiPublicSecurityScanRoute
   '/api/public/vetting-status': typeof ApiPublicVettingStatusRoute
@@ -239,6 +247,7 @@ export interface FileRoutesById {
   '/waiting-list/thanks': typeof WaitingListThanksRoute
   '/trades/': typeof TradesIndexRoute
   '/waiting-list/': typeof WaitingListIndexRoute
+  '/api/public/featured': typeof ApiPublicFeaturedRoute
   '/api/public/reviews': typeof ApiPublicReviewsRoute
   '/api/public/security-scan': typeof ApiPublicSecurityScanRoute
   '/api/public/vetting-status': typeof ApiPublicVettingStatusRoute
@@ -268,6 +277,7 @@ export interface FileRouteTypes {
     | '/waiting-list/thanks'
     | '/trades/'
     | '/waiting-list/'
+    | '/api/public/featured'
     | '/api/public/reviews'
     | '/api/public/security-scan'
     | '/api/public/vetting-status'
@@ -295,6 +305,7 @@ export interface FileRouteTypes {
     | '/waiting-list/thanks'
     | '/trades'
     | '/waiting-list'
+    | '/api/public/featured'
     | '/api/public/reviews'
     | '/api/public/security-scan'
     | '/api/public/vetting-status'
@@ -322,6 +333,7 @@ export interface FileRouteTypes {
     | '/waiting-list/thanks'
     | '/trades/'
     | '/waiting-list/'
+    | '/api/public/featured'
     | '/api/public/reviews'
     | '/api/public/security-scan'
     | '/api/public/vetting-status'
@@ -350,6 +362,7 @@ export interface RootRouteChildren {
   WaitingListThanksRoute: typeof WaitingListThanksRoute
   TradesIndexRoute: typeof TradesIndexRoute
   WaitingListIndexRoute: typeof WaitingListIndexRoute
+  ApiPublicFeaturedRoute: typeof ApiPublicFeaturedRoute
   ApiPublicReviewsRoute: typeof ApiPublicReviewsRoute
   ApiPublicSecurityScanRoute: typeof ApiPublicSecurityScanRoute
   ApiPublicVettingStatusRoute: typeof ApiPublicVettingStatusRoute
@@ -505,6 +518,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WaitingListThanksRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/featured': {
+      id: '/api/public/featured'
+      path: '/api/public/featured'
+      fullPath: '/api/public/featured'
+      preLoaderRoute: typeof ApiPublicFeaturedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/reviews': {
       id: '/api/public/reviews'
       path: '/api/public/reviews'
@@ -558,6 +578,7 @@ const rootRouteChildren: RootRouteChildren = {
   WaitingListThanksRoute: WaitingListThanksRoute,
   TradesIndexRoute: TradesIndexRoute,
   WaitingListIndexRoute: WaitingListIndexRoute,
+  ApiPublicFeaturedRoute: ApiPublicFeaturedRoute,
   ApiPublicReviewsRoute: ApiPublicReviewsRoute,
   ApiPublicSecurityScanRoute: ApiPublicSecurityScanRoute,
   ApiPublicVettingStatusRoute: ApiPublicVettingStatusRoute,
