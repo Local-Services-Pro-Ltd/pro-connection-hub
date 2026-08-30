@@ -107,7 +107,56 @@ function FeaturedBoard() {
   const { data: pros, isPending, error } = useQuery(adminProsQuery);
   const { data: audit } = useQuery(proFeatureAuditQuery);
   const [pendingId, setPendingId] = useState<string | null>(null);
+  const [exporting, setExporting] = useState(false);
   const notify = useServerFn(notifyProVettingStatus);
+
+  /** Compliance export of every featuring / unfeaturing action. */
+  async function exportAuditCsv() {
+    setExporting(true);
+    try {
+      const rows = await fetchProFeatureAuditAll();
+      if (rows.length === 0) {
+        toast.info("No featuring actions recorded yet.");
+        return;
+      }
+      const header = [
+        "changed_at_utc",
+        "pro_id",
+        "pro_name",
+        "action",
+        "was_featured",
+        "is_featured",
+        "published",
+        "verified_credentials",
+        "admin_email",
+      ];
+      const body = rows.map((r) =>
+        [
+          r.created_at,
+          r.pro_id,
+          r.pro_name,
+          r.action,
+          r.was_featured ?? "",
+          r.is_featured,
+          r.published,
+          r.verified_credentials,
+          r.changed_by_email ?? "",
+        ]
+          .map(csvCell)
+          .join(","),
+      );
+      downloadText(
+        `featuring-audit_${new Date().toISOString().slice(0, 10)}.csv`,
+        "text/csv;charset=utf-8",
+        [header.join(","), ...body].join("\n"),
+      );
+      toast.success(`Exported ${rows.length} action${rows.length === 1 ? "" : "s"}.`);
+    } catch (e) {
+      toast.error((e as Error).message || "Couldn't export the audit log.");
+    } finally {
+      setExporting(false);
+    }
+  }
 
   const toggle = useMutation({
     mutationFn: async ({ id, next }: { id: string; next: boolean }) => {
