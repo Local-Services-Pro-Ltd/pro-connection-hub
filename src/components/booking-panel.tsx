@@ -69,7 +69,8 @@ export function BookingPanel({
 }) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const slots = useMemo(buildSlots, []);
+  const { data: windows } = useQuery(proAvailabilityQuery(proId));
+  const slots = useMemo(() => buildSlots(windows ?? []), [windows]);
   const { data: taken } = useQuery(bookedSlotsQuery(proId));
   const [selected, setSelected] = useState<Date | null>(null);
   const [name, setName] = useState("");
