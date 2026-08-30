@@ -85,6 +85,13 @@
       "when": 1788086183941,
       "tag": "0011_privilege_probe_and_access_matrix",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1788086532022,
+      "tag": "0012_fix_admin_guard_effective_role",
+      "breakpoints": true
     }
   ]
 }
