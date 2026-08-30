@@ -162,6 +162,13 @@
       "when": 1788093188941,
       "tag": "0022_pro_projects_bucket_policies",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1788093574799,
+      "tag": "0023_booking_authorization_and_rate_limits",
+      "breakpoints": true
     }
   ]
 }
