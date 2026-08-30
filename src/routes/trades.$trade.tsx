@@ -147,6 +147,16 @@ function TradePage() {
     ...(search.area ? { area: search.area } : {}),
   });
 
+  // Admin overrides (/admin/hero-images) win over the bundled photo.
+  const heroImage = heroOverride?.image_url || tradeHero(trade.slug);
+  const heroAlt =
+    heroOverride?.alt_text?.trim() || tradeAlt(trade.slug, trade.name);
+  const base = tradeFocal(trade.slug);
+  const focal = {
+    focal: heroOverride?.focal || base.focal,
+    focalMobile: heroOverride?.focal_mobile || base.focalMobile,
+  };
+
   return (
     <>
       <PageHero
