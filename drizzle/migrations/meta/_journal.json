@@ -50,6 +50,13 @@
       "when": 1788084620582,
       "tag": "0006_add_pro_featured_flag",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1788084857532,
+      "tag": "0007_featured_pro_workflow",
+      "breakpoints": true
     }
   ]
 }
