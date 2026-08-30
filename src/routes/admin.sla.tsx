@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/use-auth";
 import {
   escalateApplication,
   getApplicationSla,
+  getMaintenanceJobState,
   listProApplications,
 } from "@/lib/applications.functions";
 import {
@@ -80,6 +81,7 @@ function AdminSla() {
   const loadSla = useServerFn(getApplicationSla);
   const loadApps = useServerFn(listProApplications);
   const escalate = useServerFn(escalateApplication);
+  const loadJob = useServerFn(getMaintenanceJobState);
 
   const sla = useQuery({
     queryKey: ["admin-sla"],
@@ -89,6 +91,12 @@ function AdminSla() {
   const apps = useQuery({
     queryKey: ["admin-applications"],
     queryFn: () => loadApps(),
+    enabled: isAdmin === true,
+  });
+
+  const job = useQuery({
+    queryKey: ["admin-maintenance-job"],
+    queryFn: () => loadJob(),
     enabled: isAdmin === true,
   });
 
@@ -165,6 +173,45 @@ function AdminSla() {
           label="Insurance expiring (60 days)"
           value={s?.insurance_expiring_60d ?? "—"}
         />
+      </div>
+
+      <div className="mt-8 rounded-md border border-border bg-card p-7">
+        <h2 className="text-2xl">Nightly checks and reminders</h2>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Every night we re-run the Companies House and insurance checks on open
+          applications and email firms about missing paperwork, rejected
+          documents and cover that's about to lapse.
+        </p>
+        <ul className="mt-4 grid gap-2 text-sm sm:grid-cols-2">
+          <li>
+            <span className="eyebrow !mb-0">Last run</span>{" "}
+            {job.data?.last_run_at
+              ? new Date(job.data.last_run_at).toLocaleString("en-GB")
+              : "Not run yet"}
+          </li>
+          <li>
+            <span className="eyebrow !mb-0">Applications rechecked</span>{" "}
+            {job.data?.last_result?.checked ?? 0}
+          </li>
+          <li>
+            <span className="eyebrow !mb-0">Reminders sent (7 days)</span>{" "}
+            {job.data?.reminders_7d ?? 0}
+          </li>
+          <li
+            className={
+              job.data?.last_error || job.data?.paused_reason
+                ? "text-destructive"
+                : "text-success"
+            }
+          >
+            <span className="eyebrow !mb-0">Health</span>{" "}
+            {job.data?.paused_reason
+              ? `Paused — ${job.data.paused_reason}`
+              : job.data?.last_error
+                ? job.data.last_error
+                : "Healthy"}
+          </li>
+        </ul>
       </div>
 
       <h2 className="mt-12 text-2xl">Overdue and stuck</h2>
