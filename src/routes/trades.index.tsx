@@ -6,7 +6,12 @@ import { PageHero, Section } from "@/components/layout-bits";
 import { SearchBar } from "@/components/search-bar";
 import { tradesQuery, proCountsQuery } from "@/lib/queries";
 import { getRequestOrigin } from "@/lib/origin.functions";
-import { tradeHero, hasTradePhoto } from "@/lib/trade-media";
+import {
+  tradeHero,
+  hasTradePhoto,
+  tradeAlt,
+  tradeFocal,
+} from "@/lib/trade-media";
 import heroTrades from "@/assets/hero-trades.jpg";
 
 
