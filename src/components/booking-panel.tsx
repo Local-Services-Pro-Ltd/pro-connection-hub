@@ -56,7 +56,12 @@ const reasons: Record<string, string> = {
   invalid_name: "Enter your name.",
   rate_limited: "Too many booking requests — try again later.",
   slot_taken: "Someone just took that slot. Choose another.",
+  outside_availability:
+    "That time is outside the hours this firm accepts visits. Pick another slot.",
+  too_far_ahead: "Bookings open up to 90 days ahead — pick a nearer date.",
+  notes_too_long: "Shorten the job notes a little.",
 };
+
 
 export function BookingPanel({
   proId,

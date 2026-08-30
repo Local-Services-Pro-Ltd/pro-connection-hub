@@ -176,7 +176,17 @@ function PostJob() {
       setReference(ref);
       toast.success("Job posted — matching local trades now");
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => {
+      const map: Record<string, string> = {
+        rate_limited:
+          "You've sent several job requests recently — please try again in an hour.",
+        invalid_email: "Enter a valid email address.",
+        job_too_long: "Shorten the job title or description a little.",
+      };
+      const key = Object.keys(map).find((k) => e.message.includes(k));
+      toast.error(key ? map[key]! : e.message);
+    },
+
   });
 
   return (

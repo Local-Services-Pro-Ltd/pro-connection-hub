@@ -162,6 +162,27 @@
       "when": 1788093188941,
       "tag": "0022_pro_projects_bucket_policies",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1788093574799,
+      "tag": "0023_booking_authorization_and_rate_limits",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1788093595020,
+      "tag": "0024_pro_projects_publish_requires_admin",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1788093673601,
+      "tag": "0025_booked_slots_function_only",
+      "breakpoints": true
     }
   ]
 }

@@ -997,36 +997,6 @@ export type Database = {
       }
     }
     Views: {
-      pro_booked_slots: {
-        Row: {
-          pro_id: string | null
-          slot_start: string | null
-        }
-        Insert: {
-          pro_id?: string | null
-          slot_start?: string | null
-        }
-        Update: {
-          pro_id?: string | null
-          slot_start?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "bookings_pro_id_fkey"
-            columns: ["pro_id"]
-            isOneToOne: false
-            referencedRelation: "pro_trust"
-            referencedColumns: ["pro_id"]
-          },
-          {
-            foreignKeyName: "bookings_pro_id_fkey"
-            columns: ["pro_id"]
-            isOneToOne: false
-            referencedRelation: "pros"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       pro_trust: {
         Row: {
           pro_id: string | null
@@ -1182,6 +1152,12 @@ export type Database = {
           trade_slug: string
           trust_score: number
           years: number
+        }[]
+      }
+      pro_booked_slots: {
+        Args: { p_pro_id: string }
+        Returns: {
+          slot_start: string
         }[]
       }
       prune_api_access_events: { Args: never; Returns: undefined }
