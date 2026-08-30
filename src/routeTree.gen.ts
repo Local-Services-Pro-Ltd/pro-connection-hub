@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as AreasRouteImport } from './routes/areas'
 import { Route as ClaimRouteImport } from './routes/claim'
+import { Route as CoverageRouteImport } from './routes/coverage'
 import { Route as EnterpriseRouteImport } from './routes/enterprise'
 import { Route as ForTradesmenRouteImport } from './routes/for-tradesmen'
 import { Route as PostJobRouteImport } from './routes/post-job'
@@ -62,6 +63,11 @@ const AreasRoute = AreasRouteImport.update({
 const ClaimRoute = ClaimRouteImport.update({
   id: '/claim',
   path: '/claim',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CoverageRoute = CoverageRouteImport.update({
+  id: '/coverage',
+  path: '/coverage',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EnterpriseRoute = EnterpriseRouteImport.update({
@@ -221,6 +227,7 @@ export interface FileRoutesByFullPath {
   '/account': typeof AccountRoute
   '/areas': typeof AreasRoute
   '/claim': typeof ClaimRoute
+  '/coverage': typeof CoverageRoute
   '/enterprise': typeof EnterpriseRoute
   '/for-tradesmen': typeof ForTradesmenRoute
   '/post-job': typeof PostJobRoute
@@ -257,6 +264,7 @@ export interface FileRoutesByTo {
   '/account': typeof AccountRoute
   '/areas': typeof AreasRoute
   '/claim': typeof ClaimRoute
+  '/coverage': typeof CoverageRoute
   '/enterprise': typeof EnterpriseRoute
   '/for-tradesmen': typeof ForTradesmenRoute
   '/post-job': typeof PostJobRoute
@@ -294,6 +302,7 @@ export interface FileRoutesById {
   '/account': typeof AccountRoute
   '/areas': typeof AreasRoute
   '/claim': typeof ClaimRoute
+  '/coverage': typeof CoverageRoute
   '/enterprise': typeof EnterpriseRoute
   '/for-tradesmen': typeof ForTradesmenRoute
   '/post-job': typeof PostJobRoute
@@ -332,6 +341,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/areas'
     | '/claim'
+    | '/coverage'
     | '/enterprise'
     | '/for-tradesmen'
     | '/post-job'
@@ -368,6 +378,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/areas'
     | '/claim'
+    | '/coverage'
     | '/enterprise'
     | '/for-tradesmen'
     | '/post-job'
@@ -404,6 +415,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/areas'
     | '/claim'
+    | '/coverage'
     | '/enterprise'
     | '/for-tradesmen'
     | '/post-job'
@@ -441,6 +453,7 @@ export interface RootRouteChildren {
   AccountRoute: typeof AccountRoute
   AreasRoute: typeof AreasRoute
   ClaimRoute: typeof ClaimRoute
+  CoverageRoute: typeof CoverageRoute
   EnterpriseRoute: typeof EnterpriseRoute
   ForTradesmenRoute: typeof ForTradesmenRoute
   PostJobRoute: typeof PostJobRoute
@@ -501,6 +514,13 @@ declare module '@tanstack/react-router' {
       path: '/claim'
       fullPath: '/claim'
       preLoaderRoute: typeof ClaimRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/coverage': {
+      id: '/coverage'
+      path: '/coverage'
+      fullPath: '/coverage'
+      preLoaderRoute: typeof CoverageRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/enterprise': {
@@ -721,6 +741,7 @@ const rootRouteChildren: RootRouteChildren = {
   AccountRoute: AccountRoute,
   AreasRoute: AreasRoute,
   ClaimRoute: ClaimRoute,
+  CoverageRoute: CoverageRoute,
   EnterpriseRoute: EnterpriseRoute,
   ForTradesmenRoute: ForTradesmenRoute,
   PostJobRoute: PostJobRoute,
