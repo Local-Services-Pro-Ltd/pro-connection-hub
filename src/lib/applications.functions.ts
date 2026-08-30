@@ -275,7 +275,19 @@ export type ProApplication = {
   updated_at: string;
   reference: string | null;
   tracking_token: string | null;
+  requested_fields: string[];
+  changes_requested_at: string | null;
+  resubmitted_at: string | null;
+  applicant_message: string | null;
+  escalated_at: string | null;
+  escalation_note: string | null;
+  priority: string;
+  due_at: string | null;
+  first_reviewed_at: string | null;
+  verification: VerificationResult | Record<string, never>;
+  verified_at: string | null;
 };
+
 
 async function assertAdmin(context: {
   supabase: { rpc: (fn: string, args: Record<string, unknown>) => unknown };
