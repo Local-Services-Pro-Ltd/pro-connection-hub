@@ -241,14 +241,15 @@ def test_suites_with_live_nonadmin() -> None:
 
 def test_public_endpoints() -> None:
     try:
-        # A previous run's rate-limit window may still be open; wait it out so the
-    # functional checks below measure behaviour, not leftover throttling.
-    for _ in range(15):
-        if requests.get(f"{BASE_URL}/api/public/reviews?limit=1", timeout=20).status_code != 429:
-            break
-        time.sleep(5)
+        # A previous run's rate-limit window may still be open; wait it out so
+        # the functional checks below measure behaviour, not leftover throttling.
+        for _ in range(15):
+            probe = requests.get(f"{BASE_URL}/api/public/reviews?limit=1", timeout=20)
+            if probe.status_code != 429:
+                break
+            time.sleep(5)
 
-    res = requests.get(f"{BASE_URL}/api/public/reviews?limit=5", timeout=20)
+        res = requests.get(f"{BASE_URL}/api/public/reviews?limit=5", timeout=20)
     except requests.RequestException as exc:
         print(f"  (skipping HTTP endpoint checks: {exc})")
         return
