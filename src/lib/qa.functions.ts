@@ -184,7 +184,7 @@ export const listPendingQa = createServerFn({ method: "GET" })
     });
     if (!isAdmin) throw new Error("Admins only.");
 
-    const [questions, answers] = await Promise.all([
+    const [questions, answers, reviews] = await Promise.all([
       context.supabase
         .from("questions")
         .select("*")
@@ -195,13 +195,16 @@ export const listPendingQa = createServerFn({ method: "GET" })
         .select("*")
         .order("created_at", { ascending: false })
         .limit(200),
+      context.supabase.from("question_ai_reviews").select("*").limit(200),
     ]);
 
     return {
       questions: questions.data ?? [],
       answers: answers.data ?? [],
+      reviews: reviews.data ?? [],
     };
   });
+
 
 export const moderateQa = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
