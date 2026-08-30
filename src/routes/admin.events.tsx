@@ -310,3 +310,96 @@ function EventsBoard() {
     </Section>
   );
 }
+
+/**
+ * Denied requests per day, split by endpoint — a quick read on whether a
+ * particular public endpoint is being hammered.
+ */
+function OverTime({ events }: { events: ApiAccessEvent[] }) {
+  const { days, endpoints, max } = useMemo(() => {
+    const byDay = new Map<string, Record<string, number>>();
+    const eps = new Set<string>();
+    for (const e of events) {
+      const day = e.created_at.slice(0, 10);
+      const row = byDay.get(day) ?? {};
+      row[e.endpoint] = (row[e.endpoint] ?? 0) + 1;
+      byDay.set(day, row);
+      eps.add(e.endpoint);
+    }
+    const list = [...byDay.entries()]
+      .sort((a, b) => (a[0] < b[0] ? -1 : 1))
+      .slice(-14);
+    const peak = Math.max(
+      1,
+      ...list.map(([, r]) => Object.values(r).reduce((a, b) => a + b, 0)),
+    );
+    return { days: list, endpoints: [...eps].sort(), max: peak };
+  }, [events]);
+
+  const tone = [
+    "bg-primary",
+    "bg-accent",
+    "bg-destructive",
+    "bg-muted-foreground",
+    "bg-primary/50",
+  ];
+
+  return (
+    <div
+      className="mt-8 rounded-md border border-border bg-card p-5"
+      data-testid="denied-over-time"
+    >
+      <h2 className="font-display text-lg">Blocked attempts over time</h2>
+      <p className="mt-1 text-sm text-muted-foreground">
+        Rate-limit hits and other denials per day, by endpoint (last 14 days
+        with activity).
+      </p>
+
+      {days.length === 0 ? (
+        <p className="mt-4 text-sm text-muted-foreground">
+          Nothing blocked in the retention window.
+        </p>
+      ) : (
+        <>
+          <div className="mt-5 flex h-40 items-end gap-2">
+            {days.map(([day, row]) => {
+              const total = Object.values(row).reduce((a, b) => a + b, 0);
+              return (
+                <div key={day} className="flex flex-1 flex-col items-center gap-1">
+                  <div
+                    className="flex w-full flex-col-reverse justify-start"
+                    style={{ height: `${(total / max) * 100}%` }}
+                    title={`${day}: ${total} denied`}
+                  >
+                    {endpoints.map((ep, i) =>
+                      row[ep] ? (
+                        <div
+                          key={ep}
+                          className={`${tone[i % tone.length]} w-full`}
+                          style={{ height: `${(row[ep] / total) * 100}%` }}
+                        />
+                      ) : null,
+                    )}
+                  </div>
+                  <span className="text-[10px] text-muted-foreground">
+                    {day.slice(5)}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+          <ul className="mt-4 flex flex-wrap gap-4 text-xs text-muted-foreground">
+            {endpoints.map((ep, i) => (
+              <li key={ep} className="inline-flex items-center gap-2">
+                <span
+                  className={`inline-block h-2.5 w-2.5 rounded-sm ${tone[i % tone.length]}`}
+                />
+                {ENDPOINT_LABELS[ep] ?? ep}
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </div>
+  );
+}
