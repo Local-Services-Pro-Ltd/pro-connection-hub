@@ -18,7 +18,7 @@ export type AlertInput = {
   source: string;
   environment: string;
   /** Link back to the CI run or the admin page. */
-  url?: string;
+  url?: string | undefined;
 };
 
 export type AlertResult = { slack: boolean; email: boolean };
