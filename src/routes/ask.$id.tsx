@@ -3,6 +3,8 @@ import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Section } from "@/components/layout-bits";
+import { AiAnswer } from "@/components/ai-answer";
+
 import { questionQuery } from "@/lib/queries";
 import { submitAnswer } from "@/lib/qa.functions";
 import { useAuth } from "@/hooks/use-auth";
