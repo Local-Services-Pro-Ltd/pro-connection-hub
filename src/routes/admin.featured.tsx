@@ -273,10 +273,21 @@ function FeaturedBoard() {
       </div>
 
       <div className="mt-14">
-        <h2 className="flex items-center gap-2 text-2xl">
-          <History className="h-5 w-5 text-primary" aria-hidden="true" />
-          Featuring audit log
-        </h2>
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <h2 className="flex items-center gap-2 text-2xl">
+            <History className="h-5 w-5 text-primary" aria-hidden="true" />
+            Featuring audit log
+          </h2>
+          <button
+            type="button"
+            onClick={exportAuditCsv}
+            disabled={exporting}
+            className="inline-flex items-center gap-2 rounded-sm border border-border px-4 py-2.5 font-display text-sm font-semibold hover:border-primary disabled:opacity-60"
+          >
+            <Download className="h-4 w-4" aria-hidden="true" />
+            {exporting ? "Preparing…" : "Export CSV"}
+          </button>
+        </div>
         {audit && audit.length > 0 ? (
           <div className="mt-5 overflow-x-auto rounded-md border border-border">
             <table className="w-full text-left text-sm">
