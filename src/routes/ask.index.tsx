@@ -52,6 +52,7 @@ function AskIndex() {
     area: "",
   });
   const [done, setDone] = useState(false);
+  const { data: related } = useQuery(relatedQuestionsQuery(form.title));
 
   const mutation = useMutation({
     mutationFn: async () =>
@@ -71,6 +72,7 @@ function AskIndex() {
     },
     onError: () => check.refresh(),
   });
+
 
   const tradeName = useMemo(
     () => (slug: string | null) =>
