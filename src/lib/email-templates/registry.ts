@@ -18,4 +18,5 @@ export interface TemplateEntry {
  */
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'waiting-list-confirm': waitingListConfirm,
+  'security-scan-alert': securityScanAlert,
 }
