@@ -184,6 +184,27 @@ export function proQuery(id: string) {
   });
 }
 
+/**
+ * Hand-picked firms for the homepage. `featured` is admin-only (enforced by a
+ * database trigger) and defaults to false, so the homepage shows this section
+ * only once real tradespeople have actually been chosen — never placeholders.
+ */
+export const featuredProsQuery = queryOptions({
+  queryKey: ["featured-pros"],
+  queryFn: async () =>
+    unwrap(
+      await supabase
+        .from("pros")
+        .select("*")
+        .eq("published", true)
+        .eq("featured", true)
+        .order("rating", { ascending: false })
+        .order("review_count", { ascending: false })
+        .limit(6),
+    ) as Pro[],
+  staleTime: 5 * 60_000,
+});
+
 export const latestReviewsQuery = queryOptions({
   queryKey: ["latest-reviews"],
   queryFn: async () =>
@@ -196,6 +217,7 @@ export const latestReviewsQuery = queryOptions({
     ),
   staleTime: 60_000,
 });
+
 
 export const statsQuery = queryOptions({
   queryKey: ["stats"],
