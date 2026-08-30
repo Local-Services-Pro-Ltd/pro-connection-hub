@@ -1,6 +1,8 @@
 import { Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { Star, Clock, ShieldCheck } from "lucide-react";
-import { availabilityLabels, type Pro } from "@/lib/queries";
+import { availabilityLabels, trustScoresQuery, type Pro } from "@/lib/queries";
+import { TrustBadge } from "@/components/trust-badge";
 import pro1 from "@/assets/pro-1.jpg";
 import pro2 from "@/assets/pro-2.jpg";
 import pro3 from "@/assets/pro-3.jpg";
@@ -8,6 +10,9 @@ import pro3 from "@/assets/pro-3.jpg";
 const photos: Record<number, string> = { 1: pro1, 2: pro2, 3: pro3 };
 
 export function ProCard({ pro }: { pro: Pro }) {
+  const { data: trust } = useQuery(trustScoresQuery);
+  const score = trust?.[pro.id]?.score ?? null;
+
   return (
     <Link
       to="/pro/$id"
