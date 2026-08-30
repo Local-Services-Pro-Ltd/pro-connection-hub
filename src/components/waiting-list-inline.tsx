@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Check } from "lucide-react";
 import { HumanCheck, useHumanCheck } from "@/components/human-check";
 import { submitWaitingList } from "@/lib/waiting-list.functions";
 import { isLiveArea } from "@/lib/postcode-gate";
+import { tradesQuery } from "@/lib/queries";
 
 const field =
   "mt-2 w-full rounded-sm border border-input bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/70 outline-none transition-colors focus:border-primary";
@@ -30,6 +31,9 @@ export function WaitingListInline({
   const [email, setEmail] = useState("");
   const [postcode, setPostcode] = useState("");
   const [role, setRole] = useState<"homeowner" | "trader">(defaultRole);
+  const [trade, setTrade] = useState(defaultTrade ?? "");
+  const [notifyUpdates, setNotifyUpdates] = useState(false);
+  const { data: trades = [] } = useQuery(tradesQuery);
   const [done, setDone] = useState<{
     pending: boolean;
     area: string;
@@ -46,7 +50,8 @@ export function WaitingListInline({
           email: email.trim(),
           postcode: postcode.trim(),
           role,
-          ...(defaultTrade ? { trade: defaultTrade } : {}),
+          ...(trade ? { trade } : {}),
+          notifyUpdates,
           source,
           checkToken: check.state.token,
           checkAnswer: check.state.answer,
@@ -125,6 +130,26 @@ export function WaitingListInline({
         </label>
       </div>
 
+      <label className="block">
+        <span className="eyebrow">
+          {role === "trader" ? "Your trade" : "Job you need doing"}
+        </span>
+        <select
+          value={trade}
+          onChange={(e) => setTrade(e.target.value)}
+          className={field}
+        >
+          <option value="">
+            {role === "trader" ? "Select your trade" : "Any trade"}
+          </option>
+          {trades.map((t) => (
+            <option key={t.slug} value={t.slug}>
+              {t.name}
+            </option>
+          ))}
+        </select>
+      </label>
+
       <fieldset>
         <legend className="eyebrow">I'm a</legend>
         <div className="mt-2 flex gap-3">
@@ -145,6 +170,18 @@ export function WaitingListInline({
           ))}
         </div>
       </fieldset>
+
+      <label className="flex items-start gap-3 text-sm text-muted-foreground">
+        <input
+          type="checkbox"
+          checked={notifyUpdates}
+          onChange={(e) => setNotifyUpdates(e.target.checked)}
+          className="mt-1 h-4 w-4 rounded-sm border-input accent-[var(--color-primary)]"
+        />
+        <span>
+          Also send me occasional progress updates on my area before it opens.
+        </span>
+      </label>
 
       <HumanCheck
         question={check.question}

@@ -2,6 +2,7 @@ import type { ComponentType } from 'react'
 import { template as waitingListConfirm } from './waiting-list-confirm'
 import { template as securityScanAlert } from './security-scan-alert'
 import { template as proVettingStatus } from './pro-vetting-status'
+import { template as waitingListAreaLive } from './waiting-list-area-live'
 
 
 export interface TemplateEntry {
@@ -21,4 +22,5 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'waiting-list-confirm': waitingListConfirm,
   'security-scan-alert': securityScanAlert,
   'pro-vetting-status': proVettingStatus,
+  'waiting-list-area-live': waitingListAreaLive,
 }

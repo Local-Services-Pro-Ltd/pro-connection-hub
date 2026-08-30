@@ -771,3 +771,25 @@ export const waitingListRecentQuery = queryOptions({
     ) as WaitingListRow[],
   staleTime: 0,
 });
+
+export type WaitingListTrendPoint = {
+  postcode_area: string;
+  week: string;
+  signups: number;
+  cumulative: number;
+};
+
+/**
+ * Weekly confirmed sign-ups per postcode area. Aggregate only, safe to show
+ * publicly alongside the current totals on /coverage.
+ */
+export function waitingListTrendQuery(weeks = 8) {
+  return queryOptions({
+    queryKey: ["waiting-list", "trend", weeks],
+    queryFn: async () =>
+      unwrap(
+        await supabase.rpc("waiting_list_trend", { p_weeks: weeks }),
+      ) as WaitingListTrendPoint[],
+    staleTime: 60_000,
+  });
+}

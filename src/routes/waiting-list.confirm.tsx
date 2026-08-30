@@ -2,7 +2,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Section } from "@/components/layout-bits";
-import { confirmWaitingList } from "@/lib/waiting-list.functions";
+import {
+  confirmWaitingList,
+  updateWaitingListPrefs,
+} from "@/lib/waiting-list.functions";
 
 const SITE = "https://tradesmanfinder.org";
 
@@ -97,6 +100,8 @@ function ConfirmWaitingList() {
           </>
         )}
 
+        {state.kind === "done" && token && <Prefs token={token} />}
+
         {state.kind === "failed" && (
           <>
             <h1 className="mt-3 text-4xl leading-tight sm:text-5xl">
@@ -126,5 +131,82 @@ function ConfirmWaitingList() {
         </div>
       </div>
     </Section>
+  );
+}
+
+/**
+ * Notification preferences, reachable straight from the confirmation link.
+ * Full unsubscribe is handled by the email platform's own footer link.
+ */
+function Prefs({ token }: { token: string }) {
+  const save = useServerFn(updateWaitingListPrefs);
+  const [launch, setLaunch] = useState(true);
+  const [updates, setUpdates] = useState(false);
+  const [status, setStatus] = useState<"idle" | "saving" | "saved" | "failed">(
+    "idle",
+  );
+
+  const commit = (nextLaunch: boolean, nextUpdates: boolean) => {
+    setLaunch(nextLaunch);
+    setUpdates(nextUpdates);
+    setStatus("saving");
+    save({
+      data: {
+        token,
+        notifyLaunch: nextLaunch,
+        notifyUpdates: nextUpdates,
+      },
+    })
+      .then((r) => setStatus(r.ok ? "saved" : "failed"))
+      .catch(() => setStatus("failed"));
+  };
+
+  return (
+    <div className="mx-auto mt-10 max-w-md rounded-md border border-border bg-card p-6 text-left">
+      <p className="eyebrow">Email preferences</p>
+      <p className="mt-2 text-sm text-muted-foreground">
+        Choose what we send you. You can also unsubscribe from everything using
+        the link at the bottom of any email.
+      </p>
+      <div className="mt-5 space-y-4">
+        <label className="flex items-start gap-3 text-sm">
+          <input
+            type="checkbox"
+            checked={launch}
+            onChange={(e) => commit(e.target.checked, updates)}
+            className="mt-1 h-4 w-4 rounded-sm border-input accent-[var(--color-primary)]"
+          />
+          <span>
+            Email me the day my area goes live
+            <span className="block text-muted-foreground">
+              The one email you signed up for.
+            </span>
+          </span>
+        </label>
+        <label className="flex items-start gap-3 text-sm">
+          <input
+            type="checkbox"
+            checked={updates}
+            onChange={(e) => commit(launch, e.target.checked)}
+            className="mt-1 h-4 w-4 rounded-sm border-input accent-[var(--color-primary)]"
+          />
+          <span>
+            Occasional progress updates before launch
+            <span className="block text-muted-foreground">
+              How demand is building in your postcode area.
+            </span>
+          </span>
+        </label>
+      </div>
+      <p className="mt-4 text-xs text-muted-foreground" aria-live="polite">
+        {status === "saving"
+          ? "Saving…"
+          : status === "saved"
+            ? "Preferences saved."
+            : status === "failed"
+              ? "We couldn't save that — please try again."
+              : ""}
+      </p>
+    </div>
   );
 }

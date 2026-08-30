@@ -3,7 +3,11 @@ import { useQuery } from "@tanstack/react-query";
 import { MapPin, TrendingUp } from "lucide-react";
 import { Section, SectionHead } from "@/components/layout-bits";
 import { WaitingListInline } from "@/components/waiting-list-inline";
-import { areasQuery, waitingListDemandQuery } from "@/lib/queries";
+import {
+  areasQuery,
+  waitingListDemandQuery,
+  waitingListTrendQuery,
+} from "@/lib/queries";
 
 const SITE = "https://tradesmanfinder.org";
 const TARGET = 25; // confirmed sign-ups we like to see before opening an area
@@ -53,6 +57,7 @@ function statusFor(total: number) {
 function Coverage() {
   const { data: areas = [] } = useQuery(areasQuery);
   const { data: demand = [], isPending } = useQuery(waitingListDemandQuery);
+  const { data: trend = [] } = useQuery(waitingListTrendQuery(8));
 
   const live = areas.filter((a) => a.status === "live");
   const queue = demand.slice(0, 12);
@@ -159,7 +164,16 @@ function Coverage() {
         )}
       </Section>
 
-      <Section className="border-t border-border bg-surface">
+      <Section className="border-y border-border bg-surface">
+        <SectionHead
+          eyebrow="Demand over time"
+          title="How fast each area is growing."
+          sub="Confirmed sign-ups per week over the last eight weeks, and the running total. Aggregate figures only."
+        />
+        <TrendBoard trend={trend} />
+      </Section>
+
+      <Section>
         <div className="grid gap-10 lg:grid-cols-2">
           <div>
             <p className="eyebrow">Add your postcode</p>
@@ -186,5 +200,87 @@ function Coverage() {
         </div>
       </Section>
     </>
+  );
+}
+
+/** Aggregate-only sparklines: weekly confirmed sign-ups per postcode area. */
+function TrendBoard({
+  trend,
+}: {
+  trend: {
+    postcode_area: string;
+    week: string;
+    signups: number;
+    cumulative: number;
+  }[];
+}) {
+  if (trend.length === 0) {
+    return (
+      <p className="mt-8 max-w-xl text-muted-foreground">
+        No confirmed sign-ups in the last eight weeks yet — as soon as people
+        start joining, the weekly growth for each area shows up here.
+      </p>
+    );
+  }
+
+  const byArea = new Map<string, typeof trend>();
+  for (const point of trend) {
+    const list = byArea.get(point.postcode_area) ?? [];
+    list.push(point);
+    byArea.set(point.postcode_area, list);
+  }
+
+  const areas = [...byArea.entries()]
+    .sort(
+      (a, b) =>
+        Number(b[1][b[1].length - 1]?.cumulative ?? 0) -
+        Number(a[1][a[1].length - 1]?.cumulative ?? 0),
+    )
+    .slice(0, 6);
+
+  return (
+    <ul className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {areas.map(([area, points]) => {
+        const peak = Math.max(...points.map((p) => Number(p.signups)), 1);
+        const total = Number(points[points.length - 1]?.cumulative ?? 0);
+        const latest = Number(points[points.length - 1]?.signups ?? 0);
+        return (
+          <li
+            key={area}
+            className="rounded-md border border-border bg-card p-6"
+          >
+            <div className="flex items-baseline justify-between">
+              <span className="font-display text-lg font-semibold">{area}</span>
+              <span className="font-display text-sm text-muted-foreground">
+                {total} confirmed
+              </span>
+            </div>
+            <div
+              className="mt-5 flex h-16 items-end gap-1.5"
+              role="img"
+              aria-label={`${area}: ${points
+                .map(
+                  (p) =>
+                    `${new Date(p.week).toLocaleDateString("en-GB")} ${p.signups}`,
+                )
+                .join(", ")}`}
+            >
+              {points.map((p) => (
+                <span
+                  key={p.week}
+                  className="flex-1 rounded-t-sm bg-primary/70"
+                  style={{
+                    height: `${Math.max(6, (Number(p.signups) / peak) * 100)}%`,
+                  }}
+                />
+              ))}
+            </div>
+            <p className="mt-4 text-sm text-muted-foreground">
+              {latest} new in the latest week
+            </p>
+          </li>
+        );
+      })}
+    </ul>
   );
 }
