@@ -239,7 +239,9 @@ function ProPage() {
             >
               Compare similar pros
             </Link>
-          </aside>
+            </aside>
+          </div>
+
         </div>
       </Section>
     </>
