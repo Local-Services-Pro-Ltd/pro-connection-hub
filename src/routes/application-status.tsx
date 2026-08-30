@@ -167,7 +167,57 @@ function ApplicationStatusPage() {
                   {data.reviewer_note}
                 </p>
               )}
+              {data.verification &&
+                "checks" in data.verification &&
+                data.verification.checks.length > 0 && (
+                  <ul className="mt-4 grid gap-2 border-t border-border pt-4 text-sm">
+                    {data.verification.checks.map((c) => (
+                      <li key={c.key} className="flex flex-wrap gap-2">
+                        <span className="font-display text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                          {c.label}
+                        </span>
+                        <span
+                          className={
+                            c.outcome === "fail"
+                              ? "text-destructive"
+                              : c.outcome === "warn"
+                                ? "text-primary"
+                                : "text-success"
+                          }
+                        >
+                          {CHECK_OUTCOME_LABEL[c.outcome]}
+                        </span>
+                        <span className="text-muted-foreground">{c.detail}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
             </div>
+
+            {token && (
+              <div className="mt-6">
+                <DocumentTracker
+                  token={token}
+                  documents={data.documents ?? []}
+                  requestedKinds={(data.requested_fields ?? [])
+                    .filter((f) => f.startsWith("document_"))
+                    .map((f) => f.replace("document_", ""))}
+                  onChange={() => void status.refetch()}
+                />
+              </div>
+            )}
+
+            {["changes_requested", "resubmitted", "pending"].includes(
+              data.status,
+            ) && (
+              <ResubmitPanel
+                token={token as string}
+                requestedFields={data.requested_fields ?? []}
+                status={data.status}
+                onDone={() => void status.refetch()}
+              />
+            )}
+
 
             <ol className="mt-6 grid gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-3">
               {STAGES.map((stage, i) => (
