@@ -331,7 +331,7 @@ export const listProApplications = createServerFn({ method: "GET" })
       .order("created_at", { ascending: false })
       .limit(500);
     if (error) throw new Error(error.message);
-    return (data ?? []) as ProApplication[];
+    return (data ?? []) as unknown as ProApplication[];
   });
 
 /** Move an application through the vetting pipeline. Admin-only. */
@@ -606,7 +606,7 @@ export const resubmitApplication = createServerFn({ method: "POST" })
       {
         p_token: data.token,
         p_updates: data.updates,
-        p_message: data.message || null,
+        ...(data.message ? { p_message: data.message } : {}),
       },
     );
     if (error) {
