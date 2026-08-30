@@ -12,6 +12,7 @@ import {
   type TradeHeroImage,
 } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
+import { hasCostGuide } from "@/lib/cost-guides";
 import {
   tradeHero,
   tradeFocal,
@@ -173,6 +174,17 @@ function TradePage() {
           <div>
             <dt className="eyebrow">{copy.stats.cost}</dt>
             <dd className="mt-1 font-display text-xl">{trade.typical_cost}</dd>
+            {hasCostGuide(trade.slug) && (
+              <dd className="mt-1">
+                <Link
+                  to="/costs/$trade"
+                  params={{ trade: trade.slug }}
+                  className="text-sm text-primary hover:underline"
+                >
+                  Price your job →
+                </Link>
+              </dd>
+            )}
           </div>
           <div>
             <dt className="eyebrow">{copy.stats.available}</dt>
