@@ -202,7 +202,17 @@ function TradePage() {
       </PageHero>
 
       <Section>
+        {(tradeProjects ?? []).length > 0 && (
+          <div className="mb-12">
+            <ProjectGallery
+              projects={tradeProjects ?? []}
+              heading={`${trade.name} projects — before & after`}
+            />
+          </div>
+        )}
+
         <ProFiltersBar />
+
 
         <p className="mt-8 eyebrow">
           {matches.length} {trade.name.toLowerCase()}
