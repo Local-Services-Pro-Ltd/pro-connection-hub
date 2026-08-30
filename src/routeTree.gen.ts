@@ -22,6 +22,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as VerificationRouteImport } from './routes/verification'
 import { Route as AdminAccessRouteImport } from './routes/admin.access'
+import { Route as AdminEventsRouteImport } from './routes/admin.events'
 import { Route as AdminFeaturedRouteImport } from './routes/admin.featured'
 import { Route as AdminPlansRouteImport } from './routes/admin.plans'
 import { Route as ProIdRouteImport } from './routes/pro.$id'
@@ -100,6 +101,11 @@ const VerificationRoute = VerificationRouteImport.update({
 const AdminAccessRoute = AdminAccessRouteImport.update({
   id: '/admin/access',
   path: '/admin/access',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminEventsRoute = AdminEventsRouteImport.update({
+  id: '/admin/events',
+  path: '/admin/events',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminFeaturedRoute = AdminFeaturedRouteImport.update({
@@ -188,6 +194,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/verification': typeof VerificationRoute
   '/admin/access': typeof AdminAccessRoute
+  '/admin/events': typeof AdminEventsRoute
   '/admin/featured': typeof AdminFeaturedRoute
   '/admin/plans': typeof AdminPlansRoute
   '/pro/$id': typeof ProIdRoute
@@ -217,6 +224,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/verification': typeof VerificationRoute
   '/admin/access': typeof AdminAccessRoute
+  '/admin/events': typeof AdminEventsRoute
   '/admin/featured': typeof AdminFeaturedRoute
   '/admin/plans': typeof AdminPlansRoute
   '/pro/$id': typeof ProIdRoute
@@ -247,6 +255,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/verification': typeof VerificationRoute
   '/admin/access': typeof AdminAccessRoute
+  '/admin/events': typeof AdminEventsRoute
   '/admin/featured': typeof AdminFeaturedRoute
   '/admin/plans': typeof AdminPlansRoute
   '/pro/$id': typeof ProIdRoute
@@ -278,6 +287,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/verification'
     | '/admin/access'
+    | '/admin/events'
     | '/admin/featured'
     | '/admin/plans'
     | '/pro/$id'
@@ -307,6 +317,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/verification'
     | '/admin/access'
+    | '/admin/events'
     | '/admin/featured'
     | '/admin/plans'
     | '/pro/$id'
@@ -336,6 +347,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/verification'
     | '/admin/access'
+    | '/admin/events'
     | '/admin/featured'
     | '/admin/plans'
     | '/pro/$id'
@@ -366,6 +378,7 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   VerificationRoute: typeof VerificationRoute
   AdminAccessRoute: typeof AdminAccessRoute
+  AdminEventsRoute: typeof AdminEventsRoute
   AdminFeaturedRoute: typeof AdminFeaturedRoute
   AdminPlansRoute: typeof AdminPlansRoute
   ProIdRoute: typeof ProIdRoute
@@ -473,6 +486,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/access'
       fullPath: '/admin/access'
       preLoaderRoute: typeof AdminAccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/events': {
+      id: '/admin/events'
+      path: '/admin/events'
+      fullPath: '/admin/events'
+      preLoaderRoute: typeof AdminEventsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/featured': {
@@ -590,6 +610,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   VerificationRoute: VerificationRoute,
   AdminAccessRoute: AdminAccessRoute,
+  AdminEventsRoute: AdminEventsRoute,
   AdminFeaturedRoute: AdminFeaturedRoute,
   AdminPlansRoute: AdminPlansRoute,
   ProIdRoute: ProIdRoute,
