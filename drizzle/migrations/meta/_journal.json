@@ -8,6 +8,13 @@
       "when": 1788084003063,
       "tag": "0000_security_regression_suite",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1788084074824,
+      "tag": "0001_tighten_anon_grants_and_fix_checks",
+      "breakpoints": true
     }
   ]
 }
