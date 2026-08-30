@@ -985,7 +985,7 @@ export const getApplicationEvidencePack = createServerFn({ method: "POST" })
 
 export type MaintenanceJobState = {
   last_run_at: string | null;
-  last_result: Record<string, unknown>;
+  last_result: { checked?: number; reminders?: number; failed?: number; at?: string };
   last_error: string | null;
   paused_reason: string | null;
   reminders_7d: number;
@@ -1008,7 +1008,7 @@ export const getMaintenanceJobState = createServerFn({ method: "GET" })
       .gte("created_at", since);
     return {
       last_run_at: job?.last_run_at ?? null,
-      last_result: (job?.last_result ?? {}) as Record<string, unknown>,
+      last_result: (job?.last_result ?? {}) as MaintenanceJobState["last_result"],
       last_error: job?.last_error ?? null,
       paused_reason: job?.paused_reason ?? null,
       reminders_7d: count ?? 0,

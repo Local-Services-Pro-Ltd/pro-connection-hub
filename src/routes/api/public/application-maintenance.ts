@@ -234,7 +234,7 @@ async function run(request: Request): Promise<Response> {
     await supabaseAdmin.rpc("release_job_lease", {
       p_name: JOB,
       p_result: { checked, reminders, failed, at: new Date().toISOString() },
-      p_error: lastError,
+      ...(lastError ? { p_error: lastError } : {}),
     });
 
     return json({ ok: true, checked, reminders, failed });
