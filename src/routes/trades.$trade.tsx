@@ -7,10 +7,17 @@ import {
   tradesQuery,
   prosQuery,
   availabilityLabels,
+  fetchTradeHeroImage,
   type Trade,
+  type TradeHeroImage,
 } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
-import { tradeHero, hasTradeOgImage } from "@/lib/trade-media";
+import {
+  tradeHero,
+  tradeFocal,
+  tradeAlt,
+  hasTradeOgImage,
+} from "@/lib/trade-media";
 import { tradeHeroCopy } from "@/lib/trade-copy";
 import { getRequestOrigin } from "@/lib/origin.functions";
 
