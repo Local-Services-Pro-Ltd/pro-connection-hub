@@ -366,3 +366,55 @@ export async function fetchAuditRange(fromISO: string, toISO: string) {
   if (error) throw error;
   return (data ?? []) as PlanVisibilityAudit[];
 }
+
+export type ProFeatureAudit =
+  Database["public"]["Tables"]["pro_feature_audit"]["Row"];
+
+export type AdminProRow = Pro & {
+  verified_credentials: number;
+  total_credentials: number;
+};
+
+/**
+ * Every listing plus its credential-verification counts, so an admin can see
+ * at a glance whether a firm is safe to feature. Admin-only via RLS.
+ */
+export const adminProsQuery = queryOptions({
+  queryKey: ["admin", "pros"],
+  queryFn: async (): Promise<AdminProRow[]> => {
+    const [pros, creds] = await Promise.all([
+      supabase.from("pros").select("*").order("company"),
+      supabase.from("pro_credentials").select("pro_id, verified"),
+    ]);
+    if (pros.error) throw pros.error;
+    if (creds.error) throw creds.error;
+    const tally = new Map<string, { verified: number; total: number }>();
+    for (const c of creds.data ?? []) {
+      const row = tally.get(c.pro_id) ?? { verified: 0, total: 0 };
+      row.total += 1;
+      if (c.verified) row.verified += 1;
+      tally.set(c.pro_id, row);
+    }
+    return (pros.data ?? []).map((p) => ({
+      ...(p as Pro),
+      verified_credentials: tally.get(p.id)?.verified ?? 0,
+      total_credentials: tally.get(p.id)?.total ?? 0,
+    }));
+  },
+  staleTime: 0,
+});
+
+/** Audit trail of featuring / unfeaturing actions. Admin-only via RLS. */
+export const proFeatureAuditQuery = queryOptions({
+  queryKey: ["admin", "pro-feature-audit"],
+  queryFn: async () => {
+    const { data, error } = await supabase
+      .from("pro_feature_audit")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(50);
+    if (error) throw error;
+    return (data ?? []) as ProFeatureAudit[];
+  },
+  staleTime: 0,
+});
