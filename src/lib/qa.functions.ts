@@ -109,14 +109,14 @@ export const submitQuestion = createServerFn({ method: "POST" })
           p_question_id: questionId,
           p_answer: ai.answer,
           p_safety: ai.safety,
-          p_safety_note: ai.safety_note,
+          p_safety_note: ai.safety_note ?? undefined,
           p_tags: ai.tags,
-          p_urgency: ai.urgency,
-          p_suggested_trade: ai.suggested_trade,
+          p_urgency: ai.urgency ?? undefined,
+          p_suggested_trade: ai.suggested_trade ?? undefined,
           p_verdict: ai.verdict,
           p_risk: ai.risk,
           p_reasons: ai.reasons,
-          p_summary: ai.summary,
+          p_summary: ai.summary ?? undefined,
         });
       }
     } catch {

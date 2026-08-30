@@ -2,11 +2,11 @@ import { AlertTriangle, Sparkles } from "lucide-react";
 
 type Props = {
   answer: string | null | undefined;
-  safety?: string | null;
-  safetyNote?: string | null;
-  tags?: string[] | null;
-  urgency?: string | null;
-  compact?: boolean;
+  safety?: string | null | undefined;
+  safetyNote?: string | null | undefined;
+  tags?: string[] | null | undefined;
+  urgency?: string | null | undefined;
+  compact?: boolean | undefined;
 };
 
 /**
