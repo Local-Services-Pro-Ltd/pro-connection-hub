@@ -97,6 +97,7 @@ function WaitingList() {
         search: {
           area: result.area,
           ...(result.pending ? { pending: true } : {}),
+          ...(result.waiting ? { waiting: result.waiting } : {}),
         },
       });
     },

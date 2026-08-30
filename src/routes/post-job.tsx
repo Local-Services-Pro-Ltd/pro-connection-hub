@@ -476,6 +476,7 @@ function OutOfAreaPanel({
   const [note, setNote] = useState(prefillNote);
   const [done, setDone] = useState(false);
   const [pending, setPending] = useState(false);
+  const [waiting, setWaiting] = useState(0);
   const submit = useServerFn(submitWaitingList);
   const check = useHumanCheck();
 
@@ -498,6 +499,7 @@ function OutOfAreaPanel({
     onSuccess: (result) => {
       setDone(true);
       setPending(Boolean(result?.pending));
+      setWaiting(Number(result?.waiting ?? 0));
       toast.success(
         result?.pending
           ? "Almost there — confirm the link we've emailed you"
@@ -526,6 +528,14 @@ function OutOfAreaPanel({
             ? `We've emailed you a confirmation link — click it and your place for ${postcode.toUpperCase()} is active. Your job details are saved with the request.`
             : "We've kept your job details with your request. The day we have vetted trades covering your postcode, we'll email you and — if you left a number — give you a ring."}
         </p>
+
+        {!pending && waiting > 1 && (
+          <p className="mt-4 max-w-md text-muted-foreground">
+            <strong className="text-foreground">{waiting} people</strong> are
+            already waiting in this postcode area — the more sign-ups, the
+            sooner we open it.
+          </p>
+        )}
 
         <div className="mt-6 flex flex-wrap gap-3">
           <button
