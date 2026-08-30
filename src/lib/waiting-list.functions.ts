@@ -18,6 +18,8 @@ export type WaitingListInput = {
   checkAnswer: string;
   /** Honeypot — must stay empty; only bots fill hidden fields. */
   website?: string;
+  /** Opt in to occasional progress updates before launch. */
+  notifyUpdates?: boolean;
 };
 
 function clean(value: string | undefined, max: number) {
@@ -90,6 +92,7 @@ export const submitWaitingList = createServerFn({ method: "POST" })
       checkToken: (input.checkToken ?? "").trim(),
       checkAnswer: (input.checkAnswer ?? "").trim(),
       website: (input.website ?? "").trim(),
+      notifyUpdates: Boolean(input.notifyUpdates),
     };
   })
   .handler(async ({ data }) => {
@@ -174,6 +177,15 @@ export const submitWaitingList = createServerFn({ method: "POST" })
     const id = String(row.id ?? "");
     const outward = data.postcode.split(" ")[0] ?? data.postcode;
     const area = outward.replace(/\d/g, "");
+
+    // Notification preferences chosen at sign-up.
+    if (row.token) {
+      await supabaseAdmin.rpc("waiting_list_set_prefs", {
+        p_token: row.token,
+        p_notify_launch: true,
+        p_notify_updates: data.notifyUpdates,
+      });
+    }
 
     // Demand signal shown back to the visitor: how many confirmed sign-ups
     // already exist in their postcode area. Aggregate only.
