@@ -711,3 +711,63 @@ export function adminProAvailabilityQuery(proId: string) {
     staleTime: 0,
   });
 }
+
+/* ------------------------------------------------------------------ *
+ * Waiting-list demand
+ * ------------------------------------------------------------------ */
+
+export type WaitingListDemand = {
+  postcode_area: string;
+  homeowners: number;
+  traders: number;
+  total: number;
+  first_signup: string | null;
+};
+
+/**
+ * Aggregate demand per postcode area — confirmed sign-ups only and never
+ * anything that identifies a person, so it is safe on the public site.
+ */
+export const waitingListDemandQuery = queryOptions({
+  queryKey: ["waiting-list", "demand"],
+  queryFn: async () =>
+    unwrap(await supabase.rpc("waiting_list_demand")) as WaitingListDemand[],
+  staleTime: 60_000,
+});
+
+export type WaitingListAdminSummary = {
+  postcode_area: string;
+  total: number;
+  confirmed: number;
+  homeowners: number;
+  traders: number;
+  trades: string | null;
+  last_signup: string | null;
+};
+
+/** Admin-only breakdown: unconfirmed sign-ups and trade demand included. */
+export const waitingListAdminSummaryQuery = queryOptions({
+  queryKey: ["admin", "waiting-list", "summary"],
+  queryFn: async () =>
+    unwrap(
+      await supabase.rpc("waiting_list_admin_summary"),
+    ) as WaitingListAdminSummary[],
+  staleTime: 0,
+});
+
+export type WaitingListRow =
+  Database["public"]["Tables"]["waiting_list"]["Row"];
+
+/** Recent sign-ups. Readable by admins only (RLS). */
+export const waitingListRecentQuery = queryOptions({
+  queryKey: ["admin", "waiting-list", "recent"],
+  queryFn: async () =>
+    unwrap(
+      await supabase
+        .from("waiting_list")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(500),
+    ) as WaitingListRow[],
+  staleTime: 0,
+});
