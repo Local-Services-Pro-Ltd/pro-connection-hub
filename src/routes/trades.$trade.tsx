@@ -51,14 +51,19 @@ export const Route = createFileRoute("/trades/$trade")({
       .eq("slug", params.trade)
       .maybeSingle();
     if (!data) throw notFound();
-    const [, , origin] = await Promise.all([
+    const [, , origin, heroOverride] = await Promise.all([
       context.queryClient.ensureQueryData(
         prosQuery({ trade: params.trade, ...deps }),
       ),
       context.queryClient.ensureQueryData(tradesQuery),
       getRequestOrigin(),
+      fetchTradeHeroImage(params.trade),
     ]);
-    return { trade: data as Trade, origin };
+    return {
+      trade: data as Trade,
+      origin,
+      heroOverride: heroOverride as TradeHeroImage | null,
+    };
   },
   head: ({ loaderData }) => {
     if (!loaderData) {
