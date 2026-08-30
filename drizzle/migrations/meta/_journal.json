@@ -36,6 +36,13 @@
       "when": 1788084328784,
       "tag": "0004_schedule_security_scans",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1788084487749,
+      "tag": "0005_protect_reviewer_location_and_feedback_reads",
+      "breakpoints": true
     }
   ]
 }
