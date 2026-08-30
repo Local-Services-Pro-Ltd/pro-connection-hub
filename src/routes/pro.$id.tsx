@@ -72,7 +72,10 @@ export const Route = createFileRoute("/pro/$id")({
 function ProPage() {
   const { id } = Route.useParams();
   const { data } = useSuspenseQuery(proQuery(id));
+  const { data: projects } = useQuery(proProjectsQuery(id));
+  const { data: trust } = useQuery(proTrustQuery(id));
   const pro = data.pro!;
+
   const { credentials, reviews } = data;
 
   return (
