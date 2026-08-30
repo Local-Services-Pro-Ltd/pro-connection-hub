@@ -7,7 +7,7 @@ import { Section, SectionHead } from "@/components/layout-bits";
 import {
   tradesQuery,
   areasQuery,
-  prosQuery,
+  featuredProsQuery,
   statsQuery,
   latestReviewsQuery,
   proCountsQuery,
@@ -23,7 +23,7 @@ export const Route = createFileRoute("/")({
     const [, , , , , , origin] = await Promise.all([
       qc.ensureQueryData(tradesQuery),
       qc.ensureQueryData(areasQuery),
-      qc.ensureQueryData(prosQuery({ sort: "rating" })),
+      qc.ensureQueryData(featuredProsQuery),
       qc.ensureQueryData(statsQuery),
       qc.ensureQueryData(latestReviewsQuery),
       qc.ensureQueryData(proCountsQuery),
