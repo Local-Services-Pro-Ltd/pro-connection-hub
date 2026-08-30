@@ -418,3 +418,14 @@ export const proFeatureAuditQuery = queryOptions({
   },
   staleTime: 0,
 });
+
+/** Full featuring audit trail, used by the admin CSV export. Admin-only via RLS. */
+export async function fetchProFeatureAuditAll() {
+  const { data, error } = await supabase
+    .from("pro_feature_audit")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(5000);
+  if (error) throw error;
+  return (data ?? []) as ProFeatureAudit[];
+}
