@@ -64,6 +64,13 @@
       "when": 1788085182882,
       "tag": "0008_feature_approval_trusts_service_role",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1788085214308,
+      "tag": "0009_credential_verification_trusts_service_role",
+      "breakpoints": true
     }
   ]
 }
