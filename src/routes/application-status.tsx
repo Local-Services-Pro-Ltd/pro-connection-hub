@@ -410,3 +410,59 @@ function ResubmitPanel({
     </form>
   );
 }
+
+type TimelineEvent = {
+  action: string;
+  from_status: string | null;
+  to_status: string;
+  reviewer_note?: string | null;
+  created_at: string;
+};
+
+/** Plain-English label for one audit-log entry on the firm-facing feed. */
+function describeEvent(event: TimelineEvent): { title: string; body: string } {
+  const note = event.reviewer_note ?? "";
+  switch (event.action) {
+    case "submitted":
+      return {
+        title: "Application submitted",
+        body: "We've got your paperwork and put you in the review queue.",
+      };
+    case "document_uploaded":
+      return {
+        title: "Document uploaded",
+        body: note || "You sent us a supporting document.",
+      };
+    case "resubmitted":
+      return {
+        title: "You resubmitted your details",
+        body: note || "Your updated details went back to the reviewer.",
+      };
+    case "escalated":
+      return {
+        title: "Escalated for a faster review",
+        body: note,
+      };
+    case "reminder_sent":
+      return { title: "Reminder emailed to you", body: note };
+    case "changes_requested":
+      return {
+        title: "Reviewer asked for changes",
+        body: note || "See the list above and send the missing details.",
+      };
+    case "approved":
+      return { title: "Approved", body: note || "Your firm passed our checks." };
+    case "rejected":
+      return {
+        title: "Not certified yet",
+        body: note || "The reviewer explained what was missing.",
+      };
+    case "note_updated":
+      return { title: "Reviewer note updated", body: note };
+    default:
+      return {
+        title: `Moved to ${STATUS_LABEL[event.to_status] ?? event.to_status}`,
+        body: note,
+      };
+  }
+}
