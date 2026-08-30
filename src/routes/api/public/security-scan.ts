@@ -17,26 +17,41 @@ type CheckRow = {
   detail: string;
 };
 
-function authorized(request: Request): boolean {
-  const expected = process.env["SECURITY_SCAN_TOKEN"];
-  if (!expected) return false;
-  const provided =
+function presentedToken(request: Request): string {
+  return (
     request.headers.get("x-security-scan-token") ??
-    (request.headers.get("authorization") ?? "").replace(/^Bearer\s+/i, "");
+    (request.headers.get("authorization") ?? "").replace(/^Bearer\s+/i, "")
+  );
+}
+
+function matchesEnvToken(provided: string): boolean {
+  const expected = process.env["SECURITY_SCAN_TOKEN"];
+  if (!expected || !provided) return false;
   const a = Buffer.from(provided);
   const b = Buffer.from(expected);
   return a.length === b.length && timingSafeEqual(a, b);
 }
 
 async function runScan(request: Request): Promise<Response> {
-  if (!authorized(request)) {
+  const token = presentedToken(request);
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+  let allowed = matchesEnvToken(token);
+  if (!allowed && token) {
+    // The database scheduler authenticates with its own secret, which never
+    // leaves Postgres.
+    const { data } = await supabaseAdmin.rpc("security_scan_token_matches", {
+      p_token: token,
+    });
+    allowed = data === true;
+  }
+
+  if (!allowed) {
     return new Response(JSON.stringify({ error: "unauthorized" }), {
       status: 401,
       headers: { "content-type": "application/json" },
     });
   }
-
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
   const { data, error } = await supabaseAdmin.rpc("security_regression_run");
   if (error) {
@@ -45,6 +60,7 @@ async function runScan(request: Request): Promise<Response> {
       headers: { "content-type": "application/json" },
     });
   }
+
 
   const rows = (data ?? []) as CheckRow[];
   const failures = rows.filter((r) => r.passed === false);
