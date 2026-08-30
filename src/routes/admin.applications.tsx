@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -195,9 +195,15 @@ function AdminApplications() {
             {s !== "all" && counts[s] ? ` (${counts[s]})` : ""}
           </button>
         ))}
+        <Link
+          to="/admin/sla"
+          className="ml-auto rounded-sm border border-border-strong px-3 py-1.5 font-display text-xs font-semibold uppercase tracking-widest hover:border-primary hover:text-primary"
+        >
+          SLA dashboard
+        </Link>
         <button
           onClick={exportCsv}
-          className="ml-auto rounded-sm border border-border-strong px-3 py-1.5 font-display text-xs font-semibold uppercase tracking-widest hover:border-primary hover:text-primary"
+          className="rounded-sm border border-border-strong px-3 py-1.5 font-display text-xs font-semibold uppercase tracking-widest hover:border-primary hover:text-primary"
         >
           Export CSV
         </button>
