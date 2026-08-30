@@ -48,7 +48,7 @@ async def homepage_state(page) -> tuple[bool, bool, int]:
 
 
 async def main() -> int:
-    conn = await asyncpg.connect(DB_URL)
+    conn = await asyncpg.connect(DB_URL, statement_cache_size=0)
     trade = await conn.fetchval("select slug from public.trades order by sort_order limit 1")
     try:
         async with async_playwright() as pw:
