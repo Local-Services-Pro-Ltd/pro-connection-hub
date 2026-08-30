@@ -607,11 +607,11 @@ export function bookedSlotsQuery(proId: string) {
   return queryOptions({
     queryKey: ["booked-slots", proId],
     queryFn: async () => {
-      const { data } = await supabase
-        .from("pro_booked_slots")
-        .select("slot_start")
-        .eq("pro_id", proId);
-      return new Set((data ?? []).map((r) => new Date(r.slot_start as string).toISOString()));
+      const { data } = await supabase.rpc("pro_booked_slots", { p_pro_id: proId });
+      return new Set(
+        (data ?? []).map((r) => new Date(r.slot_start as string).toISOString()),
+      );
+
     },
     staleTime: 15_000,
   });
