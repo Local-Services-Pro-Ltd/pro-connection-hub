@@ -12,6 +12,7 @@ import {
   type TradeHeroImage,
 } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
+import { hasCostGuide } from "@/lib/cost-guides";
 import {
   tradeHero,
   tradeFocal,
