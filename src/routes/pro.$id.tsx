@@ -26,7 +26,7 @@ export const Route = createFileRoute("/pro/$id")({
     if (!data.pro) throw notFound();
     return { name: data.pro.company, pro: data.pro };
   },
-  head: ({ loaderData }) => {
+  head: ({ params, loaderData }) => {
     if (!loaderData) {
       return {
         meta: [
@@ -36,11 +36,31 @@ export const Route = createFileRoute("/pro/$id")({
       };
     }
     const p = loaderData.pro;
+    const url = `https://tradesmanfinder.org/pro/${params.id}`;
     const title = `${p.company} — ${p.name}, ${p.area} | TradesmanFinder`;
     const description = `${p.company} in ${p.area}. ${p.rating}★ from ${p.review_count} reviews, ${p.years} years' experience. ${p.bio}`.slice(
       0,
       158,
     );
+    const jsonLd: Record<string, unknown> = {
+      "@context": "https://schema.org",
+      "@type": "ProfessionalService",
+      name: p.company,
+      description,
+      url,
+      areaServed: p.area,
+      address: { "@type": "PostalAddress", addressLocality: p.area, addressCountry: "GB" },
+      employee: { "@type": "Person", name: p.name },
+    };
+    if (p.review_count > 0) {
+      jsonLd['aggregateRating'] = {
+        "@type": "AggregateRating",
+        ratingValue: p.rating,
+        reviewCount: p.review_count,
+        bestRating: 5,
+        worstRating: 1,
+      };
+    }
     return {
       meta: [
         { title },
@@ -48,10 +68,16 @@ export const Route = createFileRoute("/pro/$id")({
         { property: "og:title", content: title },
         { property: "og:description", content: description },
         { property: "og:type", content: "profile" },
+        { property: "og:url", content: url },
         { name: "twitter:card", content: "summary_large_image" },
+      ],
+      links: [{ rel: "canonical", href: url }],
+      scripts: [
+        { type: "application/ld+json", children: JSON.stringify(jsonLd) },
       ],
     };
   },
+
   errorComponent: ({ error }) => (
     <Section>
       <p role="alert" className="text-muted-foreground">
