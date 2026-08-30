@@ -6,6 +6,7 @@ import { ReviewPanel } from "@/components/review-panel";
 import { ProjectGallery } from "@/components/project-gallery";
 import { BookingPanel } from "@/components/booking-panel";
 import { TrustBadge, TrustBreakdown } from "@/components/trust-badge";
+import { SaveProButton } from "@/components/save-pro-button";
 import {
   proQuery,
   availabilityLabels,
@@ -97,11 +98,11 @@ function ProPage() {
               {pro.company}
             </h1>
             <p className="mt-3 text-lg text-muted-foreground">{pro.name}</p>
-            {trust && (
-              <div className="mt-4">
-                <TrustBadge score={trust.score ?? 0} size="lg" />
-              </div>
-            )}
+            <div className="mt-4 flex items-center gap-3">
+              {trust && <TrustBadge score={trust.score ?? 0} size="lg" />}
+              <SaveProButton proId={pro.id} company={pro.company} />
+            </div>
+
 
 
             <div className="mt-7 flex flex-wrap gap-x-8 gap-y-4 border-t border-border pt-6 text-sm">

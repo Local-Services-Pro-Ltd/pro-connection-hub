@@ -435,6 +435,54 @@ export type Database = {
         }
         Relationships: []
       }
+      pro_availability: {
+        Row: {
+          active: boolean
+          created_at: string
+          end_minute: number
+          id: string
+          pro_id: string
+          slot_minutes: number
+          start_minute: number
+          weekday: number
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          end_minute: number
+          id?: string
+          pro_id: string
+          slot_minutes?: number
+          start_minute: number
+          weekday: number
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          end_minute?: number
+          id?: string
+          pro_id?: string
+          slot_minutes?: number
+          start_minute?: number
+          weekday?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pro_availability_pro_id_fkey"
+            columns: ["pro_id"]
+            isOneToOne: false
+            referencedRelation: "pro_trust"
+            referencedColumns: ["pro_id"]
+          },
+          {
+            foreignKeyName: "pro_availability_pro_id_fkey"
+            columns: ["pro_id"]
+            isOneToOne: false
+            referencedRelation: "pros"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pro_credentials: {
         Row: {
           created_at: string

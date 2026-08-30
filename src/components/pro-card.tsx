@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Star, Clock, ShieldCheck } from "lucide-react";
 import { availabilityLabels, trustScoresQuery, type Pro } from "@/lib/queries";
 import { TrustBadge } from "@/components/trust-badge";
+import { SaveProButton } from "@/components/save-pro-button";
 import pro1 from "@/assets/pro-1.jpg";
 import pro2 from "@/assets/pro-2.jpg";
 import pro3 from "@/assets/pro-3.jpg";
@@ -31,6 +32,11 @@ export function ProCard({ pro }: { pro: Pro }) {
         <span className="absolute left-3 top-3 rounded-sm bg-background/85 px-2 py-1 font-display text-[11px] font-semibold uppercase tracking-widest text-primary capitalize backdrop-blur">
           {pro.trade_slug.replace("-", " ")}
         </span>
+        <SaveProButton
+          proId={pro.id}
+          company={pro.company}
+          className="absolute bottom-3 right-3"
+        />
         {pro.availability === "immediate" && (
           <span className="absolute right-3 top-3 rounded-sm bg-success px-2 py-1 font-display text-[11px] font-semibold uppercase tracking-widest text-background">
             Free now

@@ -17,6 +17,7 @@ import { Route as EnterpriseRouteImport } from './routes/enterprise'
 import { Route as ForTradesmenRouteImport } from './routes/for-tradesmen'
 import { Route as PostJobRouteImport } from './routes/post-job'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as SavedRouteImport } from './routes/saved'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermsRouteImport } from './routes/terms'
@@ -25,6 +26,7 @@ import { Route as AdminAccessRouteImport } from './routes/admin.access'
 import { Route as AdminAuditRouteImport } from './routes/admin.audit'
 import { Route as AdminEventsRouteImport } from './routes/admin.events'
 import { Route as AdminFeaturedRouteImport } from './routes/admin.featured'
+import { Route as AdminGalleriesRouteImport } from './routes/admin.galleries'
 import { Route as AdminHeroImagesRouteImport } from './routes/admin.hero-images'
 import { Route as AdminPlansRouteImport } from './routes/admin.plans'
 import { Route as CostsIndexRouteImport } from './routes/costs.index'
@@ -82,6 +84,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
   path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SavedRoute = SavedRouteImport.update({
+  id: '/saved',
+  path: '/saved',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SigninRoute = SigninRouteImport.update({
   id: '/signin',
   path: '/signin',
@@ -120,6 +127,11 @@ const AdminEventsRoute = AdminEventsRouteImport.update({
 const AdminFeaturedRoute = AdminFeaturedRouteImport.update({
   id: '/admin/featured',
   path: '/admin/featured',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminGalleriesRoute = AdminGalleriesRouteImport.update({
+  id: '/admin/galleries',
+  path: '/admin/galleries',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminHeroImagesRoute = AdminHeroImagesRouteImport.update({
@@ -213,6 +225,7 @@ export interface FileRoutesByFullPath {
   '/for-tradesmen': typeof ForTradesmenRoute
   '/post-job': typeof PostJobRoute
   '/privacy': typeof PrivacyRoute
+  '/saved': typeof SavedRoute
   '/signin': typeof SigninRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
@@ -221,6 +234,7 @@ export interface FileRoutesByFullPath {
   '/admin/audit': typeof AdminAuditRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/featured': typeof AdminFeaturedRoute
+  '/admin/galleries': typeof AdminGalleriesRoute
   '/admin/hero-images': typeof AdminHeroImagesRoute
   '/admin/plans': typeof AdminPlansRoute
   '/costs/$trade': typeof CostsTradeRoute
@@ -247,6 +261,7 @@ export interface FileRoutesByTo {
   '/for-tradesmen': typeof ForTradesmenRoute
   '/post-job': typeof PostJobRoute
   '/privacy': typeof PrivacyRoute
+  '/saved': typeof SavedRoute
   '/signin': typeof SigninRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
@@ -255,6 +270,7 @@ export interface FileRoutesByTo {
   '/admin/audit': typeof AdminAuditRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/featured': typeof AdminFeaturedRoute
+  '/admin/galleries': typeof AdminGalleriesRoute
   '/admin/hero-images': typeof AdminHeroImagesRoute
   '/admin/plans': typeof AdminPlansRoute
   '/costs/$trade': typeof CostsTradeRoute
@@ -282,6 +298,7 @@ export interface FileRoutesById {
   '/for-tradesmen': typeof ForTradesmenRoute
   '/post-job': typeof PostJobRoute
   '/privacy': typeof PrivacyRoute
+  '/saved': typeof SavedRoute
   '/signin': typeof SigninRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
@@ -290,6 +307,7 @@ export interface FileRoutesById {
   '/admin/audit': typeof AdminAuditRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/featured': typeof AdminFeaturedRoute
+  '/admin/galleries': typeof AdminGalleriesRoute
   '/admin/hero-images': typeof AdminHeroImagesRoute
   '/admin/plans': typeof AdminPlansRoute
   '/costs/$trade': typeof CostsTradeRoute
@@ -318,6 +336,7 @@ export interface FileRouteTypes {
     | '/for-tradesmen'
     | '/post-job'
     | '/privacy'
+    | '/saved'
     | '/signin'
     | '/sitemap.xml'
     | '/terms'
@@ -326,6 +345,7 @@ export interface FileRouteTypes {
     | '/admin/audit'
     | '/admin/events'
     | '/admin/featured'
+    | '/admin/galleries'
     | '/admin/hero-images'
     | '/admin/plans'
     | '/costs/$trade'
@@ -352,6 +372,7 @@ export interface FileRouteTypes {
     | '/for-tradesmen'
     | '/post-job'
     | '/privacy'
+    | '/saved'
     | '/signin'
     | '/sitemap.xml'
     | '/terms'
@@ -360,6 +381,7 @@ export interface FileRouteTypes {
     | '/admin/audit'
     | '/admin/events'
     | '/admin/featured'
+    | '/admin/galleries'
     | '/admin/hero-images'
     | '/admin/plans'
     | '/costs/$trade'
@@ -386,6 +408,7 @@ export interface FileRouteTypes {
     | '/for-tradesmen'
     | '/post-job'
     | '/privacy'
+    | '/saved'
     | '/signin'
     | '/sitemap.xml'
     | '/terms'
@@ -394,6 +417,7 @@ export interface FileRouteTypes {
     | '/admin/audit'
     | '/admin/events'
     | '/admin/featured'
+    | '/admin/galleries'
     | '/admin/hero-images'
     | '/admin/plans'
     | '/costs/$trade'
@@ -421,6 +445,7 @@ export interface RootRouteChildren {
   ForTradesmenRoute: typeof ForTradesmenRoute
   PostJobRoute: typeof PostJobRoute
   PrivacyRoute: typeof PrivacyRoute
+  SavedRoute: typeof SavedRoute
   SigninRoute: typeof SigninRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
@@ -429,6 +454,7 @@ export interface RootRouteChildren {
   AdminAuditRoute: typeof AdminAuditRoute
   AdminEventsRoute: typeof AdminEventsRoute
   AdminFeaturedRoute: typeof AdminFeaturedRoute
+  AdminGalleriesRoute: typeof AdminGalleriesRoute
   AdminHeroImagesRoute: typeof AdminHeroImagesRoute
   AdminPlansRoute: typeof AdminPlansRoute
   CostsTradeRoute: typeof CostsTradeRoute
@@ -505,6 +531,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/saved': {
+      id: '/saved'
+      path: '/saved'
+      fullPath: '/saved'
+      preLoaderRoute: typeof SavedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/signin': {
       id: '/signin'
       path: '/signin'
@@ -559,6 +592,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/featured'
       fullPath: '/admin/featured'
       preLoaderRoute: typeof AdminFeaturedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/galleries': {
+      id: '/admin/galleries'
+      path: '/admin/galleries'
+      fullPath: '/admin/galleries'
+      preLoaderRoute: typeof AdminGalleriesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/hero-images': {
@@ -685,6 +725,7 @@ const rootRouteChildren: RootRouteChildren = {
   ForTradesmenRoute: ForTradesmenRoute,
   PostJobRoute: PostJobRoute,
   PrivacyRoute: PrivacyRoute,
+  SavedRoute: SavedRoute,
   SigninRoute: SigninRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
@@ -693,6 +734,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminAuditRoute: AdminAuditRoute,
   AdminEventsRoute: AdminEventsRoute,
   AdminFeaturedRoute: AdminFeaturedRoute,
+  AdminGalleriesRoute: AdminGalleriesRoute,
   AdminHeroImagesRoute: AdminHeroImagesRoute,
   AdminPlansRoute: AdminPlansRoute,
   CostsTradeRoute: CostsTradeRoute,
