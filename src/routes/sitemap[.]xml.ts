@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
+import { allCostGuides } from "@/lib/cost-guides";
 
 const BASE_URL = "https://tradesmanfinder.org";
 
