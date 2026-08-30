@@ -242,6 +242,10 @@ function EventsBoard() {
         </p>
       )}
 
+      <OverTime events={events} />
+
+
+
       <div
         className="mt-6 overflow-x-auto rounded-md border border-border"
         data-testid="denied-events-table"
