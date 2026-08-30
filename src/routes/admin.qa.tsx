@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Check, Lock, X } from "lucide-react";
 import { Section, SectionHead } from "@/components/layout-bits";
 import { isAdminQuery } from "@/lib/queries";
+import { useAuth } from "@/hooks/use-auth";
 import { listPendingQa, moderateQa } from "@/lib/qa.functions";
 
 export const Route = createFileRoute("/admin/qa")({
@@ -30,7 +31,11 @@ export const Route = createFileRoute("/admin/qa")({
 });
 
 function AdminQa() {
-  const { data: isAdmin, isLoading } = useQuery(isAdminQuery);
+  const { user, loading } = useAuth();
+  const { data: isAdmin, isPending: checkingRole } = useQuery({
+    ...isAdminQuery(user?.id),
+    enabled: !loading,
+  });
   const load = useServerFn(listPendingQa);
   const moderate = useServerFn(moderateQa);
 
@@ -55,7 +60,8 @@ function AdminQa() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  if (isLoading) return <Section>Checking access…</Section>;
+  if (loading || (user && checkingRole))
+    return <Section>Checking access…</Section>;
 
   if (!isAdmin) {
     return (
