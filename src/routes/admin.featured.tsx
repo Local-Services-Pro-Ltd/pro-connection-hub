@@ -107,6 +107,7 @@ function FeaturedBoard() {
   const { data: pros, isPending, error } = useQuery(adminProsQuery);
   const { data: audit } = useQuery(proFeatureAuditQuery);
   const [pendingId, setPendingId] = useState<string | null>(null);
+  const notify = useServerFn(notifyProVettingStatus);
 
   const toggle = useMutation({
     mutationFn: async ({ id, next }: { id: string; next: boolean }) => {
@@ -116,6 +117,18 @@ function FeaturedBoard() {
         .update({ featured: next })
         .eq("id", id);
       if (e) throw e;
+      // Tell the firm what changed. A failed or impossible send never blocks
+      // the admin action — the audit log is the record of truth.
+      try {
+        const res = await notify({
+          data: { proId: id, outcome: next ? "featured" : "unfeatured" },
+        });
+        if (!res.sent && res.reason === "no_contact_email") {
+          toast.info("No claimed account on this listing — no email sent.");
+        }
+      } catch {
+        toast.warning("Status changed, but the notification email failed.");
+      }
       return next;
     },
     onSuccess: async (next) => {
