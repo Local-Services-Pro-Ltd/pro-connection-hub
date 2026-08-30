@@ -156,7 +156,7 @@ function AccessBoard() {
       <SectionHead
         eyebrow="Admin"
         title="Access control map"
-        blurb="Every row-level security policy and public view, and who each one lets in. Public means anyone on the internet can read it; admin only means it is gated behind the admin role."
+        sub="Every row-level security policy and public view, and who each one lets in. Public means anyone on the internet can read it; admin only means it is gated behind the admin role."
       />
 
       <div className="mt-8 flex flex-wrap items-center gap-3">
