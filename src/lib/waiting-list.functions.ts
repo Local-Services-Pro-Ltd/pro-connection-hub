@@ -502,6 +502,9 @@ export type AreaWaiter = {
   queue_position: number;
   notify_launch: boolean;
   launch_notified_at: string | null;
+  trade: string | null;
+  last_position_notified: number | null;
+
 };
 
 /** Admin-only: who is waiting in a postcode area, with their queue position. */
