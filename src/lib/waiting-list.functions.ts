@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { getRequest, getRequestHeader } from "@tanstack/react-start/server";
 import { createHash } from "crypto";
 
@@ -240,4 +241,182 @@ export const confirmWaitingList = createServerFn({ method: "POST" })
       already: Boolean(row.already),
       postcode: row.postcode ?? "",
     };
+  });
+
+/**
+ * Updates one person's email preferences. Gated by the secret token from
+ * their confirmation link — no account needed, and no way to enumerate rows.
+ * Platform-managed unsubscribe still applies on top of this.
+ */
+export const updateWaitingListPrefs = createServerFn({ method: "POST" })
+  .inputValidator(
+    (input: {
+      token: string;
+      notifyLaunch: boolean;
+      notifyUpdates: boolean;
+    }) => ({
+      token: (input.token ?? "").trim().slice(0, 128),
+      notifyLaunch: Boolean(input.notifyLaunch),
+      notifyUpdates: Boolean(input.notifyUpdates),
+    }),
+  )
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import(
+      "@/integrations/supabase/client.server"
+    );
+    const { data: result, error } = await supabaseAdmin.rpc(
+      "waiting_list_set_prefs",
+      {
+        p_token: data.token,
+        p_notify_launch: data.notifyLaunch,
+        p_notify_updates: data.notifyUpdates,
+      },
+    );
+    if (error) throw new Error("We couldn't save that. Please try again.");
+    const row = (result ?? {}) as {
+      ok?: boolean;
+      notify_launch?: boolean;
+      notify_updates?: boolean;
+    };
+    return {
+      ok: Boolean(row.ok),
+      notifyLaunch: Boolean(row.notify_launch),
+      notifyUpdates: Boolean(row.notify_updates),
+    };
+  });
+
+async function assertAdmin(context: {
+  supabase: {
+    from: (t: string) => {
+      select: (c: string) => {
+        eq: (
+          a: string,
+          b: string,
+        ) => {
+          eq: (
+            a: string,
+            b: string,
+          ) => { maybeSingle: () => Promise<{ data: unknown }> };
+        };
+      };
+    };
+  };
+  userId: string;
+}) {
+  const { data: role } = await context.supabase
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", context.userId)
+    .eq("role", "admin")
+    .maybeSingle();
+  if (!role) throw new Error("Forbidden");
+}
+
+export type AreaWaiter = {
+  id: string;
+  email: string;
+  name: string | null;
+  postcode: string;
+  role: string;
+  queue_position: number;
+  notify_launch: boolean;
+  launch_notified_at: string | null;
+};
+
+/** Admin-only: who is waiting in a postcode area, with their queue position. */
+export const listAreaWaiting = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { area: string }) => ({
+    area: (input.area ?? "").trim().toUpperCase().slice(0, 8),
+  }))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context as never);
+    if (!data.area) return [] as AreaWaiter[];
+    const { supabaseAdmin } = await import(
+      "@/integrations/supabase/client.server"
+    );
+    const { data: rows, error } = await supabaseAdmin.rpc(
+      "waiting_list_area_recipients",
+      { p_area: data.area },
+    );
+    if (error) throw new Error(error.message);
+    return (rows ?? []) as AreaWaiter[];
+  });
+
+/**
+ * Admin-only: tells one waiting-list member their area has opened, including
+ * their position in the queue. One trigger, one recipient — the admin sends
+ * these individually from the dashboard as an area goes live.
+ */
+export const notifyAreaLive = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { id: string; areaName?: string }) => ({
+    id: (input.id ?? "").trim(),
+    areaName: (input.areaName ?? "").trim().slice(0, 80),
+  }))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context as never);
+    if (!data.id) throw new Error("Missing sign-up id");
+
+    const { supabaseAdmin } = await import(
+      "@/integrations/supabase/client.server"
+    );
+    const { data: row, error } = await supabaseAdmin
+      .from("waiting_list")
+      .select("id, email, name, postcode, role, confirmed_at, notify_launch")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!row) throw new Error("Sign-up not found");
+    if (!row.confirmed_at) return { sent: false, reason: "unconfirmed" };
+    if (!row.notify_launch) return { sent: false, reason: "opted_out" };
+
+    const outward = row.postcode.split(" ")[0] ?? row.postcode;
+    const area = outward.replace(/[^A-Z]/g, "");
+    const { data: recipients } = await supabaseAdmin.rpc(
+      "waiting_list_area_recipients",
+      { p_area: area },
+    );
+    const position =
+      ((recipients ?? []) as AreaWaiter[]).find((r) => r.id === row.id)
+        ?.queue_position ?? 1;
+
+    const origin =
+      process.env["PUBLIC_SITE_URL"] ?? "https://www.tradesmanfinder.org";
+
+    try {
+      const { sendTemplateEmail } = await import(
+        "@/lib/email-templates/send-email"
+      );
+      const result = await sendTemplateEmail(
+        "waiting-list-area-live",
+        row.email,
+        {
+          templateData: {
+            ...(row.name ? { name: row.name } : {}),
+            areaName: data.areaName || area,
+            postcode: row.postcode,
+            role: row.role,
+            queuePosition: position,
+            actionUrl:
+              row.role === "trader"
+                ? `${origin}/for-tradesmen`
+                : `${origin}/post-job`,
+          },
+          idempotencyKey: `waiting-list-live-${row.id}-${area}`,
+        },
+      );
+      if (result.sent) {
+        await supabaseAdmin.rpc("waiting_list_mark_launch_notified", {
+          p_id: row.id,
+        });
+      }
+      return {
+        sent: result.sent,
+        reason: result.sent ? "sent" : "suppressed",
+      };
+    } catch (err) {
+      console.error("[waiting-list] launch email failed", err);
+      return { sent: false, reason: "send_failed" };
+    }
   });
