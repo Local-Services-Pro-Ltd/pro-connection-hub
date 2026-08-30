@@ -22,6 +22,12 @@ interface SitemapEntry {
 const STATIC_ENTRIES: SitemapEntry[] = [
   { path: "/", changefreq: "weekly", priority: "1.0" },
   { path: "/trades", changefreq: "weekly", priority: "0.9" },
+  { path: "/costs", changefreq: "weekly", priority: "0.9" },
+  ...allCostGuides().map((g) => ({
+    path: `/costs/${g.slug}`,
+    changefreq: "monthly" as const,
+    priority: "0.7",
+  })),
   { path: "/areas", changefreq: "weekly", priority: "0.8" },
   { path: "/for-tradesmen", changefreq: "monthly", priority: "0.8" },
   { path: "/post-job", changefreq: "monthly", priority: "0.8" },
