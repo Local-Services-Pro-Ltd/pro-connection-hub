@@ -43,32 +43,20 @@ export function VettingStatusPanel() {
       </ol>
 
       <div className="mt-6 grid gap-px overflow-hidden rounded-md border border-border bg-border md:grid-cols-2">
-        <div className="bg-card p-8">
-          <h3 className="text-xl">Need work doing now?</h3>
-          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-            Post the job anyway. We match it by hand to checked trades in your
-            postcode and come back to you with names and quotes.
-          </p>
-          <Link
-            to="/post-job"
-            className="mt-6 inline-flex items-center gap-2 text-sm text-primary hover:underline"
-          >
-            Post a job — free <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-        <div className="bg-card p-8">
-          <h3 className="text-xl">Run a trade business?</h3>
-          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-            Apply to be listed. We're onboarding a small number of firms per
-            area so every postcode has cover without spreading thin.
-          </p>
-          <Link
-            to="/for-tradesmen"
-            className="mt-6 inline-flex items-center gap-2 text-sm text-primary hover:underline"
-          >
-            How membership works <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
+        {VETTING_ACTIONS.map((a) => (
+          <div key={a.key} className="bg-card p-8">
+            <h3 className="text-xl">{a.title}</h3>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+              {a.body}
+            </p>
+            <Link
+              to={a.href}
+              className="mt-6 inline-flex items-center gap-2 text-sm text-primary hover:underline"
+            >
+              {a.label} <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        ))}
       </div>
 
       <p className="mt-6 text-sm text-muted-foreground">
