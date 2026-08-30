@@ -219,6 +219,26 @@ def test_write_paths(token: str | None) -> None:
     )
 
 
+def test_suites_with_live_nonadmin() -> None:
+    """Runs the database security suites while a real non-admin account exists,
+    so the behavioural RBAC probe actually executes instead of skipping."""
+    res = rpc("security_regression_run", SERVICE)
+    if res.status_code >= 400:
+        check("security suites run", False, f"HTTP {res.status_code} {res.text[:120]}")
+        return
+    rows = res.json()
+    ran = [r for r in rows if r["suite"] == "rbac" and r["passed"] is not None]
+    check("RBAC probe executed against a real non-admin account", bool(ran), f"{len(ran)} checks")
+    for r in rows:
+        if r["passed"] is False:
+            check(f"{r['suite']}/{r['check_name']}", False, r["detail"])
+    check(
+        "all security suites pass",
+        all(r["passed"] is not False for r in rows),
+        f"{len(rows)} checks",
+    )
+
+
 def test_public_endpoints() -> None:
     try:
         res = requests.get(f"{BASE_URL}/api/public/reviews?limit=5", timeout=20)
@@ -295,6 +315,7 @@ def main() -> int:
             test_admin_tables(token)
             test_published_only_views(token)
             test_write_paths(token)
+            test_suites_with_live_nonadmin()
         finally:
             delete_user(user_id)
     else:
