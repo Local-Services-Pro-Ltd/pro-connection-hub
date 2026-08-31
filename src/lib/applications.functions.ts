@@ -1042,9 +1042,11 @@ export const getApplicationEvidencePack = createServerFn({ method: "POST" })
         verification && typeof verification === "object" && "checks" in verification
           ? (verification as VerificationResult)
           : null,
-      documents: (docs.data ?? []) as EvidencePack["documents"],
+      documents: documents as EvidencePack["documents"],
       timeline: (audit.data ?? []) as EvidencePack["timeline"],
+      verification_runs: (runs.data ?? []) as EvidencePack["verification_runs"],
       reminders: (reminders.data ?? []) as EvidencePack["reminders"],
+
       generated_at: new Date().toISOString(),
     } satisfies EvidencePack;
   });
