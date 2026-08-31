@@ -77,36 +77,8 @@ function NewProject() {
       setForm((f) => ({ ...f, contactEmail: user.email ?? "" }));
   }, [user, form.contactEmail]);
 
-  const handleFiles = async (files: FileList | null) => {
-    if (!files || !user) return;
-    setUploading(true);
-    try {
-      for (const file of Array.from(files).slice(0, MAX_PHOTOS - uploads.length)) {
-        if (!file.type.startsWith("image/")) {
-          toast.error(`${file.name} isn't an image.`);
-          continue;
-        }
-        if (file.size > MAX_BYTES) {
-          toast.error(`${file.name} is over 8MB.`);
-          continue;
-        }
-        const path = `${user.id}/${crypto.randomUUID()}-${file.name.replace(/[^\w.-]/g, "_")}`;
-        const { error } = await supabase.storage
-          .from("project-photos")
-          .upload(path, file, { contentType: file.type });
-        if (error) {
-          toast.error(`Couldn't upload ${file.name}.`);
-          continue;
-        }
-        setUploads((u) => [
-          ...u,
-          { path, name: file.name, preview: URL.createObjectURL(file) },
-        ]);
-      }
-    } finally {
-      setUploading(false);
-    }
-  };
+
+
 
   const submit = useMutation({
     mutationFn: async () =>
