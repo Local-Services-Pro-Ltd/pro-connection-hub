@@ -5,6 +5,7 @@ import {
   DOCUMENT_KINDS,
   DOCUMENT_KIND_LABEL,
   daysUntil,
+  normaliseReminderPrefs,
 } from "@/lib/application-verification";
 
 /**
@@ -26,6 +27,10 @@ const LEASE_SECONDS = 600;
 const SITE = "https://tradesmanfinder.org";
 
 const OPEN = ["pending", "in_review", "changes_requested", "resubmitted"];
+
+/** Retry backoff in minutes, indexed by attempt count. */
+const BACKOFF_MINUTES = [10, 60, 360, 1440];
+const MAX_ATTEMPTS = 5;
 
 type ReminderPlan = {
   kind: string;
@@ -115,7 +120,7 @@ async function run(request: Request): Promise<Response> {
     const { data: rows, error } = await supabaseAdmin
       .from("pro_applications")
       .select(
-        "id, company, contact_name, email, reference, status, tracking_token, insurance_expiry, created_at",
+        "id, company, contact_name, email, reference, status, tracking_token, insurance_expiry, created_at, reminder_prefs",
       )
       .in("status", OPEN)
       .order("updated_at", { ascending: true })
@@ -187,46 +192,38 @@ async function run(request: Request): Promise<Response> {
         }
       }
 
+      const prefs = normaliseReminderPrefs(row.reminder_prefs);
+
       for (const plan of plans) {
+        // The firm can opt out of each reminder type.
+        if (prefs[plan.kind as keyof typeof prefs] === false) continue;
+
         // Claim the reminder first: the unique index makes the send idempotent.
-        const { error: claimError } = await supabaseAdmin
+        const { data: claimed, error: claimError } = await supabaseAdmin
           .from("application_reminders")
           .insert({
             application_id: row.id as string,
             kind: plan.kind,
             dedupe_key: plan.dedupeKey,
             detail: plan.detail,
-          });
-        if (claimError) continue; // already sent
+            delivery_status: "pending",
+            next_attempt_at: new Date().toISOString(),
+          })
+          .select("id")
+          .maybeSingle();
+        if (claimError || !claimed) continue; // already queued or sent
 
-        if (!row.email) continue;
-        try {
-          await sendTemplateEmail("application-reminder", row.email as string, {
-            templateData: {
-              company: row.company,
-              contactName: row.contact_name,
-              reference: row.reference,
-              kind: plan.kind,
-              detail: plan.detail,
-              statusUrl: row.tracking_token
-                ? `${SITE}/application-status?token=${row.tracking_token}`
-                : `${SITE}/application-status`,
-            },
-            idempotencyKey: `app-reminder-${row.id}-${plan.kind}-${plan.dedupeKey}`,
-          });
-          reminders += 1;
-          await supabaseAdmin.from("pro_application_audit").insert({
-            application_id: row.id as string,
-            reference: (row.reference as string) ?? null,
-            company: (row.company as string) ?? "",
-            action: "reminder_sent",
-            from_status: row.status as string,
-            to_status: row.status as string,
-            reviewer_note: plan.detail,
-          });
-        } catch (emailError) {
+        const result = await deliverReminder(supabaseAdmin, {
+          id: claimed.id as string,
+          kind: plan.kind,
+          detail: plan.detail,
+          attempts: 0,
+          application: row,
+        });
+        if (result.sent) reminders += 1;
+        else {
           failed += 1;
-          lastError = (emailError as Error).message;
+          lastError = result.error ?? lastError;
         }
       }
     }
