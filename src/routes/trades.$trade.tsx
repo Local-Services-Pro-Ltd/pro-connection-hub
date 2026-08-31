@@ -4,6 +4,7 @@ import { WaitingListInline } from "@/components/waiting-list-inline";
 import { ProCard } from "@/components/pro-card";
 import { PageHero, Section } from "@/components/layout-bits";
 import { ProFiltersBar } from "@/components/pro-filters";
+import { SaveSearchButton } from "@/components/save-search-button";
 import { ProjectGallery } from "@/components/project-gallery";
 import {
   tradesQuery,
