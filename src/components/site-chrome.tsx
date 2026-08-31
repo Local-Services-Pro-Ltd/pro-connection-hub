@@ -13,6 +13,7 @@ const nav = [
   { to: "/costs", label: "Cost guides" },
   { to: "/areas", label: "Areas" },
   { to: "/ask", label: "Ask the pros" },
+  { to: "/projects", label: "Project board" },
   { to: "/how-it-works", label: "How it works" },
   { to: "/saved", label: "Shortlist" },
   { to: "/for-tradesmen", label: "For tradesmen" },
