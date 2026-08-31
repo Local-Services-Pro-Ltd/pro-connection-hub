@@ -10,10 +10,61 @@ import { submitAnswer } from "@/lib/qa.functions";
 import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/ask/$id")({
-  head: () => {
-    const title = "Question and answers | Ask the pros | TradesmanFinder";
-    const description =
-      "A homeowner's question answered by vetted UK tradesmen on TradesmanFinder.";
+  loader: async ({ params, context }) =>
+    context.queryClient.ensureQueryData(questionQuery(params.id)),
+  head: ({ params, loaderData }) => {
+    const q = loaderData?.question ?? null;
+    const answers = (loaderData?.answers ?? []).filter((a) => a.published);
+    const url = `https://tradesmanfinder.org/ask/${params.id}`;
+    const title = q
+      ? `${q.title.slice(0, 70)} | Ask the pros | TradesmanFinder`
+      : "Question and answers | Ask the pros | TradesmanFinder";
+    const description = q
+      ? `${q.body ?? q.title}`.replace(/\s+/g, " ").slice(0, 155)
+      : "A homeowner's question answered by vetted UK tradesmen on TradesmanFinder.";
+    const scripts = q
+      ? [
+          {
+            type: "application/ld+json",
+            children: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "QAPage",
+              mainEntity: {
+                "@type": "Question",
+                name: q.title,
+                text: q.body ?? q.title,
+                answerCount: answers.length,
+                datePublished: q.created_at,
+                author: { "@type": "Person", name: q.author_name || "Homeowner" },
+                ...(answers.length
+                  ? {
+                      acceptedAnswer: {
+                        "@type": "Answer",
+                        text: answers[0]!.body,
+                        datePublished: answers[0]!.created_at,
+                        url,
+                        author: {
+                          "@type": "Person",
+                          name: answers[0]!.author_name || "Vetted tradesman",
+                        },
+                      },
+                      suggestedAnswer: answers.slice(1).map((a) => ({
+                        "@type": "Answer",
+                        text: a.body,
+                        datePublished: a.created_at,
+                        url,
+                        author: {
+                          "@type": "Person",
+                          name: a.author_name || "Vetted tradesman",
+                        },
+                      })),
+                    }
+                  : {}),
+              },
+            }),
+          },
+        ]
+      : [];
     return {
       meta: [
         { title },
@@ -21,14 +72,18 @@ export const Route = createFileRoute("/ask/$id")({
         { property: "og:title", content: title },
         { property: "og:description", content: description },
         { property: "og:type", content: "article" },
+        { property: "og:url", content: url },
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:title", content: title },
         { name: "twitter:description", content: description },
       ],
+      links: [{ rel: "canonical", href: url }],
+      scripts,
     };
   },
   component: QuestionPage,
 });
+
 
 const input =
   "w-full rounded-sm border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-primary";
