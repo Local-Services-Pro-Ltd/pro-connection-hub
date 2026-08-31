@@ -1,20 +1,21 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { ImagePlus, X } from "lucide-react";
 import { PageHero, Section } from "@/components/layout-bits";
-import { supabase } from "@/integrations/supabase/client";
 import { createProject } from "@/lib/projects.functions";
 import { tradesQuery } from "@/lib/queries";
 import { useAuth } from "@/hooks/use-auth";
+import type { Upload } from "@/components/project-photo-uploader";
+
+const PhotoUploader = lazy(() => import("@/components/project-photo-uploader"));
 
 const field =
   "mt-2 w-full rounded-sm border border-border-strong bg-background px-4 py-2.5 text-sm outline-none focus:border-primary";
 
 const MAX_PHOTOS = 8;
-const MAX_BYTES = 8 * 1024 * 1024;
+
 
 export const Route = createFileRoute("/projects/new")({
   head: () => ({
