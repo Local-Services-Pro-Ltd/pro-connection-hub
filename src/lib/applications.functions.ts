@@ -953,10 +953,12 @@ export const getApplicationEvidencePack = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     if (!app) throw new Error("Application not found.");
 
-    const [docs, audit, reminders] = await Promise.all([
+    const [docs, audit, reminders, runs] = await Promise.all([
       context.supabase
         .from("pro_application_documents")
-        .select("kind, file_name, size_bytes, status, reviewer_note, created_at, reviewed_at")
+        .select(
+          "kind, file_name, size_bytes, status, reviewer_note, created_at, reviewed_at, mime_type, file_path",
+        )
         .eq("application_id", data.id)
         .order("created_at", { ascending: true }),
       context.supabase
@@ -966,12 +968,54 @@ export const getApplicationEvidencePack = createServerFn({ method: "POST" })
         .order("created_at", { ascending: true }),
       context.supabase
         .from("application_reminders")
-        .select("kind, detail, created_at")
+        .select(
+          "kind, detail, created_at, delivery_status, attempts, last_error, delivered_at",
+        )
+        .eq("application_id", data.id)
+        .order("created_at", { ascending: true }),
+      context.supabase
+        .from("application_verification_runs")
+        .select("source, outcome, error, duration_ms, triggered_by_email, created_at")
         .eq("application_id", data.id)
         .order("created_at", { ascending: true }),
     ]);
 
+    // Inline previews: images are embedded so the printed pack is
+    // self-contained; PDFs and oversized scans get a short-lived link.
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const MAX_INLINE = 2 * 1024 * 1024;
+    const documents = await Promise.all(
+      (docs.data ?? []).map(async (row) => {
+        const path = row.file_path as string;
+        const mime = (row.mime_type as string) ?? "";
+        const size = Number(row.size_bytes ?? 0);
+        let preview_data_url: string | null = null;
+        if (mime.startsWith("image/") && size > 0 && size <= MAX_INLINE) {
+          const { data: file } = await supabaseAdmin.storage
+            .from(DOCS_BUCKET)
+            .download(path);
+          if (file) {
+            const buffer = Buffer.from(await file.arrayBuffer());
+            preview_data_url = `data:${mime};base64,${buffer.toString("base64")}`;
+          }
+        }
+        const { data: signed } = await supabaseAdmin.storage
+          .from(DOCS_BUCKET)
+          .createSignedUrl(path, 1800);
+        const {
+          file_path: _omit,
+          ...rest
+        } = row as Record<string, unknown> & { file_path: string };
+        return {
+          ...rest,
+          preview_data_url,
+          preview_url: signed?.signedUrl ?? null,
+        };
+      }),
+    );
+
     const verification = app.verification as unknown;
+
 
     return {
       application: {
