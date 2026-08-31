@@ -5,6 +5,7 @@ import {
   DOCUMENT_KINDS,
   DOCUMENT_KIND_LABEL,
   daysUntil,
+  normaliseReminderPrefs,
 } from "@/lib/application-verification";
 
 /**
@@ -26,6 +27,10 @@ const LEASE_SECONDS = 600;
 const SITE = "https://tradesmanfinder.org";
 
 const OPEN = ["pending", "in_review", "changes_requested", "resubmitted"];
+
+/** Retry backoff in minutes, indexed by attempt count. */
+const BACKOFF_MINUTES = [10, 60, 360, 1440];
+const MAX_ATTEMPTS = 5;
 
 type ReminderPlan = {
   kind: string;
@@ -57,6 +62,89 @@ function json(body: unknown, status = 200) {
     status,
     headers: { "content-type": "application/json" },
   });
+}
+
+type ReminderRow = {
+  id: string;
+  kind: string;
+  detail: string | null;
+  attempts: number;
+  application: Record<string, unknown>;
+};
+
+/**
+ * Sends one queued reminder. Failures are retried with exponential backoff and
+ * dead-lettered after MAX_ATTEMPTS so an admin can see and requeue them.
+ */
+async function deliverReminder(
+  supabaseAdmin: {
+    from: (t: string) => any;
+  },
+  row: ReminderRow,
+): Promise<{ sent: boolean; dead?: boolean; error?: string }> {
+  const app = row.application;
+  const email = app["email"] as string | undefined;
+  const attempts = row.attempts + 1;
+
+  const fail = async (message: string) => {
+    const dead = attempts >= MAX_ATTEMPTS;
+    const backoff =
+      BACKOFF_MINUTES[Math.min(attempts - 1, BACKOFF_MINUTES.length - 1)] ?? 1440;
+    await supabaseAdmin
+      .from("application_reminders")
+      .update({
+        attempts,
+        last_error: message.slice(0, 500),
+        delivery_status: dead ? "dead" : "pending",
+        dead_at: dead ? new Date().toISOString() : null,
+        next_attempt_at: new Date(Date.now() + backoff * 60_000).toISOString(),
+      })
+      .eq("id", row.id);
+    return { sent: false, dead, error: message };
+  };
+
+  if (!email) return fail("No contact email on the application.");
+
+  try {
+    const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
+    await sendTemplateEmail("application-reminder", email, {
+      templateData: {
+        company: app["company"],
+        contactName: app["contact_name"],
+        reference: app["reference"],
+        kind: row.kind,
+        detail: row.detail,
+        statusUrl: app["tracking_token"]
+          ? `${SITE}/application-status?token=${app["tracking_token"]}`
+          : `${SITE}/application-status`,
+      },
+      idempotencyKey: `app-reminder-${row.id}`,
+    });
+  } catch (emailError) {
+    return fail((emailError as Error).message);
+  }
+
+  await supabaseAdmin
+    .from("application_reminders")
+    .update({
+      attempts,
+      delivery_status: "delivered",
+      delivered_at: new Date().toISOString(),
+      last_error: null,
+    })
+    .eq("id", row.id);
+
+  await supabaseAdmin.from("pro_application_audit").insert({
+    application_id: app["id"] as string,
+    reference: (app["reference"] as string) ?? null,
+    company: (app["company"] as string) ?? "",
+    action: "reminder_sent",
+    from_status: app["status"] as string,
+    to_status: app["status"] as string,
+    reviewer_note: row.detail,
+  });
+
+  return { sent: true };
 }
 
 async function run(request: Request): Promise<Response> {
@@ -108,14 +196,47 @@ async function run(request: Request): Promise<Response> {
 
   let checked = 0;
   let reminders = 0;
+  let retried = 0;
+  let dead = 0;
   let failed = 0;
   let lastError: string | null = null;
 
   try {
+    // Phase 1 — retry queue: anything left pending from an earlier run.
+    const { data: queued } = await supabaseAdmin
+      .from("application_reminders")
+      .select(
+        "id, kind, detail, attempts, application_id, pro_applications(id, company, contact_name, email, reference, status, tracking_token)",
+      )
+      .eq("delivery_status", "pending")
+      .lte("next_attempt_at", new Date().toISOString())
+      .order("next_attempt_at", { ascending: true })
+      .limit(50);
+
+    for (const item of queued ?? []) {
+      const app = (item as Record<string, unknown>)["pro_applications"] as
+        | Record<string, unknown>
+        | null;
+      if (!app) continue;
+      const result = await deliverReminder(supabaseAdmin, {
+        id: item.id as string,
+        kind: item.kind as string,
+        detail: (item.detail as string | null) ?? null,
+        attempts: Number(item.attempts ?? 0),
+        application: app,
+      });
+      if (result.sent) retried += 1;
+      else {
+        failed += 1;
+        if (result.dead) dead += 1;
+        lastError = result.error ?? lastError;
+      }
+    }
+
     const { data: rows, error } = await supabaseAdmin
       .from("pro_applications")
       .select(
-        "id, company, contact_name, email, reference, status, tracking_token, insurance_expiry, created_at",
+        "id, company, contact_name, email, reference, status, tracking_token, insurance_expiry, created_at, reminder_prefs",
       )
       .in("status", OPEN)
       .order("updated_at", { ascending: true })
@@ -125,13 +246,11 @@ async function run(request: Request): Promise<Response> {
     const { runVerificationForApplication } = await import(
       "@/lib/application-checks.server"
     );
-    const { sendTemplateEmail } = await import(
-      "@/lib/email-templates/send-email"
-    );
-
     for (const row of rows ?? []) {
       try {
-        await runVerificationForApplication(supabaseAdmin, row.id as string);
+        await runVerificationForApplication(supabaseAdmin, row.id as string, {
+          source: "scheduled",
+        });
         checked += 1;
       } catch (verifyError) {
         failed += 1;
@@ -187,61 +306,60 @@ async function run(request: Request): Promise<Response> {
         }
       }
 
+      const prefs = normaliseReminderPrefs(row.reminder_prefs);
+
       for (const plan of plans) {
+        // The firm can opt out of each reminder type.
+        if (prefs[plan.kind as keyof typeof prefs] === false) continue;
+
         // Claim the reminder first: the unique index makes the send idempotent.
-        const { error: claimError } = await supabaseAdmin
+        const { data: claimed, error: claimError } = await supabaseAdmin
           .from("application_reminders")
           .insert({
             application_id: row.id as string,
             kind: plan.kind,
             dedupe_key: plan.dedupeKey,
             detail: plan.detail,
-          });
-        if (claimError) continue; // already sent
+            delivery_status: "pending",
+            next_attempt_at: new Date().toISOString(),
+          })
+          .select("id")
+          .maybeSingle();
+        if (claimError || !claimed) continue; // already queued or sent
 
-        if (!row.email) continue;
-        try {
-          await sendTemplateEmail("application-reminder", row.email as string, {
-            templateData: {
-              company: row.company,
-              contactName: row.contact_name,
-              reference: row.reference,
-              kind: plan.kind,
-              detail: plan.detail,
-              statusUrl: row.tracking_token
-                ? `${SITE}/application-status?token=${row.tracking_token}`
-                : `${SITE}/application-status`,
-            },
-            idempotencyKey: `app-reminder-${row.id}-${plan.kind}-${plan.dedupeKey}`,
-          });
-          reminders += 1;
-          await supabaseAdmin.from("pro_application_audit").insert({
-            application_id: row.id as string,
-            reference: (row.reference as string) ?? null,
-            company: (row.company as string) ?? "",
-            action: "reminder_sent",
-            from_status: row.status as string,
-            to_status: row.status as string,
-            reviewer_note: plan.detail,
-          });
-        } catch (emailError) {
+        const result = await deliverReminder(supabaseAdmin, {
+          id: claimed.id as string,
+          kind: plan.kind,
+          detail: plan.detail,
+          attempts: 0,
+          application: row,
+        });
+        if (result.sent) reminders += 1;
+        else {
           failed += 1;
-          lastError = (emailError as Error).message;
+          lastError = result.error ?? lastError;
         }
       }
     }
 
     await supabaseAdmin.rpc("release_job_lease", {
       p_name: JOB,
-      p_result: { checked, reminders, failed, at: new Date().toISOString() },
+      p_result: {
+        checked,
+        reminders,
+        retried,
+        dead,
+        failed,
+        at: new Date().toISOString(),
+      },
       ...(lastError ? { p_error: lastError } : {}),
     });
 
-    return json({ ok: true, checked, reminders, failed });
+    return json({ ok: true, checked, reminders, retried, dead, failed });
   } catch (runError) {
     await supabaseAdmin.rpc("release_job_lease", {
       p_name: JOB,
-      p_result: { checked, reminders, failed },
+      p_result: { checked, reminders, retried, dead, failed },
       p_error: (runError as Error).message,
     });
     return json({ error: (runError as Error).message }, 500);

@@ -66,8 +66,10 @@ export type ApplicationStatus = {
   verification: VerificationResult | Record<string, never>;
   verified_at: string | null;
   documents: ApplicationDocument[];
+  reminder_prefs?: Record<string, boolean>;
   timeline: ApplicationStatusEvent[];
 };
+
 
 function clean(value: string | undefined, max: number) {
   const trimmed = (value ?? "").trim();
@@ -698,8 +700,19 @@ export const runApplicationVerification = createServerFn({ method: "POST" })
     const { runVerificationForApplication } = await import(
       "@/lib/application-checks.server"
     );
-    return runVerificationForApplication(context.supabase, data.id);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const email =
+      ((context.claims as Record<string, unknown> | undefined)?.["email"] as
+        | string
+        | undefined) ?? null;
+    return runVerificationForApplication(context.supabase, data.id, {
+      source: "manual",
+      triggeredBy: context.userId,
+      triggeredByEmail: email,
+      logClient: supabaseAdmin,
+    });
   });
+
 
 /** Ask the firm for specific missing fields and pause the clock. */
 export const requestApplicationChanges = createServerFn({ method: "POST" })
@@ -901,6 +914,11 @@ export type EvidencePack = {
     reviewer_note: string | null;
     created_at: string;
     reviewed_at: string | null;
+    mime_type: string;
+    /** Inline base64 data URI for image scans, so the printed pack is self-contained. */
+    preview_data_url: string | null;
+    /** Short-lived signed link for PDFs and oversized scans. */
+    preview_url: string | null;
   }>;
   timeline: Array<{
     action: string;
@@ -910,7 +928,24 @@ export type EvidencePack = {
     changed_by_email: string | null;
     created_at: string;
   }>;
-  reminders: Array<{ kind: string; detail: string | null; created_at: string }>;
+  verification_runs: Array<{
+    source: string;
+    outcome: string;
+    error: string | null;
+    duration_ms: number | null;
+    triggered_by_email: string | null;
+    created_at: string;
+  }>;
+  reminders: Array<{
+    kind: string;
+    detail: string | null;
+    created_at: string;
+    delivery_status: string;
+    attempts: number;
+    last_error: string | null;
+    delivered_at: string | null;
+  }>;
+
   generated_at: string;
 };
 
@@ -931,10 +966,12 @@ export const getApplicationEvidencePack = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     if (!app) throw new Error("Application not found.");
 
-    const [docs, audit, reminders] = await Promise.all([
+    const [docs, audit, reminders, runs] = await Promise.all([
       context.supabase
         .from("pro_application_documents")
-        .select("kind, file_name, size_bytes, status, reviewer_note, created_at, reviewed_at")
+        .select(
+          "kind, file_name, size_bytes, status, reviewer_note, created_at, reviewed_at, mime_type, file_path",
+        )
         .eq("application_id", data.id)
         .order("created_at", { ascending: true }),
       context.supabase
@@ -944,12 +981,54 @@ export const getApplicationEvidencePack = createServerFn({ method: "POST" })
         .order("created_at", { ascending: true }),
       context.supabase
         .from("application_reminders")
-        .select("kind, detail, created_at")
+        .select(
+          "kind, detail, created_at, delivery_status, attempts, last_error, delivered_at",
+        )
+        .eq("application_id", data.id)
+        .order("created_at", { ascending: true }),
+      context.supabase
+        .from("application_verification_runs")
+        .select("source, outcome, error, duration_ms, triggered_by_email, created_at")
         .eq("application_id", data.id)
         .order("created_at", { ascending: true }),
     ]);
 
+    // Inline previews: images are embedded so the printed pack is
+    // self-contained; PDFs and oversized scans get a short-lived link.
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const MAX_INLINE = 2 * 1024 * 1024;
+    const documents = await Promise.all(
+      (docs.data ?? []).map(async (row) => {
+        const path = row.file_path as string;
+        const mime = (row.mime_type as string) ?? "";
+        const size = Number(row.size_bytes ?? 0);
+        let preview_data_url: string | null = null;
+        if (mime.startsWith("image/") && size > 0 && size <= MAX_INLINE) {
+          const { data: file } = await supabaseAdmin.storage
+            .from(DOCS_BUCKET)
+            .download(path);
+          if (file) {
+            const buffer = Buffer.from(await file.arrayBuffer());
+            preview_data_url = `data:${mime};base64,${buffer.toString("base64")}`;
+          }
+        }
+        const { data: signed } = await supabaseAdmin.storage
+          .from(DOCS_BUCKET)
+          .createSignedUrl(path, 1800);
+        const {
+          file_path: _omit,
+          ...rest
+        } = row as Record<string, unknown> & { file_path: string };
+        return {
+          ...rest,
+          preview_data_url,
+          preview_url: signed?.signedUrl ?? null,
+        };
+      }),
+    );
+
     const verification = app.verification as unknown;
+
 
     return {
       application: {
@@ -976,19 +1055,46 @@ export const getApplicationEvidencePack = createServerFn({ method: "POST" })
         verification && typeof verification === "object" && "checks" in verification
           ? (verification as VerificationResult)
           : null,
-      documents: (docs.data ?? []) as EvidencePack["documents"],
+      documents: documents as EvidencePack["documents"],
       timeline: (audit.data ?? []) as EvidencePack["timeline"],
+      verification_runs: (runs.data ?? []) as EvidencePack["verification_runs"],
       reminders: (reminders.data ?? []) as EvidencePack["reminders"],
+
       generated_at: new Date().toISOString(),
     } satisfies EvidencePack;
   });
 
+export type ReminderDelivery = {
+  id: string;
+  application_id: string;
+  kind: string;
+  detail: string | null;
+  delivery_status: string;
+  attempts: number;
+  last_error: string | null;
+  next_attempt_at: string;
+  delivered_at: string | null;
+  dead_at: string | null;
+  created_at: string;
+  company?: string | null;
+  reference?: string | null;
+};
+
 export type MaintenanceJobState = {
   last_run_at: string | null;
-  last_result: { checked?: number; reminders?: number; failed?: number; at?: string };
+  last_result: {
+    checked?: number;
+    reminders?: number;
+    retried?: number;
+    dead?: number;
+    failed?: number;
+    at?: string;
+  };
   last_error: string | null;
   paused_reason: string | null;
   reminders_7d: number;
+  pending_retries: number;
+  dead_letters: ReminderDelivery[];
 };
 
 /** Health of the nightly re-verification and reminder job. */
@@ -1002,15 +1108,137 @@ export const getMaintenanceJobState = createServerFn({ method: "GET" })
       .eq("name", "application-maintenance")
       .maybeSingle();
     const since = new Date(Date.now() - 7 * 86_400_000).toISOString();
-    const { count } = await context.supabase
-      .from("application_reminders")
-      .select("id", { count: "exact", head: true })
-      .gte("created_at", since);
+    const [delivered, pending, dead] = await Promise.all([
+      context.supabase
+        .from("application_reminders")
+        .select("id", { count: "exact", head: true })
+        .eq("delivery_status", "delivered")
+        .gte("created_at", since),
+      context.supabase
+        .from("application_reminders")
+        .select("id", { count: "exact", head: true })
+        .eq("delivery_status", "pending"),
+      context.supabase
+        .from("application_reminders")
+        .select(
+          "id, application_id, kind, detail, delivery_status, attempts, last_error, next_attempt_at, delivered_at, dead_at, created_at, pro_applications(company, reference)",
+        )
+        .eq("delivery_status", "dead")
+        .order("dead_at", { ascending: false })
+        .limit(25),
+    ]);
+
+    const deadLetters = (dead.data ?? []).map((row) => {
+      const { pro_applications: app, ...rest } = row as Record<string, unknown> & {
+        pro_applications: { company?: string; reference?: string } | null;
+      };
+      return {
+        ...rest,
+        company: app?.company ?? null,
+        reference: app?.reference ?? null,
+      } as ReminderDelivery;
+    });
+
     return {
       last_run_at: job?.last_run_at ?? null,
       last_result: (job?.last_result ?? {}) as MaintenanceJobState["last_result"],
       last_error: job?.last_error ?? null,
       paused_reason: job?.paused_reason ?? null,
-      reminders_7d: count ?? 0,
+      reminders_7d: delivered.count ?? 0,
+      pending_retries: pending.count ?? 0,
+      dead_letters: deadLetters,
     } satisfies MaintenanceJobState;
   });
+
+/** Put a dead-lettered reminder back on the retry queue. Admin-only. */
+export const requeueReminder = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { id: string }) => {
+    if (!input.id) throw new Error("Missing reminder.");
+    return { id: input.id };
+  })
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context as never);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("application_reminders")
+      .update({
+        delivery_status: "pending",
+        attempts: 0,
+        next_attempt_at: new Date().toISOString(),
+        dead_at: null,
+        last_error: null,
+      })
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+/* ------------------------------------------------------------------ */
+/* Verification run history + firm reminder preferences                */
+/* ------------------------------------------------------------------ */
+
+export type VerificationRun = {
+  id: string;
+  source: string;
+  outcome: string;
+  error: string | null;
+  duration_ms: number | null;
+  triggered_by_email: string | null;
+  created_at: string;
+};
+
+/** Retry history for one application's automated checks. Admin-only. */
+export const listVerificationRuns = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { id: string }) => {
+    if (!input.id) throw new Error("Missing application.");
+    return { id: input.id };
+  })
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context as never);
+    const { data: rows, error } = await context.supabase
+      .from("application_verification_runs")
+      .select("id, source, outcome, error, duration_ms, triggered_by_email, created_at")
+      .eq("application_id", data.id)
+      .order("created_at", { ascending: false })
+      .limit(30);
+    if (error) throw new Error(error.message);
+    return (rows ?? []) as VerificationRun[];
+  });
+
+/** Token-gated: the firm chooses which reminder emails it wants. */
+export const setReminderPreferences = createServerFn({ method: "POST" })
+  .inputValidator((input: { token: string; prefs: Record<string, boolean> }) => {
+    const token = (input.token ?? "").trim();
+    if (token.length < 8) throw new Error("That tracking link isn't valid.");
+    return { token: token.slice(0, 120), prefs: input.prefs ?? {} };
+  })
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import(
+      "@/integrations/supabase/client.server"
+    );
+
+    const forwarded = getRequestHeader("x-forwarded-for") ?? "";
+    const ip = (forwarded.split(",")[0] ?? "").trim() || "unknown";
+    const ipKey = createHash("sha256").update(ip).digest("hex").slice(0, 32);
+    const { data: allowed } = await supabaseAdmin.rpc("hit_rate_limit", {
+      p_bucket: `appprefs:ip:${ipKey}`,
+      p_limit: 20,
+      p_window_seconds: 600,
+    });
+    if (allowed === false)
+      throw new Error("Too many changes. Please try again shortly.");
+
+    const { data: saved, error } = await supabaseAdmin.rpc(
+      "pro_application_set_reminder_prefs",
+      { p_token: data.token, p_prefs: data.prefs as never },
+    );
+    if (error) {
+      console.error("[applications] reminder prefs failed", error);
+      throw new Error("We couldn't save your preferences. Please try again.");
+    }
+    if (!saved) throw new Error("We couldn't find an application for that link.");
+    return saved as unknown as Record<string, boolean>;
+  });
+

@@ -11,10 +11,12 @@ import {
   getApplicationSla,
   getMaintenanceJobState,
   listProApplications,
+  requeueReminder,
 } from "@/lib/applications.functions";
 import {
   APPLICATION_STATUS_LABEL,
   OPEN_STATUSES,
+  REMINDER_KIND_LABEL,
 } from "@/lib/application-verification";
 
 export const Route = createFileRoute("/admin/sla")({
@@ -82,6 +84,7 @@ function AdminSla() {
   const loadApps = useServerFn(listProApplications);
   const escalate = useServerFn(escalateApplication);
   const loadJob = useServerFn(getMaintenanceJobState);
+  const requeue = useServerFn(requeueReminder);
 
   const sla = useQuery({
     queryKey: ["admin-sla"],
@@ -98,6 +101,15 @@ function AdminSla() {
     queryKey: ["admin-maintenance-job"],
     queryFn: () => loadJob(),
     enabled: isAdmin === true,
+  });
+
+  const requeueMutation = useMutation({
+    mutationFn: (id: string) => requeue({ data: { id } }),
+    onSuccess: () => {
+      toast.success("Reminder queued for another attempt tonight.");
+      void job.refetch();
+    },
+    onError: (e: Error) => toast.error(e.message),
   });
 
   const escalation = useMutation({
@@ -197,6 +209,28 @@ function AdminSla() {
             <span className="eyebrow !mb-0">Reminders sent (7 days)</span>{" "}
             {job.data?.reminders_7d ?? 0}
           </li>
+          <li>
+            <span className="eyebrow !mb-0">Retried last run</span>{" "}
+            {job.data?.last_result?.retried ?? 0}
+          </li>
+          <li
+            className={
+              (job.data?.pending_retries ?? 0) > 0 ? "text-primary" : undefined
+            }
+          >
+            <span className="eyebrow !mb-0">Awaiting retry</span>{" "}
+            {job.data?.pending_retries ?? 0}
+          </li>
+          <li
+            className={
+              (job.data?.dead_letters?.length ?? 0) > 0
+                ? "text-destructive"
+                : undefined
+            }
+          >
+            <span className="eyebrow !mb-0">Dead-lettered</span>{" "}
+            {job.data?.dead_letters?.length ?? 0}
+          </li>
           <li
             className={
               job.data?.last_error || job.data?.paused_reason
@@ -213,6 +247,44 @@ function AdminSla() {
           </li>
         </ul>
       </div>
+
+      {(job.data?.dead_letters?.length ?? 0) > 0 && (
+        <div className="mt-6 rounded-md border border-destructive/40 bg-card p-7">
+          <h3 className="text-lg">Reminder emails that gave up</h3>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Each of these failed five attempts with backoff. Fix the cause, then
+            put it back on the queue.
+          </p>
+          <ul className="mt-4 grid gap-3">
+            {(job.data?.dead_letters ?? []).map((d) => (
+              <li
+                key={d.id}
+                className="flex flex-wrap items-center gap-3 border-b border-border pb-3 text-sm last:border-0"
+              >
+                <div className="min-w-0 flex-1">
+                  <p className="font-display text-sm font-semibold">
+                    {d.company ?? "Unknown firm"}{" "}
+                    <span className="font-normal text-muted-foreground">
+                      {d.reference ?? ""} ·{" "}
+                      {REMINDER_KIND_LABEL[d.kind] ?? d.kind}
+                    </span>
+                  </p>
+                  <p className="text-destructive">
+                    {d.attempts} attempts · {d.last_error ?? "Unknown error"}
+                  </p>
+                </div>
+                <button
+                  disabled={requeueMutation.isPending}
+                  onClick={() => requeueMutation.mutate(d.id)}
+                  className="rounded-sm border border-border-strong px-3 py-2 font-display text-xs font-semibold uppercase tracking-widest hover:border-primary hover:text-primary disabled:opacity-50"
+                >
+                  Retry
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <h2 className="mt-12 text-2xl">Overdue and stuck</h2>
       <ul className="mt-5 grid gap-3">
