@@ -8,6 +8,8 @@ import { BookingPanel } from "@/components/booking-panel";
 import { LeadForm } from "@/components/lead-form";
 import { TrustBadge, TrustBreakdown } from "@/components/trust-badge";
 import { SaveProButton } from "@/components/save-pro-button";
+import { tradeHero } from "@/lib/trade-media";
+
 import {
   proQuery,
   availabilityLabels,
