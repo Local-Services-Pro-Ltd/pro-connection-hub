@@ -41,6 +41,8 @@ import { Route as AskIdRouteImport } from './routes/ask.$id'
 import { Route as CostsIndexRouteImport } from './routes/costs.index'
 import { Route as CostsTradeRouteImport } from './routes/costs.$trade'
 import { Route as ProIdRouteImport } from './routes/pro.$id'
+import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
+import { Route as ProjectsNewRouteImport } from './routes/projects.new'
 import { Route as TradesIndexRouteImport } from './routes/trades.index'
 import { Route as TradesTradeRouteImport } from './routes/trades.$trade'
 import { Route as WaitingListIndexRouteImport } from './routes/waiting-list.index'
@@ -215,6 +217,16 @@ const ProIdRoute = ProIdRouteImport.update({
   path: '/pro/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProjectsIndexRoute = ProjectsIndexRouteImport.update({
+  id: '/projects/',
+  path: '/projects/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectsNewRoute = ProjectsNewRouteImport.update({
+  id: '/projects/new',
+  path: '/projects/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TradesIndexRoute = TradesIndexRouteImport.update({
   id: '/trades/',
   path: '/trades/',
@@ -314,12 +326,14 @@ export interface FileRoutesByFullPath {
   '/ask/$id': typeof AskIdRoute
   '/costs/$trade': typeof CostsTradeRoute
   '/pro/$id': typeof ProIdRoute
+  '/projects/new': typeof ProjectsNewRoute
   '/trades/$trade': typeof TradesTradeRoute
   '/waiting-list/confirm': typeof WaitingListConfirmRoute
   '/waiting-list/manage': typeof WaitingListManageRoute
   '/waiting-list/thanks': typeof WaitingListThanksRoute
   '/ask/': typeof AskIndexRoute
   '/costs/': typeof CostsIndexRoute
+  '/projects/': typeof ProjectsIndexRoute
   '/trades/': typeof TradesIndexRoute
   '/waiting-list/': typeof WaitingListIndexRoute
   '/api/public/application-maintenance': typeof ApiPublicApplicationMaintenanceRoute
@@ -361,12 +375,14 @@ export interface FileRoutesByTo {
   '/ask/$id': typeof AskIdRoute
   '/costs/$trade': typeof CostsTradeRoute
   '/pro/$id': typeof ProIdRoute
+  '/projects/new': typeof ProjectsNewRoute
   '/trades/$trade': typeof TradesTradeRoute
   '/waiting-list/confirm': typeof WaitingListConfirmRoute
   '/waiting-list/manage': typeof WaitingListManageRoute
   '/waiting-list/thanks': typeof WaitingListThanksRoute
   '/ask': typeof AskIndexRoute
   '/costs': typeof CostsIndexRoute
+  '/projects': typeof ProjectsIndexRoute
   '/trades': typeof TradesIndexRoute
   '/waiting-list': typeof WaitingListIndexRoute
   '/api/public/application-maintenance': typeof ApiPublicApplicationMaintenanceRoute
@@ -409,12 +425,14 @@ export interface FileRoutesById {
   '/ask/$id': typeof AskIdRoute
   '/costs/$trade': typeof CostsTradeRoute
   '/pro/$id': typeof ProIdRoute
+  '/projects/new': typeof ProjectsNewRoute
   '/trades/$trade': typeof TradesTradeRoute
   '/waiting-list/confirm': typeof WaitingListConfirmRoute
   '/waiting-list/manage': typeof WaitingListManageRoute
   '/waiting-list/thanks': typeof WaitingListThanksRoute
   '/ask/': typeof AskIndexRoute
   '/costs/': typeof CostsIndexRoute
+  '/projects/': typeof ProjectsIndexRoute
   '/trades/': typeof TradesIndexRoute
   '/waiting-list/': typeof WaitingListIndexRoute
   '/api/public/application-maintenance': typeof ApiPublicApplicationMaintenanceRoute
@@ -458,12 +476,14 @@ export interface FileRouteTypes {
     | '/ask/$id'
     | '/costs/$trade'
     | '/pro/$id'
+    | '/projects/new'
     | '/trades/$trade'
     | '/waiting-list/confirm'
     | '/waiting-list/manage'
     | '/waiting-list/thanks'
     | '/ask/'
     | '/costs/'
+    | '/projects/'
     | '/trades/'
     | '/waiting-list/'
     | '/api/public/application-maintenance'
@@ -505,12 +525,14 @@ export interface FileRouteTypes {
     | '/ask/$id'
     | '/costs/$trade'
     | '/pro/$id'
+    | '/projects/new'
     | '/trades/$trade'
     | '/waiting-list/confirm'
     | '/waiting-list/manage'
     | '/waiting-list/thanks'
     | '/ask'
     | '/costs'
+    | '/projects'
     | '/trades'
     | '/waiting-list'
     | '/api/public/application-maintenance'
@@ -552,12 +574,14 @@ export interface FileRouteTypes {
     | '/ask/$id'
     | '/costs/$trade'
     | '/pro/$id'
+    | '/projects/new'
     | '/trades/$trade'
     | '/waiting-list/confirm'
     | '/waiting-list/manage'
     | '/waiting-list/thanks'
     | '/ask/'
     | '/costs/'
+    | '/projects/'
     | '/trades/'
     | '/waiting-list/'
     | '/api/public/application-maintenance'
@@ -600,12 +624,14 @@ export interface RootRouteChildren {
   AskIdRoute: typeof AskIdRoute
   CostsTradeRoute: typeof CostsTradeRoute
   ProIdRoute: typeof ProIdRoute
+  ProjectsNewRoute: typeof ProjectsNewRoute
   TradesTradeRoute: typeof TradesTradeRoute
   WaitingListConfirmRoute: typeof WaitingListConfirmRoute
   WaitingListManageRoute: typeof WaitingListManageRoute
   WaitingListThanksRoute: typeof WaitingListThanksRoute
   AskIndexRoute: typeof AskIndexRoute
   CostsIndexRoute: typeof CostsIndexRoute
+  ProjectsIndexRoute: typeof ProjectsIndexRoute
   TradesIndexRoute: typeof TradesIndexRoute
   WaitingListIndexRoute: typeof WaitingListIndexRoute
   ApiPublicApplicationMaintenanceRoute: typeof ApiPublicApplicationMaintenanceRoute
@@ -843,6 +869,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/projects/': {
+      id: '/projects/'
+      path: '/projects'
+      fullPath: '/projects/'
+      preLoaderRoute: typeof ProjectsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/projects/new': {
+      id: '/projects/new'
+      path: '/projects/new'
+      fullPath: '/projects/new'
+      preLoaderRoute: typeof ProjectsNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/trades/': {
       id: '/trades/'
       path: '/trades'
@@ -968,12 +1008,14 @@ const rootRouteChildren: RootRouteChildren = {
   AskIdRoute: AskIdRoute,
   CostsTradeRoute: CostsTradeRoute,
   ProIdRoute: ProIdRoute,
+  ProjectsNewRoute: ProjectsNewRoute,
   TradesTradeRoute: TradesTradeRoute,
   WaitingListConfirmRoute: WaitingListConfirmRoute,
   WaitingListManageRoute: WaitingListManageRoute,
   WaitingListThanksRoute: WaitingListThanksRoute,
   AskIndexRoute: AskIndexRoute,
   CostsIndexRoute: CostsIndexRoute,
+  ProjectsIndexRoute: ProjectsIndexRoute,
   TradesIndexRoute: TradesIndexRoute,
   WaitingListIndexRoute: WaitingListIndexRoute,
   ApiPublicApplicationMaintenanceRoute: ApiPublicApplicationMaintenanceRoute,
