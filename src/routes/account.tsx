@@ -54,6 +54,25 @@ function Account() {
 
   const jobs = useQuery({ ...myJobsQuery, enabled: !!user });
   const reviews = useQuery({ ...myReviewsQuery, enabled: !!user });
+  const projects = useQuery({ ...myProjectsQuery, enabled: !!user });
+  const leads = useQuery({ ...myLeadsQuery, enabled: !!user });
+  const searches = useQuery({ ...savedSearchesQuery, enabled: !!user });
+
+  const queryClient = useQueryClient();
+  const removeSearch = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from("saved_searches")
+        .delete()
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Saved search removed");
+      void queryClient.invalidateQueries({ queryKey: ["saved-searches"] });
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
 
   if (loading || !user) {
     return (
