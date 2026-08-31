@@ -158,7 +158,7 @@ function Home() {
             muted
             loop
             playsInline
-            preload="none"
+            preload="metadata"
             aria-hidden="true"
           />
 
