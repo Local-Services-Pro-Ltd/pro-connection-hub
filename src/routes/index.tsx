@@ -68,7 +68,16 @@ export const Route = createFileRoute("/")({
             ]
           : []),
       ],
-      links: [{ rel: "canonical", href: `${base}/` }],
+      links: [
+        { rel: "canonical", href: `${base}/` },
+        {
+          rel: "preload",
+          as: "image",
+          href: heroPoster,
+          fetchpriority: "high",
+        },
+      ],
+
     };
   },
 
@@ -149,8 +158,10 @@ function Home() {
             muted
             loop
             playsInline
+            preload="metadata"
             aria-hidden="true"
           />
+
         )}
 
         <div className="absolute inset-0 bg-background/32" />

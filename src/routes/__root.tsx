@@ -16,6 +16,8 @@ import { Toaster } from "../components/ui/sonner";
 import { AuthProvider } from "../hooks/use-auth";
 import { ThemeProvider, themeBootstrapScript } from "../hooks/use-theme";
 import { CookieConsent } from "../components/cookie-consent";
+import { ldScript, websiteSchema } from "../lib/structured-data";
+
 
 
 
@@ -122,7 +124,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
+
+    scripts: [ldScript(websiteSchema())],
   }),
+
 
   shellComponent: RootShell,
   component: RootComponent,
