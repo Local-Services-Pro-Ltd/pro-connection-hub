@@ -14,7 +14,7 @@ export const Route = createFileRoute("/ask/$id")({
     context.queryClient.ensureQueryData(questionQuery(params.id)),
   head: ({ params, loaderData }) => {
     const q = loaderData?.question ?? null;
-    const answers = (loaderData?.answers ?? []).filter((a) => a.published);
+    const answers = (loaderData?.answers ?? []).filter((a) => a.status === "published");
     const url = `https://tradesmanfinder.org/ask/${params.id}`;
     const title = q
       ? `${q.title.slice(0, 70)} | Ask the pros | TradesmanFinder`
@@ -35,7 +35,7 @@ export const Route = createFileRoute("/ask/$id")({
                 text: q.body ?? q.title,
                 answerCount: answers.length,
                 datePublished: q.created_at,
-                author: { "@type": "Person", name: q.author_name || "Homeowner" },
+                author: { "@type": "Person", name: q.asker_name || "Homeowner" },
                 ...(answers.length
                   ? {
                       acceptedAnswer: {
