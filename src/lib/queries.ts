@@ -864,3 +864,157 @@ export const relatedQuestionsQuery = (query: string) =>
     },
     staleTime: 60_000,
   });
+
+/* ------------------------------------------------------------------ *
+ * Project postings, firm applications, leads and saved searches
+ * ------------------------------------------------------------------ */
+
+export type Project = Database["public"]["Tables"]["projects"]["Row"];
+export type ProjectApplication =
+  Database["public"]["Tables"]["project_applications"]["Row"];
+export type SavedSearch = Database["public"]["Tables"]["saved_searches"]["Row"];
+export type ProLead = Database["public"]["Tables"]["pro_leads"]["Row"];
+
+export const projectStatusLabels: Record<string, string> = {
+  pending: "Awaiting review",
+  published: "Live on the board",
+  rejected: "Not published",
+  closed: "Closed",
+};
+
+export function formatBudget(min: number | null, max: number | null) {
+  const f = (n: number) => `£${n.toLocaleString("en-GB")}`;
+  if (min && max) return `${f(min)} – ${f(max)}`;
+  if (min) return `From ${f(min)}`;
+  if (max) return `Up to ${f(max)}`;
+  return "Budget to discuss";
+}
+
+/** Public board: postings an admin has approved. */
+export function publishedProjectsQuery(trade?: string) {
+  return queryOptions({
+    queryKey: ["projects", "published", trade ?? "all"],
+    queryFn: async () => {
+      let q = supabase
+        .from("projects")
+        .select("*")
+        .eq("status", "published")
+        .order("created_at", { ascending: false })
+        .limit(60);
+      if (trade) q = q.eq("trade_slug", trade);
+      return unwrap(await q) as Project[];
+    },
+    staleTime: 30_000,
+  });
+}
+
+export function projectQuery(id: string) {
+  return queryOptions({
+    queryKey: ["project", id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("projects")
+        .select("*")
+        .eq("id", id)
+        .maybeSingle();
+      if (error) throw error;
+      return (data ?? null) as Project | null;
+    },
+  });
+}
+
+/** Application counts for the public board — applicants stay private. */
+export const projectApplicationCountsQuery = queryOptions({
+  queryKey: ["project-application-counts"],
+  queryFn: async () => {
+    const { data, error } = await supabase.rpc("project_application_counts");
+    if (error) return {} as Record<string, number>;
+    return Object.fromEntries(
+      (data ?? []).map((r) => [r.project_id, Number(r.applications)]),
+    ) as Record<string, number>;
+  },
+  staleTime: 30_000,
+});
+
+/** The signed-in homeowner's own postings, any status (owner RLS). */
+export const myProjectsQuery = queryOptions({
+  queryKey: ["my-projects"],
+  queryFn: async () =>
+    unwrap(
+      await supabase
+        .from("projects")
+        .select("*")
+        .order("created_at", { ascending: false }),
+    ) as Project[],
+});
+
+/** Applications on a posting — readable by its owner and by admins. */
+export function projectApplicationsQuery(projectId: string) {
+  return queryOptions({
+    queryKey: ["project-applications", projectId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("project_applications")
+        .select("*")
+        .eq("project_id", projectId)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return (data ?? []) as ProjectApplication[];
+    },
+  });
+}
+
+/** Every posting for the admin review queue (admin RLS). */
+export const adminProjectsQuery = queryOptions({
+  queryKey: ["admin", "projects"],
+  queryFn: async () =>
+    unwrap(
+      await supabase
+        .from("projects")
+        .select("*")
+        .order("created_at", { ascending: false }),
+    ) as Project[],
+  staleTime: 0,
+});
+
+/** Saved directory searches for the signed-in homeowner. */
+export const savedSearchesQuery = queryOptions({
+  queryKey: ["saved-searches"],
+  queryFn: async () =>
+    unwrap(
+      await supabase
+        .from("saved_searches")
+        .select("*")
+        .order("created_at", { ascending: false }),
+    ) as SavedSearch[],
+});
+
+/** Enquiries this account has sent to firms. */
+export const myLeadsQuery = queryOptions({
+  queryKey: ["my-leads"],
+  queryFn: async () =>
+    unwrap(
+      await supabase
+        .from("pro_leads")
+        .select("*")
+        .order("created_at", { ascending: false }),
+    ) as ProLead[],
+});
+
+/** The listing this account owns, when it is a tradesperson. */
+export function myProProfileQuery(userId: string | undefined) {
+  return queryOptions({
+    queryKey: ["my-pro-profile", userId ?? null],
+    queryFn: async () => {
+      if (!userId) return null;
+      const { data, error } = await supabase
+        .from("pros")
+        .select("id, company, published, trade_slug")
+        .eq("user_id", userId)
+        .maybeSingle();
+      if (error) return null;
+      return data;
+    },
+    staleTime: 60_000,
+  });
+}

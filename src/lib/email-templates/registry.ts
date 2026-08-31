@@ -6,6 +6,10 @@ import { template as waitingListAreaLive } from './waiting-list-area-live'
 import { template as waitingListPositionChange } from './waiting-list-position-change'
 import { template as proApplicationStatus } from './pro-application-status'
 import { template as applicationReminder } from './application-reminder'
+import { template as leadConfirmation } from './lead-confirmation'
+import { template as leadReceived } from './lead-received'
+import { template as projectApplication } from './project-application'
+import { template as projectStatus } from './project-status'
 
 
 export interface TemplateEntry {
@@ -29,4 +33,8 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'waiting-list-position-change': waitingListPositionChange,
   'pro-application-status': proApplicationStatus,
   'application-reminder': applicationReminder,
+  'lead-confirmation': leadConfirmation,
+  'lead-received': leadReceived,
+  'project-application': projectApplication,
+  'project-status': projectStatus,
 }

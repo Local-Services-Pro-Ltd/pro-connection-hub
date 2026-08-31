@@ -5,6 +5,7 @@ import { Section } from "@/components/layout-bits";
 import { ReviewPanel } from "@/components/review-panel";
 import { ProjectGallery } from "@/components/project-gallery";
 import { BookingPanel } from "@/components/booking-panel";
+import { LeadForm } from "@/components/lead-form";
 import { TrustBadge, TrustBreakdown } from "@/components/trust-badge";
 import { SaveProButton } from "@/components/save-pro-button";
 import {
@@ -259,6 +260,12 @@ function ProPage() {
               proId={pro.id}
               proName={pro.name}
               postcode={pro.postcode ?? ""}
+            />
+
+            <LeadForm
+              proId={pro.id}
+              proName={pro.name}
+              company={pro.company}
             />
 
             <aside className="rounded-md border border-border bg-card p-6">
