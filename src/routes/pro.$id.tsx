@@ -13,6 +13,12 @@ import {
   proProjectsQuery,
   proTrustQuery,
 } from "@/lib/queries";
+import {
+  breadcrumbSchema,
+  ldScript,
+  organizationSchema,
+} from "@/lib/structured-data";
+
 import pro1 from "@/assets/pro-1.jpg";
 import pro2 from "@/assets/pro-2.jpg";
 import pro3 from "@/assets/pro-3.jpg";
@@ -74,9 +80,22 @@ export const Route = createFileRoute("/pro/$id")({
       links: [{ rel: "canonical", href: url }],
       scripts: [
         { type: "application/ld+json", children: JSON.stringify(jsonLd) },
+        ldScript(organizationSchema()),
+        ldScript(
+          breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Trades", path: "/trades" },
+            {
+              name: p.trade_slug.replace(/-/g, " "),
+              path: `/trades/${p.trade_slug}`,
+            },
+            { name: p.company, path: `/pro/${params.id}` },
+          ]),
+        ),
       ],
     };
   },
+
 
   errorComponent: ({ error }) => (
     <Section>
