@@ -8,13 +8,17 @@ import { toast } from "sonner";
 import {
   getApplicationStatus,
   resubmitApplication,
+  setReminderPreferences,
 } from "@/lib/applications.functions";
 import { DocumentTracker } from "@/components/application-documents";
 import {
   APPLICATION_STATUS_LABEL,
   CHECK_OUTCOME_LABEL,
+  REMINDER_KINDS,
   REQUESTABLE_FIELDS,
   REQUESTABLE_FIELD_LABEL,
+  normaliseReminderPrefs,
+  type ReminderPrefs,
 } from "@/lib/application-verification";
 
 const SITE = "https://tradesmanfinder.org";
@@ -213,6 +217,14 @@ function ApplicationStatusPage() {
               </div>
             )}
 
+            {token && (
+              <ReminderPrefsPanel
+                token={token}
+                prefs={normaliseReminderPrefs(data.reminder_prefs)}
+                onSaved={() => void status.refetch()}
+              />
+            )}
+
             {["changes_requested", "resubmitted", "pending"].includes(
               data.status,
             ) && (
@@ -292,6 +304,68 @@ function ApplicationStatusPage() {
         ) : null}
       </Section>
     </>
+  );
+}
+
+function ReminderPrefsPanel({
+  token,
+  prefs,
+  onSaved,
+}: {
+  token: string;
+  prefs: ReminderPrefs;
+  onSaved: () => void;
+}) {
+  const save = useServerFn(setReminderPreferences);
+  const [values, setValues] = useState<ReminderPrefs>(prefs);
+
+  const mutation = useMutation({
+    mutationFn: (next: ReminderPrefs) => save({ data: { token, prefs: next } }),
+    onSuccess: () => {
+      toast.success("Email preferences saved.");
+      onSaved();
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
+
+  return (
+    <section className="mt-6 rounded-md border border-border bg-card p-7">
+      <h3 className="text-lg">Reminder emails</h3>
+      <p className="mt-2 text-sm text-muted-foreground">
+        Choose what we email you about while your application is open. Decisions
+        from a reviewer are always sent.
+      </p>
+      <ul className="mt-5 grid gap-3">
+        {REMINDER_KINDS.map((kind) => (
+          <li key={kind.key}>
+            <label className="flex items-start gap-3">
+              <input
+                type="checkbox"
+                className="mt-1 h-4 w-4 accent-[hsl(var(--primary))]"
+                checked={values[kind.key]}
+                disabled={mutation.isPending}
+                onChange={(e) => {
+                  const next = { ...values, [kind.key]: e.target.checked };
+                  setValues(next);
+                  mutation.mutate(next);
+                }}
+              />
+              <span>
+                <span className="font-display text-sm font-semibold">
+                  {kind.label}
+                </span>
+                <span className="block text-sm text-muted-foreground">
+                  {kind.hint}
+                </span>
+              </span>
+            </label>
+          </li>
+        ))}
+      </ul>
+      {mutation.isPending && (
+        <p className="mt-3 text-xs text-muted-foreground">Saving…</p>
+      )}
+    </section>
   );
 }
 
