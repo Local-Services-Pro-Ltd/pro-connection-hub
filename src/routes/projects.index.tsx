@@ -61,6 +61,7 @@ function ProjectBoard() {
         aside={
           <Link
             to="/projects/new"
+            preload="render"
             className="rounded-sm bg-primary px-5 py-2.5 font-display text-sm font-semibold text-primary-foreground shadow-ember hover:brightness-110"
           >
             Post your project
@@ -78,6 +79,7 @@ function ProjectBoard() {
           </p>
           <Link
             to="/projects/new"
+            preload="render"
             className="mt-6 inline-flex rounded-sm bg-primary px-5 py-2.5 font-display text-sm font-semibold text-primary-foreground shadow-ember hover:brightness-110"
           >
             Post your project
@@ -95,6 +97,7 @@ function ProjectBoard() {
                 <Link
                   to="/projects/$id"
                   params={{ id: p.id }}
+                  preload="intent"
                   className="hover:text-primary"
                 >
                   {p.title}
@@ -125,6 +128,7 @@ function ProjectBoard() {
               <Link
                 to="/projects/$id"
                 params={{ id: p.id }}
+                preload="intent"
                 className="mt-5 inline-flex justify-center rounded-sm border border-border-strong px-4 py-2.5 font-display text-sm font-semibold hover:border-primary hover:text-primary"
               >
                 View project
