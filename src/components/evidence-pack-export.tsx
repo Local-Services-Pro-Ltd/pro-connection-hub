@@ -74,13 +74,22 @@ function buildCsv(pack: EvidencePack) {
       event.created_at,
     ]);
 
+  for (const run of pack.verification_runs)
+    rows.push([
+      "Check run",
+      run.source,
+      run.outcome,
+      `${run.error ?? ""}${run.triggered_by_email ? ` — ${run.triggered_by_email}` : ""}`,
+      run.created_at,
+    ]);
+
   for (const reminder of pack.reminders)
     rows.push([
       "Reminder",
       reminder.kind,
-      "sent",
-      reminder.detail ?? "",
-      reminder.created_at,
+      reminder.delivery_status,
+      `${reminder.detail ?? ""}${reminder.last_error ? ` — ${reminder.last_error}` : ""} (${reminder.attempts} attempt${reminder.attempts === 1 ? "" : "s"})`,
+      reminder.delivered_at ?? reminder.created_at,
     ]);
 
   return rows.map((r) => r.map(csvCell).join(",")).join("\r\n");
@@ -109,6 +118,9 @@ function buildHtml(pack: EvidencePack) {
  h1{font-size:22px;margin:0 0 4px} h2{font-size:14px;text-transform:uppercase;letter-spacing:1.5px;margin:28px 0 8px}
  table{border-collapse:collapse;width:100%} td{border-bottom:1px solid #ddd;padding:6px 8px;vertical-align:top}
  td.k{width:210px;color:#555} .meta{color:#666;font-size:12px}
+ .doc{border:1px solid #ddd;padding:10px;margin:0 0 12px;page-break-inside:avoid}
+ .doc td{border-bottom:none;padding:3px 6px}
+ img.thumb{max-width:320px;max-height:320px;margin-top:8px;border:1px solid #ccc}
 </style></head><body>
 <h1>Verification evidence pack</h1>
 <p class="meta">${esc(a.company)} · ${esc(a.reference)} · generated ${new Date(pack.generated_at).toLocaleString("en-GB")}</p>
@@ -140,13 +152,37 @@ ${section(
 ${section(
   "Documents",
   pack.documents.length
+    ? pack.documents
+        .map(
+          (d) => `<div class="doc">
+  <table><tbody>
+    <tr><td class="k">Document</td><td>${esc(DOCUMENT_KIND_LABEL[d.kind] ?? d.kind)}</td></tr>
+    <tr><td class="k">File</td><td>${esc(d.file_name)} (${esc(formatBytes(d.size_bytes))}, ${esc(d.mime_type)})</td></tr>
+    <tr><td class="k">Validation</td><td>${esc(DOCUMENT_STATUS_LABEL[d.status] ?? d.status)}${d.reviewer_note ? ` — ${esc(d.reviewer_note)}` : ""}</td></tr>
+    <tr><td class="k">Uploaded</td><td>${esc(new Date(d.created_at).toLocaleString("en-GB"))}${d.reviewed_at ? ` · reviewed ${esc(new Date(d.reviewed_at).toLocaleString("en-GB"))}` : ""}</td></tr>
+  </tbody></table>
+  ${
+    d.preview_data_url
+      ? `<img class="thumb" src="${d.preview_data_url}" alt="Scan of ${esc(d.file_name)}">`
+      : d.preview_url
+        ? `<p class="meta">Preview: <a href="${esc(d.preview_url)}">open ${esc(d.file_name)}</a> (link valid for 30 minutes).</p>`
+        : `<p class="meta">No preview available.</p>`
+  }
+</div>`,
+        )
+        .join("")
+    : "<p>No documents on file.</p>",
+)}
+${section(
+  "Check runs",
+  pack.verification_runs.length
     ? rows(
-        pack.documents.map((d) => [
-          DOCUMENT_KIND_LABEL[d.kind] ?? d.kind,
-          `${d.file_name} (${formatBytes(d.size_bytes)}) — ${DOCUMENT_STATUS_LABEL[d.status] ?? d.status}${d.reviewer_note ? ` — ${d.reviewer_note}` : ""}`,
+        pack.verification_runs.map((r) => [
+          new Date(r.created_at).toLocaleString("en-GB"),
+          `${r.source} — ${r.outcome}${r.duration_ms ? ` (${r.duration_ms}ms)` : ""}${r.triggered_by_email ? ` by ${r.triggered_by_email}` : ""}${r.error ? ` — ${r.error}` : ""}`,
         ]),
       )
-    : "<p>No documents on file.</p>",
+    : "<p>No recorded runs.</p>",
 )}
 ${section(
   "Timeline",
@@ -163,7 +199,7 @@ ${section(
     ? rows(
         pack.reminders.map((r) => [
           new Date(r.created_at).toLocaleString("en-GB"),
-          `${r.kind}${r.detail ? ` — ${r.detail}` : ""}`,
+          `${r.kind} — ${r.delivery_status}${r.detail ? ` — ${r.detail}` : ""}${r.last_error ? ` — ${r.last_error}` : ""}`,
         ]),
       )
     : "<p>None.</p>",
@@ -218,7 +254,8 @@ export function EvidencePackExport({
       win.document.write(buildHtml(pack));
       win.document.close();
       win.focus();
-      win.print();
+      // Give embedded scans a moment to lay out before the print dialog.
+      win.setTimeout(() => win.print(), 500);
     } catch (e) {
       toast.error((e as Error).message);
     } finally {
