@@ -108,10 +108,56 @@ async function companiesHouseCheck(
   }
 }
 
-/** Runs every automated check for one application and stores the result. */
+export type VerificationRunOptions = {
+  /** "manual" for an admin re-run, "scheduled" for the nightly job. */
+  source?: string;
+  triggeredBy?: string | null;
+  triggeredByEmail?: string | null;
+  /** Client used to write the run log (service role in both callers). */
+  logClient?: Client;
+};
+
+/**
+ * Runs every automated check for one application, stores the result, and
+ * appends an entry to the verification run log so manual re-runs and
+ * scheduled runs share one retry history.
+ */
 export async function runVerificationForApplication(
   client: Client,
   applicationId: string,
+  options: VerificationRunOptions = {},
+): Promise<VerificationResult> {
+  const startedAt = Date.now();
+  const log = async (outcome: string, error: string | null, checks: unknown) => {
+    const logClient = options.logClient ?? client;
+    try {
+      await logClient.from("application_verification_runs").insert({
+        application_id: applicationId,
+        source: options.source ?? "manual",
+        outcome,
+        error,
+        checks: (checks ?? []) as never,
+        duration_ms: Date.now() - startedAt,
+        triggered_by: options.triggeredBy ?? null,
+        triggered_by_email: options.triggeredByEmail ?? null,
+      } as never);
+    } catch (logError) {
+      console.error("[applications] run log failed", logError);
+    }
+  };
+
+  try {
+    return await runChecks(client, applicationId, log);
+  } catch (runError) {
+    await log("error", (runError as Error).message, []);
+    throw runError;
+  }
+}
+
+async function runChecks(
+  client: Client,
+  applicationId: string,
+  log: (outcome: string, error: string | null, checks: unknown) => Promise<void>,
 ): Promise<VerificationResult> {
   const { data: row, error } = await client
     .from("pro_applications")
@@ -159,6 +205,8 @@ export async function runVerificationForApplication(
     .update({ verification: result, verified_at: result.checked_at })
     .eq("id", applicationId);
   if (saveError) throw new Error(saveError.message);
+
+  await log(result.overall, null, result.checks);
 
   return result;
 }
