@@ -39,7 +39,7 @@ export const Route = createFileRoute("/projects/new")({
   component: NewProject,
 });
 
-type Upload = { path: string; name: string; preview: string };
+
 
 function NewProject() {
   const { user, loading } = useAuth();
