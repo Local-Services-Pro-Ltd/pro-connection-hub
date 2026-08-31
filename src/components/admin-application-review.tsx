@@ -6,6 +6,7 @@ import { AlarmClock, ShieldCheck } from "lucide-react";
 import {
   escalateApplication,
   listApplicationDocuments,
+  listVerificationRuns,
   requestApplicationChanges,
   reviewApplicationDocument,
   runApplicationVerification,
@@ -45,6 +46,7 @@ export function AdminApplicationReview({
   const verify = useServerFn(runApplicationVerification);
   const requestChanges = useServerFn(requestApplicationChanges);
   const escalate = useServerFn(escalateApplication);
+  const loadRuns = useServerFn(listVerificationRuns);
 
   const [fields, setFields] = useState<string[]>(
     application.requested_fields ?? [],
@@ -57,13 +59,22 @@ export function AdminApplicationReview({
     queryFn: () => loadDocs({ data: { applicationId: application.id } }),
   });
 
+  const runs = useQuery({
+    queryKey: ["admin-verification-runs", application.id],
+    queryFn: () => loadRuns({ data: { id: application.id } }),
+  });
+
   const verifyMutation = useMutation({
     mutationFn: () => verify({ data: { id: application.id } }),
     onSuccess: (result: VerificationResult) => {
       toast.success(`Checks complete — ${CHECK_OUTCOME_LABEL[result.overall]}.`);
+      void runs.refetch();
       onChanged();
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => {
+      toast.error(e.message);
+      void runs.refetch();
+    },
   });
 
   const docMutation = useMutation({
@@ -156,6 +167,56 @@ export function AdminApplicationReview({
             No checks run yet.
           </p>
         )}
+
+        {/* Re-run history */}
+        <details className="mt-3">
+          <summary className="cursor-pointer font-display text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+            Run history ({runs.data?.length ?? 0})
+          </summary>
+          <ul className="mt-2 grid gap-1.5 text-sm">
+            {(runs.data ?? []).map((r) => (
+              <li key={r.id} className="flex flex-wrap gap-2">
+                <span className="text-xs text-muted-foreground">
+                  {new Date(r.created_at).toLocaleString("en-GB")}
+                </span>
+                <span className="font-display text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                  {r.source}
+                </span>
+                <span
+                  className={
+                    r.outcome === "error"
+                      ? "text-destructive"
+                      : (outcomeClass[r.outcome] ?? "")
+                  }
+                >
+                  {r.outcome === "error"
+                    ? "Failed"
+                    : (CHECK_OUTCOME_LABEL[
+                        r.outcome as keyof typeof CHECK_OUTCOME_LABEL
+                      ] ?? r.outcome)}
+                </span>
+                {r.duration_ms !== null && (
+                  <span className="text-xs text-muted-foreground">
+                    {r.duration_ms}ms
+                  </span>
+                )}
+                {r.triggered_by_email && (
+                  <span className="text-xs text-muted-foreground">
+                    {r.triggered_by_email}
+                  </span>
+                )}
+                {r.error && (
+                  <span className="text-destructive">{r.error}</span>
+                )}
+              </li>
+            ))}
+            {(runs.data ?? []).length === 0 && (
+              <li className="text-sm text-muted-foreground">
+                No runs recorded yet.
+              </li>
+            )}
+          </ul>
+        </details>
       </div>
 
       {/* Documents */}
