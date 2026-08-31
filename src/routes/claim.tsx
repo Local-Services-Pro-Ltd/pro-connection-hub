@@ -12,6 +12,12 @@ import {
 } from "@/lib/applications.functions";
 import { DocumentTracker } from "@/components/application-documents";
 import { tradesQuery } from "@/lib/queries";
+import {
+  breadcrumbSchema,
+  ldScript,
+  organizationSchema,
+} from "@/lib/structured-data";
+
 
 const SITE = "https://tradesmanfinder.org";
 
@@ -41,8 +47,19 @@ export const Route = createFileRoute("/claim")({
         { name: "twitter:description", content: description },
       ],
       links: [{ rel: "canonical", href: `${SITE}/claim` }],
+      scripts: [
+        ldScript(organizationSchema()),
+        ldScript(
+          breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "For tradesmen", path: "/for-tradesmen" },
+            { name: "Get certified", path: "/claim" },
+          ]),
+        ),
+      ],
     };
   },
+
   errorComponent: ({ error }) => (
     <Section>
       <p role="alert" className="text-muted-foreground">
