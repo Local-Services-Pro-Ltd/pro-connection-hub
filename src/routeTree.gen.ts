@@ -33,6 +33,7 @@ import { Route as AdminFeaturedRouteImport } from './routes/admin.featured'
 import { Route as AdminGalleriesRouteImport } from './routes/admin.galleries'
 import { Route as AdminHeroImagesRouteImport } from './routes/admin.hero-images'
 import { Route as AdminPlansRouteImport } from './routes/admin.plans'
+import { Route as AdminProjectsRouteImport } from './routes/admin.projects'
 import { Route as AdminQaRouteImport } from './routes/admin.qa'
 import { Route as AdminSlaRouteImport } from './routes/admin.sla'
 import { Route as AdminWaitingListRouteImport } from './routes/admin.waiting-list'
@@ -42,6 +43,7 @@ import { Route as CostsIndexRouteImport } from './routes/costs.index'
 import { Route as CostsTradeRouteImport } from './routes/costs.$trade'
 import { Route as ProIdRouteImport } from './routes/pro.$id'
 import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
+import { Route as ProjectsIdRouteImport } from './routes/projects.$id'
 import { Route as ProjectsNewRouteImport } from './routes/projects.new'
 import { Route as TradesIndexRouteImport } from './routes/trades.index'
 import { Route as TradesTradeRouteImport } from './routes/trades.$trade'
@@ -177,6 +179,11 @@ const AdminPlansRoute = AdminPlansRouteImport.update({
   path: '/admin/plans',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminProjectsRoute = AdminProjectsRouteImport.update({
+  id: '/admin/projects',
+  path: '/admin/projects',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminQaRoute = AdminQaRouteImport.update({
   id: '/admin/qa',
   path: '/admin/qa',
@@ -220,6 +227,11 @@ const ProIdRoute = ProIdRouteImport.update({
 const ProjectsIndexRoute = ProjectsIndexRouteImport.update({
   id: '/projects/',
   path: '/projects/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectsIdRoute = ProjectsIdRouteImport.update({
+  id: '/projects/$id',
+  path: '/projects/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProjectsNewRoute = ProjectsNewRouteImport.update({
@@ -320,12 +332,14 @@ export interface FileRoutesByFullPath {
   '/admin/galleries': typeof AdminGalleriesRoute
   '/admin/hero-images': typeof AdminHeroImagesRoute
   '/admin/plans': typeof AdminPlansRoute
+  '/admin/projects': typeof AdminProjectsRoute
   '/admin/qa': typeof AdminQaRoute
   '/admin/sla': typeof AdminSlaRoute
   '/admin/waiting-list': typeof AdminWaitingListRoute
   '/ask/$id': typeof AskIdRoute
   '/costs/$trade': typeof CostsTradeRoute
   '/pro/$id': typeof ProIdRoute
+  '/projects/$id': typeof ProjectsIdRoute
   '/projects/new': typeof ProjectsNewRoute
   '/trades/$trade': typeof TradesTradeRoute
   '/waiting-list/confirm': typeof WaitingListConfirmRoute
@@ -369,12 +383,14 @@ export interface FileRoutesByTo {
   '/admin/galleries': typeof AdminGalleriesRoute
   '/admin/hero-images': typeof AdminHeroImagesRoute
   '/admin/plans': typeof AdminPlansRoute
+  '/admin/projects': typeof AdminProjectsRoute
   '/admin/qa': typeof AdminQaRoute
   '/admin/sla': typeof AdminSlaRoute
   '/admin/waiting-list': typeof AdminWaitingListRoute
   '/ask/$id': typeof AskIdRoute
   '/costs/$trade': typeof CostsTradeRoute
   '/pro/$id': typeof ProIdRoute
+  '/projects/$id': typeof ProjectsIdRoute
   '/projects/new': typeof ProjectsNewRoute
   '/trades/$trade': typeof TradesTradeRoute
   '/waiting-list/confirm': typeof WaitingListConfirmRoute
@@ -419,12 +435,14 @@ export interface FileRoutesById {
   '/admin/galleries': typeof AdminGalleriesRoute
   '/admin/hero-images': typeof AdminHeroImagesRoute
   '/admin/plans': typeof AdminPlansRoute
+  '/admin/projects': typeof AdminProjectsRoute
   '/admin/qa': typeof AdminQaRoute
   '/admin/sla': typeof AdminSlaRoute
   '/admin/waiting-list': typeof AdminWaitingListRoute
   '/ask/$id': typeof AskIdRoute
   '/costs/$trade': typeof CostsTradeRoute
   '/pro/$id': typeof ProIdRoute
+  '/projects/$id': typeof ProjectsIdRoute
   '/projects/new': typeof ProjectsNewRoute
   '/trades/$trade': typeof TradesTradeRoute
   '/waiting-list/confirm': typeof WaitingListConfirmRoute
@@ -470,12 +488,14 @@ export interface FileRouteTypes {
     | '/admin/galleries'
     | '/admin/hero-images'
     | '/admin/plans'
+    | '/admin/projects'
     | '/admin/qa'
     | '/admin/sla'
     | '/admin/waiting-list'
     | '/ask/$id'
     | '/costs/$trade'
     | '/pro/$id'
+    | '/projects/$id'
     | '/projects/new'
     | '/trades/$trade'
     | '/waiting-list/confirm'
@@ -519,12 +539,14 @@ export interface FileRouteTypes {
     | '/admin/galleries'
     | '/admin/hero-images'
     | '/admin/plans'
+    | '/admin/projects'
     | '/admin/qa'
     | '/admin/sla'
     | '/admin/waiting-list'
     | '/ask/$id'
     | '/costs/$trade'
     | '/pro/$id'
+    | '/projects/$id'
     | '/projects/new'
     | '/trades/$trade'
     | '/waiting-list/confirm'
@@ -568,12 +590,14 @@ export interface FileRouteTypes {
     | '/admin/galleries'
     | '/admin/hero-images'
     | '/admin/plans'
+    | '/admin/projects'
     | '/admin/qa'
     | '/admin/sla'
     | '/admin/waiting-list'
     | '/ask/$id'
     | '/costs/$trade'
     | '/pro/$id'
+    | '/projects/$id'
     | '/projects/new'
     | '/trades/$trade'
     | '/waiting-list/confirm'
@@ -618,12 +642,14 @@ export interface RootRouteChildren {
   AdminGalleriesRoute: typeof AdminGalleriesRoute
   AdminHeroImagesRoute: typeof AdminHeroImagesRoute
   AdminPlansRoute: typeof AdminPlansRoute
+  AdminProjectsRoute: typeof AdminProjectsRoute
   AdminQaRoute: typeof AdminQaRoute
   AdminSlaRoute: typeof AdminSlaRoute
   AdminWaitingListRoute: typeof AdminWaitingListRoute
   AskIdRoute: typeof AskIdRoute
   CostsTradeRoute: typeof CostsTradeRoute
   ProIdRoute: typeof ProIdRoute
+  ProjectsIdRoute: typeof ProjectsIdRoute
   ProjectsNewRoute: typeof ProjectsNewRoute
   TradesTradeRoute: typeof TradesTradeRoute
   WaitingListConfirmRoute: typeof WaitingListConfirmRoute
@@ -813,6 +839,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPlansRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/projects': {
+      id: '/admin/projects'
+      path: '/admin/projects'
+      fullPath: '/admin/projects'
+      preLoaderRoute: typeof AdminProjectsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/qa': {
       id: '/admin/qa'
       path: '/admin/qa'
@@ -874,6 +907,13 @@ declare module '@tanstack/react-router' {
       path: '/projects'
       fullPath: '/projects/'
       preLoaderRoute: typeof ProjectsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/projects/$id': {
+      id: '/projects/$id'
+      path: '/projects/$id'
+      fullPath: '/projects/$id'
+      preLoaderRoute: typeof ProjectsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/projects/new': {
@@ -1002,12 +1042,14 @@ const rootRouteChildren: RootRouteChildren = {
   AdminGalleriesRoute: AdminGalleriesRoute,
   AdminHeroImagesRoute: AdminHeroImagesRoute,
   AdminPlansRoute: AdminPlansRoute,
+  AdminProjectsRoute: AdminProjectsRoute,
   AdminQaRoute: AdminQaRoute,
   AdminSlaRoute: AdminSlaRoute,
   AdminWaitingListRoute: AdminWaitingListRoute,
   AskIdRoute: AskIdRoute,
   CostsTradeRoute: CostsTradeRoute,
   ProIdRoute: ProIdRoute,
+  ProjectsIdRoute: ProjectsIdRoute,
   ProjectsNewRoute: ProjectsNewRoute,
   TradesTradeRoute: TradesTradeRoute,
   WaitingListConfirmRoute: WaitingListConfirmRoute,
