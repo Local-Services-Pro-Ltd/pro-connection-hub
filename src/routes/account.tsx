@@ -120,6 +120,136 @@ function Account() {
           </p>
         )}
 
+        <div className="mt-14 flex items-baseline justify-between gap-4">
+          <h2 className="text-2xl">Project postings</h2>
+          <Link to="/projects/new" className="text-sm text-primary hover:underline">
+            Post a project
+          </Link>
+        </div>
+        {projects.isLoading ? (
+          <p className="mt-5 text-sm text-muted-foreground">Loading…</p>
+        ) : (projects.data?.length ?? 0) > 0 ? (
+          <ul className="mt-5 grid gap-px overflow-hidden rounded-md border border-border bg-border">
+            {projects.data!.map((p) => (
+              <li key={p.id} className="bg-card p-6">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <h3 className="text-lg">
+                      <Link
+                        to="/projects/$id"
+                        params={{ id: p.id }}
+                        className="hover:text-primary"
+                      >
+                        {p.title}
+                      </Link>
+                    </h3>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      {p.reference} · {p.postcode} ·{" "}
+                      {formatBudget(p.budget_min, p.budget_max)}
+                    </p>
+                  </div>
+                  <span className="rounded-sm border border-border px-3 py-1 font-display text-xs uppercase tracking-widest text-primary">
+                    {projectStatusLabels[p.status] ?? p.status}
+                  </span>
+                </div>
+                {p.reviewer_note && (
+                  <p className="mt-4 text-sm text-muted-foreground">
+                    Reviewer note: {p.reviewer_note}
+                  </p>
+                )}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="mt-5 rounded-md border border-border bg-card p-6 text-sm text-muted-foreground">
+            No project postings yet. Postings carry budget, dates and photos, so
+            firms can quote accurately.
+          </p>
+        )}
+
+        <h2 className="mt-14 text-2xl">Enquiries you've sent</h2>
+        {leads.isLoading ? (
+          <p className="mt-5 text-sm text-muted-foreground">Loading…</p>
+        ) : (leads.data?.length ?? 0) > 0 ? (
+          <ul className="mt-5 grid gap-px overflow-hidden rounded-md border border-border bg-border">
+            {leads.data!.map((l) => (
+              <li key={l.id} className="bg-card p-6">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <Link
+                    to="/pro/$id"
+                    params={{ id: l.pro_id }}
+                    className="text-lg hover:text-primary"
+                  >
+                    Enquiry {l.reference}
+                  </Link>
+                  <span className="text-xs text-muted-foreground">
+                    {new Date(l.created_at).toLocaleDateString("en-GB")}
+                  </span>
+                </div>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                  {l.message}
+                </p>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="mt-5 rounded-md border border-border bg-card p-6 text-sm text-muted-foreground">
+            You haven't messaged a firm yet.
+          </p>
+        )}
+
+        <h2 className="mt-14 text-2xl">Saved searches</h2>
+        {searches.isLoading ? (
+          <p className="mt-5 text-sm text-muted-foreground">Loading…</p>
+        ) : (searches.data?.length ?? 0) > 0 ? (
+          <ul className="mt-5 grid gap-px overflow-hidden rounded-md border border-border bg-border">
+            {searches.data!.map((s) => (
+              <li
+                key={s.id}
+                className="flex flex-wrap items-center justify-between gap-3 bg-card p-6"
+              >
+                <div>
+                  <p className="font-display font-semibold">{s.label}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {s.trade_slug ?? "All trades"}
+                    {s.area ? ` · ${s.area}` : ""}
+                  </p>
+                </div>
+                <div className="flex items-center gap-4">
+                  {s.trade_slug ? (
+                    <Link
+                      to="/trades/$trade"
+                      params={{ trade: s.trade_slug }}
+                      search={s.area ? { area: s.area } : {}}
+                      className="text-sm text-primary hover:underline"
+                    >
+                      Run search
+                    </Link>
+                  ) : (
+                    <Link
+                      to="/trades"
+                      className="text-sm text-primary hover:underline"
+                    >
+                      Run search
+                    </Link>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => removeSearch.mutate(s.id)}
+                    className="text-sm text-muted-foreground hover:text-primary"
+                  >
+                    Remove
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="mt-5 rounded-md border border-border bg-card p-6 text-sm text-muted-foreground">
+            Save a search from the directory and it'll be one click away here.
+          </p>
+        )}
+
         <h2 className="mt-14 text-2xl">Your reviews</h2>
         {reviews.isLoading ? (
           <p className="mt-5 text-sm text-muted-foreground">Loading…</p>
