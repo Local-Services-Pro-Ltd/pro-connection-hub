@@ -66,8 +66,10 @@ export type ApplicationStatus = {
   verification: VerificationResult | Record<string, never>;
   verified_at: string | null;
   documents: ApplicationDocument[];
+  reminder_prefs?: Record<string, boolean>;
   timeline: ApplicationStatusEvent[];
 };
+
 
 function clean(value: string | undefined, max: number) {
   const trimmed = (value ?? "").trim();
