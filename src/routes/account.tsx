@@ -1,8 +1,18 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { Section, PageHero } from "@/components/layout-bits";
-import { myJobsQuery, myReviewsQuery } from "@/lib/queries";
+import {
+  formatBudget,
+  myJobsQuery,
+  myLeadsQuery,
+  myProjectsQuery,
+  myReviewsQuery,
+  projectStatusLabels,
+  savedSearchesQuery,
+} from "@/lib/queries";
+import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/account")({
