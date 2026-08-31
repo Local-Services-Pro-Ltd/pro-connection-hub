@@ -901,6 +901,11 @@ export type EvidencePack = {
     reviewer_note: string | null;
     created_at: string;
     reviewed_at: string | null;
+    mime_type: string;
+    /** Inline base64 data URI for image scans, so the printed pack is self-contained. */
+    preview_data_url: string | null;
+    /** Short-lived signed link for PDFs and oversized scans. */
+    preview_url: string | null;
   }>;
   timeline: Array<{
     action: string;
@@ -910,7 +915,24 @@ export type EvidencePack = {
     changed_by_email: string | null;
     created_at: string;
   }>;
-  reminders: Array<{ kind: string; detail: string | null; created_at: string }>;
+  verification_runs: Array<{
+    source: string;
+    outcome: string;
+    error: string | null;
+    duration_ms: number | null;
+    triggered_by_email: string | null;
+    created_at: string;
+  }>;
+  reminders: Array<{
+    kind: string;
+    detail: string | null;
+    created_at: string;
+    delivery_status: string;
+    attempts: number;
+    last_error: string | null;
+    delivered_at: string | null;
+  }>;
+
   generated_at: string;
 };
 
