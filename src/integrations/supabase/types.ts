@@ -111,31 +111,96 @@ export type Database = {
       application_reminders: {
         Row: {
           application_id: string
+          attempts: number
           created_at: string
+          dead_at: string | null
           dedupe_key: string
+          delivered_at: string | null
+          delivery_status: string
           detail: string | null
           id: string
           kind: string
+          last_error: string | null
+          next_attempt_at: string
         }
         Insert: {
           application_id: string
+          attempts?: number
           created_at?: string
+          dead_at?: string | null
           dedupe_key: string
+          delivered_at?: string | null
+          delivery_status?: string
           detail?: string | null
           id?: string
           kind: string
+          last_error?: string | null
+          next_attempt_at?: string
         }
         Update: {
           application_id?: string
+          attempts?: number
           created_at?: string
+          dead_at?: string | null
           dedupe_key?: string
+          delivered_at?: string | null
+          delivery_status?: string
           detail?: string | null
           id?: string
           kind?: string
+          last_error?: string | null
+          next_attempt_at?: string
         }
         Relationships: [
           {
             foreignKeyName: "application_reminders_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "pro_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      application_verification_runs: {
+        Row: {
+          application_id: string
+          checks: Json
+          created_at: string
+          duration_ms: number | null
+          error: string | null
+          id: string
+          outcome: string
+          source: string
+          triggered_by: string | null
+          triggered_by_email: string | null
+        }
+        Insert: {
+          application_id: string
+          checks?: Json
+          created_at?: string
+          duration_ms?: number | null
+          error?: string | null
+          id?: string
+          outcome: string
+          source?: string
+          triggered_by?: string | null
+          triggered_by_email?: string | null
+        }
+        Update: {
+          application_id?: string
+          checks?: Json
+          created_at?: string
+          duration_ms?: number | null
+          error?: string | null
+          id?: string
+          outcome?: string
+          source?: string
+          triggered_by?: string | null
+          triggered_by_email?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "application_verification_runs_application_id_fkey"
             columns: ["application_id"]
             isOneToOne: false
             referencedRelation: "pro_applications"
@@ -683,6 +748,7 @@ export type Database = {
           postcode: string
           priority: string
           reference: string | null
+          reminder_prefs: Json
           requested_fields: string[]
           resubmitted_at: string | null
           reviewed_at: string | null
@@ -718,6 +784,7 @@ export type Database = {
           postcode: string
           priority?: string
           reference?: string | null
+          reminder_prefs?: Json
           requested_fields?: string[]
           resubmitted_at?: string | null
           reviewed_at?: string | null
@@ -753,6 +820,7 @@ export type Database = {
           postcode?: string
           priority?: string
           reference?: string | null
+          reminder_prefs?: Json
           requested_fields?: string[]
           resubmitted_at?: string | null
           reviewed_at?: string | null
@@ -1632,6 +1700,10 @@ export type Database = {
       }
       pro_application_resubmit: {
         Args: { p_message?: string; p_token: string; p_updates: Json }
+        Returns: Json
+      }
+      pro_application_set_reminder_prefs: {
+        Args: { p_prefs: Json; p_token: string }
         Returns: Json
       }
       pro_application_sla: { Args: never; Returns: Json }

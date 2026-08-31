@@ -246,6 +246,13 @@
       "when": 1788110382938,
       "tag": "0034_application_reminders_and_jobs",
       "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1788141768221,
+      "tag": "0035_reminder_prefs_retries_verification_runs",
+      "breakpoints": true
     }
   ]
 }
