@@ -1,6 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { BadgeCheck, FileCheck2, RefreshCw, ShieldCheck, Star } from "lucide-react";
 import { Section, SectionHead } from "@/components/layout-bits";
+import {
+  breadcrumbSchema,
+  ldScript,
+  organizationSchema,
+} from "@/lib/structured-data";
+
 
 const SITE = "https://tradesmanfinder.org";
 
@@ -55,9 +61,17 @@ export const Route = createFileRoute("/verification")({
             ],
           }),
         },
+        ldScript(organizationSchema()),
+        ldScript(
+          breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "How we verify", path: "/verification" },
+          ]),
+        ),
       ],
     };
   },
+
   errorComponent: ({ error }) => (
     <Section>
       <p role="alert" className="text-muted-foreground">
