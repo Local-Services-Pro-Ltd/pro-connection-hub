@@ -242,49 +242,22 @@ function NewProject() {
               Photos of the space are the single biggest thing that improves
               quote accuracy. They're only shown once the posting is approved.
             </p>
-            <label className="mt-4 inline-flex cursor-pointer items-center gap-2 rounded-sm border border-border-strong px-4 py-2.5 font-display text-sm font-semibold hover:border-primary hover:text-primary">
-              <ImagePlus className="h-4 w-4" />
-              {uploading ? "Uploading…" : "Add photos"}
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                className="sr-only"
-                onChange={(e) => {
-                  void handleFiles(e.target.files);
-                  e.target.value = "";
-                }}
+            <Suspense
+              fallback={
+                <p className="mt-4 text-sm text-muted-foreground">
+                  Loading photo uploader…
+                </p>
+              }
+            >
+              <PhotoUploader
+                userId={user.id}
+                uploads={uploads}
+                setUploads={setUploads}
+                maxPhotos={MAX_PHOTOS}
+                onUploadingChange={setUploading}
               />
-            </label>
+            </Suspense>
 
-            {uploads.length > 0 && (
-              <ul className="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-4">
-                {uploads.map((u) => (
-                  <li key={u.path} className="relative">
-                    <img
-                      src={u.preview}
-                      alt={`Project photo: ${u.name}`}
-                      className="aspect-square w-full rounded-sm border border-border object-cover"
-                    />
-                    <button
-                      type="button"
-                      aria-label={`Remove ${u.name}`}
-                      onClick={() => {
-                        void supabase.storage
-                          .from("project-photos")
-                          .remove([u.path]);
-                        setUploads((list) =>
-                          list.filter((x) => x.path !== u.path),
-                        );
-                      }}
-                      className="absolute right-1 top-1 rounded-sm bg-background/90 p-1 text-muted-foreground hover:text-primary"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
           </div>
 
           <div className="mt-7 grid gap-5 sm:grid-cols-2">
