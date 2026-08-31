@@ -22,12 +22,12 @@ function siteOrigin() {
 export type CreateProjectInput = {
   title: string;
   description: string;
-  tradeSlug?: string;
+  tradeSlug?: string | undefined;
   postcode: string;
-  budgetMin?: number;
-  budgetMax?: number;
-  startDate?: string;
-  endDate?: string;
+  budgetMin?: number | undefined;
+  budgetMax?: number | undefined;
+  startDate?: string | undefined;
+  endDate?: string | undefined;
   photos: string[];
   contactName: string;
   contactEmail: string;
@@ -170,9 +170,9 @@ export type ApplyInput = {
   projectId: string;
   proId: string;
   message: string;
-  quoteLow?: number;
-  quoteHigh?: number;
-  availableFrom?: string;
+  quoteLow?: number | undefined;
+  quoteHigh?: number | undefined;
+  availableFrom?: string | undefined;
 };
 
 export const applyToProject = createServerFn({ method: "POST" })
@@ -205,9 +205,11 @@ export const applyToProject = createServerFn({ method: "POST" })
       p_project_id: data.projectId,
       p_pro_id: data.proId,
       p_message: data.message,
-      p_quote_low: data.quoteLow,
-      p_quote_high: data.quoteHigh,
-      p_available_from: data.availableFrom,
+      ...(data.quoteLow !== undefined ? { p_quote_low: data.quoteLow } : {}),
+      ...(data.quoteHigh !== undefined ? { p_quote_high: data.quoteHigh } : {}),
+      ...(data.availableFrom !== undefined
+        ? { p_available_from: data.availableFrom }
+        : {}),
     });
     if (error) throw new Error(error.message);
 
@@ -263,7 +265,7 @@ export const applyToProject = createServerFn({ method: "POST" })
 export type ReviewProjectInput = {
   projectId: string;
   status: "published" | "rejected";
-  reviewerNote?: string;
+  reviewerNote?: string | undefined;
 };
 
 export const reviewProject = createServerFn({ method: "POST" })

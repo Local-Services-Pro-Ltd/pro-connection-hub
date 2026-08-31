@@ -13,16 +13,16 @@ export type LeadInput = {
   proId: string;
   name: string;
   email: string;
-  phone?: string;
+  phone?: string | undefined;
   postcode: string;
   message: string;
-  budgetBand?: string;
-  timing?: string;
+  budgetBand?: string | undefined;
+  timing?: string | undefined;
   /** Signed challenge issued by getHumanCheck(). */
   checkToken: string;
   checkAnswer: string;
   /** Honeypot — must stay empty. */
-  website?: string;
+  website?: string | undefined;
 };
 
 function clean(value: string | undefined, max: number) {
