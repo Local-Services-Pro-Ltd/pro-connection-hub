@@ -264,3 +264,63 @@ export const OPEN_STATUSES = [
   "changes_requested",
   "resubmitted",
 ];
+
+/* ------------------------------------------------------------------ */
+/* Reminder email preferences                                          */
+/* ------------------------------------------------------------------ */
+
+export type ReminderKind =
+  | "documents_pending"
+  | "document_rejected"
+  | "insurance_expiring"
+  | "insurance_expired";
+
+export type ReminderPrefs = Record<ReminderKind, boolean>;
+
+export const REMINDER_KINDS: Array<{
+  key: ReminderKind;
+  label: string;
+  hint: string;
+}> = [
+  {
+    key: "documents_pending",
+    label: "Pending uploads",
+    hint: "A nudge while required paperwork is still missing.",
+  },
+  {
+    key: "document_rejected",
+    label: "Rejected documents",
+    hint: "Told straight away when a document can't be accepted.",
+  },
+  {
+    key: "insurance_expiring",
+    label: "Cover expiring",
+    hint: "Warnings at 30 and 7 days before your insurance lapses.",
+  },
+  {
+    key: "insurance_expired",
+    label: "Cover expired",
+    hint: "A weekly reminder once cover has lapsed.",
+  },
+];
+
+export const REMINDER_KIND_LABEL: Record<string, string> = Object.fromEntries(
+  REMINDER_KINDS.map((r) => [r.key, r.label]),
+);
+
+export const DEFAULT_REMINDER_PREFS: ReminderPrefs = {
+  documents_pending: true,
+  document_rejected: true,
+  insurance_expiring: true,
+  insurance_expired: true,
+};
+
+export function normaliseReminderPrefs(value: unknown): ReminderPrefs {
+  const raw = (value ?? {}) as Record<string, unknown>;
+  return {
+    documents_pending: raw["documents_pending"] !== false,
+    document_rejected: raw["document_rejected"] !== false,
+    insurance_expiring: raw["insurance_expiring"] !== false,
+    insurance_expired: raw["insurance_expired"] !== false,
+  };
+}
