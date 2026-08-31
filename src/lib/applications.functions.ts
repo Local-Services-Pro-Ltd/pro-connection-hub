@@ -700,8 +700,19 @@ export const runApplicationVerification = createServerFn({ method: "POST" })
     const { runVerificationForApplication } = await import(
       "@/lib/application-checks.server"
     );
-    return runVerificationForApplication(context.supabase, data.id);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const email =
+      ((context.claims as Record<string, unknown> | undefined)?.["email"] as
+        | string
+        | undefined) ?? null;
+    return runVerificationForApplication(context.supabase, data.id, {
+      source: "manual",
+      triggeredBy: context.userId,
+      triggeredByEmail: email,
+      logClient: supabaseAdmin,
+    });
   });
+
 
 /** Ask the firm for specific missing fields and pause the clock. */
 export const requestApplicationChanges = createServerFn({ method: "POST" })
