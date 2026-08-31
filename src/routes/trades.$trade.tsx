@@ -218,10 +218,18 @@ function TradePage() {
         <ProFiltersBar />
 
 
-        <p className="mt-8 eyebrow">
-          {matches.length} {trade.name.toLowerCase()}
-          {matches.length === 1 ? "" : "s"} matching
-        </p>
+        <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
+          <p className="eyebrow">
+            {matches.length} {trade.name.toLowerCase()}
+            {matches.length === 1 ? "" : "s"} matching
+          </p>
+          <SaveSearchButton
+            label={`${trade.name}${search.area ? ` in ${search.area}` : ""}`}
+            tradeSlug={trade.slug}
+            area={search.area}
+            filters={search as Record<string, unknown>}
+          />
+        </div>
 
         {matches.length > 0 ? (
           <div className="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
