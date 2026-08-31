@@ -205,9 +205,9 @@ export const applyToProject = createServerFn({ method: "POST" })
       p_project_id: data.projectId,
       p_pro_id: data.proId,
       p_message: data.message,
-      p_quote_low: data.quoteLow ?? null,
-      p_quote_high: data.quoteHigh ?? null,
-      p_available_from: data.availableFrom ?? null,
+      p_quote_low: data.quoteLow,
+      p_quote_high: data.quoteHigh,
+      p_available_from: data.availableFrom,
     });
     if (error) throw new Error(error.message);
 
