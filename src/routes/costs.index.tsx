@@ -31,6 +31,12 @@ export const Route = createFileRoute("/costs/")({
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:title", content: title },
         { name: "twitter:description", content: description },
+        ...(base
+          ? [
+              { property: "og:image", content: `${base}${tradeHero("plumber")}` },
+              { name: "twitter:image", content: `${base}${tradeHero("plumber")}` },
+            ]
+          : []),
       ],
       ...(base ? { links: [{ rel: "canonical", href: `${base}/costs` }] } : {}),
     };

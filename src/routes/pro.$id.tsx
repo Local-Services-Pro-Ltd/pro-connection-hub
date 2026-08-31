@@ -44,6 +44,7 @@ export const Route = createFileRoute("/pro/$id")({
     }
     const p = loaderData.pro;
     const url = `https://tradesmanfinder.org/pro/${params.id}`;
+    const image = `https://tradesmanfinder.org${tradeHero(p.trade_slug)}`;
     const title = `${p.company} — ${p.name}, ${p.area} | TradesmanFinder`;
     const description = `${p.company} in ${p.area}. ${p.rating}★ from ${p.review_count} reviews, ${p.years} years' experience. ${p.bio}`.slice(
       0,
@@ -77,6 +78,10 @@ export const Route = createFileRoute("/pro/$id")({
         { property: "og:type", content: "profile" },
         { property: "og:url", content: url },
         { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: description },
+        { property: "og:image", content: image },
+        { name: "twitter:image", content: image },
       ],
       links: [{ rel: "canonical", href: url }],
       scripts: [
