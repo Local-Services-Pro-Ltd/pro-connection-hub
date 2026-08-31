@@ -1,20 +1,21 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { ImagePlus, X } from "lucide-react";
 import { PageHero, Section } from "@/components/layout-bits";
-import { supabase } from "@/integrations/supabase/client";
 import { createProject } from "@/lib/projects.functions";
 import { tradesQuery } from "@/lib/queries";
 import { useAuth } from "@/hooks/use-auth";
+import type { Upload } from "@/components/project-photo-uploader";
+
+const PhotoUploader = lazy(() => import("@/components/project-photo-uploader"));
 
 const field =
   "mt-2 w-full rounded-sm border border-border-strong bg-background px-4 py-2.5 text-sm outline-none focus:border-primary";
 
 const MAX_PHOTOS = 8;
-const MAX_BYTES = 8 * 1024 * 1024;
+
 
 export const Route = createFileRoute("/projects/new")({
   head: () => ({
@@ -38,7 +39,7 @@ export const Route = createFileRoute("/projects/new")({
   component: NewProject,
 });
 
-type Upload = { path: string; name: string; preview: string };
+
 
 function NewProject() {
   const { user, loading } = useAuth();
@@ -76,36 +77,8 @@ function NewProject() {
       setForm((f) => ({ ...f, contactEmail: user.email ?? "" }));
   }, [user, form.contactEmail]);
 
-  const handleFiles = async (files: FileList | null) => {
-    if (!files || !user) return;
-    setUploading(true);
-    try {
-      for (const file of Array.from(files).slice(0, MAX_PHOTOS - uploads.length)) {
-        if (!file.type.startsWith("image/")) {
-          toast.error(`${file.name} isn't an image.`);
-          continue;
-        }
-        if (file.size > MAX_BYTES) {
-          toast.error(`${file.name} is over 8MB.`);
-          continue;
-        }
-        const path = `${user.id}/${crypto.randomUUID()}-${file.name.replace(/[^\w.-]/g, "_")}`;
-        const { error } = await supabase.storage
-          .from("project-photos")
-          .upload(path, file, { contentType: file.type });
-        if (error) {
-          toast.error(`Couldn't upload ${file.name}.`);
-          continue;
-        }
-        setUploads((u) => [
-          ...u,
-          { path, name: file.name, preview: URL.createObjectURL(file) },
-        ]);
-      }
-    } finally {
-      setUploading(false);
-    }
-  };
+
+
 
   const submit = useMutation({
     mutationFn: async () =>
@@ -269,49 +242,22 @@ function NewProject() {
               Photos of the space are the single biggest thing that improves
               quote accuracy. They're only shown once the posting is approved.
             </p>
-            <label className="mt-4 inline-flex cursor-pointer items-center gap-2 rounded-sm border border-border-strong px-4 py-2.5 font-display text-sm font-semibold hover:border-primary hover:text-primary">
-              <ImagePlus className="h-4 w-4" />
-              {uploading ? "Uploading…" : "Add photos"}
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                className="sr-only"
-                onChange={(e) => {
-                  void handleFiles(e.target.files);
-                  e.target.value = "";
-                }}
+            <Suspense
+              fallback={
+                <p className="mt-4 text-sm text-muted-foreground">
+                  Loading photo uploader…
+                </p>
+              }
+            >
+              <PhotoUploader
+                userId={user.id}
+                uploads={uploads}
+                setUploads={setUploads}
+                maxPhotos={MAX_PHOTOS}
+                onUploadingChange={setUploading}
               />
-            </label>
+            </Suspense>
 
-            {uploads.length > 0 && (
-              <ul className="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-4">
-                {uploads.map((u) => (
-                  <li key={u.path} className="relative">
-                    <img
-                      src={u.preview}
-                      alt={`Project photo: ${u.name}`}
-                      className="aspect-square w-full rounded-sm border border-border object-cover"
-                    />
-                    <button
-                      type="button"
-                      aria-label={`Remove ${u.name}`}
-                      onClick={() => {
-                        void supabase.storage
-                          .from("project-photos")
-                          .remove([u.path]);
-                        setUploads((list) =>
-                          list.filter((x) => x.path !== u.path),
-                        );
-                      }}
-                      className="absolute right-1 top-1 rounded-sm bg-background/90 p-1 text-muted-foreground hover:text-primary"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
           </div>
 
           <div className="mt-7 grid gap-5 sm:grid-cols-2">
