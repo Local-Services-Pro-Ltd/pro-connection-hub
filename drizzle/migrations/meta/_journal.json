@@ -260,6 +260,13 @@
       "when": 1788143820073,
       "tag": "0036_leads_projects_saved_searches",
       "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "7",
+      "when": 1788143843032,
+      "tag": "0037_project_photos_storage_policies",
+      "breakpoints": true
     }
   ]
 }
