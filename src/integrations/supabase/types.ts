@@ -986,6 +986,82 @@ export type Database = {
         }
         Relationships: []
       }
+      pro_leads: {
+        Row: {
+          budget_band: string | null
+          created_at: string
+          delivered_to_firm: boolean
+          email: string
+          id: string
+          message: string
+          name: string
+          phone: string | null
+          postcode: string
+          pro_id: string
+          reference: string
+          status: string
+          timing: string | null
+          trade_slug: string | null
+          user_id: string | null
+        }
+        Insert: {
+          budget_band?: string | null
+          created_at?: string
+          delivered_to_firm?: boolean
+          email: string
+          id?: string
+          message: string
+          name: string
+          phone?: string | null
+          postcode: string
+          pro_id: string
+          reference: string
+          status?: string
+          timing?: string | null
+          trade_slug?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          budget_band?: string | null
+          created_at?: string
+          delivered_to_firm?: boolean
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          phone?: string | null
+          postcode?: string
+          pro_id?: string
+          reference?: string
+          status?: string
+          timing?: string | null
+          trade_slug?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pro_leads_pro_id_fkey"
+            columns: ["pro_id"]
+            isOneToOne: false
+            referencedRelation: "pro_trust"
+            referencedColumns: ["pro_id"]
+          },
+          {
+            foreignKeyName: "pro_leads_pro_id_fkey"
+            columns: ["pro_id"]
+            isOneToOne: false
+            referencedRelation: "pros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pro_leads_trade_slug_fkey"
+            columns: ["trade_slug"]
+            isOneToOne: false
+            referencedRelation: "trades"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
       pro_projects: {
         Row: {
           after_url: string | null
@@ -1080,6 +1156,147 @@ export type Database = {
         }
         Relationships: []
       }
+      project_applications: {
+        Row: {
+          available_from: string | null
+          created_at: string
+          id: string
+          message: string
+          pro_id: string
+          project_id: string
+          quote_high: number | null
+          quote_low: number | null
+          status: string
+        }
+        Insert: {
+          available_from?: string | null
+          created_at?: string
+          id?: string
+          message: string
+          pro_id: string
+          project_id: string
+          quote_high?: number | null
+          quote_low?: number | null
+          status?: string
+        }
+        Update: {
+          available_from?: string | null
+          created_at?: string
+          id?: string
+          message?: string
+          pro_id?: string
+          project_id?: string
+          quote_high?: number | null
+          quote_low?: number | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_applications_pro_id_fkey"
+            columns: ["pro_id"]
+            isOneToOne: false
+            referencedRelation: "pro_trust"
+            referencedColumns: ["pro_id"]
+          },
+          {
+            foreignKeyName: "project_applications_pro_id_fkey"
+            columns: ["pro_id"]
+            isOneToOne: false
+            referencedRelation: "pros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_applications_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projects: {
+        Row: {
+          area: string | null
+          budget_max: number | null
+          budget_min: number | null
+          contact_email: string
+          contact_name: string
+          created_at: string
+          description: string
+          end_date: string | null
+          id: string
+          notify_applications: boolean
+          photos: string[]
+          postcode: string
+          reference: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          reviewer_note: string | null
+          start_date: string | null
+          status: string
+          title: string
+          trade_slug: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          area?: string | null
+          budget_max?: number | null
+          budget_min?: number | null
+          contact_email: string
+          contact_name: string
+          created_at?: string
+          description: string
+          end_date?: string | null
+          id?: string
+          notify_applications?: boolean
+          photos?: string[]
+          postcode: string
+          reference?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          reviewer_note?: string | null
+          start_date?: string | null
+          status?: string
+          title: string
+          trade_slug?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          area?: string | null
+          budget_max?: number | null
+          budget_min?: number | null
+          contact_email?: string
+          contact_name?: string
+          created_at?: string
+          description?: string
+          end_date?: string | null
+          id?: string
+          notify_applications?: boolean
+          photos?: string[]
+          postcode?: string
+          reference?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          reviewer_note?: string | null
+          start_date?: string | null
+          status?: string
+          title?: string
+          trade_slug?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_trade_slug_fkey"
+            columns: ["trade_slug"]
+            isOneToOne: false
+            referencedRelation: "trades"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
       pros: {
         Row: {
           area: string
@@ -1087,6 +1304,7 @@ export type Database = {
           availability: Database["public"]["Enums"]["availability"]
           bio: string
           company: string
+          contact_email: string | null
           created_at: string
           day_rate: number | null
           featured: boolean
@@ -1111,6 +1329,7 @@ export type Database = {
           availability?: Database["public"]["Enums"]["availability"]
           bio?: string
           company: string
+          contact_email?: string | null
           created_at?: string
           day_rate?: number | null
           featured?: boolean
@@ -1135,6 +1354,7 @@ export type Database = {
           availability?: Database["public"]["Enums"]["availability"]
           bio?: string
           company?: string
+          contact_email?: string | null
           created_at?: string
           day_rate?: number | null
           featured?: boolean
@@ -1319,6 +1539,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      saved_searches: {
+        Row: {
+          area: string | null
+          created_at: string
+          filters: Json
+          id: string
+          label: string
+          notify: boolean
+          trade_slug: string | null
+          user_id: string
+        }
+        Insert: {
+          area?: string | null
+          created_at?: string
+          filters?: Json
+          id?: string
+          label: string
+          notify?: boolean
+          trade_slug?: string | null
+          user_id: string
+        }
+        Update: {
+          area?: string | null
+          created_at?: string
+          filters?: Json
+          id?: string
+          label?: string
+          notify?: boolean
+          trade_slug?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       security_scan_runs: {
         Row: {
@@ -1621,6 +1874,17 @@ export type Database = {
         Args: { p_body: string; p_question_id: string; p_user_id: string }
         Returns: string
       }
+      apply_to_project: {
+        Args: {
+          p_available_from?: string
+          p_message: string
+          p_pro_id: string
+          p_project_id: string
+          p_quote_high?: number
+          p_quote_low?: number
+        }
+        Returns: Json
+      }
       ask_question: {
         Args: {
           p_area?: string
@@ -1712,6 +1976,13 @@ export type Database = {
         Args: { p_pro_id: string }
         Returns: {
           slot_start: string
+        }[]
+      }
+      project_application_counts: {
+        Args: never
+        Returns: {
+          applications: number
+          project_id: string
         }[]
       }
       prune_api_access_events: { Args: never; Returns: undefined }
