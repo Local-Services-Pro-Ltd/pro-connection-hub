@@ -133,8 +133,12 @@ function ProPage() {
             alt={`${pro.name} of ${pro.company}`}
             width={800}
             height={800}
+            loading="eager"
+            decoding="async"
+            fetchPriority="high"
             className="aspect-square w-full rounded-md border border-border object-cover object-top"
           />
+
           <div>
             <p className="eyebrow capitalize">
               {pro.trade_slug.replace("-", " ")}
