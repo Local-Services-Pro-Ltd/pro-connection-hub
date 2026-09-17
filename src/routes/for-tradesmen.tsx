@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Check, ShieldCheck, MapPin, Users, Star } from "lucide-react";
 import { PageHero, Section, SectionHead } from "@/components/layout-bits";
+import { useAuth } from "@/hooks/use-auth";
 import { getRequestOrigin } from "@/lib/origin.functions";
 import { plansQuery, planVisibilityQuery } from "@/lib/queries";
 import heroForTradesmen from "@/assets/hero-for-tradesmen.jpg";
@@ -102,6 +103,7 @@ const DEFAULT_VISIBILITY: Record<string, boolean> = {
 };
 
 function ForTradesmen() {
+  const { user } = useAuth();
   const { data: allTiers } = useSuspenseQuery(plansQuery);
   const { data: visibility } = useSuspenseQuery(planVisibilityQuery);
 
@@ -219,17 +221,31 @@ function ForTradesmen() {
                   </li>
                 ))}
               </ul>
-              <Link
-                to="/signin"
-                search={{ plan: t.slug }}
-                className={`mt-8 flex items-center justify-center rounded-sm px-5 py-3 font-display text-sm font-semibold ${
-                  t.featured
-                    ? "bg-primary text-primary-foreground hover:brightness-110"
-                    : "border border-border-strong hover:border-primary hover:text-primary"
-                }`}
-              >
-                Choose {t.name}
-              </Link>
+              {user ? (
+                // Already signed in — go straight to checkout in the dashboard.
+                <a
+                  href="/dashboard?tab=plan"
+                  className={`mt-8 flex items-center justify-center rounded-sm px-5 py-3 font-display text-sm font-semibold ${
+                    t.featured
+                      ? "bg-primary text-primary-foreground hover:brightness-110"
+                      : "border border-border-strong hover:border-primary hover:text-primary"
+                  }`}
+                >
+                  Choose {t.name}
+                </a>
+              ) : (
+                <Link
+                  to="/signin"
+                  search={{ plan: t.slug }}
+                  className={`mt-8 flex items-center justify-center rounded-sm px-5 py-3 font-display text-sm font-semibold ${
+                    t.featured
+                      ? "bg-primary text-primary-foreground hover:brightness-110"
+                      : "border border-border-strong hover:border-primary hover:text-primary"
+                  }`}
+                >
+                  Choose {t.name}
+                </Link>
+              )}
             </div>
           ))}
         </div>

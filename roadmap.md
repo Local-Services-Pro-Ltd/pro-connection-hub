@@ -14,7 +14,7 @@
 - [ ] Confirm sign-in / sign-up works for homeowners and tradespeople
 - [x] Tradesperson dashboard (/dashboard): leads, visits, profile editing, portfolio photos, membership
 - [x] Firm directory page (/directory) grouped by trade, demo entries labelled "Example listing"
-- [ ] Subscription billing for Starter £29 / Trade £79
+- [x] Subscription billing for Starter £29 / Trade £79 (Stripe, own account; checkout + portal + dashboard unlock)
 - [ ] Photo upload on the job posting form
 
 ## Trust & legal

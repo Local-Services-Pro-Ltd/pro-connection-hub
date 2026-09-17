@@ -1,7 +1,14 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import {
+  PLAN_PRICES,
+  createMembershipCheckout,
+  openBillingPortal,
+  syncMembership,
+} from "@/lib/billing.functions";
 import { PageHero, Section } from "@/components/layout-bits";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -58,6 +65,30 @@ function Dashboard() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [tab, setTab] = useState<TabId>("leads");
+  const queryClient = useQueryClient();
+  const sync = useServerFn(syncMembership);
+
+  // Deep links from Stripe checkout land on /dashboard?tab=plan&checkout=...
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const requested = params.get("tab");
+    if (requested && TABS.some((t) => t.id === requested)) {
+      setTab(requested as TabId);
+    }
+    if (params.get("checkout") === "success") {
+      toast.success("Payment received — unlocking your membership.");
+    }
+  }, []);
+
+  // Membership state always comes from Stripe, never from the redirect.
+  useEffect(() => {
+    if (!user) return;
+    void sync({})
+      .then(() =>
+        queryClient.invalidateQueries({ queryKey: ["my-pro-profile"] }),
+      )
+      .catch(() => {});
+  }, [user, sync, queryClient]);
 
   useEffect(() => {
     if (!loading && !user)
@@ -146,14 +177,66 @@ function Dashboard() {
         </div>
 
         <div className="mt-8">
-          {tab === "leads" && <LeadsTab pro={pro} />}
-          {tab === "visits" && <VisitsTab pro={pro} />}
+          {tab === "leads" &&
+            (isMember(pro) ? (
+              <LeadsTab pro={pro} />
+            ) : (
+              <MembershipLocked
+                what="enquiries and job applications"
+                onOpen={() => setTab("plan")}
+              />
+            ))}
+          {tab === "visits" &&
+            (isMember(pro) ? (
+              <VisitsTab pro={pro} />
+            ) : (
+              <MembershipLocked
+                what="booked visits"
+                onOpen={() => setTab("plan")}
+              />
+            ))}
           {tab === "profile" && <ProfileTab pro={pro} />}
           {tab === "photos" && <PhotosTab pro={pro} />}
           {tab === "plan" && <PlanTab pro={pro} />}
         </div>
       </Section>
     </>
+  );
+}
+
+/* ----------------------------------------------------------- membership */
+
+/** A paid membership unlocks lead and visit details. */
+function isMember(pro: Pro) {
+  return ["active", "trialing", "past_due"].includes(
+    pro.subscription_status ?? "none",
+  );
+}
+
+function MembershipLocked({
+  what,
+  onOpen,
+}: {
+  what: string;
+  onOpen: () => void;
+}) {
+  return (
+    <div className={`${card} max-w-2xl`}>
+      <p className="eyebrow">Membership needed</p>
+      <h2 className="mt-2 text-2xl">Unlock your {what}</h2>
+      <p className="mt-2 text-sm text-muted-foreground">
+        Your listing stays live either way. A paid membership opens the contact
+        details on every enquiry, your booked visits and priority placement in
+        the directory.
+      </p>
+      <button
+        type="button"
+        onClick={onOpen}
+        className="mt-5 rounded-sm bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:brightness-110"
+      >
+        See membership options
+      </button>
+    </div>
   );
 }
 
@@ -734,7 +817,38 @@ function PlanTab({ pro }: { pro: Pro }) {
     [plans.data, pro.plan_slug],
   );
 
-  const active = pro.subscription_status === "active";
+  const active = isMember(pro);
+  const checkout = useServerFn(createMembershipCheckout);
+  const portal = useServerFn(openBillingPortal);
+  const [busy, setBusy] = useState<string | null>(null);
+
+  async function startCheckout(planSlug: string) {
+    setBusy(planSlug);
+    try {
+      const { url } = await checkout({ data: { planSlug } });
+      window.location.href = url;
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "We couldn't open checkout.",
+      );
+      setBusy(null);
+    }
+  }
+
+  async function manage() {
+    setBusy("manage");
+    try {
+      const { url } = await portal({});
+      window.location.href = url;
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "We couldn't open your billing page.",
+      );
+      setBusy(null);
+    }
+  }
 
   return (
     <div className="max-w-3xl space-y-8">
@@ -752,32 +866,65 @@ function PlanTab({ pro }: { pro: Pro }) {
               }.`
             : "Your listing is visible, but paid membership unlocks the full lead allowance and priority placement."}
         </p>
+        {active && (
+          <button
+            type="button"
+            onClick={manage}
+            disabled={busy !== null}
+            className="mt-5 rounded-sm border border-border px-5 py-2.5 text-sm font-semibold hover:border-primary hover:text-primary disabled:opacity-60"
+          >
+            {busy === "manage" ? "Opening…" : "Manage billing"}
+          </button>
+        )}
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2">
         {(plans.data ?? [])
           .filter((p) => p.visible)
-          .map((p) => (
-            <div key={p.slug} className={card}>
-              <h3 className="text-lg">{p.name}</h3>
-              <p className="mt-1 text-2xl">
-                {p.price}
-                <span className="text-sm text-muted-foreground">{p.per}</span>
-              </p>
-              <p className="mt-2 text-sm text-muted-foreground">{p.line}</p>
-              <ul className="mt-4 space-y-1.5 text-sm text-muted-foreground">
-                {p.features.map((f) => (
-                  <li key={f}>· {f}</li>
-                ))}
-              </ul>
-              <Link
-                to="/for-tradesmen"
-                className="mt-5 inline-block rounded-sm border border-border px-5 py-2.5 text-sm font-semibold"
-              >
-                {pro.plan_slug === p.slug ? "Your plan" : "Choose this plan"}
-              </Link>
-            </div>
-          ))}
+          .map((p) => {
+            const payable = p.slug in PLAN_PRICES;
+            const mine = pro.plan_slug === p.slug && active;
+            return (
+              <div key={p.slug} className={card}>
+                <h3 className="text-lg">{p.name}</h3>
+                <p className="mt-1 text-2xl">
+                  {p.price}
+                  <span className="text-sm text-muted-foreground">{p.per}</span>
+                </p>
+                <p className="mt-2 text-sm text-muted-foreground">{p.line}</p>
+                <ul className="mt-4 space-y-1.5 text-sm text-muted-foreground">
+                  {p.features.map((f) => (
+                    <li key={f}>· {f}</li>
+                  ))}
+                </ul>
+                {mine ? (
+                  <span className="mt-5 inline-block rounded-sm border border-primary px-5 py-2.5 text-sm font-semibold text-primary">
+                    Your plan
+                  </span>
+                ) : payable ? (
+                  <button
+                    type="button"
+                    onClick={() => startCheckout(p.slug)}
+                    disabled={busy !== null}
+                    className="mt-5 rounded-sm bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:brightness-110 disabled:opacity-60"
+                  >
+                    {busy === p.slug
+                      ? "Opening checkout…"
+                      : active
+                        ? `Switch to ${p.name}`
+                        : `Subscribe — ${p.price}${p.per}`}
+                  </button>
+                ) : (
+                  <Link
+                    to="/enterprise"
+                    className="mt-5 inline-block rounded-sm border border-border px-5 py-2.5 text-sm font-semibold"
+                  >
+                    Talk to us
+                  </Link>
+                )}
+              </div>
+            );
+          })}
       </div>
     </div>
   );
