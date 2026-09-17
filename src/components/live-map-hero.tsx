@@ -134,9 +134,13 @@ export function LiveMapHero({
   const { consent, fix, smoothed, track, error, allow, deny, reset } =
     useGpsConsent();
 
-  // Live hub counts over a realtime WebSocket channel.
+  // Hub counts come from the directory itself — the same source as the Areas
+  // page and every trade page — then travel between tabs over realtime.
+  const { data: proCounts } = useQuery(proCountsQuery);
   const { counts, updatedAt, connected } = useHubCounts(
-    Object.fromEntries(hubs.map((h) => [h.label, h.live])),
+    Object.fromEntries(
+      hubs.map((h) => [h.label, proCounts?.byArea[h.slug] ?? 0]),
+    ),
   );
   const [now, setNow] = useState(0);
   const [selected, setSelected] = useState<Hub | null>(null);
