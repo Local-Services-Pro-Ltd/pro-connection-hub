@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { CalendarDays, MapPin, Users } from "lucide-react";
 import { Section, SectionHead } from "@/components/layout-bits";
 import {
