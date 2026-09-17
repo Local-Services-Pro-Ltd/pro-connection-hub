@@ -20,6 +20,12 @@ export function useHubCounts(seed: HubCounts) {
   const countsRef = useRef(counts);
   countsRef.current = counts;
 
+  // The seed is the database truth; adopt it whenever it changes.
+  const seedKey = JSON.stringify(seed);
+  useEffect(() => {
+    setCounts(JSON.parse(seedKey) as HubCounts);
+  }, [seedKey]);
+
   const apply = useCallback((payload: Payload) => {
     lastSeen.current = payload.at;
     setCounts(payload.counts);
