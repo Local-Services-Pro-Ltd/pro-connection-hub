@@ -289,7 +289,7 @@ export function SiteFooter() {
               no. 12126782 · ICO registration no. 00015543780
             </p>
             <address className="not-italic">
-              Registered office: 38 Bloomfield Road, London, SE18 7J, United
+              Registered office: 38 Bloomfield Road, London, SE18 7JH, United
               Kingdom
             </address>
           </div>
