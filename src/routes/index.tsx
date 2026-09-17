@@ -124,7 +124,8 @@ function Home() {
   const reducedMotion = usePrefersReducedMotion();
 
   const ledger = [
-    { value: String(stats.pros), label: "Verified tradesmen" },
+    // Same source as the coverage map and the trade/area pages.
+    { value: String(counts.total), label: "Verified tradesmen" },
     { value: String(stats.trades), label: "Trades covered" },
     {
       value: stats.avgResponse ? `${stats.avgResponse} min` : "—",
