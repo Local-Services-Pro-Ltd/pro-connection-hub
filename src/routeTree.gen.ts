@@ -15,6 +15,7 @@ import { Route as ApplicationStatusRouteImport } from './routes/application-stat
 import { Route as AreasRouteImport } from './routes/areas'
 import { Route as ClaimRouteImport } from './routes/claim'
 import { Route as CoverageRouteImport } from './routes/coverage'
+import { Route as DirectoryRouteImport } from './routes/directory'
 import { Route as EnterpriseRouteImport } from './routes/enterprise'
 import { Route as ForTradesmenRouteImport } from './routes/for-tradesmen'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
@@ -87,6 +88,11 @@ const ClaimRoute = ClaimRouteImport.update({
 const CoverageRoute = CoverageRouteImport.update({
   id: '/coverage',
   path: '/coverage',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DirectoryRoute = DirectoryRouteImport.update({
+  id: '/directory',
+  path: '/directory',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EnterpriseRoute = EnterpriseRouteImport.update({
@@ -314,6 +320,7 @@ export interface FileRoutesByFullPath {
   '/areas': typeof AreasRoute
   '/claim': typeof ClaimRoute
   '/coverage': typeof CoverageRoute
+  '/directory': typeof DirectoryRoute
   '/enterprise': typeof EnterpriseRoute
   '/for-tradesmen': typeof ForTradesmenRoute
   '/how-it-works': typeof HowItWorksRoute
@@ -365,6 +372,7 @@ export interface FileRoutesByTo {
   '/areas': typeof AreasRoute
   '/claim': typeof ClaimRoute
   '/coverage': typeof CoverageRoute
+  '/directory': typeof DirectoryRoute
   '/enterprise': typeof EnterpriseRoute
   '/for-tradesmen': typeof ForTradesmenRoute
   '/how-it-works': typeof HowItWorksRoute
@@ -417,6 +425,7 @@ export interface FileRoutesById {
   '/areas': typeof AreasRoute
   '/claim': typeof ClaimRoute
   '/coverage': typeof CoverageRoute
+  '/directory': typeof DirectoryRoute
   '/enterprise': typeof EnterpriseRoute
   '/for-tradesmen': typeof ForTradesmenRoute
   '/how-it-works': typeof HowItWorksRoute
@@ -470,6 +479,7 @@ export interface FileRouteTypes {
     | '/areas'
     | '/claim'
     | '/coverage'
+    | '/directory'
     | '/enterprise'
     | '/for-tradesmen'
     | '/how-it-works'
@@ -521,6 +531,7 @@ export interface FileRouteTypes {
     | '/areas'
     | '/claim'
     | '/coverage'
+    | '/directory'
     | '/enterprise'
     | '/for-tradesmen'
     | '/how-it-works'
@@ -572,6 +583,7 @@ export interface FileRouteTypes {
     | '/areas'
     | '/claim'
     | '/coverage'
+    | '/directory'
     | '/enterprise'
     | '/for-tradesmen'
     | '/how-it-works'
@@ -624,6 +636,7 @@ export interface RootRouteChildren {
   AreasRoute: typeof AreasRoute
   ClaimRoute: typeof ClaimRoute
   CoverageRoute: typeof CoverageRoute
+  DirectoryRoute: typeof DirectoryRoute
   EnterpriseRoute: typeof EnterpriseRoute
   ForTradesmenRoute: typeof ForTradesmenRoute
   HowItWorksRoute: typeof HowItWorksRoute
@@ -711,6 +724,13 @@ declare module '@tanstack/react-router' {
       path: '/coverage'
       fullPath: '/coverage'
       preLoaderRoute: typeof CoverageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/directory': {
+      id: '/directory'
+      path: '/directory'
+      fullPath: '/directory'
+      preLoaderRoute: typeof DirectoryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/enterprise': {
@@ -1024,6 +1044,7 @@ const rootRouteChildren: RootRouteChildren = {
   AreasRoute: AreasRoute,
   ClaimRoute: ClaimRoute,
   CoverageRoute: CoverageRoute,
+  DirectoryRoute: DirectoryRoute,
   EnterpriseRoute: EnterpriseRoute,
   ForTradesmenRoute: ForTradesmenRoute,
   HowItWorksRoute: HowItWorksRoute,

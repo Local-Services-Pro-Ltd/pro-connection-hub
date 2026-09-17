@@ -29,10 +29,6 @@ export const Route = createFileRoute("/directory")({
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      {
-        rel: "canonical",
-        href: "https://tradesmanfinder.org/directory",
-      },
     ],
     links: [{ rel: "canonical", href: "https://tradesmanfinder.org/directory" }],
   }),
@@ -62,7 +58,7 @@ function Directory() {
       <PageHero
         eyebrow="Directory"
         title="Every firm listed on TradesmanFinder"
-        lead="Firms grouped by trade, with their photos, ratings and reviews. Listings marked “Example listing” are illustrative entries we use while the first firms complete vetting."
+        sub="Firms grouped by trade, with their photos, ratings and reviews. Listings marked “Example listing” are illustrative entries we use while the first firms complete vetting."
       />
 
       <Section>
