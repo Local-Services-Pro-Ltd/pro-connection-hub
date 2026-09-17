@@ -42,11 +42,16 @@ export const Route = createFileRoute("/projects/")({
       ),
     ],
   }),
+  // Resolve the board on the server so the page never ships a permanent
+  // "loading" state if hydration is slow or blocked.
+  loader: ({ context }) =>
+    context.queryClient.ensureQueryData(publishedProjectsQuery()),
   component: ProjectBoard,
 });
 
 function ProjectBoard() {
-  const { data: projects, isLoading } = useQuery(publishedProjectsQuery());
+  const { data: projects } = useSuspenseQuery(publishedProjectsQuery());
+  const isLoading = false;
   const { data: counts } = useQuery(projectApplicationCountsQuery);
   const { data: trades } = useQuery(tradesQuery);
   const tradeName = (slug: string | null) =>
