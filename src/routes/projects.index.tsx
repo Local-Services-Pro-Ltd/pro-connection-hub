@@ -51,7 +51,6 @@ export const Route = createFileRoute("/projects/")({
 
 function ProjectBoard() {
   const { data: projects } = useSuspenseQuery(publishedProjectsQuery());
-  const isLoading = false;
   const { data: counts } = useQuery(projectApplicationCountsQuery);
   const { data: trades } = useQuery(tradesQuery);
   const tradeName = (slug: string | null) =>
@@ -74,9 +73,7 @@ function ProjectBoard() {
         }
       />
 
-      {isLoading ? (
-        <p className="mt-10 text-sm text-muted-foreground">Loading the board…</p>
-      ) : (projects?.length ?? 0) === 0 ? (
+      {projects.length === 0 ? (
         <div className="mt-10 rounded-md border border-dashed border-border p-10 text-center">
           <p className="text-muted-foreground">
             No live projects right now. Post yours and vetted firms in your area
@@ -92,7 +89,7 @@ function ProjectBoard() {
         </div>
       ) : (
         <ul className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {projects!.map((p) => (
+          {projects.map((p) => (
             <li
               key={p.id}
               className="flex flex-col rounded-md border border-border bg-card p-6"
