@@ -37,10 +37,16 @@ export function ProCard({ pro }: { pro: Pro }) {
           company={pro.company}
           className="absolute bottom-3 right-3"
         />
-        {pro.availability === "immediate" && (
-          <span className="absolute right-3 top-3 rounded-sm bg-success px-2 py-1 font-display text-[11px] font-semibold uppercase tracking-widest text-background">
-            Free now
+        {pro.is_demo ? (
+          <span className="absolute right-3 top-3 rounded-sm bg-muted px-2 py-1 font-display text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+            Example listing
           </span>
+        ) : (
+          pro.availability === "immediate" && (
+            <span className="absolute right-3 top-3 rounded-sm bg-success px-2 py-1 font-display text-[11px] font-semibold uppercase tracking-widest text-background">
+              Free now
+            </span>
+          )
         )}
       </div>
       <div className="p-5">
