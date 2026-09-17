@@ -103,6 +103,7 @@ const DEFAULT_VISIBILITY: Record<string, boolean> = {
 };
 
 function ForTradesmen() {
+  const { user } = useAuth();
   const { data: allTiers } = useSuspenseQuery(plansQuery);
   const { data: visibility } = useSuspenseQuery(planVisibilityQuery);
 
