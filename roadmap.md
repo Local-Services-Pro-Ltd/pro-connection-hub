@@ -6,8 +6,8 @@
 
 ## Broken / empty sections
 - [x] Project board renders server-side (no permanent "Loading the board…")
-- [ ] Warmer empty states + labelled example entries for Ask the Pros and Reviews
-- [ ] Audit every main nav link for dead ends / 404s
+- [x] Warmer empty states; 4 labelled example questions seeded (reviews left unseeded — real jobs only)
+- [x] Nav audit — all main links return a real page
 
 ## Functional completeness
 - [ ] Confirm Post a job submits + confirmation screen and email
