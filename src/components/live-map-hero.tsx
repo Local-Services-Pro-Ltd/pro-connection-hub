@@ -12,6 +12,8 @@ import {
   Download,
   Trash2,
 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { proCountsQuery } from "@/lib/queries";
 import { usePrefersReducedMotion } from "@/hooks/use-reduced-motion";
 import { useGpsConsent } from "@/hooks/use-gps-consent";
 import { useHubCounts } from "@/hooks/use-hub-counts";
@@ -66,15 +68,15 @@ type Hub = {
   y: number;
   r: number;
   label: string;
-  live: number;
+  slug: string;
   postcode: string;
 };
 
 /** Live "hubs" — pulsing coverage nodes for the areas we're actually live in. */
 const hubs: Hub[] = [
-  { x: 1240, y: 540, r: 150, label: "Greater London", live: 75, postcode: "EC1" },
-  { x: 1385, y: 605, r: 104, label: "Kent", live: 38, postcode: "ME14" },
-  { x: 1145, y: 640, r: 96, label: "Surrey", live: 31, postcode: "GU1" },
+  { x: 1240, y: 540, r: 150, label: "Greater London", slug: "london", postcode: "EC1" },
+  { x: 1385, y: 605, r: 104, label: "Kent", slug: "kent", postcode: "ME14" },
+  { x: 1145, y: 640, r: 96, label: "Surrey", slug: "surrey", postcode: "GU1" },
 ];
 
 
@@ -132,9 +134,13 @@ export function LiveMapHero({
   const { consent, fix, smoothed, track, error, allow, deny, reset } =
     useGpsConsent();
 
-  // Live hub counts over a realtime WebSocket channel.
+  // Hub counts come from the directory itself — the same source as the Areas
+  // page and every trade page — then travel between tabs over realtime.
+  const { data: proCounts } = useQuery(proCountsQuery);
   const { counts, updatedAt, connected } = useHubCounts(
-    Object.fromEntries(hubs.map((h) => [h.label, h.live])),
+    Object.fromEntries(
+      hubs.map((h) => [h.label, proCounts?.byArea[h.slug] ?? 0]),
+    ),
   );
   const [now, setNow] = useState(0);
   const [selected, setSelected] = useState<Hub | null>(null);
@@ -385,7 +391,7 @@ export function LiveMapHero({
                 strokeWidth="2"
                 style={{
                   transformOrigin: `${h.x}px ${h.y}px`,
-                  animation: `map-ping 3.2s ease-out ${(h.live % 5) * 0.4}s infinite`,
+                  animation: `map-ping 3.2s ease-out ${(h.slug.length % 5) * 0.4}s infinite`,
                 }}
               />
             )}

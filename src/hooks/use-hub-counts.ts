@@ -20,6 +20,12 @@ export function useHubCounts(seed: HubCounts) {
   const countsRef = useRef(counts);
   countsRef.current = counts;
 
+  // The seed is the database truth; adopt it whenever it changes.
+  const seedKey = JSON.stringify(seed);
+  useEffect(() => {
+    setCounts(JSON.parse(seedKey) as HubCounts);
+  }, [seedKey]);
+
   const apply = useCallback((payload: Payload) => {
     lastSeen.current = payload.at;
     setCounts(payload.counts);
@@ -45,10 +51,9 @@ export function useHubCounts(seed: HubCounts) {
     const timer = setInterval(() => {
       const now = Date.now();
       if (now - lastSeen.current < 5_500) return;
-      const next: HubCounts = {};
-      for (const [label, value] of Object.entries(countsRef.current)) {
-        next[label] = Math.max(3, value + Math.round((Math.random() - 0.5) * 4));
-      }
+      // Counts are a mirror of the directory, never a simulation: publish the
+      // seed we were given so every tab agrees with the database.
+      const next: HubCounts = { ...countsRef.current };
       lastSeen.current = now;
       void channel.send({
         type: "broadcast",
