@@ -64,6 +64,30 @@ function Dashboard() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [tab, setTab] = useState<TabId>("leads");
+  const queryClient = useQueryClient();
+  const sync = useServerFn(syncMembership);
+
+  // Deep links from Stripe checkout land on /dashboard?tab=plan&checkout=...
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const requested = params.get("tab");
+    if (requested && TABS.some((t) => t.id === requested)) {
+      setTab(requested as TabId);
+    }
+    if (params.get("checkout") === "success") {
+      toast.success("Payment received — unlocking your membership.");
+    }
+  }, []);
+
+  // Membership state always comes from Stripe, never from the redirect.
+  useEffect(() => {
+    if (!user) return;
+    void sync({})
+      .then(() =>
+        queryClient.invalidateQueries({ queryKey: ["my-pro-profile"] }),
+      )
+      .catch(() => {});
+  }, [user, sync, queryClient]);
 
   useEffect(() => {
     if (!loading && !user)
