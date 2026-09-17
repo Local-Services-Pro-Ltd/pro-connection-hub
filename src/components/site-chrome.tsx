@@ -278,11 +278,16 @@ export function SiteFooter() {
 
       <div className="border-t border-border">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-5 py-5 text-xs leading-relaxed text-muted-foreground lg:px-8">
-          <p>
-            © {new Date().getFullYear()} TradesmanFinder. Tradesman Finder is
-            part of Local Services Pro and All Care 4 U Group. All Rights
-            Reserved.
-          </p>
+          <div className="space-y-1">
+            <p>
+              © {new Date().getFullYear()} TradesmanFinder. Tradesman Finder is
+              part of Local Services Pro and All Care 4 U Group. All Rights
+              Reserved.
+            </p>
+            <p>
+              Local Services Pro Ltd · ICO registration no. 00015543780
+            </p>
+          </div>
           <nav className="flex flex-wrap items-center gap-4">
             <Link to="/privacy" className="hover:text-foreground">
               Privacy
