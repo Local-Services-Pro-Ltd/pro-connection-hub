@@ -391,7 +391,7 @@ export function LiveMapHero({
                 strokeWidth="2"
                 style={{
                   transformOrigin: `${h.x}px ${h.y}px`,
-                  animation: `map-ping 3.2s ease-out ${(h.live % 5) * 0.4}s infinite`,
+                  animation: `map-ping 3.2s ease-out ${(h.slug.length % 5) * 0.4}s infinite`,
                 }}
               />
             )}
