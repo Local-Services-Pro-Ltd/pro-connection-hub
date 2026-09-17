@@ -65,7 +65,7 @@ function CostsIndex() {
           sub="Every guide gives per-item prices, typical day rates, what pushes a quote up, and the questions worth asking before you agree anything."
         />
 
-        <div className="mt-10 grid gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {guides.map((g) => {
             const name = nameOf(g.slug);
             const cheapest = Math.min(...g.jobs.map((j) => j.low));
@@ -74,7 +74,7 @@ function CostsIndex() {
                 key={g.slug}
                 to="/costs/$trade"
                 params={{ trade: g.slug }}
-                className="group flex flex-col bg-card transition-colors hover:bg-surface"
+                className="group flex flex-col overflow-hidden rounded-md border border-border bg-card transition-colors hover:border-border-strong hover:bg-surface"
               >
                 <img
                   src={tradeHero(g.slug)}
@@ -88,7 +88,10 @@ function CostsIndex() {
                 <div className="flex flex-1 flex-col p-6">
                   <div className="flex items-start justify-between gap-3">
                     <h2 className="text-xl">{name} prices</h2>
-                    <ArrowUpRight className="h-4 w-4 shrink-0 text-muted-foreground transition-all group-hover:-translate-y-0.5 group-hover:text-primary" />
+                    <ArrowUpRight
+                      aria-hidden="true"
+                      className="h-4 w-4 shrink-0 text-muted-foreground/60 transition-all group-hover:-translate-y-0.5 group-hover:text-foreground"
+                    />
                   </div>
                   <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
                     {g.intro}
@@ -101,6 +104,23 @@ function CostsIndex() {
               </Link>
             );
           })}
+
+          <Link
+            to="/ask"
+            className="group flex flex-col justify-between rounded-md border border-dashed border-border-strong bg-surface p-6 transition-colors hover:bg-muted"
+          >
+            <div>
+              <h2 className="text-xl">Don't see your trade?</h2>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                Ask the pros what your job should cost, or post it and let
+                vetted tradespeople price it for you.
+              </p>
+            </div>
+            <span className="mt-6 inline-flex items-center gap-2 font-display text-sm font-semibold text-primary">
+              Ask the pros
+              <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5" />
+            </span>
+          </Link>
         </div>
 
         <p className="mt-10 max-w-2xl text-sm text-muted-foreground">
