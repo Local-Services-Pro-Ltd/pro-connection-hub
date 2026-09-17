@@ -33,3 +33,4 @@ dist-ssr
 
 tests/visual/current/
 tests/visual/diffs/
+package-lock.json
