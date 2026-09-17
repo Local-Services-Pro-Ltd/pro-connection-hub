@@ -1009,12 +1009,92 @@ export function myProProfileQuery(userId: string | undefined) {
       if (!userId) return null;
       const { data, error } = await supabase
         .from("pros")
-        .select("id, company, published, trade_slug")
+        .select("*")
         .eq("user_id", userId)
         .maybeSingle();
       if (error) return null;
-      return data;
+      return (data as Pro | null) ?? null;
     },
     staleTime: 60_000,
   });
 }
+
+/* ------------------------------------------------------------------ *
+ * Tradesperson dashboard
+ * ------------------------------------------------------------------ */
+
+export type Booking = Database["public"]["Tables"]["bookings"]["Row"];
+
+/** Enquiries sent to this firm (RLS limits rows to the firm's own leads). */
+export function firmLeadsQuery(proId: string | undefined) {
+  return queryOptions({
+    queryKey: ["firm-leads", proId ?? null],
+    queryFn: async () => {
+      if (!proId) return [] as ProLead[];
+      return unwrap(
+        await supabase
+          .from("pro_leads")
+          .select("*")
+          .eq("pro_id", proId)
+          .order("created_at", { ascending: false }),
+      ) as ProLead[];
+    },
+    staleTime: 15_000,
+  });
+}
+
+/** Visits homeowners have requested with this firm. */
+export function firmBookingsQuery(proId: string | undefined) {
+  return queryOptions({
+    queryKey: ["firm-bookings", proId ?? null],
+    queryFn: async () => {
+      if (!proId) return [] as Booking[];
+      return unwrap(
+        await supabase
+          .from("bookings")
+          .select("*")
+          .eq("pro_id", proId)
+          .order("slot_start", { ascending: true }),
+      ) as Booking[];
+    },
+    staleTime: 15_000,
+  });
+}
+
+/** Project-board applications this firm has sent. */
+export function firmApplicationsQuery(proId: string | undefined) {
+  return queryOptions({
+    queryKey: ["firm-applications", proId ?? null],
+    queryFn: async () => {
+      if (!proId) return [] as ProjectApplication[];
+      return unwrap(
+        await supabase
+          .from("project_applications")
+          .select("*")
+          .eq("pro_id", proId)
+          .order("created_at", { ascending: false }),
+      ) as ProjectApplication[];
+    },
+    staleTime: 15_000,
+  });
+}
+
+/**
+ * Whole published directory for /directory — every firm with its trade, area,
+ * rating and review count, newest verified firms first.
+ */
+export const directoryQuery = queryOptions({
+  queryKey: ["directory"],
+  queryFn: async () =>
+    unwrap(
+      await supabase
+        .from("pros")
+        .select("*")
+        .eq("published", true)
+        .order("is_demo", { ascending: true })
+        .order("rating", { ascending: false })
+        .order("review_count", { ascending: false }),
+    ) as Pro[],
+  staleTime: 60_000,
+});
+

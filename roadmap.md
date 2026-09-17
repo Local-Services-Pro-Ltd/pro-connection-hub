@@ -12,12 +12,13 @@
 ## Functional completeness
 - [ ] Confirm Post a job submits + confirmation screen and email
 - [ ] Confirm sign-in / sign-up works for homeowners and tradespeople
-- [ ] Tradesperson dashboard for matched leads
+- [x] Tradesperson dashboard (/dashboard): leads, visits, profile editing, portfolio photos, membership
+- [x] Firm directory page (/directory) grouped by trade, demo entries labelled "Example listing"
 - [ ] Subscription billing for Starter £29 / Trade £79
 - [ ] Photo upload on the job posting form
 
 ## Trust & legal
-- [ ] Footer: Local Services Pro Ltd, registered address, ICO 00015543780 (address still needed)
+- [x] Footer: Local Services Pro Ltd, company no. 12126782, 38 Bloomfield Road, London SE18 7JH, ICO 00015543780
 - [ ] Review vetting/verification claims for ASA/CMA accuracy
 - [ ] Privacy Policy + Terms GDPR review
 
