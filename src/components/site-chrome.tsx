@@ -285,8 +285,13 @@ export function SiteFooter() {
               Reserved.
             </p>
             <p>
-              Local Services Pro Ltd · ICO registration no. 00015543780
+              Local Services Pro Ltd · Registered in England &amp; Wales, company
+              no. 12126782 · ICO registration no. 00015543780
             </p>
+            <address className="not-italic">
+              Registered office: 38 Bloomfield Road, London, SE18 7J, United
+              Kingdom
+            </address>
           </div>
           <nav className="flex flex-wrap items-center gap-4">
             <Link to="/privacy" className="hover:text-foreground">
