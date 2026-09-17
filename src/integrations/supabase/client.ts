@@ -28,21 +28,28 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
 }
 
 
+// Last-resort fallback for this project's own Supabase instance. These are
+// not secrets: the URL and publishable/anon key are meant to be public and
+// ship in every client bundle regardless (Supabase's access control is
+// Row Level Security on the server, not secrecy of this key). This only
+// activates when the platform's env vars fail to reach the build/runtime —
+// which Cloudflare Pages has done intermittently for this project because
+// creating a deployment (via the API or a GitHub-push webhook) resets the
+// project's persisted deployment_configs env vars. See PR #1 for details.
+const FALLBACK_SUPABASE_URL = 'https://muohvxodwefhwjhdqbxh.supabase.co';
+const FALLBACK_SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_aovWZTugwawLcqBpTuooaA_7V3EQSPb';
+
 function createSupabaseClient() {
   // Use import.meta.env for client-side (Vite build-time replacement)
-  // Fall back to process.env for SSR (server-side rendering)
-  const SUPABASE_URL = import.meta.env['VITE_SUPABASE_URL'] || process.env['SUPABASE_URL'];
-  const SUPABASE_PUBLISHABLE_KEY = import.meta.env['VITE_SUPABASE_PUBLISHABLE_KEY'] || process.env['SUPABASE_PUBLISHABLE_KEY'];
-
-  if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
-    const missing = [
-      ...(!SUPABASE_URL ? ['SUPABASE_URL'] : []),
-      ...(!SUPABASE_PUBLISHABLE_KEY ? ['SUPABASE_PUBLISHABLE_KEY'] : []),
-    ];
-    const message = `Missing Supabase environment variable(s): ${missing.join(', ')}. Connect Supabase in Lovable Cloud.`;
-    console.error(`[Supabase] ${message}`);
-    throw new Error(message);
-  }
+  // Fall back to process.env for SSR (server-side rendering), then to the
+  // known-public values above so a platform env-var outage never breaks
+  // the site.
+  const SUPABASE_URL =
+    import.meta.env['VITE_SUPABASE_URL'] || process.env['SUPABASE_URL'] || FALLBACK_SUPABASE_URL;
+  const SUPABASE_PUBLISHABLE_KEY =
+    import.meta.env['VITE_SUPABASE_PUBLISHABLE_KEY'] ||
+    process.env['SUPABASE_PUBLISHABLE_KEY'] ||
+    FALLBACK_SUPABASE_PUBLISHABLE_KEY;
 
   return createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
     global: {

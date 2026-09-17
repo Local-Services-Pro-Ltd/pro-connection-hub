@@ -10,13 +10,46 @@
  * and connections are all blocked.
  */
 
-const SUPABASE_URL = (
-  process.env["SUPABASE_URL"] ??
-  process.env["VITE_SUPABASE_URL"] ??
-  ""
-).replace(/\/+$/, "");
+// Cloudflare Workers only guarantee bindings via the per-request `env`
+// object passed to `fetch(request, env, ctx)`. `process.env` is a Node.js
+// compatibility polyfill that populates lazily inside a request's async
+// context — it is not reliable at module top-level (evaluated once, at
+// isolate cold start, before any request context exists), which is why a
+// module-level constant here always resolved to "". Resolving the URL
+// inside `policy()` from the real per-request `env` fixes that.
+type RuntimeEnv = Record<string, string | undefined> | undefined;
 
-const SUPABASE_WS = SUPABASE_URL.replace(/^https:/, "wss:");
+// Same last-resort public fallback as src/integrations/supabase/client.ts —
+// keeps the CSP's connect-src consistent with whichever URL the client
+// actually ends up using when platform env vars fail to arrive.
+const FALLBACK_SUPABASE_URL = "https://muohvxodwefhwjhdqbxh.supabase.co";
+
+// `cloudflare:workers`'s `env` is backed by the runtime's own per-request
+// async context, independent of whatever parameters a framework's custom
+// server-entry wrapper does or doesn't forward — the most reliable source.
+// It's only resolvable inside an actual Workers runtime, so this stays a
+// dynamic import guarded by a try/catch for local Node dev and tooling.
+async function cloudflareWorkersEnv(): Promise<RuntimeEnv> {
+  try {
+    const mod = (await import("cloudflare:workers")) as { env?: RuntimeEnv };
+    return mod.env;
+  } catch {
+    return undefined;
+  }
+}
+
+async function resolveSupabaseUrl(env: RuntimeEnv): Promise<string> {
+  const cfEnv = await cloudflareWorkersEnv();
+  const raw =
+    cfEnv?.["SUPABASE_URL"] ??
+    cfEnv?.["VITE_SUPABASE_URL"] ??
+    env?.["SUPABASE_URL"] ??
+    env?.["VITE_SUPABASE_URL"] ??
+    process.env["SUPABASE_URL"] ??
+    process.env["VITE_SUPABASE_URL"] ??
+    FALLBACK_SUPABASE_URL;
+  return raw.replace(/\/+$/, "");
+}
 
 const LOVABLE_FRAME_ANCESTORS = [
   "'self'",
@@ -26,11 +59,13 @@ const LOVABLE_FRAME_ANCESTORS = [
   "https://*.lovableproject.com",
 ];
 
-function policy(): string {
+async function policy(env: RuntimeEnv): Promise<string> {
+  const supabaseUrl = await resolveSupabaseUrl(env);
+  const supabaseWs = supabaseUrl.replace(/^https:/, "wss:");
   const connect = [
     "'self'",
-    SUPABASE_URL,
-    SUPABASE_WS,
+    supabaseUrl,
+    supabaseWs,
     "https://*.lovable.dev",
     "https://*.lovable.app",
   ].filter(Boolean);
@@ -55,18 +90,19 @@ function policy(): string {
   ].join("; ");
 }
 
-export function applySecurityHeaders(
+export async function applySecurityHeaders(
   response: Response,
   request?: Request,
-): Response {
+  env?: RuntimeEnv,
+): Promise<Response> {
   const headers = new Headers(response.headers);
 
   const contentType = headers.get("content-type") ?? "";
   // Dev/preview tooling (Vite HMR, the Lovable editor bridge) evaluates code
   // strings, which a strict policy forbids — enforce CSP in production only.
-  const isProd = process.env["NODE_ENV"] === "production";
+  const isProd = (env?.["NODE_ENV"] ?? process.env["NODE_ENV"]) === "production";
   if (isProd && contentType.includes("text/html")) {
-    headers.set("Content-Security-Policy", policy());
+    headers.set("Content-Security-Policy", await policy(env));
   }
 
   headers.set("X-Content-Type-Options", "nosniff");
