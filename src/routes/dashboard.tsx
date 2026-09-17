@@ -203,6 +203,42 @@ function Dashboard() {
   );
 }
 
+/* ----------------------------------------------------------- membership */
+
+/** A paid membership unlocks lead and visit details. */
+function isMember(pro: Pro) {
+  return ["active", "trialing", "past_due"].includes(
+    pro.subscription_status ?? "none",
+  );
+}
+
+function MembershipLocked({
+  what,
+  onOpen,
+}: {
+  what: string;
+  onOpen: () => void;
+}) {
+  return (
+    <div className={`${card} max-w-2xl`}>
+      <p className="eyebrow">Membership needed</p>
+      <h2 className="mt-2 text-2xl">Unlock your {what}</h2>
+      <p className="mt-2 text-sm text-muted-foreground">
+        Your listing stays live either way. A paid membership opens the contact
+        details on every enquiry, your booked visits and priority placement in
+        the directory.
+      </p>
+      <button
+        type="button"
+        onClick={onOpen}
+        className="mt-5 rounded-sm bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:brightness-110"
+      >
+        See membership options
+      </button>
+    </div>
+  );
+}
+
 /* ---------------------------------------------------------------- leads */
 
 function LeadsTab({ pro }: { pro: Pro }) {
