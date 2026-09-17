@@ -10,13 +10,24 @@
  * and connections are all blocked.
  */
 
-const SUPABASE_URL = (
-  process.env["SUPABASE_URL"] ??
-  process.env["VITE_SUPABASE_URL"] ??
-  ""
-).replace(/\/+$/, "");
+// Cloudflare Workers only guarantee bindings via the per-request `env`
+// object passed to `fetch(request, env, ctx)`. `process.env` is a Node.js
+// compatibility polyfill that populates lazily inside a request's async
+// context — it is not reliable at module top-level (evaluated once, at
+// isolate cold start, before any request context exists), which is why a
+// module-level constant here always resolved to "". Resolving the URL
+// inside `policy()` from the real per-request `env` fixes that.
+type RuntimeEnv = Record<string, string | undefined> | undefined;
 
-const SUPABASE_WS = SUPABASE_URL.replace(/^https:/, "wss:");
+function resolveSupabaseUrl(env: RuntimeEnv): string {
+  const raw =
+    env?.["SUPABASE_URL"] ??
+    env?.["VITE_SUPABASE_URL"] ??
+    process.env["SUPABASE_URL"] ??
+    process.env["VITE_SUPABASE_URL"] ??
+    "";
+  return raw.replace(/\/+$/, "");
+}
 
 const LOVABLE_FRAME_ANCESTORS = [
   "'self'",
@@ -26,11 +37,13 @@ const LOVABLE_FRAME_ANCESTORS = [
   "https://*.lovableproject.com",
 ];
 
-function policy(): string {
+function policy(env: RuntimeEnv): string {
+  const supabaseUrl = resolveSupabaseUrl(env);
+  const supabaseWs = supabaseUrl.replace(/^https:/, "wss:");
   const connect = [
     "'self'",
-    SUPABASE_URL,
-    SUPABASE_WS,
+    supabaseUrl,
+    supabaseWs,
     "https://*.lovable.dev",
     "https://*.lovable.app",
   ].filter(Boolean);
@@ -58,15 +71,16 @@ function policy(): string {
 export function applySecurityHeaders(
   response: Response,
   request?: Request,
+  env?: RuntimeEnv,
 ): Response {
   const headers = new Headers(response.headers);
 
   const contentType = headers.get("content-type") ?? "";
   // Dev/preview tooling (Vite HMR, the Lovable editor bridge) evaluates code
   // strings, which a strict policy forbids — enforce CSP in production only.
-  const isProd = process.env["NODE_ENV"] === "production";
+  const isProd = (env?.["NODE_ENV"] ?? process.env["NODE_ENV"]) === "production";
   if (isProd && contentType.includes("text/html")) {
-    headers.set("Content-Security-Policy", policy());
+    headers.set("Content-Security-Policy", policy(env));
   }
 
   headers.set("X-Content-Type-Options", "nosniff");

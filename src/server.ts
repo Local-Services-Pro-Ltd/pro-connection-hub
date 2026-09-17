@@ -9,6 +9,8 @@ type ServerEntry = {
   fetch: (request: Request, env: unknown, ctx: unknown) => Promise<Response> | Response;
 };
 
+type WorkerEnv = Record<string, string | undefined>;
+
 let serverEntryPromise: Promise<ServerEntry> | undefined;
 
 async function getServerEntry(): Promise<ServerEntry> {
@@ -54,6 +56,7 @@ export default {
       return applySecurityHeaders(
         await normalizeCatastrophicSsrResponse(response),
         request,
+        env as WorkerEnv,
       );
     } catch (error) {
       console.error(error);
@@ -63,6 +66,7 @@ export default {
           headers: { "content-type": "text/html; charset=utf-8" },
         }),
         request,
+        env as WorkerEnv,
       );
     }
   },
