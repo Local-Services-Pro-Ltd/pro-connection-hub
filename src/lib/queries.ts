@@ -1024,8 +1024,6 @@ export function myProProfileQuery(userId: string | undefined) {
  * ------------------------------------------------------------------ */
 
 export type Booking = Database["public"]["Tables"]["bookings"]["Row"];
-export type ProjectApplication =
-  Database["public"]["Tables"]["project_applications"]["Row"];
 
 /** Enquiries sent to this firm (RLS limits rows to the firm's own leads). */
 export function firmLeadsQuery(proId: string | undefined) {
