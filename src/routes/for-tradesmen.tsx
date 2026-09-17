@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Check, ShieldCheck, MapPin, Users, Star } from "lucide-react";
 import { PageHero, Section, SectionHead } from "@/components/layout-bits";
+import { useAuth } from "@/hooks/use-auth";
 import { getRequestOrigin } from "@/lib/origin.functions";
 import { plansQuery, planVisibilityQuery } from "@/lib/queries";
 import heroForTradesmen from "@/assets/hero-for-tradesmen.jpg";
