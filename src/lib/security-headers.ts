@@ -19,8 +19,25 @@
 // inside `policy()` from the real per-request `env` fixes that.
 type RuntimeEnv = Record<string, string | undefined> | undefined;
 
-function resolveSupabaseUrl(env: RuntimeEnv): string {
+// `cloudflare:workers`'s `env` is backed by the runtime's own per-request
+// async context, independent of whatever parameters a framework's custom
+// server-entry wrapper does or doesn't forward — the most reliable source.
+// It's only resolvable inside an actual Workers runtime, so this stays a
+// dynamic import guarded by a try/catch for local Node dev and tooling.
+async function cloudflareWorkersEnv(): Promise<RuntimeEnv> {
+  try {
+    const mod = (await import("cloudflare:workers")) as { env?: RuntimeEnv };
+    return mod.env;
+  } catch {
+    return undefined;
+  }
+}
+
+async function resolveSupabaseUrl(env: RuntimeEnv): Promise<string> {
+  const cfEnv = await cloudflareWorkersEnv();
   const raw =
+    cfEnv?.["SUPABASE_URL"] ??
+    cfEnv?.["VITE_SUPABASE_URL"] ??
     env?.["SUPABASE_URL"] ??
     env?.["VITE_SUPABASE_URL"] ??
     process.env["SUPABASE_URL"] ??
@@ -37,8 +54,8 @@ const LOVABLE_FRAME_ANCESTORS = [
   "https://*.lovableproject.com",
 ];
 
-function policy(env: RuntimeEnv): string {
-  const supabaseUrl = resolveSupabaseUrl(env);
+async function policy(env: RuntimeEnv): Promise<string> {
+  const supabaseUrl = await resolveSupabaseUrl(env);
   const supabaseWs = supabaseUrl.replace(/^https:/, "wss:");
   const connect = [
     "'self'",
@@ -68,11 +85,11 @@ function policy(env: RuntimeEnv): string {
   ].join("; ");
 }
 
-export function applySecurityHeaders(
+export async function applySecurityHeaders(
   response: Response,
   request?: Request,
   env?: RuntimeEnv,
-): Response {
+): Promise<Response> {
   const headers = new Headers(response.headers);
 
   const contentType = headers.get("content-type") ?? "";
@@ -80,7 +97,7 @@ export function applySecurityHeaders(
   // strings, which a strict policy forbids — enforce CSP in production only.
   const isProd = (env?.["NODE_ENV"] ?? process.env["NODE_ENV"]) === "production";
   if (isProd && contentType.includes("text/html")) {
-    headers.set("Content-Security-Policy", policy(env));
+    headers.set("Content-Security-Policy", await policy(env));
   }
 
   headers.set("X-Content-Type-Options", "nosniff");
