@@ -219,17 +219,31 @@ function ForTradesmen() {
                   </li>
                 ))}
               </ul>
-              <Link
-                to="/signin"
-                search={{ plan: t.slug }}
-                className={`mt-8 flex items-center justify-center rounded-sm px-5 py-3 font-display text-sm font-semibold ${
-                  t.featured
-                    ? "bg-primary text-primary-foreground hover:brightness-110"
-                    : "border border-border-strong hover:border-primary hover:text-primary"
-                }`}
-              >
-                Choose {t.name}
-              </Link>
+              {user ? (
+                // Already signed in — go straight to checkout in the dashboard.
+                <a
+                  href="/dashboard?tab=plan"
+                  className={`mt-8 flex items-center justify-center rounded-sm px-5 py-3 font-display text-sm font-semibold ${
+                    t.featured
+                      ? "bg-primary text-primary-foreground hover:brightness-110"
+                      : "border border-border-strong hover:border-primary hover:text-primary"
+                  }`}
+                >
+                  Choose {t.name}
+                </a>
+              ) : (
+                <Link
+                  to="/signin"
+                  search={{ plan: t.slug }}
+                  className={`mt-8 flex items-center justify-center rounded-sm px-5 py-3 font-display text-sm font-semibold ${
+                    t.featured
+                      ? "bg-primary text-primary-foreground hover:brightness-110"
+                      : "border border-border-strong hover:border-primary hover:text-primary"
+                  }`}
+                >
+                  Choose {t.name}
+                </Link>
+              )}
             </div>
           ))}
         </div>
