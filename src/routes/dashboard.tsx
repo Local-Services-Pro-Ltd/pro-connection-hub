@@ -176,8 +176,24 @@ function Dashboard() {
         </div>
 
         <div className="mt-8">
-          {tab === "leads" && <LeadsTab pro={pro} />}
-          {tab === "visits" && <VisitsTab pro={pro} />}
+          {tab === "leads" &&
+            (isMember(pro) ? (
+              <LeadsTab pro={pro} />
+            ) : (
+              <MembershipLocked
+                what="enquiries and job applications"
+                onOpen={() => setTab("plan")}
+              />
+            ))}
+          {tab === "visits" &&
+            (isMember(pro) ? (
+              <VisitsTab pro={pro} />
+            ) : (
+              <MembershipLocked
+                what="booked visits"
+                onOpen={() => setTab("plan")}
+              />
+            ))}
           {tab === "profile" && <ProfileTab pro={pro} />}
           {tab === "photos" && <PhotosTab pro={pro} />}
           {tab === "plan" && <PlanTab pro={pro} />}
