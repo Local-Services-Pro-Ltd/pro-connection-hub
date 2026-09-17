@@ -816,7 +816,38 @@ function PlanTab({ pro }: { pro: Pro }) {
     [plans.data, pro.plan_slug],
   );
 
-  const active = pro.subscription_status === "active";
+  const active = isMember(pro);
+  const checkout = useServerFn(createMembershipCheckout);
+  const portal = useServerFn(openBillingPortal);
+  const [busy, setBusy] = useState<string | null>(null);
+
+  async function startCheckout(planSlug: string) {
+    setBusy(planSlug);
+    try {
+      const { url } = await checkout({ data: { planSlug } });
+      window.location.href = url;
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "We couldn't open checkout.",
+      );
+      setBusy(null);
+    }
+  }
+
+  async function manage() {
+    setBusy("manage");
+    try {
+      const { url } = await portal({});
+      window.location.href = url;
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "We couldn't open your billing page.",
+      );
+      setBusy(null);
+    }
+  }
 
   return (
     <div className="max-w-3xl space-y-8">
@@ -834,32 +865,65 @@ function PlanTab({ pro }: { pro: Pro }) {
               }.`
             : "Your listing is visible, but paid membership unlocks the full lead allowance and priority placement."}
         </p>
+        {active && (
+          <button
+            type="button"
+            onClick={manage}
+            disabled={busy !== null}
+            className="mt-5 rounded-sm border border-border px-5 py-2.5 text-sm font-semibold hover:border-primary hover:text-primary disabled:opacity-60"
+          >
+            {busy === "manage" ? "Opening…" : "Manage billing"}
+          </button>
+        )}
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2">
         {(plans.data ?? [])
           .filter((p) => p.visible)
-          .map((p) => (
-            <div key={p.slug} className={card}>
-              <h3 className="text-lg">{p.name}</h3>
-              <p className="mt-1 text-2xl">
-                {p.price}
-                <span className="text-sm text-muted-foreground">{p.per}</span>
-              </p>
-              <p className="mt-2 text-sm text-muted-foreground">{p.line}</p>
-              <ul className="mt-4 space-y-1.5 text-sm text-muted-foreground">
-                {p.features.map((f) => (
-                  <li key={f}>· {f}</li>
-                ))}
-              </ul>
-              <Link
-                to="/for-tradesmen"
-                className="mt-5 inline-block rounded-sm border border-border px-5 py-2.5 text-sm font-semibold"
-              >
-                {pro.plan_slug === p.slug ? "Your plan" : "Choose this plan"}
-              </Link>
-            </div>
-          ))}
+          .map((p) => {
+            const payable = p.slug in PLAN_PRICES;
+            const mine = pro.plan_slug === p.slug && active;
+            return (
+              <div key={p.slug} className={card}>
+                <h3 className="text-lg">{p.name}</h3>
+                <p className="mt-1 text-2xl">
+                  {p.price}
+                  <span className="text-sm text-muted-foreground">{p.per}</span>
+                </p>
+                <p className="mt-2 text-sm text-muted-foreground">{p.line}</p>
+                <ul className="mt-4 space-y-1.5 text-sm text-muted-foreground">
+                  {p.features.map((f) => (
+                    <li key={f}>· {f}</li>
+                  ))}
+                </ul>
+                {mine ? (
+                  <span className="mt-5 inline-block rounded-sm border border-primary px-5 py-2.5 text-sm font-semibold text-primary">
+                    Your plan
+                  </span>
+                ) : payable ? (
+                  <button
+                    type="button"
+                    onClick={() => startCheckout(p.slug)}
+                    disabled={busy !== null}
+                    className="mt-5 rounded-sm bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:brightness-110 disabled:opacity-60"
+                  >
+                    {busy === p.slug
+                      ? "Opening checkout…"
+                      : active
+                        ? `Switch to ${p.name}`
+                        : `Subscribe — ${p.price}${p.per}`}
+                  </button>
+                ) : (
+                  <Link
+                    to="/enterprise"
+                    className="mt-5 inline-block rounded-sm border border-border px-5 py-2.5 text-sm font-semibold"
+                  >
+                    Talk to us
+                  </Link>
+                )}
+              </div>
+            );
+          })}
       </div>
     </div>
   );
