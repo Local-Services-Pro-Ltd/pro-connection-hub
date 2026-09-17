@@ -15,6 +15,7 @@ import { Route as ApplicationStatusRouteImport } from './routes/application-stat
 import { Route as AreasRouteImport } from './routes/areas'
 import { Route as ClaimRouteImport } from './routes/claim'
 import { Route as CoverageRouteImport } from './routes/coverage'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DirectoryRouteImport } from './routes/directory'
 import { Route as EnterpriseRouteImport } from './routes/enterprise'
 import { Route as ForTradesmenRouteImport } from './routes/for-tradesmen'
@@ -88,6 +89,11 @@ const ClaimRoute = ClaimRouteImport.update({
 const CoverageRoute = CoverageRouteImport.update({
   id: '/coverage',
   path: '/coverage',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DirectoryRoute = DirectoryRouteImport.update({
@@ -320,6 +326,7 @@ export interface FileRoutesByFullPath {
   '/areas': typeof AreasRoute
   '/claim': typeof ClaimRoute
   '/coverage': typeof CoverageRoute
+  '/dashboard': typeof DashboardRoute
   '/directory': typeof DirectoryRoute
   '/enterprise': typeof EnterpriseRoute
   '/for-tradesmen': typeof ForTradesmenRoute
@@ -372,6 +379,7 @@ export interface FileRoutesByTo {
   '/areas': typeof AreasRoute
   '/claim': typeof ClaimRoute
   '/coverage': typeof CoverageRoute
+  '/dashboard': typeof DashboardRoute
   '/directory': typeof DirectoryRoute
   '/enterprise': typeof EnterpriseRoute
   '/for-tradesmen': typeof ForTradesmenRoute
@@ -425,6 +433,7 @@ export interface FileRoutesById {
   '/areas': typeof AreasRoute
   '/claim': typeof ClaimRoute
   '/coverage': typeof CoverageRoute
+  '/dashboard': typeof DashboardRoute
   '/directory': typeof DirectoryRoute
   '/enterprise': typeof EnterpriseRoute
   '/for-tradesmen': typeof ForTradesmenRoute
@@ -479,6 +488,7 @@ export interface FileRouteTypes {
     | '/areas'
     | '/claim'
     | '/coverage'
+    | '/dashboard'
     | '/directory'
     | '/enterprise'
     | '/for-tradesmen'
@@ -531,6 +541,7 @@ export interface FileRouteTypes {
     | '/areas'
     | '/claim'
     | '/coverage'
+    | '/dashboard'
     | '/directory'
     | '/enterprise'
     | '/for-tradesmen'
@@ -583,6 +594,7 @@ export interface FileRouteTypes {
     | '/areas'
     | '/claim'
     | '/coverage'
+    | '/dashboard'
     | '/directory'
     | '/enterprise'
     | '/for-tradesmen'
@@ -636,6 +648,7 @@ export interface RootRouteChildren {
   AreasRoute: typeof AreasRoute
   ClaimRoute: typeof ClaimRoute
   CoverageRoute: typeof CoverageRoute
+  DashboardRoute: typeof DashboardRoute
   DirectoryRoute: typeof DirectoryRoute
   EnterpriseRoute: typeof EnterpriseRoute
   ForTradesmenRoute: typeof ForTradesmenRoute
@@ -724,6 +737,13 @@ declare module '@tanstack/react-router' {
       path: '/coverage'
       fullPath: '/coverage'
       preLoaderRoute: typeof CoverageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/directory': {
@@ -1044,6 +1064,7 @@ const rootRouteChildren: RootRouteChildren = {
   AreasRoute: AreasRoute,
   ClaimRoute: ClaimRoute,
   CoverageRoute: CoverageRoute,
+  DashboardRoute: DashboardRoute,
   DirectoryRoute: DirectoryRoute,
   EnterpriseRoute: EnterpriseRoute,
   ForTradesmenRoute: ForTradesmenRoute,
