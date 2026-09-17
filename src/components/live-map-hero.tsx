@@ -68,15 +68,15 @@ type Hub = {
   y: number;
   r: number;
   label: string;
-  live: number;
+  slug: string;
   postcode: string;
 };
 
 /** Live "hubs" — pulsing coverage nodes for the areas we're actually live in. */
 const hubs: Hub[] = [
-  { x: 1240, y: 540, r: 150, label: "Greater London", live: 75, postcode: "EC1" },
-  { x: 1385, y: 605, r: 104, label: "Kent", live: 38, postcode: "ME14" },
-  { x: 1145, y: 640, r: 96, label: "Surrey", live: 31, postcode: "GU1" },
+  { x: 1240, y: 540, r: 150, label: "Greater London", slug: "london", postcode: "EC1" },
+  { x: 1385, y: 605, r: 104, label: "Kent", slug: "kent", postcode: "ME14" },
+  { x: 1145, y: 640, r: 96, label: "Surrey", slug: "surrey", postcode: "GU1" },
 ];
 
 
