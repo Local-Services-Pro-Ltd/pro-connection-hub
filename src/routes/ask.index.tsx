@@ -135,9 +135,21 @@ function AskIndex() {
           </ul>
 
           {(questions ?? []).length === 0 && (
-            <p className="mt-8 rounded-md border border-border bg-card p-8 text-muted-foreground">
-              No published questions here yet — yours could be the first.
-            </p>
+            <div className="mt-8 rounded-md border border-border bg-card p-8">
+              <h2 className="font-display text-xl">Be the first to ask</h2>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                Nothing published in this view yet. Ask anything about a job
+                you're planning — vetted trades answer, and we check every
+                answer before it goes live.
+              </p>
+              <p className="mt-4 text-sm text-muted-foreground">
+                For example:{" "}
+                <span className="text-foreground">
+                  “My boiler pressure keeps dropping to zero every few days —
+                  is that a repair or a replacement?”
+                </span>
+              </p>
+            </div>
           )}
         </div>
 
