@@ -101,9 +101,15 @@ export function ReviewPanel({
           ))}
         </ul>
       ) : (
-        <p className="mt-5 rounded-md border border-border bg-card p-6 text-sm text-muted-foreground">
-          No published reviews yet.
-        </p>
+        <div className="mt-5 rounded-md border border-border bg-card p-6">
+          <p className="font-display text-base">Be the first to review this firm</p>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+            This firm has passed vetting but hasn't been reviewed here yet. We
+            only publish reviews from signed-in homeowners with a job on record,
+            so the first one carries real weight — tell people what the work
+            was, whether the quote held, and how the firm left the place.
+          </p>
+        </div>
       )}
 
       <div className="mt-8 rounded-md border border-border bg-surface p-6">
