@@ -12,6 +12,8 @@ import {
   Download,
   Trash2,
 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { proCountsQuery } from "@/lib/queries";
 import { usePrefersReducedMotion } from "@/hooks/use-reduced-motion";
 import { useGpsConsent } from "@/hooks/use-gps-consent";
 import { useHubCounts } from "@/hooks/use-hub-counts";
