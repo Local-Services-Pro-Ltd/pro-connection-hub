@@ -1306,18 +1306,24 @@ export type Database = {
           company: string
           contact_email: string | null
           created_at: string
+          current_period_end: string | null
           day_rate: number | null
           featured: boolean
           id: string
+          is_demo: boolean
           min_job_budget: number
           name: string
           photo: number
+          plan_slug: string | null
           postcode: string | null
           published: boolean
           rating: number
           response_mins: number
           review_count: number
           services: string[]
+          subscription_provider: string | null
+          subscription_ref: string | null
+          subscription_status: string
           trade_slug: string
           updated_at: string
           user_id: string | null
@@ -1331,18 +1337,24 @@ export type Database = {
           company: string
           contact_email?: string | null
           created_at?: string
+          current_period_end?: string | null
           day_rate?: number | null
           featured?: boolean
           id: string
+          is_demo?: boolean
           min_job_budget?: number
           name: string
           photo?: number
+          plan_slug?: string | null
           postcode?: string | null
           published?: boolean
           rating?: number
           response_mins?: number
           review_count?: number
           services?: string[]
+          subscription_provider?: string | null
+          subscription_ref?: string | null
+          subscription_status?: string
           trade_slug: string
           updated_at?: string
           user_id?: string | null
@@ -1356,18 +1368,24 @@ export type Database = {
           company?: string
           contact_email?: string | null
           created_at?: string
+          current_period_end?: string | null
           day_rate?: number | null
           featured?: boolean
           id?: string
+          is_demo?: boolean
           min_job_budget?: number
           name?: string
           photo?: number
+          plan_slug?: string | null
           postcode?: string | null
           published?: boolean
           rating?: number
           response_mins?: number
           review_count?: number
           services?: string[]
+          subscription_provider?: string | null
+          subscription_ref?: string | null
+          subscription_status?: string
           trade_slug?: string
           updated_at?: string
           user_id?: string | null
