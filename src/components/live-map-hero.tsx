@@ -134,14 +134,14 @@ export function LiveMapHero({
   const { consent, fix, smoothed, track, error, allow, deny, reset } =
     useGpsConsent();
 
-  // Hub counts come from the directory itself — the same source as the Areas
-  // page and every trade page — then travel between tabs over realtime.
-  const { data: proCounts } = useQuery(proCountsQuery);
-  const { counts, updatedAt, connected } = useHubCounts(
-    Object.fromEntries(
-      hubs.map((h) => [h.label, proCounts?.byArea[h.slug] ?? 0]),
-    ),
+  // Hub counts come straight from the directory — the same query the Areas
+  // page and every trade page use. Never from another visitor's browser.
+  const { data: proCounts, dataUpdatedAt } = useQuery(proCountsQuery);
+  const counts: Record<string, number> = Object.fromEntries(
+    hubs.map((h) => [h.label, proCounts?.byArea[h.slug] ?? 0]),
   );
+  const updatedAt = proCounts ? dataUpdatedAt : null;
+  const connected = Boolean(proCounts);
   const [now, setNow] = useState(0);
   const [selected, setSelected] = useState<Hub | null>(null);
 
