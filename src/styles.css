@@ -43,6 +43,12 @@
   --color-border-strong: var(--border-strong);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-brand-blue: var(--brand-blue);
+}
+
+/* Brand mark accent — the blue dot in the TF logo, constant across themes. */
+:root {
+  --brand-blue: oklch(0.42 0.16 262);
 }
 
 /* ---------- Default theme: "Dim" (lifted graphite) ---------- */
