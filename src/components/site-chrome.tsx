@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { ThemeControl } from "@/components/theme-control";
 import { openCookiePreferences } from "@/lib/cookie-consent";
 import { FeedbackForm } from "@/components/feedback-form";
+import logoMark from "@/assets/logo.png";
 
 
 
