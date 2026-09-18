@@ -24,9 +24,13 @@ const nav = [
 export function Logo() {
   return (
     <Link to="/" className="flex shrink-0 items-center gap-2.5">
-      <span className="grid h-8 w-8 place-items-center rounded-sm bg-primary font-display text-sm font-bold text-primary-foreground">
-        TF
-      </span>
+      <img
+        src={logoMark}
+        alt="TradesmanFinder"
+        width={32}
+        height={32}
+        className="h-8 w-8 rounded-[7px]"
+      />
       <span className="font-display text-[15px] font-bold tracking-tight">
         Tradesman<span className="text-primary">Finder</span>
       </span>
