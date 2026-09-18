@@ -643,7 +643,7 @@ export function LiveMapHero({
             </dl>
             <p className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
               <Radio className="h-3 w-3" aria-hidden="true" />
-              {connected ? "Live over realtime connection" : "Reconnecting…"}
+              {connected ? "Live from the verified directory" : "Loading…"}
             </p>
           </div>
         )}
