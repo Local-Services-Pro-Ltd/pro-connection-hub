@@ -30,7 +30,7 @@ export function Logo() {
         alt="TradesmanFinder"
         width={52}
         height={52}
-        className="h-11 w-11 rounded-[14px] sm:h-13 sm:w-13"
+        className="h-11 w-11 sm:h-13 sm:w-13"
       />
       <span className="font-display text-[17px] font-bold tracking-tight sm:text-[19px]">
         Tradesman<span className="text-primary">Finder</span>
