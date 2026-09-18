@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { ThemeControl } from "@/components/theme-control";
 import { openCookiePreferences } from "@/lib/cookie-consent";
 import { FeedbackForm } from "@/components/feedback-form";
-import { LogoMark } from "@/components/logo-mark";
+import logoSrc from "@/assets/logo.png";
 
 
 
@@ -25,7 +25,13 @@ const nav = [
 export function Logo() {
   return (
     <Link to="/" className="flex shrink-0 items-center gap-2.5">
-      <LogoMark className="h-8 w-8" />
+      <img
+        src={logoSrc}
+        alt="TradesmanFinder"
+        width={32}
+        height={32}
+        className="h-8 w-8 rounded-[9px]"
+      />
       <span className="font-display text-[15px] font-bold tracking-tight">
         Tradesman<span className="text-primary">Finder</span>
       </span>
