@@ -122,7 +122,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: appCss,
       },
-      { rel: "icon", href: "/tradesmanfinder-v2.ico", type: "image/x-icon", sizes: "16x16 32x32 48x48 64x64 128x128 256x256" },
+      { rel: "icon", href: "/favicon.png", type: "image/png", sizes: "64x64" },
       { rel: "icon", href: "/tradesmanfinder-v2-32.png", type: "image/png", sizes: "32x32" },
       { rel: "apple-touch-icon", href: "/tradesmanfinder-v2-180.png", sizes: "180x180" },
     ],
