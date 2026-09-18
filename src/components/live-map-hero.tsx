@@ -16,7 +16,6 @@ import { useQuery } from "@tanstack/react-query";
 import { proCountsQuery } from "@/lib/queries";
 import { usePrefersReducedMotion } from "@/hooks/use-reduced-motion";
 import { useGpsConsent } from "@/hooks/use-gps-consent";
-import { useHubCounts } from "@/hooks/use-hub-counts";
 import { encodeShare, SHARE_DURATIONS } from "@/lib/share-position";
 import {
   accuracyBand,
@@ -134,14 +133,14 @@ export function LiveMapHero({
   const { consent, fix, smoothed, track, error, allow, deny, reset } =
     useGpsConsent();
 
-  // Hub counts come from the directory itself — the same source as the Areas
-  // page and every trade page — then travel between tabs over realtime.
-  const { data: proCounts } = useQuery(proCountsQuery);
-  const { counts, updatedAt, connected } = useHubCounts(
-    Object.fromEntries(
-      hubs.map((h) => [h.label, proCounts?.byArea[h.slug] ?? 0]),
-    ),
+  // Hub counts come straight from the directory — the same query the Areas
+  // page and every trade page use. Never from another visitor's browser.
+  const { data: proCounts, dataUpdatedAt } = useQuery(proCountsQuery);
+  const counts: Record<string, number> = Object.fromEntries(
+    hubs.map((h) => [h.label, proCounts?.byArea[h.slug] ?? 0]),
   );
+  const updatedAt = proCounts ? dataUpdatedAt : null;
+  const connected = Boolean(proCounts);
   const [now, setNow] = useState(0);
   const [selected, setSelected] = useState<Hub | null>(null);
 
@@ -643,7 +642,7 @@ export function LiveMapHero({
             </dl>
             <p className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
               <Radio className="h-3 w-3" aria-hidden="true" />
-              {connected ? "Live over realtime connection" : "Reconnecting…"}
+              {connected ? "Live from the verified directory" : "Loading…"}
             </p>
           </div>
         )}
