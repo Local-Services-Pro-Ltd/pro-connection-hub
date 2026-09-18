@@ -16,7 +16,6 @@ import { useQuery } from "@tanstack/react-query";
 import { proCountsQuery } from "@/lib/queries";
 import { usePrefersReducedMotion } from "@/hooks/use-reduced-motion";
 import { useGpsConsent } from "@/hooks/use-gps-consent";
-import { useHubCounts } from "@/hooks/use-hub-counts";
 import { encodeShare, SHARE_DURATIONS } from "@/lib/share-position";
 import {
   accuracyBand,
