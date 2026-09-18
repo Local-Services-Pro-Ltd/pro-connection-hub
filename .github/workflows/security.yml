@@ -35,6 +35,9 @@ jobs:
       - name: Typecheck
         run: bunx tsc --noEmit
 
+      - name: Authentication and coverage regression tests
+        run: bun run test:deployment
+
       - name: Build
         run: bun run build
 

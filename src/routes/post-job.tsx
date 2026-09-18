@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { Check } from "lucide-react";
 import { PageHero, Section } from "@/components/layout-bits";
 import heroPostJob from "@/assets/hero-post-job.jpg";
-import { tradesQuery, budgetBands } from "@/lib/queries";
+import { tradesQuery, areasQuery, budgetBands } from "@/lib/queries";
 import { getRequestOrigin } from "@/lib/origin.functions";
 import { isLiveArea } from "@/lib/postcode-gate";
 import { useServerFn } from "@tanstack/react-start";
@@ -32,6 +32,7 @@ export const Route = createFileRoute("/post-job")({
     const [, origin] = await Promise.all([
       context.queryClient.ensureQueryData(tradesQuery),
       getRequestOrigin(),
+      context.queryClient.ensureQueryData(areasQuery),
     ]);
     return { origin };
   },
@@ -104,6 +105,8 @@ function PostJob() {
   const search = Route.useSearch();
   const { user } = useAuth();
   const { data: trades } = useSuspenseQuery(tradesQuery);
+  const { data: areas } = useSuspenseQuery(areasQuery);
+  const liveAreaNames = areas.filter(a => a.status === "live").map(a => a.name);
   const [reference, setReference] = useState<string | null>(null);
 
   const [form, setForm] = useState({
@@ -123,7 +126,7 @@ function PostJob() {
   // Postcode gate: we only take jobs in areas that have enough vetted trades
   // to answer them. Anything else is routed to the waiting list instead.
   const postcodeLooksValid = ukPostcode.test(form.postcode.trim());
-  const postcodeIsCovered = isLiveArea(form.postcode);
+  const postcodeIsCovered = isLiveArea(form.postcode, areas);
   const [outOfArea, setOutOfArea] = useState<string | null>(null);
 
 
@@ -133,7 +136,7 @@ function PostJob() {
       if (!form.trade_slug) errors.push("Choose a trade.");
       if (!ukPostcode.test(form.postcode.trim()))
         errors.push("Enter a valid UK postcode.");
-      else if (!isLiveArea(form.postcode))
+      else if (!isLiveArea(form.postcode, areas))
         errors.push("We're not live in that postcode yet.");
 
       if (form.title.trim().length < 6)
@@ -317,7 +320,7 @@ function PostJob() {
                   >
                     {postcodeLooksValid && !postcodeIsCovered
                       ? "We're not live in this postcode yet — you can still join the waiting list."
-                      : "We're live in Greater London, Kent and Surrey."}
+                      : `We're live in ${liveAreaNames.join(", ")}.`}
                   </span>
                 </label>
 

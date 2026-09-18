@@ -17,6 +17,12 @@ const dirname = path.dirname(fileURLToPath(import.meta.url));
 Object.assign(process.env, loadEnv(process.env["MODE"] ?? "development", process.cwd(), ""));
 
 export default defineConfig({
+  // Pages settings are managed in the Cloudflare dashboard. Nitro's generated
+  // empty Wrangler config otherwise becomes the source of truth and replaces
+  // dashboard vars on every Git-triggered deploy. Keep Lovable builds unchanged.
+  nitro: {
+    cloudflare: { deployConfig: process.env["CF_PAGES"] !== "1" },
+  },
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this

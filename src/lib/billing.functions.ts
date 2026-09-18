@@ -59,6 +59,11 @@ export const createMembershipCheckout = createServerFn({ method: "POST" })
     return { planSlug };
   })
   .handler(async ({ data, context }) => {
+    // Restoring server credentials must not silently activate live payments.
+    // Enable only after an explicit operational approval and checkout QA.
+    if (process.env["PAYMENTS_ENABLED"] !== "true") {
+      throw new Error("Payments are not enabled yet.");
+    }
     const email = (context.claims as { email?: string } | undefined)?.email;
     if (!email) throw new Error("We couldn't read your account email.");
 

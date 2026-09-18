@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/hooks/use-auth";
+import { googleReturnUrl, safeAuthDestination, usesLovableAuth } from "@/lib/auth-redirect";
 import heroPoster from "@/assets/hero-poster.jpg";
 
 type SignInSearch = {
@@ -17,9 +18,8 @@ type SignInSearch = {
 
 export const Route = createFileRoute("/signin")({
   validateSearch: (search: Record<string, unknown>): SignInSearch => ({
-    ...(typeof search["redirect"] === "string" &&
-    search["redirect"].startsWith("/")
-      ? { redirect: search["redirect"] }
+    ...(typeof search["redirect"] === "string"
+      ? { redirect: safeAuthDestination(search["redirect"]) }
       : {}),
     ...(typeof search["plan"] === "string" && search["plan"]
       ? { plan: search["plan"] }
@@ -64,6 +64,7 @@ function SignIn() {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [checkEmail, setCheckEmail] = useState(false);
+  const [googleBusy, setGoogleBusy] = useState(false);
 
   const dest = search.redirect ?? "/account";
 
@@ -106,12 +107,20 @@ function SignIn() {
   }
 
   async function google() {
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
-    });
-    if (result.error) {
-      toast.error("Google sign-in failed. Please try again.");
-      return;
+    setGoogleBusy(true);
+    try {
+      const redirectTo = googleReturnUrl(window.location.origin, dest);
+      const result = usesLovableAuth(window.location.hostname)
+        ? await lovable.auth.signInWithOAuth("google", { redirect_uri: redirectTo })
+        : await supabase.auth.signInWithOAuth({
+            provider: "google",
+            options: { redirectTo },
+          });
+      if (result.error) throw result.error;
+    } catch {
+      toast.error("Google sign-in failed. Please try again or use your email and password.");
+    } finally {
+      setGoogleBusy(false);
     }
   }
 
@@ -162,6 +171,7 @@ function SignIn() {
               <button
                 type="button"
                 onClick={google}
+                disabled={googleBusy}
                 className="mt-8 flex w-full items-center justify-center gap-3 rounded-sm border border-border-strong px-5 py-3 font-display text-sm font-semibold transition-colors hover:border-primary hover:text-primary"
               >
                 <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true">

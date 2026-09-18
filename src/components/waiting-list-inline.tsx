@@ -7,7 +7,7 @@ import { Check } from "lucide-react";
 import { HumanCheck, useHumanCheck } from "@/components/human-check";
 import { submitWaitingList } from "@/lib/waiting-list.functions";
 import { isLiveArea } from "@/lib/postcode-gate";
-import { tradesQuery } from "@/lib/queries";
+import { tradesQuery, areasQuery } from "@/lib/queries";
 
 const field =
   "mt-2 w-full rounded-sm border border-input bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/70 outline-none transition-colors focus:border-primary";
@@ -34,6 +34,7 @@ export function WaitingListInline({
   const [trade, setTrade] = useState(defaultTrade ?? "");
   const [notifyUpdates, setNotifyUpdates] = useState(false);
   const { data: trades = [] } = useQuery(tradesQuery);
+  const { data: areas = [] } = useQuery(areasQuery);
   const [done, setDone] = useState<{
     pending: boolean;
     area: string;
@@ -96,7 +97,7 @@ export function WaitingListInline({
     );
   }
 
-  const covered = postcode.trim().length > 1 && isLiveArea(postcode);
+  const covered = postcode.trim().length > 1 && isLiveArea(postcode, areas);
 
   return (
     <form

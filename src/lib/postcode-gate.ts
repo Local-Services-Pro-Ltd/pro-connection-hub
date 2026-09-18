@@ -1,10 +1,13 @@
 // TradesmanFinder — postcode gate
 //
 // Checks whether a UK postcode falls inside a currently-live service area
-// (Greater London, Kent, Surrey). Used by /post-job before creating a job and
+// supplied by the areas table. Used by /post-job before creating a job and
 // by the waiting-list handoff. Errs on the side of accepting borderline cases.
 
-export type LiveArea = "london" | "kent" | "surrey";
+export type LiveArea = "london" | "kent" | "surrey" | "berkshire" |
+  "manchester" | "birmingham" | "bristol" | "leeds";
+
+export type CoverageArea = { slug: string; status: string };
 
 const AREA_POSTCODE_PREFIXES: Record<LiveArea, string[]> = {
   london: [
@@ -31,14 +34,22 @@ const AREA_POSTCODE_PREFIXES: Record<LiveArea, string[]> = {
   ],
   kent: ["BR", "CT", "DA", "ME", "TN"],
   surrey: ["CR", "GU", "KT", "RH", "SM", "TW"],
+  berkshire: ["RG", "SL"],
+  manchester: ["M"],
+  birmingham: ["B"],
+  bristol: ["BS"],
+  leeds: ["LS"],
 };
-
-const LIVE_PREFIXES = new Set(Object.values(AREA_POSTCODE_PREFIXES).flat());
 
 export const LIVE_AREA_NAMES: Record<LiveArea, string> = {
   london: "Greater London",
   kent: "Kent",
   surrey: "Surrey",
+  berkshire: "Berkshire",
+  manchester: "Manchester",
+  birmingham: "Birmingham",
+  bristol: "Bristol",
+  leeds: "Leeds",
 };
 
 /** "se1 7pb" -> "SE". Empty string when unparseable. */
@@ -58,26 +69,21 @@ export function outwardCode(postcode: string): string {
 }
 
 /** True when the postcode sits inside any live area. */
-export function isLiveArea(postcode: string): boolean {
-  const prefix = outwardPrefix(postcode);
-  return prefix ? LIVE_PREFIXES.has(prefix) : false;
+export function isLiveArea(postcode: string, areas: readonly CoverageArea[]): boolean {
+  return liveAreasFor(postcode, areas).length > 0;
 }
 
 /** First matching live area (London wins overlaps), or null. */
-export function liveAreaFor(postcode: string): LiveArea | null {
-  const prefix = outwardPrefix(postcode);
-  if (!prefix) return null;
-  for (const area of ["london", "kent", "surrey"] as LiveArea[]) {
-    if (AREA_POSTCODE_PREFIXES[area].includes(prefix)) return area;
-  }
-  return null;
+export function liveAreaFor(postcode: string, areas: readonly CoverageArea[]): LiveArea | null {
+  return liveAreasFor(postcode, areas)[0] ?? null;
 }
 
 /** Every live area that covers this postcode (overlaps included). */
-export function liveAreasFor(postcode: string): LiveArea[] {
+export function liveAreasFor(postcode: string, areas: readonly CoverageArea[]): LiveArea[] {
   const prefix = outwardPrefix(postcode);
   if (!prefix) return [];
-  return (["london", "kent", "surrey"] as LiveArea[]).filter((a) =>
-    AREA_POSTCODE_PREFIXES[a].includes(prefix),
+  const live = new Set(areas.filter(a => a.status === "live").map(a => a.slug));
+  return (Object.keys(AREA_POSTCODE_PREFIXES) as LiveArea[]).filter((a) =>
+    live.has(a) && AREA_POSTCODE_PREFIXES[a].includes(prefix),
   );
 }
