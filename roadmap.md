@@ -50,6 +50,12 @@
 ## /join application redesign
 - [x] /join page (hero, fact tiles, steps, accordion, form, success)
 - [x] business_type column + optional insurance/CH/accreditations at submission
-- [x] CTAs to /join; For tradesmen 5-working-day reply
+- [x] CTAs to /join; For tradesmen 2-working-day reply
 - [x] Application-received email wording; admin shows business type
 - [x] Tests
+
+## Navigation and reviewed listing claims
+- [x] Declutter desktop/mobile header and move appearance controls to footer
+- [x] Centre /join, add listing search, and improve field-level form feedback
+- [x] Add /claim/$proId account and admin-reviewed claim flow
+- [x] Verify claim security, duplicate prevention, header widths, and screenshots

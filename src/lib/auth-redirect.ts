@@ -16,3 +16,8 @@ export function googleReturnUrl(origin: string, destination: unknown): string {
   url.searchParams.set("redirect", safeAuthDestination(destination));
   return url.toString();
 }
+
+/** Google sign-in needs the Lovable auth adapter (Lovable hosting) or an explicit opt-in. */
+export function showGoogleSignIn(hostname: string, googleAuthEnabled: string | undefined): boolean {
+  return usesLovableAuth(hostname) || hostname === "localhost" || googleAuthEnabled === "true";
+}

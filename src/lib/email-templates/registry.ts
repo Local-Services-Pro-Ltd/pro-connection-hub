@@ -10,6 +10,7 @@ import { template as leadConfirmation } from './lead-confirmation'
 import { template as leadReceived } from './lead-received'
 import { template as projectApplication } from './project-application'
 import { template as projectStatus } from './project-status'
+import { template as proClaimStatus } from './pro-claim-status'
 
 
 export interface TemplateEntry {
@@ -37,4 +38,5 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'lead-received': leadReceived,
   'project-application': projectApplication,
   'project-status': projectStatus,
+  'pro-claim-status': proClaimStatus,
 }

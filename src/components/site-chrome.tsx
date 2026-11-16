@@ -1,8 +1,14 @@
 import { Link } from "@tanstack/react-router";
 import { type ReactNode, useState } from "react";
-import { Menu, X, UserRound, Mail } from "lucide-react";
+import { ChevronDown, Menu, X, UserRound, Mail } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { ThemeControl } from "@/components/theme-control";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { openCookiePreferences } from "@/lib/cookie-consent";
 import { FeedbackForm } from "@/components/feedback-form";
 import logoSrc from "@/assets/logo.png";
@@ -11,16 +17,17 @@ import logoSrc from "@/assets/logo.png";
 
 const nav = [
   { to: "/trades", label: "Find a tradesman" },
-  { to: "/directory", label: "Directory" },
   { to: "/costs", label: "Cost guides" },
+  { to: "/how-it-works", label: "How it works" },
+] as const;
+
+const moreNav = [
+  { to: "/directory", label: "Directory" },
   { to: "/areas", label: "Areas" },
   { to: "/ask", label: "Ask the pros" },
   { to: "/projects", label: "Project board" },
-  { to: "/how-it-works", label: "How it works" },
   { to: "/saved", label: "Shortlist" },
-  { to: "/for-tradesmen", label: "For tradesmen" },
-
-];
+] as const;
 
 export function Logo() {
   return (
@@ -32,7 +39,7 @@ export function Logo() {
         height={52}
         className="h-11 w-11 sm:h-13 sm:w-13"
       />
-      <span className="font-display text-[17px] font-bold tracking-tight sm:text-[19px]">
+      <span className="inline font-display text-[17px] font-bold tracking-tight sm:text-[19px] lg:hidden xl:inline">
         Tradesman<span className="text-primary">Finder</span>
       </span>
     </Link>
@@ -45,50 +52,73 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/80 bg-background/95 backdrop-blur-xl">
-      <div className="mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 py-3.5 lg:px-8">
-        <div className="flex min-w-0 items-center gap-10">
+      <div className="mx-auto grid max-w-[1440px] grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 lg:flex lg:justify-between lg:px-5">
+        <div className="flex min-w-0 items-center gap-5 xl:gap-7">
           <Logo />
-          <nav className="hidden items-center gap-8 lg:flex">
+          <nav aria-label="Main navigation" className="hidden items-center gap-5 lg:flex xl:gap-6">
             {nav.map((item) => (
               <Link
                 key={item.to}
                 to={item.to}
-                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                className="whitespace-nowrap text-sm text-muted-foreground transition-colors hover:text-foreground"
                 activeProps={{ className: "text-foreground" }}
               >
                 {item.label}
               </Link>
             ))}
+            <DropdownMenu>
+              <DropdownMenuTrigger className="inline-flex items-center gap-1 whitespace-nowrap rounded-sm text-sm text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring">
+                More <ChevronDown className="h-4 w-4" aria-hidden="true" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-52">
+                {moreNav.map((item) => (
+                  <DropdownMenuItem key={item.to} asChild>
+                    <Link to={item.to} className="cursor-pointer px-3 py-2.5">
+                      {item.label}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </nav>
         </div>
-        <div className="flex items-center gap-2">
-          <ThemeControl />
+        <div className="flex shrink-0 items-center gap-2">
           {user ? (
-
             <Link
               to="/account"
-              className="hidden items-center gap-2 rounded-sm px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground sm:flex"
+              className="hidden items-center gap-1.5 whitespace-nowrap rounded-sm px-2 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground lg:flex"
             >
-              <UserRound className="h-4 w-4" />
+              <UserRound className="h-4 w-4 shrink-0" />
               My account
             </Link>
           ) : (
             <Link
               to="/signin"
               search={{}}
-              className="hidden rounded-sm px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground sm:block"
+              className="hidden whitespace-nowrap rounded-sm px-2 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground lg:block"
             >
               Sign in
             </Link>
           )}
-          <Link to="/post-job" search={{}} className="hidden sm:block">
-            <Action>Post a job</Action>
+          <Link
+            to="/post-job"
+            search={{}}
+            className="hidden whitespace-nowrap rounded-sm bg-primary px-3 py-2.5 font-display text-xs font-semibold text-primary-foreground shadow-ember hover:brightness-110 lg:inline-flex xl:px-4 xl:text-sm"
+          >
+            Post a job
+          </Link>
+          <Link
+            to="/join"
+            className="hidden whitespace-nowrap rounded-sm border-2 border-primary bg-background px-3 py-2 font-display text-xs font-semibold text-foreground hover:bg-muted lg:inline-flex xl:px-4 xl:text-sm"
+          >
+            For trades: Join or claim
           </Link>
           <button
             type="button"
             aria-label={open ? "Close menu" : "Open menu"}
-            onClick={() => setOpen((v) => !v)}
-            className="grid h-9 w-9 shrink-0 place-items-center rounded-sm border border-border lg:hidden"
+            aria-expanded={open}
+            onClick={() => setOpen((value) => !value)}
+            className="grid h-10 w-10 shrink-0 place-items-center rounded-sm border border-border lg:hidden"
           >
             {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
           </button>
@@ -97,13 +127,25 @@ export function SiteHeader() {
 
       {open && (
         <div className="border-t border-border bg-background px-5 py-4 lg:hidden">
-          <nav className="flex flex-col gap-1">
-            {[
-              ...nav,
-              user
-                ? { to: "/account", label: "My account" }
-                : { to: "/signin", label: "Sign in" },
-            ].map((item) => (
+          <div className="grid gap-3">
+            <Link
+              to="/post-job"
+              search={{}}
+              onClick={() => setOpen(false)}
+              className="inline-flex w-full items-center justify-center rounded-sm bg-primary px-5 py-3.5 font-display font-semibold text-primary-foreground shadow-ember"
+            >
+              Post a job
+            </Link>
+            <Link
+              to="/join"
+              onClick={() => setOpen(false)}
+              className="inline-flex w-full items-center justify-center rounded-sm border-2 border-primary bg-background px-5 py-3 font-display font-semibold text-foreground"
+            >
+              For trades: Join or claim
+            </Link>
+          </div>
+          <nav aria-label="Mobile navigation" className="mt-4 flex flex-col gap-1 border-t border-border pt-3">
+            {[...nav, ...moreNav].map((item) => (
               <Link
                 key={item.to}
                 to={item.to}
@@ -114,12 +156,12 @@ export function SiteHeader() {
               </Link>
             ))}
             <Link
-              to="/post-job"
+              to={user ? "/account" : "/signin"}
               search={{}}
               onClick={() => setOpen(false)}
-              className="mt-2"
+              className="rounded-sm px-2 py-2.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
             >
-              <Action className="w-full justify-center">Post a job</Action>
+              {user ? "My account" : "Sign in"}
             </Link>
           </nav>
         </div>
@@ -196,7 +238,7 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
-              <Link to="/for-tradesmen" className="hover:text-foreground">
+              <Link to="/join" className="hover:text-foreground">
                 Join as a tradesman
               </Link>
             </li>
@@ -299,6 +341,7 @@ export function SiteFooter() {
             </address>
           </div>
           <nav className="flex flex-wrap items-center gap-4">
+            <ThemeControl />
             <Link to="/privacy" className="hover:text-foreground">
               Privacy
             </Link>

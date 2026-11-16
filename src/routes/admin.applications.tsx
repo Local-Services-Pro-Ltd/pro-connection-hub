@@ -277,7 +277,12 @@ function AdminApplications() {
         {rows.map((a) => (
           <li key={a.id} className="rounded-md border border-border bg-card p-6">
             <div className="flex flex-wrap items-baseline justify-between gap-3">
-              <h2 className="text-xl">{a.company}</h2>
+              <div className="flex min-w-0 flex-wrap items-center gap-3">
+                <h2 className="text-xl">{a.company}</h2>
+                <span className="rounded-sm border border-border px-2 py-1 font-display text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                  {a.kind === "claim" ? "Claim" : "Application"}
+                </span>
+              </div>
               <span className="eyebrow !mb-0">
                 {a.reference ? `${a.reference} · ` : ""}
                 {a.status.replace("_", " ")} ·{" "}
@@ -299,6 +304,11 @@ function AdminApplications() {
                 {a.priority !== "normal" ? ` · ${a.priority}` : ""}
               </span>
             </div>
+            {a.kind === "claim" && (
+              <p className="mt-3 rounded-sm bg-muted px-3 py-2 text-sm text-muted-foreground">
+                Type: Claim · Listing: <span className="font-mono text-foreground">{a.claim_pro_id}</span>
+              </p>
+            )}
             <p className="mt-2 text-sm text-muted-foreground">
               {a.business_type ? `${BUSINESS_TYPE_LABEL[a.business_type] ?? a.business_type} · ` : ""}
               {a.contact_name} · {a.email}
@@ -326,7 +336,7 @@ function AdminApplications() {
             )}
             {a.applicant_message && (
               <p className="mt-2 text-sm text-muted-foreground">
-                Firm replied: "{a.applicant_message}"
+                {a.kind === "claim" ? a.applicant_message : `Firm replied: "${a.applicant_message}"`}
               </p>
             )}
 

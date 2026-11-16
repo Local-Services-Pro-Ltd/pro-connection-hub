@@ -74,3 +74,38 @@ backend remains the source of truth for live-database checks.
 
 Restoring Pages bindings does not populate GitHub Actions secrets or prove that
 the optional GitHub live scan has passed.
+
+## Self-hosted production database (tradesmanfinder.org)
+
+Preview keeps using Lovable Cloud. The live site on Cloudflare Pages uses the
+owner's own database project **fzijsbkoiuhvjfmuvbrl** (London). The same build
+works on both; the provider is chosen at runtime from env vars.
+
+Cloudflare Pages env vars:
+
+| Name | Type | Notes |
+| --- | --- | --- |
+| SUPABASE_URL | plain | `https://fzijsbkoiuhvjfmuvbrl.supabase.co`; also feeds the CSP |
+| SUPABASE_PUBLISHABLE_KEY | plain | |
+| VITE_SUPABASE_URL | plain (build) | same as SUPABASE_URL |
+| VITE_SUPABASE_PUBLISHABLE_KEY | plain (build) | |
+| SUPABASE_SERVICE_ROLE_KEY | secret | server functions, cron routes |
+| RESEND_API_KEY | secret | when set, email goes via Resend instead of Lovable Emails (verify the sender domain in Resend) |
+| EMAIL_FROM_DOMAIN | plain | optional From/sender domain. Production: `tradesmanfinder.org`, giving From `TradesmanFinder <noreply@tradesmanfinder.org>`. Unset (preview) keeps `TradesmanFinder <noreply@notify.tradesmanfinder.org>` |
+| GEMINI_API_KEY | secret | when set, AI goes to Google Gemini instead of the Lovable AI gateway; without any key questions are saved with no AI answer |
+| SECURITY_SCAN_TOKEN | secret | cron route token |
+| STRIPE_SECRET_KEY | secret | payments stay off while ONBOARDING_FREE is on |
+| PUBLIC_SITE_URL | plain | `https://tradesmanfinder.org` |
+| GOOGLE_AUTH_ENABLED | optional | `true` shows "Continue with Google" off Lovable hosting (Google provider must be configured in the database project) |
+
+GitHub secret **PRODUCTION_DB_URL**: Postgres connection string used by
+`.github/workflows/migrate-production.yml` to apply each migration to production before release.
+
+Scheduled jobs (reschedule on production pointing at `https://tradesmanfinder.org`):
+
+- `GET|POST /api/public/security-scan`
+- `GET|POST /api/public/application-maintenance`
+
+Both require header `x-security-scan-token: <token>` or `Authorization: Bearer <token>`,
+where the token equals `SECURITY_SCAN_TOKEN` or matches the database's
+`security_scan_token_matches()` secret. Both are rate limited.

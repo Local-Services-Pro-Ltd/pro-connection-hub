@@ -733,6 +733,8 @@ export type Database = {
           applicant_message: string | null
           business_type: string | null
           changes_requested_at: string | null
+          claim_pro_id: string | null
+          claimant_user_id: string | null
           companies_house: string | null
           company: string
           contact_name: string
@@ -745,6 +747,7 @@ export type Database = {
           id: string
           insurance_expiry: string | null
           insurance_provider: string | null
+          kind: string
           phone: string | null
           postcode: string
           priority: string
@@ -770,6 +773,8 @@ export type Database = {
           applicant_message?: string | null
           business_type?: string | null
           changes_requested_at?: string | null
+          claim_pro_id?: string | null
+          claimant_user_id?: string | null
           companies_house?: string | null
           company: string
           contact_name: string
@@ -782,6 +787,7 @@ export type Database = {
           id?: string
           insurance_expiry?: string | null
           insurance_provider?: string | null
+          kind?: string
           phone?: string | null
           postcode: string
           priority?: string
@@ -807,6 +813,8 @@ export type Database = {
           applicant_message?: string | null
           business_type?: string | null
           changes_requested_at?: string | null
+          claim_pro_id?: string | null
+          claimant_user_id?: string | null
           companies_house?: string | null
           company?: string
           contact_name?: string
@@ -819,6 +827,7 @@ export type Database = {
           id?: string
           insurance_expiry?: string | null
           insurance_provider?: string | null
+          kind?: string
           phone?: string | null
           postcode?: string
           priority?: string
@@ -839,6 +848,20 @@ export type Database = {
           years?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "pro_applications_claim_pro_id_fkey"
+            columns: ["claim_pro_id"]
+            isOneToOne: false
+            referencedRelation: "pro_trust"
+            referencedColumns: ["pro_id"]
+          },
+          {
+            foreignKeyName: "pro_applications_claim_pro_id_fkey"
+            columns: ["claim_pro_id"]
+            isOneToOne: false
+            referencedRelation: "pros"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "pro_applications_trade_slug_fkey"
             columns: ["trade_slug"]
@@ -2164,6 +2187,17 @@ export type Database = {
           p_verdict?: string
         }
         Returns: undefined
+      }
+      submit_listing_claim: {
+        Args: {
+          p_consent: boolean
+          p_contact_name: string
+          p_email: string
+          p_phone: string
+          p_pro_id: string
+          p_role: string
+        }
+        Returns: string
       }
       submit_pro_application: {
         Args: {
