@@ -142,7 +142,7 @@ function Dashboard() {
               account as soon as your documents are approved.
             </p>
             <Link
-              to="/claim"
+              to="/join"
               className="mt-5 inline-block rounded-sm bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground"
             >
               Apply to join

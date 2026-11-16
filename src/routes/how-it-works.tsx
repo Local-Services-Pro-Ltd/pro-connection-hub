@@ -220,8 +220,7 @@ function HowItWorks() {
             Ask the pros
           </Link>
           <Link
-            to="/claim"
-            search={{}}
+            to="/join"
             className="inline-flex rounded-sm border border-border-strong px-6 py-3.5 font-display font-semibold hover:border-primary hover:text-primary"
           >
             Apply as a firm

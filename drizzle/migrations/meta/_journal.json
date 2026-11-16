@@ -309,6 +309,13 @@
       "when": 1794809278143,
       "tag": "0043_restrict_matching_to_server_plan_enforcement",
       "breakpoints": true
+    },
+    {
+      "idx": 44,
+      "version": "7",
+      "when": 1794833728298,
+      "tag": "0044_pro_applications_business_type",
+      "breakpoints": true
     }
   ]
 }

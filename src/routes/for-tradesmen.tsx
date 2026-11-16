@@ -128,8 +128,8 @@ function ForTradesmen() {
         eyebrow="For tradesmen"
         title={ONBOARDING_FREE ? "Free while we onboard trades — no card needed." : "Leads that are worth answering."}
         sub={ONBOARDING_FREE
-          ? "Approved firms get Trade-tier features free during onboarding, with a cap of three quotes per job and no per-lead charges."
-          : "A flat monthly membership and a cap of three quotes per job. We're onboarding local trades now, with ID and insurance checks required before quoting."}
+          ? "Approved firms get Trade-tier features free during onboarding, with a cap of three quotes per job and no per-lead charges. A real person replies to every application within 5 working days."
+          : "A flat monthly membership and a cap of three quotes per job. We're onboarding local trades now, with ID and insurance checks required before quoting. A real person replies to every application within 5 working days."}
         image={heroForTradesmen}
         imageAlt="A tradesman checking his phone beside his van at sunrise"
         focal="55% 40%"
@@ -137,8 +137,7 @@ function ForTradesmen() {
       >
         <div className="flex flex-wrap gap-3">
           <Link
-            to="/signin"
-            search={{ intent: "claim" as const }}
+            to="/join"
             className="inline-flex rounded-sm bg-primary px-6 py-3.5 font-display font-semibold text-primary-foreground shadow-ember hover:brightness-110"
           >
             Apply to join
@@ -239,8 +238,7 @@ function ForTradesmen() {
               </ul>
               {ONBOARDING_FREE ? (
                 <Link
-                  to="/signin"
-                  search={{ intent: "claim" as const }}
+                  to="/join"
                   className={`mt-8 flex items-center justify-center rounded-sm px-5 py-3 font-display text-sm font-semibold ${
                     t.featured
                       ? "bg-primary text-primary-foreground hover:brightness-110"

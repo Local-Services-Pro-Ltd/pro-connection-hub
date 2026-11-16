@@ -142,7 +142,7 @@ function ApplicationStatusPage() {
         {!token ? (
           <p className="max-w-2xl text-muted-foreground">
             Haven't applied yet?{" "}
-            <Link to="/claim" className="text-primary underline">
+            <Link to="/join" className="text-primary underline">
               Send your paperwork
             </Link>{" "}
             and we'll email you a tracking link straight away.

@@ -15,6 +15,7 @@
     "test:access": "python3 tests/regression/access_control.py",
     "test:deployment": "bun test tests/regression/deployment-flows.test.ts",
     "test:trust": "python3 tests/regression/public_trust.py",
+    "test:join": "bun test tests/regression/join-content.test.ts && python3 tests/regression/join_page.py",
     "test:onboarding": "bun test tests/regression/onboarding-free.test.ts && python3 tests/regression/onboarding_free.py",
     "security:ci": "node scripts/security-ci.mjs",
     "test:ratelimit": "python3 tests/regression/rate_limits.py"

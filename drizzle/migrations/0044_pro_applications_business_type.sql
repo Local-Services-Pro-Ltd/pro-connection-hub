@@ -1,0 +1,2 @@
+ALTER TABLE public.pro_applications ADD COLUMN IF NOT EXISTS business_type text;
+ALTER TABLE public.pro_applications ADD CONSTRAINT pro_applications_business_type_check CHECK (business_type IS NULL OR business_type IN ('sole_trader','partnership','limited_company'));

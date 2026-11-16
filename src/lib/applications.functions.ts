@@ -35,6 +35,12 @@ export type ProApplicationInput = {
   insuranceExpiry?: string;
   accreditations?: string;
   about?: string;
+  /** sole_trader | partnership | limited_company */
+  businessType?: string;
+  /** Required on /join; the legacy /claim form omits it. */
+  consent?: boolean;
+  /** Which form sent this — "join" enforces the newer required fields. */
+  source?: "join" | "claim";
   checkToken: string;
   checkAnswer: string;
   /** Honeypot — must stay empty. */
@@ -42,6 +48,9 @@ export type ProApplicationInput = {
 };
 
 const SITE = "https://tradesmanfinder.org";
+
+export const BUSINESS_TYPES = ["sole_trader", "partnership", "limited_company"] as const;
+export type BusinessType = (typeof BUSINESS_TYPES)[number];
 
 export type ApplicationStatusEvent = {
   action: string;
@@ -89,6 +98,18 @@ export const submitProApplication = createServerFn({ method: "POST" })
       throw new Error("Please enter a valid email address.");
     if (postcode.length < 2)
       throw new Error("Please enter the postcode you work from.");
+    const businessType = clean(input.businessType, 30);
+    if (businessType && !BUSINESS_TYPES.includes(businessType as BusinessType))
+      throw new Error("Please choose how your business is set up.");
+    if (input.source === "join") {
+      if (!businessType)
+        throw new Error("Please choose how your business is set up.");
+      if (!clean(input.tradeSlug, 60)) throw new Error("Please choose your main trade.");
+      if ((clean(input.about, 2000) ?? "").length < 10)
+        throw new Error("Please tell us a little about the work you do.");
+      if (input.consent !== true)
+        throw new Error("Please confirm the declaration before sending.");
+    }
     const expiry = clean(input.insuranceExpiry, 10);
     if (expiry && !/^\d{4}-\d{2}-\d{2}$/.test(expiry))
       throw new Error("Insurance expiry must be a valid date.");
@@ -106,6 +127,7 @@ export const submitProApplication = createServerFn({ method: "POST" })
       insuranceExpiry: expiry,
       accreditations: clean(input.accreditations, 500),
       about: clean(input.about, 2000) ?? "",
+      businessType: businessType as BusinessType | undefined,
       checkToken: (input.checkToken ?? "").trim(),
       checkAnswer: (input.checkAnswer ?? "").trim(),
       hp: (input.hp ?? "").trim(),
@@ -199,6 +221,14 @@ export const submitProApplication = createServerFn({ method: "POST" })
 
     const applicationId = String(id ?? "");
 
+    if (data.businessType) {
+      const { error: typeError } = await supabaseAdmin
+        .from("pro_applications")
+        .update({ business_type: data.businessType })
+        .eq("id", applicationId);
+      if (typeError) console.error("[applications] business type save failed", typeError);
+    }
+
     const { data: row } = await supabaseAdmin
       .from("pro_applications")
       .select("reference, tracking_token, contact_name, company")
@@ -281,6 +311,7 @@ export type ProApplication = {
   years: number;
   website: string | null;
   companies_house: string | null;
+  business_type: string | null;
   insurance_provider: string | null;
   insurance_expiry: string | null;
   accreditations: string | null;

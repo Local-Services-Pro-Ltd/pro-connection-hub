@@ -21,7 +21,7 @@ interface Props {
 }
 
 const HEADLINES: Record<string, string> = {
-  submitted: "We've got your certification application.",
+  submitted: "Thanks — we've got your application.",
   pending: "Your application is back in the queue.",
   in_review: "Your application is now being checked.",
   approved: "Your firm has passed our checks.",
@@ -30,7 +30,7 @@ const HEADLINES: Record<string, string> = {
 
 const BODIES: Record<string, string> = {
   submitted:
-    "Before your firm can quote, our team must review your ID, insurance and any required registration or accreditation evidence. You can track the review from your application page.",
+    "A real person will reply within 5 working days. After that first review we'll ask for your photo ID, public liability insurance and any trade registration your work needs — all checked before you can quote. You can track your application from your status page.",
   pending:
     "We've moved your application back to the queue while we wait on something. You don't need to do anything unless we ask.",
   in_review:
