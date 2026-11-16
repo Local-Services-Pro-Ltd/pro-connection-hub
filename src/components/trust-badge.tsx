@@ -77,7 +77,10 @@ export function TrustBreakdown({
   const tier = trustTier(score);
   const rows = [
     { label: "Verified credentials", value: `${verified} of ${total || verified}` },
-    { label: "Customer rating", value: reviews ? `${rating} from ${reviews} reviews` : "No reviews yet" },
+    {
+      label: "Customer rating",
+      value: reviews ? `${rating} from ${reviews} reviews` : "No reviews yet",
+    },
     { label: "Years trading", value: `${years} years` },
     { label: "Typical reply", value: `~${responseMins} min` },
   ];

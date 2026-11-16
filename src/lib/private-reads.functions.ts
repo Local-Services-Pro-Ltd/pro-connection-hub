@@ -1,5 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/integrations/supabase/types";
 
 /**
  * Reads that include private columns (firm contact/billing, project owner
@@ -7,7 +9,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
  * directly, so owners and admins fetch them here after a server-side check.
  */
 
-async function isAdmin(context: { supabase: any; userId: string }) {
+async function isAdmin(context: { supabase: SupabaseClient<Database>; userId: string }) {
   const { data } = await context.supabase.rpc("has_role", {
     _user_id: context.userId,
     _role: "admin",

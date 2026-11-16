@@ -57,9 +57,7 @@ const Email = ({
         <Container style={container}>
           <Text style={eyebrow}>TRADESMANFINDER · VETTING</Text>
           <Heading style={heading}>{copy.heading}</Heading>
-          <Text style={text}>
-            {contactName ? `Hi ${contactName},` : "Hello,"}
-          </Text>
+          <Text style={text}>{contactName ? `Hi ${contactName},` : "Hello,"}</Text>
           <Text style={text}>{copy.body}</Text>
           <Text style={text}>
             <strong>Firm:</strong> {company}
@@ -81,8 +79,8 @@ const Email = ({
           ) : null}
           <Hr style={rule} />
           <Text style={small}>
-            You're receiving this because your firm is listed on
-            TradesmanFinder. Reply to this email if anything looks wrong.
+            You're receiving this because your firm is listed on TradesmanFinder. Reply to this
+            email if anything looks wrong.
           </Text>
         </Container>
       </Body>
@@ -91,7 +89,12 @@ const Email = ({
 };
 
 const main = { backgroundColor: "#f5f4f2", fontFamily: "Helvetica, Arial, sans-serif" };
-const container = { backgroundColor: "#ffffff", padding: "32px", maxWidth: "560px", margin: "0 auto" };
+const container = {
+  backgroundColor: "#ffffff",
+  padding: "32px",
+  maxWidth: "560px",
+  margin: "0 auto",
+};
 const eyebrow = { fontSize: "11px", letterSpacing: "2px", color: "#9a8f86", margin: "0 0 8px" };
 const heading = { fontSize: "22px", lineHeight: "1.3", color: "#1b1a19", margin: "0 0 16px" };
 const text = { fontSize: "15px", lineHeight: "1.6", color: "#333130" };
@@ -112,8 +115,7 @@ export const template: TemplateEntry = {
   component: Email,
   displayName: "Pro vetting status",
   subject: (data) =>
-    (COPY[(data['outcome'] as VettingOutcome) ?? "approved"] ?? COPY.approved)
-      .heading,
+    (COPY[(data["outcome"] as VettingOutcome) ?? "approved"] ?? COPY.approved).heading,
   previewData: {
     company: "Ember Building Ltd",
     contactName: "Sam",

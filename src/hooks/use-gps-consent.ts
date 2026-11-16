@@ -28,7 +28,6 @@ export function useGpsConsent() {
   const [error, setError] = useState<string | null>(null);
   const watchId = useRef<number | null>(null);
 
-
   // Hydrate stored choice after mount so SSR markup matches.
   useEffect(() => {
     try {
@@ -83,7 +82,8 @@ export function useGpsConsent() {
           const cutoff = next.at - TRACK_WINDOW_MS;
           const last = prev[prev.length - 1];
           // Throttle the trail to one point every ~5s to keep it scrubbable.
-          const merged = last && next.at - last.at < 5_000 ? [...prev.slice(0, -1), next] : [...prev, next];
+          const merged =
+            last && next.at - last.at < 5_000 ? [...prev.slice(0, -1), next] : [...prev, next];
           return merged.filter((f) => f.at >= cutoff);
         });
       },
@@ -92,7 +92,6 @@ export function useGpsConsent() {
     );
     return stop;
   }, [consent, stop]);
-
 
   const choose = useCallback((next: Exclude<GpsConsent, "unknown">) => {
     try {
@@ -122,5 +121,4 @@ export function useGpsConsent() {
     deny: () => choose("denied"),
     reset,
   };
-
 }

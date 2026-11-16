@@ -117,10 +117,7 @@ export async function applySecurityHeaders(
 
   headers.set("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
   headers.set("Cross-Origin-Resource-Policy", "same-site");
-  headers.set(
-    "Strict-Transport-Security",
-    "max-age=31536000; includeSubDomains; preload",
-  );
+  headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
   // Geolocation stays enabled for the live coverage map; everything else off.
   headers.set(
     "Permissions-Policy",

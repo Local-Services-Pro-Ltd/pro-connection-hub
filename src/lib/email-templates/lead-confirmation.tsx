@@ -1,14 +1,5 @@
 import * as React from "react";
-import {
-  Body,
-  Container,
-  Head,
-  Heading,
-  Hr,
-  Html,
-  Preview,
-  Text,
-} from "@react-email/components";
+import { Body, Container, Head, Heading, Hr, Html, Preview, Text } from "@react-email/components";
 import type { TemplateEntry } from "./registry";
 
 interface Props {
@@ -28,13 +19,10 @@ const Email = ({ name, company, reference, message }: Props) => (
         <Heading style={heading}>Your enquiry is on its way</Heading>
         <Text style={text}>{name ? `Hi ${name},` : "Hi there,"}</Text>
         <Text style={text}>
-          We've passed your job details to{" "}
-          <strong>{company ?? "the firm you contacted"}</strong>. They can reply
-          using the contact details you provided.
+          We've passed your job details to <strong>{company ?? "the firm you contacted"}</strong>.
+          They can reply using the contact details you provided.
         </Text>
-        {reference ? (
-          <Text style={refBox}>Your reference: {reference}</Text>
-        ) : null}
+        {reference ? <Text style={refBox}>Your reference: {reference}</Text> : null}
         {message ? (
           <>
             <Text style={label}>What you sent</Text>
@@ -43,8 +31,8 @@ const Email = ({ name, company, reference, message }: Props) => (
         ) : null}
         <Hr style={rule} />
         <Text style={small}>
-          Firms must complete ID and insurance checks before they can quote.
-          If anything feels off, reply to this email and we'll step in.
+          Firms must complete ID and insurance checks before they can quote. If anything feels off,
+          reply to this email and we'll step in.
         </Text>
       </Container>
     </Body>
@@ -54,7 +42,7 @@ const Email = ({ name, company, reference, message }: Props) => (
 export const template = {
   component: Email,
   subject: (data: Record<string, unknown>) =>
-    `Your enquiry to ${(data['company'] as string) ?? "a local firm"} — TradesmanFinder`,
+    `Your enquiry to ${(data["company"] as string) ?? "a local firm"} — TradesmanFinder`,
   displayName: "Lead — homeowner confirmation",
   previewData: {
     name: "Jane",

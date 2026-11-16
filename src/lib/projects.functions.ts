@@ -81,9 +81,7 @@ export const createProject = createServerFn({ method: "POST" })
   })
   .handler(async ({ data, context }) => {
     // Photos live under <user-id>/… — reject anything pointing elsewhere.
-    const photos = data.photos.filter((p) =>
-      p.startsWith(`${context.userId}/`),
-    );
+    const photos = data.photos.filter((p) => p.startsWith(`${context.userId}/`));
 
     const { data: row, error } = await context.supabase
       .from("projects")
@@ -123,9 +121,7 @@ export const signProjectPhotos = createServerFn({ method: "POST" })
   }))
   .handler(async ({ data }) => {
     if (!data.projectId) return { urls: [] as string[] };
-    const { supabaseAdmin } = await import(
-      "@/integrations/supabase/client.server"
-    );
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: project } = await supabaseAdmin
       .from("projects")
       .select("photos, status")
@@ -183,9 +179,7 @@ export const applyToProject = createServerFn({ method: "POST" })
     if (!input.projectId || !input.proId)
       throw new Error("We couldn't tell which posting you're applying to.");
     if (message.length < 20)
-      throw new Error(
-        "Tell the homeowner how you'd approach the job (20 characters or more).",
-      );
+      throw new Error("Tell the homeowner how you'd approach the job (20 characters or more).");
     return {
       projectId: input.projectId,
       proId: input.proId,
@@ -204,9 +198,7 @@ export const applyToProject = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     // This RPC is service-role only: the shared server flag and authenticated
     // user ID cannot be replaced by browser input to bypass plan limits.
-    const { supabaseAdmin } = await import(
-      "@/integrations/supabase/client.server"
-    );
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.rpc("apply_to_project", {
       p_project_id: data.projectId,
       p_pro_id: data.proId,
@@ -215,9 +207,7 @@ export const applyToProject = createServerFn({ method: "POST" })
       p_onboarding_free: ONBOARDING_FREE,
       ...(data.quoteLow !== undefined ? { p_quote_low: data.quoteLow } : {}),
       ...(data.quoteHigh !== undefined ? { p_quote_high: data.quoteHigh } : {}),
-      ...(data.availableFrom !== undefined
-        ? { p_available_from: data.availableFrom }
-        : {}),
+      ...(data.availableFrom !== undefined ? { p_available_from: data.availableFrom } : {}),
     });
     if (error) throw new Error(error.message);
 
@@ -229,11 +219,7 @@ export const applyToProject = createServerFn({ method: "POST" })
         .select("id, title, contact_name, contact_email, notify_applications")
         .eq("id", data.projectId)
         .maybeSingle(),
-      supabaseAdmin
-        .from("pros")
-        .select("company")
-        .eq("id", data.proId)
-        .maybeSingle(),
+      supabaseAdmin.from("pros").select("company").eq("id", data.proId).maybeSingle(),
     ]);
 
     if (project?.notify_applications && project.contact_email) {
@@ -244,9 +230,7 @@ export const applyToProject = createServerFn({ method: "POST" })
             ? `From £${data.quoteLow.toLocaleString("en-GB")}`
             : undefined;
       try {
-        const { sendTemplateEmail } = await import(
-          "@/lib/email-templates/send-email"
-        );
+        const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
         await sendTemplateEmail("project-application", project.contact_email, {
           idempotencyKey: `project-apply-${data.projectId}-${data.proId}`,
           templateData: {
@@ -305,9 +289,7 @@ export const reviewProject = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
 
     try {
-      const { sendTemplateEmail } = await import(
-        "@/lib/email-templates/send-email"
-      );
+      const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
       await sendTemplateEmail("project-status", row.contact_email, {
         idempotencyKey: `project-review-${row.id}-${data.status}`,
         templateData: {

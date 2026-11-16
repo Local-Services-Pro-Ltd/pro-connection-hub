@@ -167,10 +167,7 @@ function FeaturedBoard() {
   const toggle = useMutation({
     mutationFn: async ({ id, next }: { id: string; next: boolean }) => {
       setPendingId(id);
-      const { error: e } = await supabase
-        .from("pros")
-        .update({ featured: next })
-        .eq("id", id);
+      const { error: e } = await supabase.from("pros").update({ featured: next }).eq("id", id);
       if (e) throw e;
       // Tell the firm what changed. A failed or impossible send never blocks
       // the admin action — the audit log is the record of truth.
@@ -196,8 +193,7 @@ function FeaturedBoard() {
         next ? "Firm is now featured on the homepage" : "Firm removed from the homepage",
       );
     },
-    onError: (e: Error) =>
-      toast.error(e.message || "Couldn't change the featured state."),
+    onError: (e: Error) => toast.error(e.message || "Couldn't change the featured state."),
     onSettled: () => setPendingId(null),
   });
 
@@ -256,10 +252,7 @@ function FeaturedBoard() {
                       className="flex items-center gap-2 text-sm text-muted-foreground"
                     >
                       {c.ok ? (
-                        <Check
-                          className="h-4 w-4 text-primary"
-                          aria-hidden="true"
-                        />
+                        <Check className="h-4 w-4 text-primary" aria-hidden="true" />
                       ) : (
                         <X className="h-4 w-4 text-destructive" aria-hidden="true" />
                       )}
@@ -268,8 +261,7 @@ function FeaturedBoard() {
                   ))}
                 </ul>
                 <p className="mt-3 text-xs text-muted-foreground">
-                  {p.verified_credentials} of {p.total_credentials} credentials
-                  verified
+                  {p.verified_credentials} of {p.total_credentials} credentials verified
                 </p>
               </div>
 
@@ -293,8 +285,7 @@ function FeaturedBoard() {
                 {!p.featured && !canFeature ? (
                   <>
                     <p className="mt-2 max-w-56 text-xs text-muted-foreground">
-                      Blocked:{" "}
-                      {blockers.map((b) => b.label.toLowerCase()).join("; ")}
+                      Blocked: {blockers.map((b) => b.label.toLowerCase()).join("; ")}
                     </p>
                     <button
                       type="button"
@@ -309,9 +300,7 @@ function FeaturedBoard() {
                           .then((r) =>
                             r.sent
                               ? toast.success("Rejection email sent to the firm.")
-                              : toast.info(
-                                  "No claimed account on this listing — no email sent.",
-                                ),
+                              : toast.info("No claimed account on this listing — no email sent."),
                           )
                           .catch(() => toast.error("Couldn't send the email."))
                       }
@@ -350,7 +339,6 @@ function FeaturedBoard() {
               {exporting ? "Preparing…" : "Export CSV"}
             </button>
           </div>
-
         </div>
         {audit && audit.length > 0 ? (
           <div className="mt-5 overflow-x-auto rounded-md border border-border">
@@ -382,9 +370,7 @@ function FeaturedBoard() {
             </table>
           </div>
         ) : (
-          <p className="mt-4 text-sm text-muted-foreground">
-            No featuring actions recorded yet.
-          </p>
+          <p className="mt-4 text-sm text-muted-foreground">No featuring actions recorded yet.</p>
         )}
       </div>
     </Section>

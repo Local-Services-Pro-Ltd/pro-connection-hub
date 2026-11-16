@@ -3,18 +3,13 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Section } from "@/components/layout-bits";
 import { HumanCheck, useHumanCheck } from "@/components/human-check";
-import {
-  confirmWaitingList,
-  updateWaitingListPrefs,
-} from "@/lib/waiting-list.functions";
+import { confirmWaitingList, updateWaitingListPrefs } from "@/lib/waiting-list.functions";
 
 const SITE = "https://tradesmanfinder.org";
 
 export const Route = createFileRoute("/waiting-list/confirm")({
   validateSearch: (search: Record<string, unknown>): { token?: string } =>
-    typeof search["token"] === "string" && search["token"]
-      ? { token: search["token"] }
-      : {},
+    typeof search["token"] === "string" && search["token"] ? { token: search["token"] } : {},
   head: () => {
     const description =
       "Confirm your email address to activate your TradesmanFinder waiting-list place.";
@@ -50,9 +45,7 @@ function ConfirmWaitingList() {
   const { token } = Route.useSearch();
   const confirm = useServerFn(confirmWaitingList);
   const check = useHumanCheck();
-  const [state, setState] = useState<State>(
-    token ? { kind: "challenge" } : { kind: "failed" },
-  );
+  const [state, setState] = useState<State>(token ? { kind: "challenge" } : { kind: "failed" });
 
   useEffect(() => {
     if (!token) setState({ kind: "failed" });
@@ -91,12 +84,10 @@ function ConfirmWaitingList() {
         <p className="eyebrow">Waiting list</p>
         {state.kind === "challenge" && (
           <>
-            <h1 className="mt-3 text-4xl leading-tight sm:text-5xl">
-              One quick check.
-            </h1>
+            <h1 className="mt-3 text-4xl leading-tight sm:text-5xl">One quick check.</h1>
             <p className="mt-5 text-muted-foreground">
-              Answer this and we'll activate your waiting-list place. It keeps
-              automated scripts away from confirmation links.
+              Answer this and we'll activate your waiting-list place. It keeps automated scripts
+              away from confirmation links.
             </p>
             <form
               className="mx-auto mt-8 max-w-sm space-y-5 text-left"
@@ -124,9 +115,7 @@ function ConfirmWaitingList() {
 
         {state.kind === "working" && (
           <>
-            <h1 className="mt-3 text-4xl leading-tight sm:text-5xl">
-              Confirming your email…
-            </h1>
+            <h1 className="mt-3 text-4xl leading-tight sm:text-5xl">Confirming your email…</h1>
             <p className="mt-5 text-muted-foreground" aria-live="polite">
               One moment while we activate your place.
             </p>
@@ -140,9 +129,8 @@ function ConfirmWaitingList() {
             </h1>
             <p className="mt-5 text-muted-foreground" aria-live="polite">
               Your waiting-list place
-              {state.postcode ? ` for ${state.postcode}` : ""} is active. We'll
-              email you the moment TradesmanFinder opens in your area — nothing
-              else in between.
+              {state.postcode ? ` for ${state.postcode}` : ""} is active. We'll email you the moment
+              TradesmanFinder opens in your area — nothing else in between.
             </p>
           </>
         )}
@@ -166,9 +154,7 @@ function ConfirmWaitingList() {
 
         {state.kind === "failed" && (
           <>
-            <h1 className="mt-3 text-4xl leading-tight sm:text-5xl">
-              That link didn't work.
-            </h1>
+            <h1 className="mt-3 text-4xl leading-tight sm:text-5xl">That link didn't work.</h1>
             <p className="mt-5 text-muted-foreground" role="alert">
               {state.message ??
                 "The confirmation link looks incomplete or has already been replaced by a newer one. Join again and we'll send a fresh link."}
@@ -213,9 +199,7 @@ function Prefs({ token }: { token: string }) {
   const save = useServerFn(updateWaitingListPrefs);
   const [launch, setLaunch] = useState(true);
   const [updates, setUpdates] = useState(false);
-  const [status, setStatus] = useState<"idle" | "saving" | "saved" | "failed">(
-    "idle",
-  );
+  const [status, setStatus] = useState<"idle" | "saving" | "saved" | "failed">("idle");
 
   const commit = (nextLaunch: boolean, nextUpdates: boolean) => {
     setLaunch(nextLaunch);
@@ -236,8 +220,8 @@ function Prefs({ token }: { token: string }) {
     <div className="mx-auto mt-10 max-w-md rounded-md border border-border bg-card p-6 text-left">
       <p className="eyebrow">Email preferences</p>
       <p className="mt-2 text-sm text-muted-foreground">
-        Choose what we send you. You can also unsubscribe from everything using
-        the link at the bottom of any email.
+        Choose what we send you. You can also unsubscribe from everything using the link at the
+        bottom of any email.
       </p>
       <div className="mt-5 space-y-4">
         <label className="flex items-start gap-3 text-sm">
@@ -249,9 +233,7 @@ function Prefs({ token }: { token: string }) {
           />
           <span>
             Email me the day my area opens
-            <span className="block text-muted-foreground">
-              The one email you signed up for.
-            </span>
+            <span className="block text-muted-foreground">The one email you signed up for.</span>
           </span>
         </label>
         <label className="flex items-start gap-3 text-sm">

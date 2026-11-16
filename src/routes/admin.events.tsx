@@ -5,11 +5,7 @@ import { Download, Lock, RefreshCw, ShieldAlert } from "lucide-react";
 import { Section, SectionHead } from "@/components/layout-bits";
 import { downloadText } from "@/lib/track-export";
 import { useAuth } from "@/hooks/use-auth";
-import {
-  apiAccessEventsQuery,
-  isAdminQuery,
-  type ApiAccessEvent,
-} from "@/lib/queries";
+import { apiAccessEventsQuery, isAdminQuery, type ApiAccessEvent } from "@/lib/queries";
 
 export const Route = createFileRoute("/admin/events")({
   head: () => ({
@@ -108,8 +104,7 @@ const OUTCOME_STYLES: Record<string, string> = {
 };
 
 function EventsBoard() {
-  const { data, isPending, error, refetch, isFetching } =
-    useQuery(apiAccessEventsQuery);
+  const { data, isPending, error, refetch, isFetching } = useQuery(apiAccessEventsQuery);
   const [endpoint, setEndpoint] = useState("all");
   const [outcome, setOutcome] = useState("all");
 
@@ -123,9 +118,7 @@ function EventsBoard() {
 
   const stats = useMemo(() => {
     const since = Date.now() - 24 * 60 * 60 * 1000;
-    const recent = (data ?? []).filter(
-      (e) => new Date(e.created_at).getTime() >= since,
-    );
+    const recent = (data ?? []).filter((e) => new Date(e.created_at).getTime() >= since);
     return {
       last24h: recent.length,
       rateLimited: recent.filter((e) => e.outcome === "rate_limited").length,
@@ -147,16 +140,7 @@ function EventsBoard() {
     ];
     const cell = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
     const body = events.map((e: ApiAccessEvent) =>
-      [
-        e.created_at,
-        e.endpoint,
-        e.method,
-        e.outcome,
-        e.status,
-        e.ip_hash,
-        e.detail,
-        e.user_agent,
-      ]
+      [e.created_at, e.endpoint, e.method, e.outcome, e.status, e.ip_hash, e.detail, e.user_agent]
         .map(cell)
         .join(","),
     );
@@ -244,8 +228,6 @@ function EventsBoard() {
 
       <OverTime events={events} />
 
-
-
       <div
         className="mt-6 overflow-x-auto rounded-md border border-border"
         data-testid="denied-events-table"
@@ -274,8 +256,7 @@ function EventsBoard() {
                 <td colSpan={6} className="px-4 py-6 text-muted-foreground">
                   <span className="inline-flex items-center gap-2">
                     <ShieldAlert className="h-4 w-4 text-primary" />
-                    No denied requests recorded in the retention window. That is
-                    the healthy state.
+                    No denied requests recorded in the retention window. That is the healthy state.
                   </span>
                 </td>
               </tr>
@@ -285,9 +266,7 @@ function EventsBoard() {
                 <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
                   {new Date(e.created_at).toLocaleString("en-GB")}
                 </td>
-                <td className="px-4 py-3">
-                  {ENDPOINT_LABELS[e.endpoint] ?? e.endpoint}
-                </td>
+                <td className="px-4 py-3">{ENDPOINT_LABELS[e.endpoint] ?? e.endpoint}</td>
                 <td className="px-4 py-3 text-muted-foreground">{e.method}</td>
                 <td className="px-4 py-3">
                   <span
@@ -326,13 +305,8 @@ function OverTime({ events }: { events: ApiAccessEvent[] }) {
       byDay.set(day, row);
       eps.add(e.endpoint);
     }
-    const list = [...byDay.entries()]
-      .sort((a, b) => (a[0] < b[0] ? -1 : 1))
-      .slice(-14);
-    const peak = Math.max(
-      1,
-      ...list.map(([, r]) => Object.values(r).reduce((a, b) => a + b, 0)),
-    );
+    const list = [...byDay.entries()].sort((a, b) => (a[0] < b[0] ? -1 : 1)).slice(-14);
+    const peak = Math.max(1, ...list.map(([, r]) => Object.values(r).reduce((a, b) => a + b, 0)));
     return { days: list, endpoints: [...eps].sort(), max: peak };
   }, [events]);
 
@@ -351,8 +325,7 @@ function OverTime({ events }: { events: ApiAccessEvent[] }) {
     >
       <h2 className="font-display text-lg">Blocked attempts over time</h2>
       <p className="mt-1 text-sm text-muted-foreground">
-        Rate-limit hits and other denials per day, by endpoint (last 14 days
-        with activity).
+        Rate-limit hits and other denials per day, by endpoint (last 14 days with activity).
       </p>
 
       {days.length === 0 ? (
@@ -381,9 +354,7 @@ function OverTime({ events }: { events: ApiAccessEvent[] }) {
                       ) : null,
                     )}
                   </div>
-                  <span className="text-[10px] text-muted-foreground">
-                    {day.slice(5)}
-                  </span>
+                  <span className="text-[10px] text-muted-foreground">{day.slice(5)}</span>
                 </div>
               );
             })}
@@ -391,9 +362,7 @@ function OverTime({ events }: { events: ApiAccessEvent[] }) {
           <ul className="mt-4 flex flex-wrap gap-4 text-xs text-muted-foreground">
             {endpoints.map((ep, i) => (
               <li key={ep} className="inline-flex items-center gap-2">
-                <span
-                  className={`inline-block h-2.5 w-2.5 rounded-sm ${tone[i % tone.length]}`}
-                />
+                <span className={`inline-block h-2.5 w-2.5 rounded-sm ${tone[i % tone.length]}`} />
                 {ENDPOINT_LABELS[ep] ?? ep}
               </li>
             ))}

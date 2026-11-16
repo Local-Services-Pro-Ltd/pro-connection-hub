@@ -37,9 +37,8 @@ const Email = ({ name, postcode, role, confirmUrl }: Props) => {
           <Text style={text}>{name ? `Hi ${name},` : "Hi there,"}</Text>
           <Text style={text}>
             Thanks for joining the waiting list
-            {postcode ? ` for ${postcode}` : ""}. One quick step and you're in —
-            confirm your email address so we can {who} the moment we open in
-            your area.
+            {postcode ? ` for ${postcode}` : ""}. One quick step and you're in — confirm your email
+            address so we can {who} the moment we open in your area.
           </Text>
           {confirmUrl ? (
             <>
@@ -56,12 +55,11 @@ const Email = ({ name, postcode, role, confirmUrl }: Props) => {
           ) : null}
           <Hr style={rule} />
           <Text style={small}>
-            Didn't sign up? Ignore this email and nothing happens — we won't add
-            you or contact you again.
+            Didn't sign up? Ignore this email and nothing happens — we won't add you or contact you
+            again.
           </Text>
           <Text style={small}>
-            TradesmanFinder is part of Local Services Pro and All Care 4 U
-            Group.
+            TradesmanFinder is part of Local Services Pro and All Care 4 U Group.
           </Text>
         </Container>
       </Body>
@@ -83,8 +81,7 @@ export const template = {
 
 const main = {
   backgroundColor: "#ffffff",
-  fontFamily:
-    "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif",
+  fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif",
   color: "#1b1a19",
 };
 

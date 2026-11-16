@@ -36,16 +36,15 @@ function TermsPage() {
       <Section>
         <div className="max-w-3xl space-y-8">
           <p className="text-sm text-muted-foreground">
-            Last updated {new Date().getFullYear()}. By using TradesmanFinder
-            you agree to these terms. TradesmanFinder is part of Local Services
-            Pro and All Care 4 U Group.
+            Last updated {new Date().getFullYear()}. By using TradesmanFinder you agree to these
+            terms. TradesmanFinder is part of Local Services Pro and All Care 4 U Group.
           </p>
 
           <Block title="What TradesmanFinder is">
             <p>
-              We are an introduction service. We connect homeowners with
-              independent tradespeople. We are not a party to any contract you
-              agree with a trade, and we don't carry out the work ourselves.
+              We are an introduction service. We connect homeowners with independent tradespeople.
+              We are not a party to any contract you agree with a trade, and we don't carry out the
+              work ourselves.
             </p>
           </Block>
 
@@ -54,8 +53,8 @@ function TermsPage() {
               <li>Give accurate details when posting a job or creating an account.</li>
               <li>You're responsible for anything done through your account.</li>
               <li>
-                Don't misuse the service — no spam, scraping, impersonation, or
-                attempts to interfere with the site or other users.
+                Don't misuse the service — no spam, scraping, impersonation, or attempts to
+                interfere with the site or other users.
               </li>
               <li>You must be 18 or over to post a job or register as a trade.</li>
             </ul>
@@ -63,56 +62,52 @@ function TermsPage() {
 
           <Block title="Quotes and hiring">
             <p>
-              Quotes come from independent trades and are theirs, not ours.
-              Always agree scope, price and timings directly with the trade, and
-              satisfy yourself about their insurance and qualifications before
-              work starts.
+              Quotes come from independent trades and are theirs, not ours. Always agree scope,
+              price and timings directly with the trade, and satisfy yourself about their insurance
+              and qualifications before work starts.
             </p>
           </Block>
 
           <Block title="Reviews">
             <p>
-              Reviews must describe genuine experience of work arranged through
-              the site. We may remove reviews that are false, abusive, defamatory
-              or incentivised. You keep ownership of what you write and give us
-              permission to display it.
+              Reviews must describe genuine experience of work arranged through the site. We may
+              remove reviews that are false, abusive, defamatory or incentivised. You keep ownership
+              of what you write and give us permission to display it.
             </p>
           </Block>
 
           <Block title="Free onboarding period">
             <p>
-              TradesmanFinder is free for trades while we onboard, with no card
-              needed. Approved firms receive Trade-tier features during this
-              period. Prices after onboarding are Starter £29, Trade £79 and
-              Contractor £129 per month. Join during onboarding and get 50% off
-              for your first 12 months once charging starts. We'll email you at
-              least 30 days before anything is charged, and you can leave any time.
+              TradesmanFinder is free for trades while we onboard, with no card needed. Approved
+              firms receive Trade-tier features during this period. Prices after onboarding are
+              Starter £29, Trade £79 and Contractor £129 per month. Join during onboarding and get
+              50% off for your first 12 months once charging starts. We'll email you at least 30
+              days before anything is charged, and you can leave any time.
             </p>
           </Block>
 
           <Block title="Trade memberships">
             <p>
-              After the free onboarding period, trades pay a flat membership
-              rather than per-lead fees. Membership renews on the stated cycle
-              and can be cancelled before the next renewal date. Listings may be
-              suspended where we receive credible reports of poor conduct.
+              After the free onboarding period, trades pay a flat membership rather than per-lead
+              fees. Membership renews on the stated cycle and can be cancelled before the next
+              renewal date. Listings may be suspended where we receive credible reports of poor
+              conduct.
             </p>
           </Block>
 
           <Block title="Liability">
             <p>
-              We take reasonable care to keep listings accurate, but we don't
-              guarantee the quality, timing or outcome of any work. To the extent
-              permitted by law, we're not liable for losses arising from your
-              dealings with a trade or homeowner. Nothing here limits liability
-              that can't be limited by law.
+              We take reasonable care to keep listings accurate, but we don't guarantee the quality,
+              timing or outcome of any work. To the extent permitted by law, we're not liable for
+              losses arising from your dealings with a trade or homeowner. Nothing here limits
+              liability that can't be limited by law.
             </p>
           </Block>
 
           <Block title="Changes and contact">
             <p>
-              We may update these terms as the service develops; the date above
-              shows the latest version. Questions? Email{" "}
+              We may update these terms as the service develops; the date above shows the latest
+              version. Questions? Email{" "}
               <a
                 href="mailto:hello@tradesmanfinder.org"
                 className="font-semibold text-primary underline underline-offset-4"
@@ -132,9 +127,7 @@ function Block({ title, children }: { title: string; children: React.ReactNode }
   return (
     <section>
       <h2 className="font-display text-2xl font-bold tracking-tight">{title}</h2>
-      <div className="mt-3 space-y-3 text-sm leading-relaxed text-muted-foreground">
-        {children}
-      </div>
+      <div className="mt-3 space-y-3 text-sm leading-relaxed text-muted-foreground">{children}</div>
     </section>
   );
 }

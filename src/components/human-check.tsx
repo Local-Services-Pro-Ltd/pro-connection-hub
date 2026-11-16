@@ -62,9 +62,7 @@ export function HumanCheck({
             tabIndex={-1}
             autoComplete="off"
             value={state.website}
-            onChange={(e) =>
-              setState((s) => ({ ...s, website: e.target.value }))
-            }
+            onChange={(e) => setState((s) => ({ ...s, website: e.target.value }))}
           />
         </label>
       </div>
@@ -72,19 +70,14 @@ export function HumanCheck({
       <label className="block">
         <span className="eyebrow">Quick human check</span>
         <div className="mt-2 flex items-center gap-3">
-          <span
-            aria-live="polite"
-            className="min-w-[7.5rem] font-display text-sm font-semibold"
-          >
+          <span aria-live="polite" className="min-w-[7.5rem] font-display text-sm font-semibold">
             {question || "Loading…"}
           </span>
           <input
             required
             inputMode="numeric"
             value={state.answer}
-            onChange={(e) =>
-              setState((s) => ({ ...s, answer: e.target.value }))
-            }
+            onChange={(e) => setState((s) => ({ ...s, answer: e.target.value }))}
             aria-label={question || "Human check answer"}
             className={`${inputClassName} max-w-[7rem]`}
           />

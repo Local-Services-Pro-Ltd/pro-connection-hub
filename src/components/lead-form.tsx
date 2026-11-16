@@ -11,12 +11,7 @@ import { useAuth } from "@/hooks/use-auth";
 const field =
   "mt-2 w-full rounded-sm border border-border-strong bg-background px-4 py-2.5 text-sm outline-none focus:border-primary";
 
-const timings = [
-  "As soon as possible",
-  "Within a week",
-  "Within a month",
-  "Just planning",
-];
+const timings = ["As soon as possible", "Within a week", "Within a month", "Just planning"];
 
 /**
  * Direct enquiry to one firm. Everything the homeowner types is sent through
@@ -56,9 +51,7 @@ export function LeadForm({
           phone: form.phone,
           postcode: form.postcode,
           message: form.message,
-          budgetBand:
-            budgetBands.find((b) => b.value === form.budgetBand)?.label ??
-            undefined,
+          budgetBand: budgetBands.find((b) => b.value === form.budgetBand)?.label ?? undefined,
           timing: form.timing,
           checkToken: check.state.token,
           checkAnswer: check.state.answer,
@@ -83,8 +76,7 @@ export function LeadForm({
           <p className="font-display font-semibold">Enquiry sent</p>
         </div>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-          {proName.split(" ")[0]} has your details and we've emailed you a copy.
-          Your reference is{" "}
+          {proName.split(" ")[0]} has your details and we've emailed you a copy. Your reference is{" "}
           <strong className="text-foreground">{sent.reference}</strong>.
         </p>
       </div>
@@ -103,8 +95,7 @@ export function LeadForm({
         <Mail className="h-4 w-4 text-primary" /> Message this firm
       </p>
       <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-        Send the job straight to {company}. Free, no obligation, and you'll get
-        a copy by email.
+        Send the job straight to {company}. Free, no obligation, and you'll get a copy by email.
       </p>
 
       <label className="mt-5 block text-sm">

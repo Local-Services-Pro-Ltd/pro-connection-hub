@@ -66,8 +66,8 @@ function Directory() {
           <div className="mt-10 rounded-md border border-border bg-card p-8">
             <h2 className="text-2xl">We're onboarding firms in this area</h2>
             <p className="mt-3 max-w-xl text-muted-foreground">
-              We're onboarding firms in this area — post your job and we'll
-              match you as soon as one is approved.
+              We're onboarding firms in this area — post your job and we'll match you as soon as one
+              is approved.
             </p>
             <Link
               to="/post-job"
@@ -94,9 +94,7 @@ function Directory() {
                     Search {trade.name.toLowerCase()} →
                   </Link>
                 </div>
-                <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-                  {trade.blurb}
-                </p>
+                <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{trade.blurb}</p>
                 <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                   {firms.map((pro) => (
                     <ProCard key={pro.id} pro={pro} />

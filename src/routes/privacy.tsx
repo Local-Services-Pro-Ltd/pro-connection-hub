@@ -37,58 +37,55 @@ function PrivacyPage() {
       <Section>
         <div className="prose-tf max-w-3xl space-y-8">
           <p className="text-sm text-muted-foreground">
-            Last updated {new Date().getFullYear()}. This policy is published by
-            TradesmanFinder, part of Local Services Pro and All Care 4 U Group.
+            Last updated {new Date().getFullYear()}. This policy is published by TradesmanFinder,
+            part of Local Services Pro and All Care 4 U Group.
           </p>
 
           <Block title="What we collect">
             <ul className="list-disc space-y-2 pl-5">
               <li>
-                <strong>Job details</strong> — the trade, area, budget,
-                timescale and description you enter when posting a job.
+                <strong>Job details</strong> — the trade, area, budget, timescale and description
+                you enter when posting a job.
               </li>
               <li>
-                <strong>Contact details</strong> — your name, email and phone
-                number where you give them, so trades can reply to you.
+                <strong>Contact details</strong> — your name, email and phone number where you give
+                them, so trades can reply to you.
               </li>
               <li>
-                <strong>Account details</strong> — if you sign in, the email
-                address and basic profile from your chosen sign-in method.
+                <strong>Account details</strong> — if you sign in, the email address and basic
+                profile from your chosen sign-in method.
               </li>
               <li>
-                <strong>Reviews and feedback</strong> — anything you choose to
-                write and submit on the site.
+                <strong>Reviews and feedback</strong> — anything you choose to write and submit on
+                the site.
               </li>
               <li>
-                <strong>Location</strong> — only if you explicitly allow it in
-                your browser, and only while that permission is active.
+                <strong>Location</strong> — only if you explicitly allow it in your browser, and
+                only while that permission is active.
               </li>
             </ul>
           </Block>
 
           <Block title="How we use it">
             <p>
-              We use your details to match your job to relevant local trades,
-              to let those trades respond, to run your account, to publish
-              reviews you submit, and to keep the service secure and working.
-              We do not sell your personal details.
+              We use your details to match your job to relevant local trades, to let those trades
+              respond, to run your account, to publish reviews you submit, and to keep the service
+              secure and working. We do not sell your personal details.
             </p>
           </Block>
 
           <Block title="Who sees it">
             <p>
-              Job details are shared with a small number of trades that cover
-              your area and category so they can quote. Reviews you publish are
-              visible to anyone using the site. Our hosting and database
-              providers process data on our behalf under contract.
+              Job details are shared with a small number of trades that cover your area and category
+              so they can quote. Reviews you publish are visible to anyone using the site. Our
+              hosting and database providers process data on our behalf under contract.
             </p>
           </Block>
 
           <Block title="Cookies and similar technology">
             <p>
-              Necessary cookies keep you signed in and remember your display and
-              consent choices. Optional analytics and personalisation cookies
-              only run if you allow them.
+              Necessary cookies keep you signed in and remember your display and consent choices.
+              Optional analytics and personalisation cookies only run if you allow them.
             </p>
             <button
               type="button"
@@ -140,9 +137,7 @@ function Block({ title, children }: { title: string; children: React.ReactNode }
   return (
     <section>
       <h2 className="font-display text-2xl font-bold tracking-tight">{title}</h2>
-      <div className="mt-3 space-y-3 text-sm leading-relaxed text-muted-foreground">
-        {children}
-      </div>
+      <div className="mt-3 space-y-3 text-sm leading-relaxed text-muted-foreground">{children}</div>
     </section>
   );
 }

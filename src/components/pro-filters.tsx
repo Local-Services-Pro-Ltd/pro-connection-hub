@@ -23,9 +23,7 @@ export function ProFiltersBar() {
       replace: true,
     });
 
-  const active = ["area", "budget", "availability", "q", "sort"].filter(
-    (k) => search[k],
-  );
+  const active = ["area", "budget", "availability", "q", "sort"].filter((k) => search[k]);
 
   return (
     <div className="rounded-md border border-border bg-surface p-4">

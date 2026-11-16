@@ -132,17 +132,9 @@ export function WaitingListInline({
       </div>
 
       <label className="block">
-        <span className="eyebrow">
-          {role === "trader" ? "Your trade" : "Job you need doing"}
-        </span>
-        <select
-          value={trade}
-          onChange={(e) => setTrade(e.target.value)}
-          className={field}
-        >
-          <option value="">
-            {role === "trader" ? "Select your trade" : "Any trade"}
-          </option>
+        <span className="eyebrow">{role === "trader" ? "Your trade" : "Job you need doing"}</span>
+        <select value={trade} onChange={(e) => setTrade(e.target.value)} className={field}>
+          <option value="">{role === "trader" ? "Select your trade" : "Any trade"}</option>
           {trades.map((t) => (
             <option key={t.slug} value={t.slug}>
               {t.name}
@@ -179,9 +171,7 @@ export function WaitingListInline({
           onChange={(e) => setNotifyUpdates(e.target.checked)}
           className="mt-1 h-4 w-4 rounded-sm border-input accent-[var(--color-primary)]"
         />
-        <span>
-          Also send me occasional progress updates on my area before it opens.
-        </span>
+        <span>Also send me occasional progress updates on my area before it opens.</span>
       </label>
 
       <HumanCheck
@@ -214,8 +204,8 @@ export function WaitingListInline({
         {mutation.isPending ? "Adding you…" : "Join the waiting list"}
       </button>
       <p className="text-xs text-muted-foreground">
-        One email when we open your area. Nothing else, and you can ask us to
-        delete your details at any time.
+        One email when we open your area. Nothing else, and you can ask us to delete your details at
+        any time.
       </p>
     </form>
   );

@@ -45,9 +45,7 @@ const STATUS_LABEL: Record<string, string> = APPLICATION_STATUS_LABEL;
 
 export const Route = createFileRoute("/application-status")({
   validateSearch: (search: Record<string, unknown>): { token?: string } =>
-    typeof search["token"] === "string" && search["token"]
-      ? { token: search["token"] }
-      : {},
+    typeof search["token"] === "string" && search["token"] ? { token: search["token"] } : {},
   head: () => {
     const description =
       "Track the progress of your TradesmanFinder certification application using the tracking link from your confirmation email.";
@@ -169,8 +167,7 @@ function ApplicationStatusPage() {
                   <Clock className="h-4 w-4 text-primary" aria-hidden="true" />
                 )}
                 {STATUS_LABEL[data.status] ?? data.status} · submitted{" "}
-                {new Date(data.submitted_at).toLocaleDateString("en-GB")} ·{" "}
-                {data.postcode}
+                {new Date(data.submitted_at).toLocaleDateString("en-GB")} · {data.postcode}
               </p>
               {data.reviewer_note && (
                 <p className="mt-4 border-l-2 border-primary bg-surface p-4 text-sm leading-relaxed">
@@ -225,9 +222,7 @@ function ApplicationStatusPage() {
               />
             )}
 
-            {["changes_requested", "resubmitted", "pending"].includes(
-              data.status,
-            ) && (
+            {["changes_requested", "resubmitted", "pending"].includes(data.status) && (
               <ResubmitPanel
                 token={token as string}
                 requestedFields={data.requested_fields ?? []}
@@ -236,23 +231,16 @@ function ApplicationStatusPage() {
               />
             )}
 
-
             <ol className="mt-6 grid gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-3">
               {STAGES.map((stage, i) => (
                 <li key={stage.key} className="bg-card p-6">
-                  <span
-                    className={`eyebrow ${i <= currentStage ? "text-primary" : ""}`}
-                  >
+                  <span className={`eyebrow ${i <= currentStage ? "text-primary" : ""}`}>
                     Step {i + 1}
                   </span>
                   <h3 className="text-lg">
-                    {i === 2 && data.status === "rejected"
-                      ? "Decision — not yet"
-                      : stage.title}
+                    {i === 2 && data.status === "rejected" ? "Decision — not yet" : stage.title}
                   </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                    {stage.body}
-                  </p>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{stage.body}</p>
                 </li>
               ))}
             </ol>
@@ -266,9 +254,7 @@ function ApplicationStatusPage() {
                 <ol className="mt-5 grid gap-4">
                   {[...data.timeline]
                     .sort(
-                      (a, b) =>
-                        new Date(b.created_at).getTime() -
-                        new Date(a.created_at).getTime(),
+                      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
                     )
                     .map((event, i) => {
                       const label = describeEvent(event);
@@ -332,8 +318,8 @@ function ReminderPrefsPanel({
     <section className="mt-6 rounded-md border border-border bg-card p-7">
       <h3 className="text-lg">Reminder emails</h3>
       <p className="mt-2 text-sm text-muted-foreground">
-        Choose what we email you about while your application is open. Decisions
-        from a reviewer are always sent.
+        Choose what we email you about while your application is open. Decisions from a reviewer are
+        always sent.
       </p>
       <ul className="mt-5 grid gap-3">
         {REMINDER_KINDS.map((kind) => (
@@ -351,20 +337,14 @@ function ReminderPrefsPanel({
                 }}
               />
               <span>
-                <span className="font-display text-sm font-semibold">
-                  {kind.label}
-                </span>
-                <span className="block text-sm text-muted-foreground">
-                  {kind.hint}
-                </span>
+                <span className="font-display text-sm font-semibold">{kind.label}</span>
+                <span className="block text-sm text-muted-foreground">{kind.hint}</span>
               </span>
             </label>
           </li>
         ))}
       </ul>
-      {mutation.isPending && (
-        <p className="mt-3 text-xs text-muted-foreground">Saving…</p>
-      )}
+      {mutation.isPending && <p className="mt-3 text-xs text-muted-foreground">Saving…</p>}
     </section>
   );
 }
@@ -388,13 +368,13 @@ function ResubmitPanel({
   const [message, setMessage] = useState("");
 
   const asked = requestedFields.filter((f) => !f.startsWith("document_"));
-  const fields = (asked.length > 0
-    ? REQUESTABLE_FIELDS.filter((f) => asked.includes(f.key))
-    : REQUESTABLE_FIELDS.filter((f) => !f.key.startsWith("document_")));
+  const fields =
+    asked.length > 0
+      ? REQUESTABLE_FIELDS.filter((f) => asked.includes(f.key))
+      : REQUESTABLE_FIELDS.filter((f) => !f.key.startsWith("document_"));
 
   const mutation = useMutation({
-    mutationFn: () =>
-      send({ data: { token, updates: values, message } }),
+    mutationFn: () => send({ data: { token, updates: values, message } }),
     onSuccess: () => {
       toast.success("Thanks — your updated details are back with the reviewer.");
       setValues({});
@@ -424,15 +404,13 @@ function ResubmitPanel({
       {asked.length > 0 ? (
         <p className="mt-2 text-sm text-muted-foreground">
           Our reviewer asked for:{" "}
-          {requestedFields
-            .map((f) => REQUESTABLE_FIELD_LABEL[f] ?? f)
-            .join(", ")}
-          . Upload requests are handled in the documents panel above.
+          {requestedFields.map((f) => REQUESTABLE_FIELD_LABEL[f] ?? f).join(", ")}. Upload requests
+          are handled in the documents panel above.
         </p>
       ) : (
         <p className="mt-2 text-sm text-muted-foreground">
-          Anything you change here goes straight back to the reviewer, and every
-          change is recorded in your history below.
+          Anything you change here goes straight back to the reviewer, and every change is recorded
+          in your history below.
         </p>
       )}
 
@@ -444,18 +422,14 @@ function ResubmitPanel({
               <textarea
                 rows={3}
                 value={values[f.key] ?? ""}
-                onChange={(e) =>
-                  setValues((v) => ({ ...v, [f.key]: e.target.value }))
-                }
+                onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
                 className={editableField}
               />
             ) : (
               <input
                 type={f.key === "insurance_expiry" ? "date" : "text"}
                 value={values[f.key] ?? ""}
-                onChange={(e) =>
-                  setValues((v) => ({ ...v, [f.key]: e.target.value }))
-                }
+                onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
                 className={editableField}
               />
             )}

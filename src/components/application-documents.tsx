@@ -85,8 +85,7 @@ export function DocumentTracker({
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <h3 className="text-xl">Your documents</h3>
         <span className="eyebrow !mb-0">
-          {progress.sent} of {progress.requiredTotal} required sent ·{" "}
-          {progress.verified} verified
+          {progress.sent} of {progress.requiredTotal} required sent · {progress.verified} verified
         </span>
       </div>
 
@@ -116,17 +115,13 @@ export function DocumentTracker({
           return (
             <li
               key={defn.key}
-              className={`rounded-sm border p-4 ${
-                requested ? "border-primary" : "border-border"
-              }`}
+              className={`rounded-sm border p-4 ${requested ? "border-primary" : "border-border"}`}
             >
               <div className="flex flex-wrap items-baseline justify-between gap-2">
                 <p className="font-display text-sm font-semibold">
                   {defn.label}
                   {defn.required && (
-                    <span className="ml-2 text-xs font-normal text-muted-foreground">
-                      required
-                    </span>
+                    <span className="ml-2 text-xs font-normal text-muted-foreground">required</span>
                   )}
                   {requested && (
                     <span className="ml-2 text-xs font-normal text-primary">
@@ -142,25 +137,13 @@ export function DocumentTracker({
               {files.length > 0 && (
                 <ul className="mt-3 grid gap-1.5">
                   {files.map((file) => (
-                    <li
-                      key={file.id}
-                      className="flex flex-wrap items-center gap-2 text-sm"
-                    >
+                    <li key={file.id} className="flex flex-wrap items-center gap-2 text-sm">
                       {file.status === "verified" ? (
-                        <CheckCircle2
-                          className="h-4 w-4 text-success"
-                          aria-hidden="true"
-                        />
+                        <CheckCircle2 className="h-4 w-4 text-success" aria-hidden="true" />
                       ) : file.status === "rejected" ? (
-                        <CircleAlert
-                          className="h-4 w-4 text-destructive"
-                          aria-hidden="true"
-                        />
+                        <CircleAlert className="h-4 w-4 text-destructive" aria-hidden="true" />
                       ) : (
-                        <Paperclip
-                          className="h-4 w-4 text-muted-foreground"
-                          aria-hidden="true"
-                        />
+                        <Paperclip className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
                       )}
                       <span>{file.file_name}</span>
                       <span className="text-xs text-muted-foreground">
@@ -206,13 +189,11 @@ export function DocumentTracker({
         <p className="inline-flex items-center gap-2 text-xs text-muted-foreground">
           {mutation.isPending ? (
             <>
-              <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />{" "}
-              Uploading…
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> Uploading…
             </>
           ) : (
             <>
-              <FileUp className="h-4 w-4" aria-hidden="true" /> PDF or photo, up
-              to 8MB.
+              <FileUp className="h-4 w-4" aria-hidden="true" /> PDF or photo, up to 8MB.
             </>
           )}
         </p>

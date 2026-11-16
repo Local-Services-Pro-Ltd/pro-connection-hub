@@ -9,7 +9,6 @@ import { AiAnswer } from "@/components/ai-answer";
 import { tradesQuery, questionsQuery, relatedQuestionsQuery } from "@/lib/queries";
 import { submitQuestion } from "@/lib/qa.functions";
 
-
 export const Route = createFileRoute("/ask/")({
   loader: async ({ context }) => {
     await context.queryClient.ensureQueryData(tradesQuery);
@@ -73,10 +72,8 @@ function AskIndex() {
     onError: () => check.refresh(),
   });
 
-
   const tradeName = useMemo(
-    () => (slug: string | null) =>
-      trades.find((t) => t.slug === slug)?.name ?? "General",
+    () => (slug: string | null) => trades.find((t) => t.slug === slug)?.name ?? "General",
     [trades],
   );
 
@@ -118,12 +115,8 @@ function AskIndex() {
                     {tradeName(q.trade_slug)}
                     {q.area ? ` · ${q.area}` : ""}
                   </p>
-                  <h2 className="mt-2 font-display text-xl leading-snug">
-                    {q.title}
-                  </h2>
-                  <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
-                    {q.body}
-                  </p>
+                  <h2 className="mt-2 font-display text-xl leading-snug">{q.title}</h2>
+                  <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{q.body}</p>
                   <p className="mt-4 inline-flex items-center gap-2 text-sm text-primary">
                     <MessagesSquare className="h-4 w-4" />
                     {Number(q.answer_count)} answer
@@ -138,15 +131,14 @@ function AskIndex() {
             <div className="mt-8 rounded-md border border-border bg-card p-8">
               <h2 className="font-display text-xl">Be the first to ask</h2>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                Nothing published in this view yet. Ask anything about a job
-                you're planning — approved trades can answer, and we check every
-                answer before it is published.
+                Nothing published in this view yet. Ask anything about a job you're planning —
+                approved trades can answer, and we check every answer before it is published.
               </p>
               <p className="mt-4 text-sm text-muted-foreground">
                 For example:{" "}
                 <span className="text-foreground">
-                  “My boiler pressure keeps dropping to zero every few days —
-                  is that a repair or a replacement?”
+                  “My boiler pressure keeps dropping to zero every few days — is that a repair or a
+                  replacement?”
                 </span>
               </p>
             </div>
@@ -156,18 +148,15 @@ function AskIndex() {
         <div className="h-fit rounded-md border border-border bg-card p-6 lg:sticky lg:top-24">
           <h2 className="font-display text-2xl">Ask your question</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            It's free, and you don't need an account. We publish it once it's
-            been checked — usually within a working day.
+            It's free, and you don't need an account. We publish it once it's been checked — usually
+            within a working day.
           </p>
 
           {done ? (
             <div className="mt-6 grid gap-4">
-              <p
-                role="status"
-                className="rounded-sm border border-border bg-surface p-4 text-sm"
-              >
-                Thanks — your question is with our team for review. It'll appear
-                here once published, and approved firms can answer from then on.
+              <p role="status" className="rounded-sm border border-border bg-surface p-4 text-sm">
+                Thanks — your question is with our team for review. It'll appear here once
+                published, and approved firms can answer from then on.
               </p>
               <AiAnswer
                 compact
@@ -219,7 +208,6 @@ function AskIndex() {
                   </ul>
                 </div>
               )}
-
 
               <label className="block">
                 <span className="eyebrow">Detail</span>
@@ -288,8 +276,7 @@ function AskIndex() {
                 {mutation.isPending ? "Sending…" : "Ask the pros"}
               </button>
               <p className="text-xs text-muted-foreground">
-                Don't include personal details — questions are public once
-                published.
+                Don't include personal details — questions are public once published.
               </p>
             </form>
           )}

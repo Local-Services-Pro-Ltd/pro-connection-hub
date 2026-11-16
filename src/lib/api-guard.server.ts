@@ -29,9 +29,7 @@ export type GuardOptions = {
 export function clientFingerprint(request: Request): string {
   const forwarded = request.headers.get("x-forwarded-for") ?? "";
   const ip =
-    (forwarded.split(",")[0] ?? "").trim() ||
-    request.headers.get("cf-connecting-ip") ||
-    "unknown";
+    (forwarded.split(",")[0] ?? "").trim() || request.headers.get("cf-connecting-ip") || "unknown";
   return createHash("sha256").update(ip).digest("hex").slice(0, 32);
 }
 
@@ -46,11 +44,7 @@ function json(body: unknown, status: number, extra?: HeadersInit): Response {
   });
 }
 
-export type DenialOutcome =
-  | "rate_limited"
-  | "method_not_allowed"
-  | "unauthorized"
-  | "bad_request";
+export type DenialOutcome = "rate_limited" | "method_not_allowed" | "unauthorized" | "bad_request";
 
 /**
  * Records a denied request so admins can review abuse patterns.
@@ -67,9 +61,7 @@ export async function logApiDenial(
   },
 ): Promise<void> {
   try {
-    const { supabaseAdmin } = await import(
-      "@/integrations/supabase/client.server"
-    );
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     await supabaseAdmin.from("api_access_events").insert({
       endpoint: new URL(request.url).pathname,
       bucket: args.bucket,
@@ -109,9 +101,7 @@ export async function guardPublicRequest(
   const bucket = `${options.bucket}:${clientFingerprint(request)}`;
 
   try {
-    const { supabaseAdmin } = await import(
-      "@/integrations/supabase/client.server"
-    );
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data, error } = await supabaseAdmin.rpc("hit_rate_limit", {
       p_bucket: bucket,
       p_limit: options.limit,
@@ -136,7 +126,6 @@ export async function guardPublicRequest(
   return null;
 }
 
-
 /** Constant-time comparison for shared-secret endpoints. */
 export function secretMatches(
   provided: string | null | undefined,
@@ -149,5 +138,4 @@ export function secretMatches(
 }
 
 export const unauthorized = () => json({ error: "unauthorized" }, 401);
-export const badRequest = (detail: string) =>
-  json({ error: "bad_request", detail }, 400);
+export const badRequest = (detail: string) => json({ error: "bad_request", detail }, 400);

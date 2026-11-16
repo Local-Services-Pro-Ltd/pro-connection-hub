@@ -33,8 +33,17 @@ describe("email provider", () => {
     const fetchMock = vi.fn(async () => new Response("{}", { status: 200 }));
     vi.stubGlobal("fetch", fetchMock);
     const r = await deliverEmail(
-      { from: "TradesmanFinder <noreply@notify.tradesmanfinder.org>", to: "a@b.co", subject: "s", html: "h", text: "t",
-        senderDomain: "notify.tradesmanfinder.org", template: "waiting list.confirm", purpose: "transactional", idempotencyKey: "k1" },
+      {
+        from: "TradesmanFinder <noreply@notify.tradesmanfinder.org>",
+        to: "a@b.co",
+        subject: "s",
+        html: "h",
+        text: "t",
+        senderDomain: "notify.tradesmanfinder.org",
+        template: "waiting list.confirm",
+        purpose: "transactional",
+        idempotencyKey: "k1",
+      },
       { RESEND_API_KEY: "r" },
     );
     expect(r).toEqual({ sent: true });
@@ -46,11 +55,14 @@ describe("email provider", () => {
     expect(body.tags[1]).toEqual({ name: "template", value: "waiting_list_confirm" });
   });
   it("maps Resend errors", () => {
+    const errorCode = (result: ReturnType<typeof mapResendError>) =>
+      result === "suppressed" ? result : result.code;
     expect(mapResendError(422, "recipient suppressed", null)).toBe("suppressed");
-    expect((mapResendError(403, "domain not verified", null) as any).code).toBe("domain_not_verified");
-    expect((mapResendError(401, "bad key", null) as any).code).toBe("emails_disabled");
-    expect((mapResendError(422, "invalid", null) as any).code).toBe("validation_error");
-    const rl = mapResendError(429, "slow", "7") as any;
+    expect(errorCode(mapResendError(403, "domain not verified", null))).toBe("domain_not_verified");
+    expect(errorCode(mapResendError(401, "bad key", null))).toBe("emails_disabled");
+    expect(errorCode(mapResendError(422, "invalid", null))).toBe("validation_error");
+    const rl = mapResendError(429, "slow", "7");
+    if (rl === "suppressed") throw new Error("Expected a rate-limit error");
     expect([rl.code, rl.retryAfterSeconds]).toEqual(["rate_limited", 7]);
   });
 });
@@ -58,7 +70,9 @@ describe("email provider", () => {
 describe("CSP", () => {
   it("uses the env database URL", async () => {
     const p = await policy({ SUPABASE_URL: "https://fzijsbkoiuhvjfmuvbrl.supabase.co" });
-    expect(p).toContain("connect-src 'self' https://fzijsbkoiuhvjfmuvbrl.supabase.co wss://fzijsbkoiuhvjfmuvbrl.supabase.co");
+    expect(p).toContain(
+      "connect-src 'self' https://fzijsbkoiuhvjfmuvbrl.supabase.co wss://fzijsbkoiuhvjfmuvbrl.supabase.co",
+    );
     expect(p).not.toContain("muohvxodwefhwjhdqbxh");
   });
 });

@@ -19,15 +19,7 @@ const BUCKET = "pro-projects";
 /** Signed-URL lifetime for uploaded project photos (10 years). */
 const SIGNED_URL_TTL = 60 * 60 * 24 * 365 * 10;
 
-const dayNames = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-];
+const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 function minutesToTime(m: number) {
   return `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
@@ -153,13 +145,7 @@ function GalleryManager() {
   );
 }
 
-function ProjectEditor({
-  proId,
-  tradeSlug,
-}: {
-  proId: string;
-  tradeSlug: string;
-}) {
+function ProjectEditor({ proId, tradeSlug }: { proId: string; tradeSlug: string }) {
   const queryClient = useQueryClient();
   const { data: projects } = useQuery(adminProProjectsQuery(proId));
   const [title, setTitle] = useState("");
@@ -182,9 +168,7 @@ function ProjectEditor({
         .from(BUCKET)
         .upload(path, file, { upsert: true, cacheControl: "31536000" });
       if (error) throw error;
-      const { data } = await supabase.storage
-        .from(BUCKET)
-        .createSignedUrl(path, SIGNED_URL_TTL);
+      const { data } = await supabase.storage.from(BUCKET).createSignedUrl(path, SIGNED_URL_TTL);
       const url = data?.signedUrl ?? "";
       if (!url) throw new Error("Could not create a link for that upload.");
       if (which === "before") setBeforeUrl(url);
@@ -237,10 +221,7 @@ function ProjectEditor({
 
   const remove = useMutation({
     mutationFn: async (row: ProProject) => {
-      const { error } = await supabase
-        .from("pro_projects")
-        .delete()
-        .eq("id", row.id);
+      const { error } = await supabase.from("pro_projects").delete().eq("id", row.id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -325,9 +306,7 @@ function ProjectEditor({
               />
             )}
             <div className="min-w-0 flex-1">
-              <p className="truncate font-display text-sm font-semibold">
-                {row.title}
-              </p>
+              <p className="truncate font-display text-sm font-semibold">{row.title}</p>
               <p className="truncate text-xs text-muted-foreground">
                 {row.published ? "Live" : "Draft"} · {row.summary || "No summary"}
               </p>
@@ -395,10 +374,7 @@ function AvailabilityEditor({ proId }: { proId: string }) {
 
   const remove = useMutation({
     mutationFn: async (row: ProAvailability) => {
-      const { error } = await supabase
-        .from("pro_availability")
-        .delete()
-        .eq("id", row.id);
+      const { error } = await supabase.from("pro_availability").delete().eq("id", row.id);
       if (error) throw error;
     },
     onSuccess: refresh,
@@ -409,8 +385,8 @@ function AvailabilityEditor({ proId }: { proId: string }) {
     <div>
       <h2 className="text-2xl">Bookable windows</h2>
       <p className="mt-3 text-sm text-muted-foreground">
-        Set the days and hours this firm accepts visits. With no windows saved,
-        the profile falls back to standard weekday slots.
+        Set the days and hours this firm accepts visits. With no windows saved, the profile falls
+        back to standard weekday slots.
       </p>
 
       <div className="mt-6 space-y-4 rounded-md border border-border bg-card p-6">
@@ -474,8 +450,8 @@ function AvailabilityEditor({ proId }: { proId: string }) {
             className="flex items-center justify-between gap-3 rounded-md border border-border bg-card px-4 py-3 text-sm"
           >
             <span>
-              {dayNames[w.weekday]} · {minutesToTime(w.start_minute)}–
-              {minutesToTime(w.end_minute)} · {w.slot_minutes} min slots
+              {dayNames[w.weekday]} · {minutesToTime(w.start_minute)}–{minutesToTime(w.end_minute)}{" "}
+              · {w.slot_minutes} min slots
             </span>
             <button
               type="button"

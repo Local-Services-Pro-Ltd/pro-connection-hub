@@ -19,7 +19,9 @@ export function SaveProButton({
     <button
       type="button"
       aria-pressed={saved}
-      aria-label={saved ? `Remove ${company} from your shortlist` : `Save ${company} to your shortlist`}
+      aria-label={
+        saved ? `Remove ${company} from your shortlist` : `Save ${company} to your shortlist`
+      }
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();

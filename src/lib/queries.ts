@@ -46,8 +46,7 @@ function unwrap<T>({ data, error }: { data: T | null; error: unknown }): T {
 
 export const tradesQuery = queryOptions({
   queryKey: ["trades"],
-  queryFn: async () =>
-    unwrap(await supabase.from("trades").select("*").order("sort_order")),
+  queryFn: async () => unwrap(await supabase.from("trades").select("*").order("sort_order")),
   staleTime: 5 * 60_000,
 });
 
@@ -78,8 +77,7 @@ export type Plan = Database["public"]["Tables"]["plans"]["Row"];
  */
 export const plansQuery = queryOptions({
   queryKey: ["plans"],
-  queryFn: async () =>
-    unwrap(await supabase.from("plans").select("*").order("sort_order")),
+  queryFn: async () => unwrap(await supabase.from("plans").select("*").order("sort_order")),
   staleTime: 5 * 60_000,
 });
 
@@ -97,23 +95,20 @@ export const planVisibilityQuery = queryOptions({
     // Never break the pricing page on a backend hiccup — the caller falls
     // back to hard-coded defaults when this map is empty.
     if (error || !data) return {} as Record<string, boolean>;
-    return Object.fromEntries(
-      data.map((r) => [r.plan_slug, r.is_public]),
-    ) as Record<string, boolean>;
+    return Object.fromEntries(data.map((r) => [r.plan_slug, r.is_public])) as Record<
+      string,
+      boolean
+    >;
   },
   staleTime: 60_000,
 });
-
 
 /** Internal counts of published pros per trade slug and per area slug. */
 export const proCountsQuery = queryOptions({
   queryKey: ["pro-counts"],
   queryFn: async () => {
     const rows = unwrap(
-      await supabase
-        .from("pros")
-        .select("trade_slug, area_slug")
-        .eq("published", true),
+      await supabase.from("pros").select("trade_slug, area_slug").eq("published", true),
     ) as { trade_slug: string; area_slug: string | null }[];
     const byTrade: Record<string, number> = {};
     const byArea: Record<string, number> = {};
@@ -192,11 +187,7 @@ export function proQuery(id: string) {
           .eq("id", id)
           .eq("published", true)
           .maybeSingle(),
-        supabase
-          .from("pro_credentials")
-          .select("*")
-          .eq("pro_id", id)
-          .order("created_at"),
+        supabase.from("pro_credentials").select("*").eq("pro_id", id).order("created_at"),
         supabase
           .from("reviews_public")
           .select("*")
@@ -249,7 +240,6 @@ export const latestReviewsQuery = queryOptions({
   staleTime: 60_000,
 });
 
-
 export const statsQuery = queryOptions({
   queryKey: ["stats"],
   queryFn: async () => {
@@ -268,12 +258,7 @@ export const statsQuery = queryOptions({
 export const myJobsQuery = queryOptions({
   queryKey: ["my-jobs"],
   queryFn: async () =>
-    unwrap(
-      await supabase
-        .from("jobs")
-        .select("*")
-        .order("created_at", { ascending: false }),
-    ),
+    unwrap(await supabase.from("jobs").select("*").order("created_at", { ascending: false })),
 });
 
 export const myReviewsQuery = queryOptions({
@@ -289,9 +274,7 @@ export const myReviewsQuery = queryOptions({
     ),
 });
 
-
-export type PlanVisibility =
-  Database["public"]["Tables"]["plan_visibility"]["Row"];
+export type PlanVisibility = Database["public"]["Tables"]["plan_visibility"]["Row"];
 
 /** Everything the admin plan-visibility screen needs, hidden tiers included. */
 export const adminPlansQuery = queryOptions({
@@ -324,14 +307,12 @@ export function isAdminQuery(userId: string | undefined) {
         .eq("role", "admin")
         .maybeSingle();
       return error ? false : Boolean(data);
-
     },
     staleTime: 60_000,
   });
 }
 
-export type PlanVisibilityAudit =
-  Database["public"]["Tables"]["plan_visibility_audit"]["Row"];
+export type PlanVisibilityAudit = Database["public"]["Tables"]["plan_visibility_audit"]["Row"];
 
 /** Append-only trail of every show/hide change, newest first. Admins only. */
 export const planVisibilityAuditQuery = queryOptions({
@@ -386,8 +367,7 @@ export async function fetchAuditRange(fromISO: string, toISO: string) {
   return (data ?? []) as PlanVisibilityAudit[];
 }
 
-export type ProFeatureAudit =
-  Database["public"]["Tables"]["pro_feature_audit"]["Row"];
+export type ProFeatureAudit = Database["public"]["Tables"]["pro_feature_audit"]["Row"];
 
 export type AdminProRow = Pro & {
   verified_credentials: number;
@@ -402,7 +382,9 @@ export const adminProsQuery = queryOptions({
   queryKey: ["admin", "pros"],
   queryFn: async (): Promise<AdminProRow[]> => {
     const [pros, creds] = await Promise.all([
-      adminListPros().then((data) => ({ data, error: null })).catch((error) => ({ data: null, error })),
+      adminListPros()
+        .then((data) => ({ data, error: null }))
+        .catch((error) => ({ data: null, error })),
       supabase.from("pro_credentials").select("pro_id, verified"),
     ]);
     if (pros.error) throw pros.error;
@@ -523,8 +505,7 @@ export const apiAccessEventsQuery = queryOptions({
   staleTime: 0,
 });
 
-export type TradeHeroImage =
-  Database["public"]["Tables"]["trade_hero_images"]["Row"];
+export type TradeHeroImage = Database["public"]["Tables"]["trade_hero_images"]["Row"];
 
 /**
  * Per-trade hero overrides set in /admin/hero-images. Publicly readable so a
@@ -534,10 +515,7 @@ export type TradeHeroImage =
 export const tradeHeroImagesQuery = queryOptions({
   queryKey: ["trade-hero-images"],
   queryFn: async () => {
-    const { data, error } = await supabase
-      .from("trade_hero_images")
-      .select("*")
-      .order("slug");
+    const { data, error } = await supabase.from("trade_hero_images").select("*").order("slug");
     if (error) throw error;
     return (data ?? []) as TradeHeroImage[];
   },
@@ -628,10 +606,7 @@ export function bookedSlotsQuery(proId: string) {
     queryKey: ["booked-slots", proId],
     queryFn: async () => {
       const { data } = await supabase.rpc("pro_booked_slots", { p_pro_id: proId });
-      return new Set(
-        (data ?? []).map((r) => new Date(r.slot_start as string).toISOString()),
-      );
-
+      return new Set((data ?? []).map((r) => new Date(r.slot_start as string).toISOString()));
     },
     staleTime: 15_000,
   });
@@ -674,8 +649,7 @@ export async function matchPros(args: {
   })) as MatchedPro[];
 }
 
-export type ProAvailability =
-  Database["public"]["Tables"]["pro_availability"]["Row"];
+export type ProAvailability = Database["public"]["Tables"]["pro_availability"]["Row"];
 
 /**
  * Visit windows a tradesperson has declared for themselves. Empty means the
@@ -750,8 +724,7 @@ export type WaitingListDemand = {
  */
 export const waitingListDemandQuery = queryOptions({
   queryKey: ["waiting-list", "demand"],
-  queryFn: async () =>
-    unwrap(await supabase.rpc("waiting_list_demand")) as WaitingListDemand[],
+  queryFn: async () => unwrap(await supabase.rpc("waiting_list_demand")) as WaitingListDemand[],
   staleTime: 60_000,
 });
 
@@ -769,14 +742,11 @@ export type WaitingListAdminSummary = {
 export const waitingListAdminSummaryQuery = queryOptions({
   queryKey: ["admin", "waiting-list", "summary"],
   queryFn: async () =>
-    unwrap(
-      await supabase.rpc("waiting_list_admin_summary"),
-    ) as WaitingListAdminSummary[],
+    unwrap(await supabase.rpc("waiting_list_admin_summary")) as WaitingListAdminSummary[],
   staleTime: 0,
 });
 
-export type WaitingListRow =
-  Database["public"]["Tables"]["waiting_list"]["Row"];
+export type WaitingListRow = Database["public"]["Tables"]["waiting_list"]["Row"];
 
 /** Recent sign-ups. Readable by admins only (RLS). */
 export const waitingListRecentQuery = queryOptions({
@@ -847,11 +817,7 @@ export const questionQuery = (id: string) =>
     queryFn: async () => {
       const [{ data: question }, { data: answers }] = await Promise.all([
         supabase.from("questions").select("*").eq("id", id).maybeSingle(),
-        supabase
-          .from("answers")
-          .select("*")
-          .eq("question_id", id)
-          .order("created_at"),
+        supabase.from("answers").select("*").eq("question_id", id).order("created_at"),
       ]);
       return {
         question: question as Database["public"]["Tables"]["questions"]["Row"] | null,
@@ -890,8 +856,7 @@ export const relatedQuestionsQuery = (query: string) =>
  * ------------------------------------------------------------------ */
 
 export type Project = Database["public"]["Tables"]["projects"]["Row"];
-export type ProjectApplication =
-  Database["public"]["Tables"]["project_applications"]["Row"];
+export type ProjectApplication = Database["public"]["Tables"]["project_applications"]["Row"];
 export type SavedSearch = Database["public"]["Tables"]["saved_searches"]["Row"];
 export type ProLead = Database["public"]["Tables"]["pro_leads"]["Row"];
 
@@ -990,10 +955,7 @@ export const savedSearchesQuery = queryOptions({
   queryKey: ["saved-searches"],
   queryFn: async () =>
     unwrap(
-      await supabase
-        .from("saved_searches")
-        .select("*")
-        .order("created_at", { ascending: false }),
+      await supabase.from("saved_searches").select("*").order("created_at", { ascending: false }),
     ) as SavedSearch[],
 });
 
@@ -1002,10 +964,7 @@ export const myLeadsQuery = queryOptions({
   queryKey: ["my-leads"],
   queryFn: async () =>
     unwrap(
-      await supabase
-        .from("pro_leads")
-        .select("*")
-        .order("created_at", { ascending: false }),
+      await supabase.from("pro_leads").select("*").order("created_at", { ascending: false }),
     ) as ProLead[],
 });
 
@@ -1103,4 +1062,3 @@ export const directoryQuery = queryOptions({
     ) as Pro[],
   staleTime: 60_000,
 });
-

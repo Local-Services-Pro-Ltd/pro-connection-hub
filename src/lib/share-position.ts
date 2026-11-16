@@ -29,7 +29,6 @@ export function decodeShare(token: string): SharedPosition | null {
       return null;
     if (exp <= Date.now()) return null;
     return { lat, lon, exp };
-
   } catch {
     return null;
   }

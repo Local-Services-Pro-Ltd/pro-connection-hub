@@ -7,12 +7,7 @@
  * server-side validation can never drift apart.
  */
 
-export type DocumentKind =
-  | "insurance"
-  | "companies_house"
-  | "accreditation"
-  | "identity"
-  | "other";
+export type DocumentKind = "insurance" | "companies_house" | "accreditation" | "identity" | "other";
 
 export const DOCUMENT_KINDS: Array<{
   key: DocumentKind;
@@ -78,8 +73,7 @@ export function validateDocumentFile(file: {
   if (file.size <= 0) return "That file looks empty.";
   if (file.size > MAX_DOCUMENT_BYTES)
     return `Files must be under ${Math.round(MAX_DOCUMENT_BYTES / (1024 * 1024))}MB. That one is ${formatBytes(file.size)}.`;
-  if (!ALLOWED_DOCUMENT_TYPES[file.type])
-    return "Send a PDF or a photo (JPG, PNG, WebP or HEIC).";
+  if (!ALLOWED_DOCUMENT_TYPES[file.type]) return "Send a PDF or a photo (JPG, PNG, WebP or HEIC).";
   return null;
 }
 
@@ -170,10 +164,7 @@ export function daysUntil(dateIso: string) {
 }
 
 /** Insurance expiry rules: expired = fail, under 30 days = warn. */
-export function checkInsurance(
-  provider: string | null,
-  expiry: string | null,
-): VerificationCheck {
+export function checkInsurance(provider: string | null, expiry: string | null): VerificationCheck {
   if (!provider && !expiry)
     return {
       key: "insurance",
@@ -237,8 +228,9 @@ export const REQUESTABLE_FIELDS: Array<{ key: string; label: string }> = [
   { key: "document_identity", label: "Photo ID (upload)" },
 ];
 
-export const REQUESTABLE_FIELD_LABEL: Record<string, string> =
-  Object.fromEntries(REQUESTABLE_FIELDS.map((f) => [f.key, f.label]));
+export const REQUESTABLE_FIELD_LABEL: Record<string, string> = Object.fromEntries(
+  REQUESTABLE_FIELDS.map((f) => [f.key, f.label]),
+);
 
 export const APPLICATION_STATUSES = [
   "pending",
@@ -258,22 +250,14 @@ export const APPLICATION_STATUS_LABEL: Record<string, string> = {
   rejected: "Not certified yet",
 };
 
-export const OPEN_STATUSES = [
-  "pending",
-  "in_review",
-  "changes_requested",
-  "resubmitted",
-];
+export const OPEN_STATUSES = ["pending", "in_review", "changes_requested", "resubmitted"];
 
 /* ------------------------------------------------------------------ */
 /* Reminder email preferences                                          */
 /* ------------------------------------------------------------------ */
 
 export type ReminderKind =
-  | "documents_pending"
-  | "document_rejected"
-  | "insurance_expiring"
-  | "insurance_expired";
+  "documents_pending" | "document_rejected" | "insurance_expiring" | "insurance_expired";
 
 export type ReminderPrefs = Record<ReminderKind, boolean>;
 

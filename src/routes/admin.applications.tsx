@@ -87,12 +87,8 @@ function AdminApplications() {
   });
 
   const mutation = useMutation({
-    mutationFn: (vars: {
-      id: string;
-      status: string;
-      note?: string;
-      notify?: boolean;
-    }) => review({ data: vars }),
+    mutationFn: (vars: { id: string; status: string; note?: string; notify?: boolean }) =>
+      review({ data: vars }),
     onSuccess: (result) => {
       toast.success(
         result?.notified
@@ -105,8 +101,7 @@ function AdminApplications() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  if (loading || (user && checkingRole))
-    return <Section>Checking access…</Section>;
+  if (loading || (user && checkingRole)) return <Section>Checking access…</Section>;
 
   if (!isAdmin) {
     return (
@@ -121,8 +116,7 @@ function AdminApplications() {
   const term = search.trim().toLowerCase();
   const rows = (data ?? []).filter((a) => {
     if (filter !== "all" && a.status !== filter) return false;
-    if (tradeFilter !== "all" && (a.trade_slug ?? "") !== tradeFilter)
-      return false;
+    if (tradeFilter !== "all" && (a.trade_slug ?? "") !== tradeFilter) return false;
     if (from && a.created_at.slice(0, 10) < from) return false;
     if (to && a.created_at.slice(0, 10) > to) return false;
     if (
@@ -163,9 +157,7 @@ function AdminApplications() {
       "status",
     ];
     const body = (data ?? []).map((a) =>
-      head
-        .map((k) => `"${String((a as never)[k] ?? "").replace(/"/g, '""')}"`)
-        .join(","),
+      head.map((k) => `"${String((a as never)[k] ?? "").replace(/"/g, '""')}"`).join(","),
     );
     const blob = new Blob([[head.join(","), ...body].join("\n")], {
       type: "text/csv",
@@ -253,11 +245,7 @@ function AdminApplications() {
           />
         </label>
         <label className="inline-flex items-center gap-2 text-xs text-muted-foreground">
-          <input
-            type="checkbox"
-            checked={notify}
-            onChange={(e) => setNotify(e.target.checked)}
-          />
+          <input type="checkbox" checked={notify} onChange={(e) => setNotify(e.target.checked)} />
           Email the firm on decisions
         </label>
         <button
@@ -285,8 +273,7 @@ function AdminApplications() {
               </div>
               <span className="eyebrow !mb-0">
                 {a.reference ? `${a.reference} · ` : ""}
-                {a.status.replace("_", " ")} ·{" "}
-                {new Date(a.created_at).toLocaleDateString("en-GB")}
+                {a.status.replace("_", " ")} · {new Date(a.created_at).toLocaleDateString("en-GB")}
                 {a.due_at && OPEN_STATUSES.includes(a.status) && (
                   <span
                     className={
@@ -296,7 +283,8 @@ function AdminApplications() {
                     }
                   >
                     {" "}
-                    · {new Date(a.due_at).getTime() < Date.now()
+                    ·{" "}
+                    {new Date(a.due_at).getTime() < Date.now()
                       ? "overdue"
                       : `due ${new Date(a.due_at).toLocaleDateString("en-GB")}`}
                   </span>
@@ -306,14 +294,17 @@ function AdminApplications() {
             </div>
             {a.kind === "claim" && (
               <p className="mt-3 rounded-sm bg-muted px-3 py-2 text-sm text-muted-foreground">
-                Type: Claim · Listing: <span className="font-mono text-foreground">{a.claim_pro_id}</span>
+                Type: Claim · Listing:{" "}
+                <span className="font-mono text-foreground">{a.claim_pro_id}</span>
               </p>
             )}
             <p className="mt-2 text-sm text-muted-foreground">
-              {a.business_type ? `${BUSINESS_TYPE_LABEL[a.business_type] ?? a.business_type} · ` : ""}
+              {a.business_type
+                ? `${BUSINESS_TYPE_LABEL[a.business_type] ?? a.business_type} · `
+                : ""}
               {a.contact_name} · {a.email}
-              {a.phone ? ` · ${a.phone}` : ""} · {a.postcode} ·{" "}
-              {a.trade_slug ?? "trade not given"} · {a.years} yrs
+              {a.phone ? ` · ${a.phone}` : ""} · {a.postcode} · {a.trade_slug ?? "trade not given"}{" "}
+              · {a.years} yrs
             </p>
             <p className="mt-2 text-sm text-muted-foreground">
               {a.companies_house ? `CH ${a.companies_house}` : "No CH number"} ·{" "}
@@ -321,13 +312,9 @@ function AdminApplications() {
               {a.insurance_expiry ? ` (to ${a.insurance_expiry})` : ""} ·{" "}
               {a.accreditations || "No accreditations listed"}
             </p>
-            {a.about && (
-              <p className="mt-3 max-w-3xl text-sm leading-relaxed">{a.about}</p>
-            )}
+            {a.about && <p className="mt-3 max-w-3xl text-sm leading-relaxed">{a.about}</p>}
             {a.reviewer_note && (
-              <p className="mt-3 text-sm text-muted-foreground">
-                Note: {a.reviewer_note}
-              </p>
+              <p className="mt-3 text-sm text-muted-foreground">Note: {a.reviewer_note}</p>
             )}
             {(a.requested_fields ?? []).length > 0 && (
               <p className="mt-2 text-sm text-primary">
@@ -336,16 +323,16 @@ function AdminApplications() {
             )}
             {a.applicant_message && (
               <p className="mt-2 text-sm text-muted-foreground">
-                {a.kind === "claim" ? a.applicant_message : `Firm replied: "${a.applicant_message}"`}
+                {a.kind === "claim"
+                  ? a.applicant_message
+                  : `Firm replied: "${a.applicant_message}"`}
               </p>
             )}
 
             <div className="mt-4 flex flex-wrap items-center gap-2">
               <input
                 value={notes[a.id] ?? ""}
-                onChange={(e) =>
-                  setNotes((n) => ({ ...n, [a.id]: e.target.value }))
-                }
+                onChange={(e) => setNotes((n) => ({ ...n, [a.id]: e.target.value }))}
                 placeholder="Reviewer note"
                 className="w-64 rounded-sm border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary"
               />
@@ -367,17 +354,13 @@ function AdminApplications() {
                 </button>
               ))}
               <button
-                onClick={() =>
-                  setOpenReview((cur) => (cur === a.id ? null : a.id))
-                }
+                onClick={() => setOpenReview((cur) => (cur === a.id ? null : a.id))}
                 className="rounded-sm border border-border px-3 py-2 font-display text-xs font-semibold uppercase tracking-widest text-muted-foreground hover:border-primary hover:text-primary"
               >
                 {openReview === a.id ? "Hide checks" : "Checks & documents"}
               </button>
               <button
-                onClick={() =>
-                  setOpenAudit((cur) => (cur === a.id ? null : a.id))
-                }
+                onClick={() => setOpenAudit((cur) => (cur === a.id ? null : a.id))}
                 className="rounded-sm border border-border px-3 py-2 font-display text-xs font-semibold uppercase tracking-widest text-muted-foreground hover:border-primary hover:text-primary"
               >
                 {openAudit === a.id ? "Hide history" : "History"}
@@ -412,17 +395,11 @@ function AdminApplications() {
                   >
                     <span>
                       {entry.action.replace("_", " ")}
-                      {entry.from_status
-                        ? ` — from ${entry.from_status.replace("_", " ")}`
-                        : ""}
-                      {entry.changed_by_email
-                        ? ` · ${entry.changed_by_email}`
-                        : " · system"}
+                      {entry.from_status ? ` — from ${entry.from_status.replace("_", " ")}` : ""}
+                      {entry.changed_by_email ? ` · ${entry.changed_by_email}` : " · system"}
                       {entry.reviewer_note ? ` · "${entry.reviewer_note}"` : ""}
                     </span>
-                    <span>
-                      {new Date(entry.created_at).toLocaleString("en-GB")}
-                    </span>
+                    <span>{new Date(entry.created_at).toLocaleString("en-GB")}</span>
                   </li>
                 ))}
                 {(audit.data ?? []).length === 0 && (

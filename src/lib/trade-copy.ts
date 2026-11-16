@@ -52,9 +52,7 @@ export function tradeHeroCopy(
     area: vars.area ?? "",
   };
   return {
-    eyebrow: vars.area
-      ? fill(c.areaEyebrow, map)
-      : fill(c.eyebrow, map),
+    eyebrow: vars.area ? fill(c.areaEyebrow, map) : fill(c.eyebrow, map),
     title: fill(c.title, map),
     sub: fill(c.sub, map),
     imageAlt: fill(heroImageAlt, { trade: vars.trade.toLowerCase() }),

@@ -14,15 +14,10 @@ import {
 import { usePrefersReducedMotion } from "@/hooks/use-reduced-motion";
 import { useGpsConsent } from "@/hooks/use-gps-consent";
 import { encodeShare, SHARE_DURATIONS } from "@/lib/share-position";
-import {
-  accuracyBand,
-  downloadText,
-  toGpx,
-  toKml,
-} from "@/lib/track-export";
-import heroVideo from "@/assets/hero.mp4.asset.json";
+import { accuracyBand, downloadText, toGpx, toKml } from "@/lib/track-export";
 import heroPoster from "@/assets/hero-poster.jpg";
 
+const HERO_VIDEO_URL = "/media/hero.mp4";
 
 type Route = {
   id: string;
@@ -75,7 +70,6 @@ const hubs: Hub[] = [
   { x: 1145, y: 640, r: 96, label: "Surrey", slug: "surrey", postcode: "GU1" },
 ];
 
-
 /** Rough equirectangular projection of the UK onto the 1600x900 viewBox. */
 function project(lat: number, lon: number) {
   const x = ((lon + 8.2) / 10.2) * 1600;
@@ -127,8 +121,7 @@ export function LiveMapHero({
   children?: ReactNode;
 }) {
   const reduced = usePrefersReducedMotion();
-  const { consent, fix, smoothed, track, error, allow, deny, reset } =
-    useGpsConsent();
+  const { consent, fix, smoothed, track, error, allow, deny, reset } = useGpsConsent();
 
   const [now, setNow] = useState(0);
   const [selected, setSelected] = useState<Hub | null>(null);
@@ -166,11 +159,7 @@ export function LiveMapHero({
     if (track.length < 2) return;
     const stamp = new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-");
     if (kind === "gpx") {
-      downloadText(
-        `tradesman-finder-track-${stamp}.gpx`,
-        "application/gpx+xml",
-        toGpx(track),
-      );
+      downloadText(`tradesman-finder-track-${stamp}.gpx`, "application/gpx+xml", toGpx(track));
     } else {
       downloadText(
         `tradesman-finder-track-${stamp}.kml`,
@@ -216,12 +205,8 @@ export function LiveMapHero({
     const h = Math.floor(total / 3600);
     const m = Math.floor((total % 3600) / 60);
     const s = total % 60;
-    return h > 0
-      ? `${h}h ${String(m).padStart(2, "0")}m`
-      : `${m}:${String(s).padStart(2, "0")}`;
+    return h > 0 ? `${h}h ${String(m).padStart(2, "0")}m` : `${m}:${String(s).padStart(2, "0")}`;
   }
-
-
 
   // Live video feed overlay
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -244,9 +229,9 @@ export function LiveMapHero({
   // Accuracy halo in viewBox units (~0.00088 units per metre), kept visible.
   const accuracyR = fix ? Math.min(90, Math.max(26, fix.accuracy * 0.00088 + 26)) : 0;
   const trackPts = track.map((f) => project(f.lat, f.lon));
-  const trackPath = trackPts.length > 1 ? `M ${trackPts.map((p) => `${p.x} ${p.y}`).join(" L ")}` : null;
+  const trackPath =
+    trackPts.length > 1 ? `M ${trackPts.map((p) => `${p.x} ${p.y}`).join(" L ")}` : null;
   const ghost = replayPoint ? project(replayPoint.lat, replayPoint.lon) : null;
-
 
   return (
     <div className="relative isolate overflow-hidden border-b border-border bg-surface">
@@ -258,12 +243,7 @@ export function LiveMapHero({
         aria-label="Stylised map of the UK showing the first trade onboarding areas"
       >
         <defs>
-          <pattern
-            id="map-grid"
-            width="64"
-            height="64"
-            patternUnits="userSpaceOnUse"
-          >
+          <pattern id="map-grid" width="64" height="64" patternUnits="userSpaceOnUse">
             <path
               d="M64 0H0V64"
               fill="none"
@@ -273,16 +253,8 @@ export function LiveMapHero({
             />
           </pattern>
           <radialGradient id="map-glow" cx="50%" cy="50%" r="50%">
-            <stop
-              offset="0%"
-              stopColor="var(--color-primary)"
-              stopOpacity="0.35"
-            />
-            <stop
-              offset="100%"
-              stopColor="var(--color-primary)"
-              stopOpacity="0"
-            />
+            <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0.35" />
+            <stop offset="100%" stopColor="var(--color-primary)" stopOpacity="0" />
           </radialGradient>
           {routes.map((r) => (
             <path key={r.id} id={r.id} d={r.d} fill="none" />
@@ -317,12 +289,7 @@ export function LiveMapHero({
         {/* Roads */}
         <g fill="none" strokeLinecap="round">
           {routes.map((r) => (
-            <path
-              key={`base-${r.id}`}
-              d={r.d}
-              className="stroke-foreground/15"
-              strokeWidth="6"
-            />
+            <path key={`base-${r.id}`} d={r.d} className="stroke-foreground/15" strokeWidth="6" />
           ))}
           {routes.map((r, i) => (
             <path
@@ -394,18 +361,9 @@ export function LiveMapHero({
               cx={h.x}
               cy={h.y}
               r="9"
-              className={
-                selected?.label === h.label
-                  ? "fill-accent"
-                  : "fill-primary"
-              }
+              className={selected?.label === h.label ? "fill-accent" : "fill-primary"}
             />
-            <circle
-              cx={h.x}
-              cy={h.y}
-              r="3.5"
-              className="fill-primary-foreground"
-            />
+            <circle cx={h.x} cy={h.y} r="3.5" className="fill-primary-foreground" />
             <text
               x={h.x + 18}
               y={h.y - 12}
@@ -506,7 +464,7 @@ export function LiveMapHero({
           <video
             ref={videoRef}
             className="h-24 w-full object-cover sm:h-32 lg:h-40"
-            src={heroVideo.url}
+            src={HERO_VIDEO_URL}
             poster={heroPoster}
             muted
             loop
@@ -542,7 +500,6 @@ export function LiveMapHero({
         <p className="sr-only" role="status">
           Map animation {playing ? "playing" : "paused"}.
         </p>
-
       </div>
 
       <div className="pointer-events-none relative z-[2] mx-auto max-w-7xl px-5 py-20 sm:py-24 lg:px-8 lg:py-36">
@@ -558,11 +515,7 @@ export function LiveMapHero({
         <h1 className="hero-ink mt-4 max-w-3xl text-4xl leading-[1.02] sm:text-5xl lg:text-6xl">
           {title}
         </h1>
-        {sub && (
-          <p className="hero-ink-muted mt-5 max-w-xl text-base leading-relaxed">
-            {sub}
-          </p>
-        )}
+        {sub && <p className="hero-ink-muted mt-5 max-w-xl text-base leading-relaxed">{sub}</p>}
         {children && <div className="pointer-events-auto mt-8 max-w-3xl">{children}</div>}
 
         {/* Hub shortcuts — same panel as clicking a map node */}
@@ -627,7 +580,6 @@ export function LiveMapHero({
           </div>
         )}
 
-
         {/* GPS consent / opt-out */}
         <div className="pointer-events-auto mt-8 max-w-xl">
           {consent === "unknown" ? (
@@ -639,9 +591,8 @@ export function LiveMapHero({
                 <ShieldCheck className="h-3 w-3" aria-hidden="true" /> Privacy — location consent
               </p>
               <p className="mt-2 text-sm text-muted-foreground">
-                We can plot your position on the map. Your location stays in
-                this browser — it's never sent
-                to us or stored. The map works fine without it.
+                We can plot your position on the map. Your location stays in this browser — it's
+                never sent to us or stored. The map works fine without it.
               </p>
               <div className="mt-4 flex flex-wrap gap-3">
                 <button
@@ -717,8 +668,7 @@ export function LiveMapHero({
               </p>
               {track.length < 2 ? (
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Collecting your movement — the replay unlocks once we have a
-                  couple of fixes.
+                  Collecting your movement — the replay unlocks once we have a couple of fixes.
                 </p>
               ) : (
                 <>
@@ -727,9 +677,7 @@ export function LiveMapHero({
                       type="button"
                       onClick={() => {
                         if (replaying) return setReplaying(false);
-                        setReplayIdx((i) =>
-                          i === null || i >= track.length - 1 ? 0 : i,
-                        );
+                        setReplayIdx((i) => (i === null || i >= track.length - 1 ? 0 : i));
                         setReplaying(true);
                       }}
                       aria-pressed={replaying}
@@ -772,10 +720,7 @@ export function LiveMapHero({
                     </button>
                   </div>
                   <div className="mt-3 flex flex-wrap items-center gap-2">
-                    <span
-                      className="text-xs text-muted-foreground"
-                      id="replay-speed-label"
-                    >
+                    <span className="text-xs text-muted-foreground" id="replay-speed-label">
                       Speed
                     </span>
                     <div
@@ -791,9 +736,7 @@ export function LiveMapHero({
                           aria-pressed={speed === s}
                           aria-label={`Play replay at ${s} times speed`}
                           className={`px-2.5 py-1.5 font-display text-xs font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent ${
-                            speed === s
-                              ? "bg-primary text-primary-foreground"
-                              : "hover:bg-surface"
+                            speed === s ? "bg-primary text-primary-foreground" : "hover:bg-surface"
                           }`}
                         >
                           {s}x
@@ -823,8 +766,7 @@ export function LiveMapHero({
                       : `Following your live position · ${track.length} fixes recorded · ${speed}x`}
                   </p>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    Download the last 30 minutes as GPX or KML for maps and
-                    route apps.
+                    Download the last 30 minutes as GPX or KML for maps and route apps.
                   </p>
                 </>
               )}
@@ -904,7 +846,6 @@ export function LiveMapHero({
             </section>
           </div>
         )}
-
       </div>
     </div>
   );

@@ -21,27 +21,21 @@ export async function sendWaitingListConfirmation(payload: {
   id?: string;
 }): Promise<{ sent: boolean }> {
   try {
-    const result = await sendTemplateEmail(
-      "waiting-list-confirm",
-      payload.email,
-      {
-        templateData: {
-          ...(payload.name ? { name: payload.name } : {}),
-          postcode: payload.postcode,
-          role: payload.role,
-          confirmUrl: payload.confirmUrl,
-        },
-        idempotencyKey: `waiting-list-confirm-${payload.id ?? payload.email}`,
+    const result = await sendTemplateEmail("waiting-list-confirm", payload.email, {
+      templateData: {
+        ...(payload.name ? { name: payload.name } : {}),
+        postcode: payload.postcode,
+        role: payload.role,
+        confirmUrl: payload.confirmUrl,
       },
-    );
+      idempotencyKey: `waiting-list-confirm-${payload.id ?? payload.email}`,
+    });
     // A suppressed recipient (earlier bounce, complaint or unsubscribe) is a
     // normal outcome, never something to retry around.
     return { sent: result.sent };
   } catch (error) {
     if (error instanceof EmailAPIError || error instanceof TransportError) {
-      console.info(
-        `[waiting-list] confirmation email not sent (${error.code})`,
-      );
+      console.info(`[waiting-list] confirmation email not sent (${error.code})`);
       return { sent: false };
     }
     throw error;

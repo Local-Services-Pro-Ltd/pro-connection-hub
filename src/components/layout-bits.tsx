@@ -31,14 +31,8 @@ export function SectionHead({
     <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-6 border-b border-border pb-8">
       <div className="min-w-0 max-w-2xl">
         <p className="eyebrow">{eyebrow}</p>
-        <h2 className="mt-3 text-3xl leading-[1.05] sm:text-4xl lg:text-5xl">
-          {title}
-        </h2>
-        {sub && (
-          <p className="mt-4 text-base leading-relaxed text-muted-foreground">
-            {sub}
-          </p>
-        )}
+        <h2 className="mt-3 text-3xl leading-[1.05] sm:text-4xl lg:text-5xl">{title}</h2>
+        {sub && <p className="mt-4 text-base leading-relaxed text-muted-foreground">{sub}</p>}
       </div>
       {aside}
     </div>
@@ -123,9 +117,6 @@ export function PageHero({
         )}
         {children && <div className="mt-8 max-w-3xl">{children}</div>}
       </div>
-
     </div>
   );
 }
-
-

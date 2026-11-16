@@ -21,9 +21,7 @@ export const Route = createFileRoute("/areas")({
     const description =
       "See where TradesmanFinder is onboarding local trades. Firms must complete ID and insurance checks before they can quote.";
     const base = loaderData?.origin ?? "";
-    const image = loaderData?.origin
-      ? `${loaderData.origin}/og/areas.jpg`
-      : undefined;
+    const image = loaderData?.origin ? `${loaderData.origin}/og/areas.jpg` : undefined;
     return {
       meta: [
         { title },
@@ -101,9 +99,7 @@ function Areas() {
                 Onboarding firms
               </span>
               <h2 className="mt-5 text-2xl">{a.name}</h2>
-              <p className="mt-3 leading-relaxed text-muted-foreground">
-                {a.note}
-              </p>
+              <p className="mt-3 leading-relaxed text-muted-foreground">{a.note}</p>
               <p className="mt-8 flex items-center gap-2 font-display text-sm font-semibold text-primary">
                 Browse firms
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -123,10 +119,7 @@ function Areas() {
           <div className="mt-10 grid gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
             {soon.map((a) => (
               <div key={a.slug} className="bg-card p-7">
-                <MapPin
-                  className="h-4 w-4 text-muted-foreground"
-                  aria-hidden="true"
-                />
+                <MapPin className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
                 <h3 className="mt-4 text-lg">{a.name}</h3>
                 <p className="mt-2 text-sm text-muted-foreground">{a.note}</p>
                 <p className="mt-6 font-display text-xs uppercase tracking-widest text-muted-foreground">
@@ -150,13 +143,11 @@ function Areas() {
           />
           <div>
             <p className="eyebrow">Not on the list?</p>
-            <h2 className="mt-3 text-3xl leading-tight sm:text-4xl">
-              Tell us where you are.
-            </h2>
+            <h2 className="mt-3 text-3xl leading-tight sm:text-4xl">Tell us where you are.</h2>
             <p className="mt-4 leading-relaxed text-muted-foreground">
-              We'd rather say "not yet" than send you three trades who can't
-              actually get to you. Leave your postcode and we'll email you the
-              day we open — homeowners and trades both welcome.
+              We'd rather say "not yet" than send you three trades who can't actually get to you.
+              Leave your postcode and we'll email you the day we open — homeowners and trades both
+              welcome.
             </p>
             <div className="mt-8">
               <WaitingListInline source="areas_page" />

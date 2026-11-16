@@ -7,15 +7,9 @@ export const Route = createFileRoute("/waiting-list/thanks")({
   validateSearch: (
     search: Record<string, unknown>,
   ): { area?: string; pending?: boolean; waiting?: number } => ({
-    ...(typeof search["area"] === "string" && search["area"]
-      ? { area: search["area"] }
-      : {}),
-    ...(search["pending"] === true || search["pending"] === "true"
-      ? { pending: true }
-      : {}),
-    ...(Number(search["waiting"]) > 0
-      ? { waiting: Number(search["waiting"]) }
-      : {}),
+    ...(typeof search["area"] === "string" && search["area"] ? { area: search["area"] } : {}),
+    ...(search["pending"] === true || search["pending"] === "true" ? { pending: true } : {}),
+    ...(Number(search["waiting"]) > 0 ? { waiting: Number(search["waiting"]) } : {}),
   }),
   head: () => {
     const description =
@@ -44,9 +38,7 @@ function WaitingListThanks() {
   return (
     <Section>
       <div className="mx-auto max-w-xl text-center">
-        <p className="eyebrow">
-          {pending ? "One last step" : "You're on the list"}
-        </p>
+        <p className="eyebrow">{pending ? "One last step" : "You're on the list"}</p>
         <h1 className="mt-3 text-4xl leading-tight sm:text-5xl">
           {pending ? "Check your inbox." : "Thanks — we'll be in touch."}
         </h1>
@@ -54,28 +46,25 @@ function WaitingListThanks() {
           {pending ? (
             <>
               We've emailed you a confirmation link. Click it and your place
-              {area ? ` in ${area}` : ""} is active — until then we won't send
-              you anything else. Can't see it? Check your spam folder.
+              {area ? ` in ${area}` : ""} is active — until then we won't send you anything else.
+              Can't see it? Check your spam folder.
             </>
           ) : (
             <>
               We'll email you the moment TradesmanFinder opens
-              {area ? ` in ${area}` : " in your area"}. The more people join
-              from your postcode, the sooner that happens — feel free to share
-              the waiting list with a neighbour or a local trade.
+              {area ? ` in ${area}` : " in your area"}. The more people join from your postcode, the
+              sooner that happens — feel free to share the waiting list with a neighbour or a local
+              trade.
             </>
           )}
         </p>
 
         {waiting && waiting > 1 ? (
           <p className="mt-6 rounded-md border border-border bg-card px-6 py-5 text-muted-foreground">
-            <strong className="text-foreground">{waiting} people</strong> are
-            now waiting in {area || "your postcode area"}. We open an area once
-            around 25 confirmed sign-ups are in — you can{" "}
-            <Link
-              to="/coverage"
-              className="font-medium text-primary underline underline-offset-2"
-            >
+            <strong className="text-foreground">{waiting} people</strong> are now waiting in{" "}
+            {area || "your postcode area"}. We open an area once around 25 confirmed sign-ups are in
+            — you can{" "}
+            <Link to="/coverage" className="font-medium text-primary underline underline-offset-2">
               track the progress here
             </Link>
             .

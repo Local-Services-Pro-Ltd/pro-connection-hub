@@ -13,8 +13,6 @@ import { openCookiePreferences } from "@/lib/cookie-consent";
 import { FeedbackForm } from "@/components/feedback-form";
 import logoSrc from "@/assets/logo.png";
 
-
-
 const nav = [
   { to: "/trades", label: "Find a tradesman" },
   { to: "/costs", label: "Cost guides" },
@@ -144,7 +142,10 @@ export function SiteHeader() {
               For trades: Join or claim
             </Link>
           </div>
-          <nav aria-label="Mobile navigation" className="mt-4 flex flex-col gap-1 border-t border-border pt-3">
+          <nav
+            aria-label="Mobile navigation"
+            className="mt-4 flex flex-col gap-1 border-t border-border pt-3"
+          >
             {[...nav, ...moreNav].map((item) => (
               <Link
                 key={item.to}
@@ -185,8 +186,7 @@ export function Action({
   const styles = {
     ember:
       "bg-primary text-primary-foreground shadow-ember hover:brightness-110 active:translate-y-px",
-    outline:
-      "border border-border-strong text-foreground hover:border-primary hover:text-primary",
+    outline: "border border-border-strong text-foreground hover:border-primary hover:text-primary",
     ghost: "text-muted-foreground hover:text-foreground",
   }[variant];
 
@@ -253,11 +253,7 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
-              <Link
-                to="/waiting-list"
-                search={{}}
-                className="hover:text-foreground"
-              >
+              <Link to="/waiting-list" search={{}} className="hover:text-foreground">
                 Waiting list
               </Link>
             </li>
@@ -293,8 +289,8 @@ export function SiteFooter() {
               Something to tell us?
             </h2>
             <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">
-              Whether it's a bug, a trade who let you down, or an idea we've
-              missed — we'd rather hear it.
+              Whether it's a bug, a trade who let you down, or an idea we've missed — we'd rather
+              hear it.
             </p>
             <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
               <li className="flex items-center gap-2">
@@ -327,17 +323,15 @@ export function SiteFooter() {
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-5 py-5 text-xs leading-relaxed text-muted-foreground lg:px-8">
           <div className="space-y-1">
             <p>
-              © {new Date().getFullYear()} TradesmanFinder. Tradesman Finder is
-              part of Local Services Pro and All Care 4 U Group. All Rights
-              Reserved.
+              © {new Date().getFullYear()} TradesmanFinder. Tradesman Finder is part of Local
+              Services Pro and All Care 4 U Group. All Rights Reserved.
             </p>
             <p>
-              Local Services Pro Ltd · Registered in England &amp; Wales, company
-              no. 12126782 · ICO registration no. 00015543780
+              Local Services Pro Ltd · Registered in England &amp; Wales, company no. 12126782 · ICO
+              registration no. 00015543780
             </p>
             <address className="not-italic">
-              Registered office: 38 Bloomfield Road, London, SE18 7JH, United
-              Kingdom
+              Registered office: 38 Bloomfield Road, London, SE18 7JH, United Kingdom
             </address>
           </div>
           <nav className="flex flex-wrap items-center gap-4">
@@ -348,11 +342,7 @@ export function SiteFooter() {
             <Link to="/terms" className="hover:text-foreground">
               Terms
             </Link>
-            <button
-              type="button"
-              onClick={openCookiePreferences}
-              className="hover:text-foreground"
-            >
+            <button type="button" onClick={openCookiePreferences} className="hover:text-foreground">
               Cookies
             </button>
           </nav>
@@ -361,4 +351,3 @@ export function SiteFooter() {
     </footer>
   );
 }
-

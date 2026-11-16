@@ -1,14 +1,18 @@
 /** Never allow a post-login destination to escape this site's origin. */
 export function safeAuthDestination(value: unknown): string {
-  if (typeof value !== "string" || !value.startsWith("/") ||
-      value.startsWith("//") || /[\\\u0000-\u0020]/.test(value)) return "/account";
-  return value;
+  if (typeof value !== "string" || !value.startsWith("/") || value.startsWith("//")) {
+    return "/account";
+  }
+  const hasUnsafeCharacter = Array.from(value).some((character) => {
+    const code = character.charCodeAt(0);
+    return character === "\\" || code <= 0x20;
+  });
+  return hasUnsafeCharacter ? "/account" : value;
 }
 
 /** Lovable's /~oauth proxy exists on its hosting, not on Cloudflare Pages. */
 export function usesLovableAuth(hostname: string): boolean {
-  return hostname.endsWith(".lovable.app") ||
-    hostname.endsWith(".lovableproject.com");
+  return hostname.endsWith(".lovable.app") || hostname.endsWith(".lovableproject.com");
 }
 
 export function googleReturnUrl(origin: string, destination: unknown): string {

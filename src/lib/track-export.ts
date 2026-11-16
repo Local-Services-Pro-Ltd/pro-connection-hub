@@ -32,9 +32,7 @@ ${pts}
 }
 
 export function toKml(track: GpsFix[], name = "Last 30 minutes"): string {
-  const coords = track
-    .map((f) => `${f.lon.toFixed(6)},${f.lat.toFixed(6)},0`)
-    .join(" ");
+  const coords = track.map((f) => `${f.lon.toFixed(6)},${f.lat.toFixed(6)},0`).join(" ");
   return `<?xml version="1.0" encoding="UTF-8"?>
 <kml xmlns="http://www.opengis.net/kml/2.2">
   <Document>

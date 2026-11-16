@@ -69,8 +69,11 @@ The GitHub live-database security scan is optional. When `SUPABASE_URL` or
 `SUPABASE_SERVICE_ROLE_KEY` is absent from the repository secrets, GitHub Actions
 skips the live scan and access-control tests with a warning instead of failing;
 typecheck, lint, dependency audit, offline regression tests, and build still run
-and fail normally on problems. The existing daily database scan cron inside the
-backend remains the source of truth for live-database checks.
+and fail normally on problems. The dependency audit exempts only
+`GHSA-mrhx-c7xc-m3w5` (Zod 3) because its fix requires the deferred major upgrade
+to Zod 4.6.6 or later; every other advisory still fails CI. The existing daily
+database scan cron inside the backend remains the source of truth for
+live-database checks.
 
 Restoring Pages bindings does not populate GitHub Actions secrets or prove that
 the optional GitHub live scan has passed.

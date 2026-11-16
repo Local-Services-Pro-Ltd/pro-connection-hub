@@ -23,9 +23,7 @@ export const Route = createFileRoute("/signin")({
     ...(typeof search["redirect"] === "string"
       ? { redirect: safeAuthDestination(search["redirect"]) }
       : {}),
-    ...(typeof search["plan"] === "string" && search["plan"]
-      ? { plan: search["plan"] }
-      : {}),
+    ...(typeof search["plan"] === "string" && search["plan"] ? { plan: search["plan"] } : {}),
     ...(search["intent"] === "claim" ? { intent: "claim" as const } : {}),
   }),
 
@@ -34,8 +32,7 @@ export const Route = createFileRoute("/signin")({
       { title: "Sign in | TradesmanFinder" },
       {
         name: "description",
-        content:
-          "Sign in to manage your posted jobs, quotes and reviews on TradesmanFinder.",
+        content: "Sign in to manage your posted jobs, quotes and reviews on TradesmanFinder.",
       },
       { property: "og:title", content: "Sign in — TradesmanFinder" },
       {
@@ -143,9 +140,7 @@ function SignIn() {
                     ? "Welcome back"
                     : "Create an account"}
           </p>
-          <h1 className="mt-3 text-4xl leading-tight">
-            {mode === "in" ? "Sign in." : "Join up."}
-          </h1>
+          <h1 className="mt-3 text-4xl leading-tight">{mode === "in" ? "Sign in." : "Join up."}</h1>
           <p className="mt-3 text-sm text-muted-foreground">
             {search.intent === "claim"
               ? "Create an account with the email on your listing and we'll match it up, or sign in if you already have one."
@@ -156,13 +151,12 @@ function SignIn() {
                   : "Manage your jobs, quotes and reviews in one place."}
           </p>
 
-
           {checkEmail ? (
             <div className="mt-8 rounded-md border border-border bg-card p-6 text-sm">
               <p className="font-display text-base">Check your email</p>
               <p className="mt-2 text-muted-foreground">
-                We've sent a confirmation link to {email}. Click it to activate
-                your account, then come back and sign in.
+                We've sent a confirmation link to {email}. Click it to activate your account, then
+                come back and sign in.
               </p>
               <button
                 onClick={() => {
@@ -176,27 +170,29 @@ function SignIn() {
             </div>
           ) : (
             <>
-              {googleEnabled && (<>
-              <button
-                type="button"
-                onClick={google}
-                disabled={googleBusy}
-                className="mt-8 flex w-full items-center justify-center gap-3 rounded-sm border border-border-strong px-5 py-3 font-display text-sm font-semibold transition-colors hover:border-primary hover:text-primary"
-              >
-                <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true">
-                  <path
-                    fill="currentColor"
-                    d="M21.35 11.1H12v2.98h5.35c-.23 1.4-1.65 4.1-5.35 4.1a5.9 5.9 0 1 1 0-11.8c1.68 0 2.8.72 3.45 1.33l2.35-2.27C16.3 3.9 14.36 3 12 3a9 9 0 1 0 0 18c5.2 0 8.64-3.65 8.64-8.8 0-.6-.06-1.05-.29-2.1Z"
-                  />
-                </svg>
-                Continue with Google
-              </button>
+              {googleEnabled && (
+                <>
+                  <button
+                    type="button"
+                    onClick={google}
+                    disabled={googleBusy}
+                    className="mt-8 flex w-full items-center justify-center gap-3 rounded-sm border border-border-strong px-5 py-3 font-display text-sm font-semibold transition-colors hover:border-primary hover:text-primary"
+                  >
+                    <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true">
+                      <path
+                        fill="currentColor"
+                        d="M21.35 11.1H12v2.98h5.35c-.23 1.4-1.65 4.1-5.35 4.1a5.9 5.9 0 1 1 0-11.8c1.68 0 2.8.72 3.45 1.33l2.35-2.27C16.3 3.9 14.36 3 12 3a9 9 0 1 0 0 18c5.2 0 8.64-3.65 8.64-8.8 0-.6-.06-1.05-.29-2.1Z"
+                      />
+                    </svg>
+                    Continue with Google
+                  </button>
 
-              <div className="my-6 flex items-center gap-3 text-xs uppercase tracking-widest text-muted-foreground">
-                <span className="h-px flex-1 bg-border" /> or
-                <span className="h-px flex-1 bg-border" />
-              </div>
-              </>)}
+                  <div className="my-6 flex items-center gap-3 text-xs uppercase tracking-widest text-muted-foreground">
+                    <span className="h-px flex-1 bg-border" /> or
+                    <span className="h-px flex-1 bg-border" />
+                  </div>
+                </>
+              )}
 
               <form onSubmit={submit} className="space-y-5">
                 {mode === "up" && (
@@ -237,11 +233,7 @@ function SignIn() {
                   disabled={busy}
                   className="w-full rounded-sm bg-primary px-6 py-3.5 font-display font-semibold text-primary-foreground shadow-ember hover:brightness-110 disabled:opacity-60"
                 >
-                  {busy
-                    ? "Please wait…"
-                    : mode === "in"
-                      ? "Sign in"
-                      : "Create account"}
+                  {busy ? "Please wait…" : mode === "in" ? "Sign in" : "Create account"}
                 </button>
               </form>
 
@@ -249,9 +241,7 @@ function SignIn() {
                 onClick={() => setMode(mode === "in" ? "up" : "in")}
                 className="mt-5 text-sm text-muted-foreground hover:text-primary"
               >
-                {mode === "in"
-                  ? "No account? Create one"
-                  : "Already have an account? Sign in"}
+                {mode === "in" ? "No account? Create one" : "Already have an account? Sign in"}
               </button>
             </>
           )}

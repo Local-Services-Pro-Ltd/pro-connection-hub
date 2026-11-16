@@ -5,10 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { CalendarDays, MapPin, Users } from "lucide-react";
 import { Section } from "@/components/layout-bits";
-import {
-  applyToProject,
-  signProjectPhotos,
-} from "@/lib/projects.functions";
+import { applyToProject, signProjectPhotos } from "@/lib/projects.functions";
 import {
   formatBudget,
   myProProfileQuery,
@@ -86,9 +83,7 @@ function ProjectDetail() {
   useEffect(() => {
     if (!project || project.status !== "published") return;
     if ((project.photos ?? []).length === 0) return;
-    void sign({ data: { projectId: project.id } }).then((r) =>
-      setPhotos(r.urls),
-    );
+    void sign({ data: { projectId: project.id } }).then((r) => setPhotos(r.urls));
   }, [project, sign]);
 
   if (isLoading) {
@@ -103,9 +98,7 @@ function ProjectDetail() {
     return (
       <Section>
         <h1 className="text-3xl">This project isn't available</h1>
-        <p className="mt-4 text-muted-foreground">
-          It may have been closed or is still in review.
-        </p>
+        <p className="mt-4 text-muted-foreground">It may have been closed or is still in review.</p>
         <Link
           to="/projects"
           className="mt-6 inline-flex rounded-sm border border-border-strong px-4 py-2.5 font-display text-sm font-semibold hover:border-primary hover:text-primary"
@@ -116,8 +109,7 @@ function ProjectDetail() {
     );
   }
 
-  const tradeName =
-    trades?.find((t) => t.slug === project.trade_slug)?.name ?? "General work";
+  const tradeName = trades?.find((t) => t.slug === project.trade_slug)?.name ?? "General work";
 
   return (
     <Section>
@@ -171,16 +163,12 @@ function ProjectDetail() {
               </p>
               {(applications.data?.length ?? 0) === 0 ? (
                 <p className="mt-3 text-sm text-muted-foreground">
-                  No applications yet. We'll email you as soon as an approved firm
-                  applies.
+                  No applications yet. We'll email you as soon as an approved firm applies.
                 </p>
               ) : (
                 <ul className="mt-4 space-y-4">
                   {applications.data!.map((a) => (
-                    <li
-                      key={a.id}
-                      className="rounded-sm border border-border p-4"
-                    >
+                    <li key={a.id} className="rounded-sm border border-border p-4">
                       <div className="flex flex-wrap items-baseline justify-between gap-3">
                         <Link
                           to="/pro/$id"
@@ -200,10 +188,7 @@ function ProjectDetail() {
                       </p>
                       {a.available_from && (
                         <p className="mt-3 text-xs text-muted-foreground">
-                          Available from{" "}
-                          {new Date(a.available_from).toLocaleDateString(
-                            "en-GB",
-                          )}
+                          Available from {new Date(a.available_from).toLocaleDateString("en-GB")}
                         </p>
                       )}
                     </li>
@@ -221,16 +206,15 @@ function ProjectDetail() {
             <div className="rounded-md border border-border bg-card p-6">
               <p className="font-display font-semibold">This is your posting</p>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                Status: {project.status}. Applications appear on this page and
-                in your account.
+                Status: {project.status}. Applications appear on this page and in your account.
               </p>
             </div>
           ) : (
             <div className="rounded-md border border-border bg-card p-6">
               <p className="font-display font-semibold">Are you a firm?</p>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                Firms must complete their ID and insurance checks before they
-                can quote. Apply to have your firm's documents reviewed.
+                Firms must complete their ID and insurance checks before they can quote. Apply to
+                have your firm's documents reviewed.
               </p>
               <Link
                 to="/join"
@@ -246,13 +230,7 @@ function ProjectDetail() {
   );
 }
 
-function ApplyPanel({
-  projectId,
-  proId,
-}: {
-  projectId: string;
-  proId: string;
-}) {
+function ApplyPanel({ projectId, proId }: { projectId: string; proId: string }) {
   const apply = useServerFn(applyToProject);
   const [done, setDone] = useState(false);
   const [form, setForm] = useState({
@@ -284,12 +262,9 @@ function ApplyPanel({
   if (done) {
     return (
       <div className="rounded-md border border-border bg-card p-6">
-        <p className="font-display font-semibold text-success">
-          Application sent
-        </p>
+        <p className="font-display font-semibold text-success">Application sent</p>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-          The homeowner has your quote and message. They'll contact you directly
-          if it's a fit.
+          The homeowner has your quote and message. They'll contact you directly if it's a fit.
         </p>
       </div>
     );

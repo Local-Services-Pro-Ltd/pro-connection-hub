@@ -31,9 +31,7 @@ export const notifyProVettingStatus = createServerFn({ method: "POST" })
       .maybeSingle();
     if (!role) throw new Error("Forbidden");
 
-    const { supabaseAdmin } = await import(
-      "@/integrations/supabase/client.server"
-    );
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const { data: pro, error } = await supabaseAdmin
       .from("pros")
@@ -54,13 +52,10 @@ export const notifyProVettingStatus = createServerFn({ method: "POST" })
     }
     if (!email) return { sent: false, reason: "no_contact_email" as const };
 
-    const origin =
-      process.env["PUBLIC_SITE_URL"] ?? "https://www.tradesmanfinder.org";
+    const origin = process.env["PUBLIC_SITE_URL"] ?? "https://www.tradesmanfinder.org";
 
     try {
-      const { sendTemplateEmail } = await import(
-        "@/lib/email-templates/send-email"
-      );
+      const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
       const result = await sendTemplateEmail("pro-vetting-status", email, {
         templateData: {
           company: pro.company,

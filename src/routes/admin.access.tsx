@@ -228,9 +228,7 @@ function AccessBoard() {
       <div className="mt-8 grid gap-5">
         {grouped.map(([name, entries]) => {
           const kind = entries[0]?.object_kind ?? "table";
-          const rlsOff = entries.some(
-            (e) => e.object_kind === "table" && e.rls_enabled === false,
-          );
+          const rlsOff = entries.some((e) => e.object_kind === "table" && e.rls_enabled === false);
           return (
             <div
               key={name}
@@ -263,7 +261,10 @@ function AccessBoard() {
                   </thead>
                   <tbody>
                     {entries.map((e, i) => (
-                      <tr key={`${e.policy_name ?? "view"}-${i}`} className="border-t border-border/60">
+                      <tr
+                        key={`${e.policy_name ?? "view"}-${i}`}
+                        className="border-t border-border/60"
+                      >
                         <td className="py-2 pr-4">{e.policy_name ?? "view definition"}</td>
                         <td className="py-2 pr-4">{e.command ?? "—"}</td>
                         <td className="py-2 pr-4 text-muted-foreground">{e.roles ?? "—"}</td>

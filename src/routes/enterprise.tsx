@@ -69,10 +69,9 @@ function Enterprise() {
           Running more than a couple of vans?
         </h1>
         <p className="mt-4 text-muted-foreground">
-          Contractor plans cover unlimited trade categories and postcode areas,
-          team profiles and a named account manager. They're arranged directly
-          with us at the moment — tell us a little about the outfit and we'll
-          set you up.
+          Contractor plans cover unlimited trade categories and postcode areas, team profiles and a
+          named account manager. They're arranged directly with us at the moment — tell us a little
+          about the outfit and we'll set you up.
         </p>
 
         {sent ? (

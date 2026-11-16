@@ -11,11 +11,7 @@ import {
   notifyQueuePositionChange,
 } from "@/lib/waiting-list.functions";
 import { useAuth } from "@/hooks/use-auth";
-import {
-  isAdminQuery,
-  waitingListAdminSummaryQuery,
-  waitingListRecentQuery,
-} from "@/lib/queries";
+import { isAdminQuery, waitingListAdminSummaryQuery, waitingListRecentQuery } from "@/lib/queries";
 
 export const Route = createFileRoute("/admin/waiting-list")({
   head: () => ({
@@ -96,10 +92,7 @@ function AdminWaitingList() {
   }
   if (!isAdmin) {
     return (
-      <Locked
-        title="You don't have access"
-        body="This page is restricted to administrators."
-      />
+      <Locked title="You don't have access" body="This page is restricted to administrators." />
     );
   }
 
@@ -166,25 +159,9 @@ function Dashboard() {
   };
 
   const exportSignups = () => {
-    const header = [
-      "created_at",
-      "email",
-      "postcode",
-      "role",
-      "trade",
-      "source",
-      "confirmed_at",
-    ];
+    const header = ["created_at", "email", "postcode", "role", "trade", "source", "confirmed_at"];
     const body = (recent.data ?? []).map((r) =>
-      [
-        r.created_at,
-        r.email,
-        r.postcode,
-        r.role,
-        r.trade ?? "",
-        r.source,
-        r.confirmed_at ?? "",
-      ]
+      [r.created_at, r.email, r.postcode, r.role, r.trade ?? "", r.source, r.confirmed_at ?? ""]
         .map(csvCell)
         .join(","),
     );
@@ -212,14 +189,9 @@ function Dashboard() {
           { label: "Confirmed", value: totals.confirmed },
           { label: "Trades waiting", value: totals.traders },
         ].map((s) => (
-          <div
-            key={s.label}
-            className="rounded-md border border-border bg-card p-6"
-          >
+          <div key={s.label} className="rounded-md border border-border bg-card p-6">
             <p className="eyebrow">{s.label}</p>
-            <p className="mt-2 font-display text-3xl font-semibold">
-              {s.value}
-            </p>
+            <p className="mt-2 font-display text-3xl font-semibold">{s.value}</p>
           </div>
         ))}
       </div>
@@ -287,10 +259,7 @@ function Dashboard() {
           <tbody>
             {rows.length === 0 ? (
               <tr>
-                <td
-                  colSpan={7}
-                  className="px-4 py-8 text-center text-muted-foreground"
-                >
+                <td colSpan={7} className="px-4 py-8 text-center text-muted-foreground">
                   {summary.isPending ? "Loading…" : "No sign-ups yet."}
                 </td>
               </tr>
@@ -308,13 +277,9 @@ function Dashboard() {
                   <td className="px-4 py-3">{r.confirmed}</td>
                   <td className="px-4 py-3">{r.homeowners}</td>
                   <td className="px-4 py-3">{r.traders}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{r.trades ?? "—"}</td>
                   <td className="px-4 py-3 text-muted-foreground">
-                    {r.trades ?? "—"}
-                  </td>
-                  <td className="px-4 py-3 text-muted-foreground">
-                    {r.last_signup
-                      ? new Date(r.last_signup).toLocaleDateString("en-GB")
-                      : "—"}
+                    {r.last_signup ? new Date(r.last_signup).toLocaleDateString("en-GB") : "—"}
                   </td>
                 </tr>
               ))
@@ -386,9 +351,9 @@ function LaunchNotifier() {
       <p className="eyebrow">Area launch</p>
       <h2 className="mt-2 text-2xl">Tell an area it's live.</h2>
       <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-        Load the confirmed sign-ups for a postcode area, then send each person
-        their launch email — it includes their position in the queue. People who
-        opted out of launch emails are skipped automatically.
+        Load the confirmed sign-ups for a postcode area, then send each person their launch email —
+        it includes their position in the queue. People who opted out of launch emails are skipped
+        automatically.
       </p>
 
       <div className="mt-6 flex flex-wrap items-center gap-3">
@@ -459,10 +424,7 @@ function LaunchNotifier() {
                     {r.launch_notified_at ? (
                       <span className="inline-flex items-center gap-2">
                         <span className="text-muted-foreground">
-                          Sent{" "}
-                          {new Date(r.launch_notified_at).toLocaleDateString(
-                            "en-GB",
-                          )}
+                          Sent {new Date(r.launch_notified_at).toLocaleDateString("en-GB")}
                         </span>
                         <button
                           onClick={() => void sendPosition(r.id)}
@@ -486,9 +448,7 @@ function LaunchNotifier() {
                       </button>
                     )}
                     {sentIds[r.id] && (
-                      <span className="ml-2 text-xs text-muted-foreground">
-                        {sentIds[r.id]}
-                      </span>
+                      <span className="ml-2 text-xs text-muted-foreground">{sentIds[r.id]}</span>
                     )}
                   </td>
                 </tr>

@@ -1,12 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { BadgeCheck, FileCheck2, RefreshCw, ShieldCheck, Star } from "lucide-react";
 import { Section, SectionHead } from "@/components/layout-bits";
-import {
-  breadcrumbSchema,
-  ldScript,
-  organizationSchema,
-} from "@/lib/structured-data";
-
+import { breadcrumbSchema, ldScript, organizationSchema } from "@/lib/structured-data";
 
 const SITE = "https://tradesmanfinder.org";
 
@@ -129,9 +124,7 @@ function Verification() {
             <div key={c.title} className="bg-card p-8">
               <c.icon className="h-6 w-6 text-primary" aria-hidden="true" />
               <h2 className="mt-4 text-xl">{c.title}</h2>
-              <p className="mt-3 leading-relaxed text-muted-foreground">
-                {c.body}
-              </p>
+              <p className="mt-3 leading-relaxed text-muted-foreground">{c.body}</p>
             </div>
           ))}
         </div>

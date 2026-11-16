@@ -16,10 +16,7 @@ import {
 
 type Client = SupabaseClient<Database>;
 
-async function companiesHouseCheck(
-  company: string,
-  chNumber: string,
-): Promise<VerificationCheck> {
+async function companiesHouseCheck(company: string, chNumber: string): Promise<VerificationCheck> {
   if (!chNumber) {
     return {
       key: "companies_house",
@@ -169,10 +166,7 @@ async function runChecks(
 
   const checks: VerificationCheck[] = [];
   checks.push(
-    await companiesHouseCheck(
-      String(row.company),
-      (row.companies_house as string | null) ?? "",
-    ),
+    await companiesHouseCheck(String(row.company), (row.companies_house as string | null) ?? ""),
   );
   checks.push(
     checkInsurance(

@@ -147,8 +147,7 @@ export function tradeFocal(slug: string): Focal {
 const alts: Record<string, string> = {
   "air-conditioning-engineer":
     "An air conditioning engineer servicing a wall-mounted split unit in a living room",
-  "appliance-repair":
-    "An appliance engineer repairing a washing machine in a domestic kitchen",
+  "appliance-repair": "An appliance engineer repairing a washing machine in a domestic kitchen",
   "fencing-gate-installer":
     "A fencing contractor fitting a timber fence panel in a suburban back garden",
   "furniture-assembly":
@@ -157,38 +156,31 @@ const alts: Record<string, string> = {
     "A mobile mechanic working under the bonnet of a car on a residential driveway",
   "tv-aerial-installer":
     "An installer levelling a large flat-screen TV on a living room wall mount",
-  "bathroom-fitter":
-    "A bathroom fitter checking the pipework behind a newly installed basin",
+  "bathroom-fitter": "A bathroom fitter checking the pipework behind a newly installed basin",
   blacksmith: "A blacksmith striking hot metal on an anvil, sparks flying",
   bricklayer: "A bricklayer in a hard hat spreading mortar on a new brick wall",
   builder: "A builder in a hi-vis jacket working on a house extension at dusk",
   carpenter: "A carpenter marking a length of timber at a workshop bench",
-  "cctv-satellites-alarms":
-    "An engineer mounting a CCTV camera to the outside wall of a house",
+  "cctv-satellites-alarms": "An engineer mounting a CCTV camera to the outside wall of a house",
   cleaner: "A professional cleaner wiping down a kitchen worktop",
-  "drainage-specialist":
-    "Drainage engineers jetting a blocked outside drain at a terraced house",
+  "drainage-specialist": "Drainage engineers jetting a blocked outside drain at a terraced house",
   "driveway-specialist":
     "A driveway specialist in hi-vis laying block paving outside a brick house",
   electrician: "An electrician testing circuits at a domestic consumer unit",
   "floor-fitter": "A floor fitter laying engineered wood boards in a living room",
   gardener: "A gardener in overalls trimming a hedge in a sunny back garden",
-  "gas-heating-engineer":
-    "A Gas Safe heating engineer servicing a wall-mounted combi boiler",
+  "gas-heating-engineer": "A Gas Safe heating engineer servicing a wall-mounted combi boiler",
   handyman: "A handyman fitting a new door handle in a bright hallway",
   "kitchen-specialist": "A kitchen fitter levelling a new wall unit during an install",
   locksmith: "A locksmith fitting a new mortice lock to a front door",
   "loft-conversion-specialist":
     "A loft conversion specialist fitting a roof window in a converted attic",
-  "painter-decorator":
-    "A painter and decorator in white overalls rolling fresh paint onto a wall",
-  "pest-control":
-    "A pest control technician placing a bait station along a skirting board",
+  "painter-decorator": "A painter and decorator in white overalls rolling fresh paint onto a wall",
+  "pest-control": "A pest control technician placing a bait station along a skirting board",
   plasterer: "A plasterer skimming a smooth finish onto an interior wall",
   plumber: "A plumber tightening pipework under a kitchen sink with a wrench",
   removals: "A removals team loading boxes into a van outside a house",
-  "renewables-specialist":
-    "An installer fitting solar panels to a pitched roof on a clear day",
+  "renewables-specialist": "An installer fitting solar panels to a pitched roof on a clear day",
   roofer: "A roofer in a helmet and harness fitting slate tiles to a pitched roof",
   "security-systems": "An engineer fitting an alarm control panel inside a home",
   "specialist-tradesperson":
@@ -197,8 +189,7 @@ const alts: Record<string, string> = {
   "swimming-pool-specialist":
     "A pool technician testing water chemistry beside an outdoor swimming pool",
   tiler: "A tiler levelling large format floor tiles in a hallway",
-  "traditional-craftspeople":
-    "A craftsperson hand-carving lettering into a stone panel",
+  "traditional-craftspeople": "A craftsperson hand-carving lettering into a stone panel",
   "tree-surgeon": "A tree surgeon roped into a tree, cutting a limb with a chainsaw",
   "window-fitter": "A window fitter adjusting a newly installed uPVC window",
 };

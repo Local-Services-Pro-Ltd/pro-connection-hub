@@ -1,23 +1,23 @@
-import * as React from 'react'
-import { render } from '@react-email/render'
-import { deliverEmail } from './email-transport'
-import { TEMPLATES } from './registry'
+import * as React from "react";
+import { render } from "@react-email/render";
+import { deliverEmail } from "./email-transport";
+import { TEMPLATES } from "./registry";
 
 // Server-only: delivery via email-transport (Resend or Lovable). Never import from client components.
 
 // Configuration baked in at scaffold time
-const SITE_NAME = "TradesmanFinder"
+const SITE_NAME = "TradesmanFinder";
 // SENDER_DOMAIN is the verified sender subdomain FQDN (e.g., "notify.example.com").
 // It MUST match the subdomain delegated to Lovable's nameservers. NEVER use the root domain.
-const SENDER_DOMAIN = "notify.tradesmanfinder.org"
+const SENDER_DOMAIN = "notify.tradesmanfinder.org";
 // FROM_DOMAIN is the domain shown in the From: header (e.g., "example.com").
 // Can be the root domain when display_from_root is enabled — this is cosmetic only.
-const FROM_DOMAIN = "notify.tradesmanfinder.org"
+const FROM_DOMAIN = "notify.tradesmanfinder.org";
 
-type Env = Record<string, string | undefined>
-const envOf = (): Env => (globalThis as { process?: { env?: Env } }).process?.env ?? {}
+type Env = Record<string, string | undefined>;
+const envOf = (): Env => (globalThis as { process?: { env?: Env } }).process?.env ?? {};
 
-export type EmailSender = { from: string; senderDomain: string }
+export type EmailSender = { from: string; senderDomain: string };
 
 /**
  * Resolves the From header and sender domain.
@@ -30,22 +30,21 @@ export type EmailSender = { from: string; senderDomain: string }
  * before.
  */
 export function resolveSender(e: Env = envOf()): EmailSender {
-  const domain = (e['EMAIL_FROM_DOMAIN'] ?? '').trim()
+  const domain = (e["EMAIL_FROM_DOMAIN"] ?? "").trim();
   if (!domain) {
-    return { from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`, senderDomain: SENDER_DOMAIN }
+    return { from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`, senderDomain: SENDER_DOMAIN };
   }
-  return { from: `${SITE_NAME} <noreply@${domain}>`, senderDomain: domain }
+  return { from: `${SITE_NAME} <noreply@${domain}>`, senderDomain: domain };
 }
 
 export type SendTemplateEmailResult =
-  | { sent: true }
-  | { sent: false; reason: 'recipient_suppressed' }
+  { sent: true } | { sent: false; reason: "recipient_suppressed" };
 
 export interface SendTemplateEmailOptions {
-  templateData?: Record<string, any>
+  templateData?: Record<string, unknown>;
   /** Dedupes retries of the same logical send; defaults to a random UUID (no dedupe). */
-  idempotencyKey?: string
-  replyTo?: string
+  idempotencyKey?: string;
+  replyTo?: string;
 }
 
 /**
@@ -58,33 +57,30 @@ export interface SendTemplateEmailOptions {
 export async function sendTemplateEmail(
   templateName: string,
   to: string,
-  options: SendTemplateEmailOptions = {}
+  options: SendTemplateEmailOptions = {},
 ): Promise<SendTemplateEmailResult> {
-
-  const template = TEMPLATES[templateName]
+  const template = TEMPLATES[templateName];
   if (!template) {
     throw new Error(
-      `Template '${templateName}' not found. Available: ${Object.keys(TEMPLATES).join(', ')}`
-    )
+      `Template '${templateName}' not found. Available: ${Object.keys(TEMPLATES).join(", ")}`,
+    );
   }
 
   // Template-level `to` takes precedence — notification templates always
   // send to their fixed address.
-  const recipient = template.to || to
+  const recipient = template.to || to;
   if (!recipient) {
-    throw new Error('Recipient is required (the template defines no fixed recipient)')
+    throw new Error("Recipient is required (the template defines no fixed recipient)");
   }
 
-  const templateData = options.templateData ?? {}
-  const element = React.createElement(template.component, templateData)
-  const html = await render(element)
-  const text = await render(element, { plainText: true })
+  const templateData = options.templateData ?? {};
+  const element = React.createElement(template.component, templateData);
+  const html = await render(element);
+  const text = await render(element, { plainText: true });
   const subject =
-    typeof template.subject === 'function'
-      ? template.subject(templateData)
-      : template.subject
+    typeof template.subject === "function" ? template.subject(templateData) : template.subject;
 
-  const sender = resolveSender()
+  const sender = resolveSender();
   return deliverEmail({
     to: recipient,
     from: sender.from,
@@ -92,9 +88,9 @@ export async function sendTemplateEmail(
     subject,
     html,
     text,
-    purpose: 'transactional',
+    purpose: "transactional",
     template: templateName,
     idempotencyKey: options.idempotencyKey || crypto.randomUUID(),
     ...(options.replyTo ? { replyTo: options.replyTo } : {}),
-  })
+  });
 }

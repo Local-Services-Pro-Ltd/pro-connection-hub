@@ -13,7 +13,6 @@ import { useServerFn } from "@tanstack/react-start";
 import { submitWaitingList } from "@/lib/waiting-list.functions";
 import { HumanCheck, useHumanCheck } from "@/components/human-check";
 
-
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -21,12 +20,8 @@ type Search = { trade?: string; pro?: string };
 
 export const Route = createFileRoute("/post-job")({
   validateSearch: (search: Record<string, unknown>): Search => ({
-    ...(typeof search["trade"] === "string" && search["trade"]
-      ? { trade: search["trade"] }
-      : {}),
-    ...(typeof search["pro"] === "string" && search["pro"]
-      ? { pro: search["pro"] }
-      : {}),
+    ...(typeof search["trade"] === "string" && search["trade"] ? { trade: search["trade"] } : {}),
+    ...(typeof search["pro"] === "string" && search["pro"] ? { pro: search["pro"] } : {}),
   }),
   loader: async ({ context }) => {
     const [, origin] = await Promise.all([
@@ -41,9 +36,7 @@ export const Route = createFileRoute("/post-job")({
     const description =
       "Describe your job in two minutes and we'll match you with local trades as they join — ID-checked and insured before they can quote.";
     const base = loaderData?.origin ?? "";
-    const image = loaderData?.origin
-      ? `${loaderData.origin}/og/post-job.jpg`
-      : undefined;
+    const image = loaderData?.origin ? `${loaderData.origin}/og/post-job.jpg` : undefined;
     return {
       meta: [
         { title },
@@ -98,15 +91,14 @@ const timings = [
   "Flexible / planning ahead",
 ];
 
-const ukPostcode =
-  /^[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2}$/i;
+const ukPostcode = /^[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2}$/i;
 
 function PostJob() {
   const search = Route.useSearch();
   const { user } = useAuth();
   const { data: trades } = useSuspenseQuery(tradesQuery);
   const { data: areas } = useSuspenseQuery(areasQuery);
-  const liveAreaNames = areas.filter(a => a.status === "live").map(a => a.name);
+  const liveAreaNames = areas.filter((a) => a.status === "live").map((a) => a.name);
   const [reference, setReference] = useState<string | null>(null);
 
   const [form, setForm] = useState({
@@ -120,8 +112,7 @@ function PostJob() {
     contact_email: "",
   });
 
-  const set = (k: keyof typeof form) => (v: string) =>
-    setForm((f) => ({ ...f, [k]: v }));
+  const set = (k: keyof typeof form) => (v: string) => setForm((f) => ({ ...f, [k]: v }));
 
   // Postcode gate: we only take jobs in areas that have enough vetted trades
   // to answer them. Anything else is routed to the waiting list instead.
@@ -129,18 +120,15 @@ function PostJob() {
   const postcodeIsCovered = isLiveArea(form.postcode, areas);
   const [outOfArea, setOutOfArea] = useState<string | null>(null);
 
-
   const mutation = useMutation({
     mutationFn: async () => {
       const errors: string[] = [];
       if (!form.trade_slug) errors.push("Choose a trade.");
-      if (!ukPostcode.test(form.postcode.trim()))
-        errors.push("Enter a valid UK postcode.");
+      if (!ukPostcode.test(form.postcode.trim())) errors.push("Enter a valid UK postcode.");
       else if (!isLiveArea(form.postcode, areas))
         errors.push("We're not onboarding in that postcode yet.");
 
-      if (form.title.trim().length < 6)
-        errors.push("Give the job a clearer title.");
+      if (form.title.trim().length < 6) errors.push("Give the job a clearer title.");
       if (form.description.trim().length < 25)
         errors.push("Describe the job in a little more detail (25+ chars).");
       if (!/^\S+@\S+\.\S+$/.test(form.contact_email.trim()))
@@ -181,15 +169,13 @@ function PostJob() {
     },
     onError: (e: Error) => {
       const map: Record<string, string> = {
-        rate_limited:
-          "You've sent several job requests recently — please try again in an hour.",
+        rate_limited: "You've sent several job requests recently — please try again in an hour.",
         invalid_email: "Enter a valid email address.",
         job_too_long: "Shorten the job title or description a little.",
       };
       const key = Object.keys(map).find((k) => e.message.includes(k));
       toast.error(key ? map[key]! : e.message);
     },
-
   });
 
   return (
@@ -204,7 +190,6 @@ function PostJob() {
         focalMobile="58% 55%"
       />
 
-
       <Section>
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px]">
           {reference !== null ? (
@@ -217,15 +202,11 @@ function PostJob() {
                 {reference ? (
                   <>
                     Your reference is{" "}
-                    <strong className="font-display text-foreground">
-                      {reference}
-                    </strong>
-                    .{" "}
+                    <strong className="font-display text-foreground">{reference}</strong>.{" "}
                   </>
                 ) : null}
-                We'll match your job with local trades covering{" "}
-                {form.postcode.toUpperCase()} as they join and complete their
-                checks.
+                We'll match your job with local trades covering {form.postcode.toUpperCase()} as
+                they join and complete their checks.
               </p>
               <MatchedPros
                 trade={form.trade_slug}
@@ -265,15 +246,11 @@ function PostJob() {
               prefillEmail={form.contact_email}
               prefillNote={
                 form.title.trim()
-                  ? `${form.title.trim()} — ${form.description.trim()}`.slice(
-                      0,
-                      1000,
-                    )
+                  ? `${form.title.trim()} — ${form.description.trim()}`.slice(0, 1000)
                   : ""
               }
               onReset={() => setOutOfArea(null)}
             />
-
           ) : (
             <form
               onSubmit={(e) => {
@@ -314,16 +291,12 @@ function PostJob() {
                     aria-describedby="postcode-coverage"
                     className={`${field} mt-2`}
                   />
-                  <span
-                    id="postcode-coverage"
-                    className="mt-2 block text-xs text-muted-foreground"
-                  >
+                  <span id="postcode-coverage" className="mt-2 block text-xs text-muted-foreground">
                     {postcodeLooksValid && !postcodeIsCovered
                       ? "We're not onboarding in this postcode yet — you can still join the waiting list."
                       : `We're onboarding trades in ${liveAreaNames.join(", ")}.`}
                   </span>
                 </label>
-
               </div>
 
               <label className="block">
@@ -421,26 +394,30 @@ function PostJob() {
               <p className="eyebrow">What happens next</p>
               <ol className="mt-4 space-y-4 text-sm text-muted-foreground">
                 <li>
-                  <strong className="text-foreground">1.</strong> We match your
-                  job to local trades covering your postcode as they complete their checks.
+                  <strong className="text-foreground">1.</strong> We match your job to local trades
+                  covering your postcode as they complete their checks.
                 </li>
                 <li>
-                  <strong className="text-foreground">2.</strong> Up to three of
-                  them contact you with a price and availability.
+                  <strong className="text-foreground">2.</strong> Up to three of them contact you
+                  with a price and availability.
                 </li>
                 <li>
-                  <strong className="text-foreground">3.</strong> You choose —
-                  or you don't. There's no fee either way.
+                  <strong className="text-foreground">3.</strong> You choose — or you don't. There's
+                  no fee either way.
                 </li>
               </ol>
             </div>
             <div className="border-t border-border pt-6 text-sm text-muted-foreground">
-              We never sell your details, and your phone number is only shared
-              with trades you choose to speak to.
+              We never sell your details, and your phone number is only shared with trades you
+              choose to speak to.
               {!user && (
                 <>
                   {" "}
-                  <Link to="/signin" search={{}} className="font-medium text-primary underline underline-offset-2">
+                  <Link
+                    to="/signin"
+                    search={{}}
+                    className="font-medium text-primary underline underline-offset-2"
+                  >
                     Sign in
                   </Link>{" "}
                   to track quotes in your account.
@@ -534,9 +511,8 @@ function OutOfAreaPanel({
 
         {!pending && waiting > 1 && (
           <p className="mt-4 max-w-md text-muted-foreground">
-            <strong className="text-foreground">{waiting} people</strong> are
-            already waiting in this postcode area — the more sign-ups, the
-            sooner we open it.
+            <strong className="text-foreground">{waiting} people</strong> are already waiting in
+            this postcode area — the more sign-ups, the sooner we open it.
           </p>
         )}
 
@@ -560,19 +536,16 @@ function OutOfAreaPanel({
 
   return (
     <div className="rounded-md border border-border bg-card p-6 lg:p-10">
-      <h2 className="text-2xl">
-        We're not in {postcode.toUpperCase()} just yet.
-      </h2>
+      <h2 className="text-2xl">We're not in {postcode.toUpperCase()} just yet.</h2>
       <div className="mt-3 max-w-xl space-y-3 text-muted-foreground">
         <p>
-          We're onboarding local trades area by area. We don't want to pass
-          your job to firms a long way away or promise coverage we don't have.
+          We're onboarding local trades area by area. We don't want to pass your job to firms a long
+          way away or promise coverage we don't have.
         </p>
         <p>
-          So we'd rather be straight with you. Leave your details below and
-          we'll come back to you when an approved trade covers{" "}
-          {postcode.toUpperCase()}. Nothing else, no spam, and you can ask us to
-          delete it at any time.
+          So we'd rather be straight with you. Leave your details below and we'll come back to you
+          when an approved trade covers {postcode.toUpperCase()}. Nothing else, no spam, and you can
+          ask us to delete it at any time.
         </p>
       </div>
 

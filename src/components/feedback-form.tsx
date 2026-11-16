@@ -42,8 +42,7 @@ export function FeedbackForm() {
   if (sent) {
     return (
       <p className="rounded-sm border border-border p-4 text-sm leading-relaxed text-muted-foreground">
-        Thanks for the feedback. We read every message and reply to anything
-        that needs an answer.{" "}
+        Thanks for the feedback. We read every message and reply to anything that needs an answer.{" "}
         <button
           type="button"
           onClick={() => setSent(false)}

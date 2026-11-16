@@ -16,7 +16,6 @@ const field =
 
 const MAX_PHOTOS = 8;
 
-
 export const Route = createFileRoute("/projects/new")({
   head: () => ({
     meta: [
@@ -38,8 +37,6 @@ export const Route = createFileRoute("/projects/new")({
   }),
   component: NewProject,
 });
-
-
 
 function NewProject() {
   const { user, loading } = useAuth();
@@ -76,9 +73,6 @@ function NewProject() {
     if (user?.email && !form.contactEmail)
       setForm((f) => ({ ...f, contactEmail: user.email ?? "" }));
   }, [user, form.contactEmail]);
-
-
-
 
   const submit = useMutation({
     mutationFn: async () =>
@@ -147,9 +141,7 @@ function NewProject() {
               rows={6}
               minLength={40}
               value={form.description}
-              onChange={(e) =>
-                setForm({ ...form, description: e.target.value })
-              }
+              onChange={(e) => setForm({ ...form, description: e.target.value })}
               placeholder="Scope, sizes, materials, access, anything a price depends on."
               className={field}
             />
@@ -160,9 +152,7 @@ function NewProject() {
               Trade
               <select
                 value={form.tradeSlug}
-                onChange={(e) =>
-                  setForm({ ...form, tradeSlug: e.target.value })
-                }
+                onChange={(e) => setForm({ ...form, tradeSlug: e.target.value })}
                 className={field}
               >
                 <option value="">Not sure / general</option>
@@ -178,9 +168,7 @@ function NewProject() {
               <input
                 required
                 value={form.postcode}
-                onChange={(e) =>
-                  setForm({ ...form, postcode: e.target.value })
-                }
+                onChange={(e) => setForm({ ...form, postcode: e.target.value })}
                 className={field}
               />
             </label>
@@ -193,9 +181,7 @@ function NewProject() {
                 type="number"
                 min={0}
                 value={form.budgetMin}
-                onChange={(e) =>
-                  setForm({ ...form, budgetMin: e.target.value })
-                }
+                onChange={(e) => setForm({ ...form, budgetMin: e.target.value })}
                 className={field}
               />
             </label>
@@ -205,9 +191,7 @@ function NewProject() {
                 type="number"
                 min={0}
                 value={form.budgetMax}
-                onChange={(e) =>
-                  setForm({ ...form, budgetMax: e.target.value })
-                }
+                onChange={(e) => setForm({ ...form, budgetMax: e.target.value })}
                 className={field}
               />
             </label>
@@ -219,9 +203,7 @@ function NewProject() {
               <input
                 type="date"
                 value={form.startDate}
-                onChange={(e) =>
-                  setForm({ ...form, startDate: e.target.value })
-                }
+                onChange={(e) => setForm({ ...form, startDate: e.target.value })}
                 className={field}
               />
             </label>
@@ -239,14 +221,12 @@ function NewProject() {
           <div className="mt-7">
             <p className="eyebrow">Photos (up to {MAX_PHOTOS})</p>
             <p className="mt-2 text-sm text-muted-foreground">
-              Photos of the space are the single biggest thing that improves
-              quote accuracy. They're only shown once the posting is approved.
+              Photos of the space are the single biggest thing that improves quote accuracy. They're
+              only shown once the posting is approved.
             </p>
             <Suspense
               fallback={
-                <p className="mt-4 text-sm text-muted-foreground">
-                  Loading photo uploader…
-                </p>
+                <p className="mt-4 text-sm text-muted-foreground">Loading photo uploader…</p>
               }
             >
               <PhotoUploader
@@ -257,7 +237,6 @@ function NewProject() {
                 onUploadingChange={setUploading}
               />
             </Suspense>
-
           </div>
 
           <div className="mt-7 grid gap-5 sm:grid-cols-2">
@@ -266,9 +245,7 @@ function NewProject() {
               <input
                 required
                 value={form.contactName}
-                onChange={(e) =>
-                  setForm({ ...form, contactName: e.target.value })
-                }
+                onChange={(e) => setForm({ ...form, contactName: e.target.value })}
                 className={field}
               />
             </label>
@@ -278,9 +255,7 @@ function NewProject() {
                 required
                 type="email"
                 value={form.contactEmail}
-                onChange={(e) =>
-                  setForm({ ...form, contactEmail: e.target.value })
-                }
+                onChange={(e) => setForm({ ...form, contactEmail: e.target.value })}
                 className={field}
               />
             </label>
@@ -290,9 +265,7 @@ function NewProject() {
             <input
               type="checkbox"
               checked={form.notifyApplications}
-              onChange={(e) =>
-                setForm({ ...form, notifyApplications: e.target.checked })
-              }
+              onChange={(e) => setForm({ ...form, notifyApplications: e.target.checked })}
               className="mt-1"
             />
             Email me whenever an approved firm applies to this project.

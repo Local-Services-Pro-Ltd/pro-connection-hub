@@ -99,8 +99,7 @@ export const createMembershipCheckout = createServerFn({ method: "POST" })
 export const syncMembership = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    if (ONBOARDING_FREE)
-      throw new Error("Billing is unavailable while onboarding is free.");
+    if (ONBOARDING_FREE) throw new Error("Billing is unavailable while onboarding is free.");
     const email = (context.claims as { email?: string } | undefined)?.email;
     if (!email) throw new Error("We couldn't read your account email.");
 
@@ -118,17 +117,14 @@ export const syncMembership = createServerFn({ method: "POST" })
         status: "all",
         limit: 10,
       });
-      const live = subs.data.find((s) =>
-        ["active", "trialing", "past_due"].includes(s.status),
-      );
+      const live = subs.data.find((s) => ["active", "trialing", "past_due"].includes(s.status));
       if (live) {
         const item = live.items.data[0];
         const priceId = typeof item?.price === "object" ? item.price.id : null;
         planSlug = (priceId && PRICE_TO_PLAN[priceId]) || null;
         status = live.status;
         ref = live.id;
-        const end = (item as { current_period_end?: number } | undefined)
-          ?.current_period_end;
+        const end = (item as { current_period_end?: number } | undefined)?.current_period_end;
         periodEnd = end ? new Date(end * 1000).toISOString() : null;
       }
     }
@@ -152,8 +148,7 @@ export const syncMembership = createServerFn({ method: "POST" })
 export const openBillingPortal = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    if (ONBOARDING_FREE)
-      throw new Error("Billing is unavailable while onboarding is free.");
+    if (ONBOARDING_FREE) throw new Error("Billing is unavailable while onboarding is free.");
     const email = (context.claims as { email?: string } | undefined)?.email;
     if (!email) throw new Error("We couldn't read your account email.");
 

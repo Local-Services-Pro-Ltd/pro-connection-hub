@@ -8,14 +8,7 @@ const BASE_URL = "https://tradesmanfinder.org";
 
 interface SitemapEntry {
   path: string;
-  changefreq?:
-    | "always"
-    | "hourly"
-    | "daily"
-    | "weekly"
-    | "monthly"
-    | "yearly"
-    | "never";
+  changefreq?: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
   priority?: string;
 }
 
@@ -50,26 +43,19 @@ export const Route = createFileRoute("/sitemap.xml")({
 
         try {
           const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
-          const supabasePublic = createClient<Database>(
-            process.env["SUPABASE_URL"]!,
-            key,
-            {
-              auth: { persistSession: false, autoRefreshToken: false },
-              global: {
-                fetch: (input, init) => {
-                  const headers = new Headers(init?.headers);
-                  if (
-                    key.startsWith("sb_") &&
-                    headers.get("Authorization") === `Bearer ${key}`
-                  ) {
-                    headers.delete("Authorization");
-                  }
-                  headers.set("apikey", key);
-                  return fetch(input, { ...init, headers });
-                },
+          const supabasePublic = createClient<Database>(process.env["SUPABASE_URL"]!, key, {
+            auth: { persistSession: false, autoRefreshToken: false },
+            global: {
+              fetch: (input, init) => {
+                const headers = new Headers(init?.headers);
+                if (key.startsWith("sb_") && headers.get("Authorization") === `Bearer ${key}`) {
+                  headers.delete("Authorization");
+                }
+                headers.set("apikey", key);
+                return fetch(input, { ...init, headers });
               },
             },
-          );
+          });
 
           const [trades, pros] = await Promise.all([
             supabasePublic.from("trades").select("slug").order("sort_order"),

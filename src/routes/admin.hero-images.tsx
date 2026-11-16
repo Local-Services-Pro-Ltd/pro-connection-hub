@@ -186,9 +186,7 @@ function HeroBoard() {
               slug={trade.slug}
               name={trade.name}
               override={byslug[trade.slug] ?? null}
-              onSaved={() =>
-                queryClient.invalidateQueries({ queryKey: ["trade-hero-images"] })
-              }
+              onSaved={() => queryClient.invalidateQueries({ queryKey: ["trade-hero-images"] })}
             />
           ) : null}
         </div>
@@ -251,10 +249,7 @@ function HeroEditor({
 
   const reset = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase
-        .from("trade_hero_images")
-        .delete()
-        .eq("slug", slug);
+      const { error } = await supabase.from("trade_hero_images").delete().eq("slug", slug);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -349,8 +344,8 @@ function HeroEditor({
               altLength > 125 ? "text-destructive" : "text-muted-foreground"
             }`}
           >
-            {altLength}/125 characters — don't start with "image of", and don't
-            repeat the page heading.
+            {altLength}/125 characters — don't start with "image of", and don't repeat the page
+            heading.
           </span>
         </label>
 
@@ -367,9 +362,7 @@ function HeroEditor({
           <span className="eyebrow">Focal point — mobile</span>
           <input
             value={draft.focalMobile}
-            onChange={(e) =>
-              setDraft({ ...draft, focalMobile: e.target.value })
-            }
+            onChange={(e) => setDraft({ ...draft, focalMobile: e.target.value })}
             placeholder="60% 45%"
             className="mt-2 w-full rounded-sm border border-border bg-surface px-3 py-2 text-sm"
           />
@@ -377,9 +370,8 @@ function HeroEditor({
       </div>
 
       <p className="mt-3 text-xs text-muted-foreground">
-        Focal points are CSS <code>object-position</code> values: first number is
-        left → right, second is top → bottom. Put the subject's face at roughly
-        35–45% from the top.
+        Focal points are CSS <code>object-position</code> values: first number is left → right,
+        second is top → bottom. Put the subject's face at roughly 35–45% from the top.
       </p>
 
       <div className="mt-6 flex flex-wrap items-center gap-3">
