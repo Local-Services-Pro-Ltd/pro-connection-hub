@@ -96,6 +96,7 @@ Cloudflare Pages env vars:
 | RESEND_API_KEY | secret | when set, email goes via Resend instead of Lovable Emails (verify the sender domain in Resend) |
 | EMAIL_FROM_DOMAIN | plain | optional From/sender domain. Production: `tradesmanfinder.org`, giving From `TradesmanFinder <noreply@tradesmanfinder.org>`. Unset (preview) keeps `TradesmanFinder <noreply@notify.tradesmanfinder.org>` |
 | GEMINI_API_KEY | secret | when set, AI goes to Google Gemini instead of the Lovable AI gateway; without any key questions are saved with no AI answer |
+| GEMINI_MODEL | plain | optional Gemini model override; unset defaults all Gemini flash, flash-lite and pro requests to `gemini-3.8-flash` |
 | SECURITY_SCAN_TOKEN | secret | cron route token |
 | STRIPE_SECRET_KEY | secret | payments stay off while ONBOARDING_FREE is on |
 | PUBLIC_SITE_URL | plain | `https://tradesmanfinder.org` |
