@@ -16,6 +16,9 @@
 - [x] Regression tests cover checkout isolation, Trade limits, and pricing wording
 - [ ] Owner/solicitor review of the new Free onboarding period trader terms
 
+## CI reliability
+- [x] Skip secret-dependent GitHub security checks cleanly while preserving offline CI failures
+
 ## Functional completeness
 - [ ] Confirm Post a job submits + confirmation screen and email
 - [ ] Confirm sign-in / sign-up works for homeowners and tradespeople
