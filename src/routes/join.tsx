@@ -312,7 +312,7 @@ function Join() {
               <fieldset className="mt-8 border-t border-border pt-7">
                 <legend className="px-0 font-display text-xl font-semibold">About your business</legend>
                 <div className="mt-5">
-                  <span className="eyebrow">Your business is a *</span>
+                  <span className="eyebrow">Your business is a <span aria-hidden="true">*</span></span>
                   <div className="mt-3 flex flex-wrap gap-3" role="radiogroup" aria-describedby={describedBy("businessType")}>
                     {businessTypes.map((type) => (
                       <label key={type.value} className="flex cursor-pointer items-center gap-2 rounded-sm border border-input px-4 py-3 text-sm has-[:checked]:border-primary">
@@ -325,12 +325,12 @@ function Join() {
                 </div>
                 <div className="mt-6 grid gap-5 sm:grid-cols-2">
                   <label className="block sm:col-span-2">
-                    <span className="eyebrow">Business or trading name *</span>
+                    <span className="eyebrow">Business or trading name <span aria-hidden="true">*</span></span>
                     <input id="company" required value={form.company} onChange={(e) => set("company")(e.target.value)} onBlur={() => touch("company")} aria-invalid={Boolean(error("company"))} aria-describedby={describedBy("company")} className={field} autoComplete="organization" />
                     <FieldError id="company-error" message={error("company")} />
                   </label>
                   <label className="block">
-                    <span className="eyebrow">Your main trade *</span>
+                    <span className="eyebrow">Your main trade <span aria-hidden="true">*</span></span>
                     <select id="tradeSlug" required value={form.tradeSlug} onChange={(e) => set("tradeSlug")(e.target.value)} onBlur={() => touch("tradeSlug")} aria-invalid={Boolean(error("tradeSlug"))} aria-describedby={describedBy("tradeSlug")} className={field}>
                       <option value="">Choose a trade</option>
                       {trades.map((trade) => <option key={trade.slug} value={trade.slug}>{trade.name}</option>)}
@@ -338,12 +338,12 @@ function Join() {
                     <FieldError id="tradeSlug-error" message={error("tradeSlug")} />
                   </label>
                   <label className="block">
-                    <span className="eyebrow">Postcode you work from *</span>
+                    <span className="eyebrow">Postcode you work from <span aria-hidden="true">*</span></span>
                     <input id="postcode" required value={form.postcode} onChange={(e) => set("postcode")(e.target.value)} onBlur={() => touch("postcode")} aria-invalid={Boolean(error("postcode"))} aria-describedby={describedBy("postcode")} className={field} autoComplete="postal-code" />
                     <FieldError id="postcode-error" message={error("postcode")} />
                   </label>
                   <label className="block sm:col-span-2">
-                    <span className="eyebrow">What work do you do? *</span>
+                    <span className="eyebrow">What work do you do? <span aria-hidden="true">*</span></span>
                     <textarea id="about" required minLength={10} rows={4} value={form.about} onChange={(e) => set("about")(e.target.value)} onBlur={() => touch("about")} aria-invalid={Boolean(error("about"))} aria-describedby={describedBy("about", "about-hint")} className={field} />
                     <span id="about-hint" className="mt-2 block text-xs text-muted-foreground">A sentence or two: the jobs you take on, the areas you cover and roughly how long you've been trading.</span>
                     <FieldError id="about-error" message={error("about")} />
@@ -359,12 +359,12 @@ function Join() {
                 <legend className="px-0 font-display text-xl font-semibold">About you</legend>
                 <div className="mt-5 grid gap-5 sm:grid-cols-2">
                   <label className="block sm:col-span-2">
-                    <span className="eyebrow">Your full name *</span>
+                    <span className="eyebrow">Your full name <span aria-hidden="true">*</span></span>
                     <input id="contactName" required value={form.contactName} onChange={(e) => set("contactName")(e.target.value)} onBlur={() => touch("contactName")} aria-invalid={Boolean(error("contactName"))} aria-describedby={describedBy("contactName")} className={field} autoComplete="name" />
                     <FieldError id="contactName-error" message={error("contactName")} />
                   </label>
                   <label className="block">
-                    <span className="eyebrow">Email *</span>
+                    <span className="eyebrow">Email <span aria-hidden="true">*</span></span>
                     <input id="email" required type="email" value={form.email} onChange={(e) => set("email")(e.target.value)} onBlur={() => touch("email")} aria-invalid={Boolean(error("email"))} aria-describedby={describedBy("email")} className={field} autoComplete="email" />
                     <FieldError id="email-error" message={error("email")} />
                   </label>
@@ -380,7 +380,7 @@ function Join() {
               </div>
               <label className="mt-6 flex items-start gap-3 text-sm leading-relaxed">
                 <input id="consent" type="checkbox" required checked={consent} onChange={(e) => { setConsent(e.target.checked); touch("consent"); }} onBlur={() => touch("consent")} aria-invalid={Boolean(error("consent"))} aria-describedby={describedBy("consent")} className="mt-1 accent-primary" />
-                <span>I confirm the details are accurate and that I'll provide ID and insurance before quoting. I understand I'll be asked to agree to the TradesmanFinder trader terms before I can receive jobs. *</span>
+                <span>I confirm the details are accurate and that I'll provide ID and insurance before quoting. I understand I'll be asked to agree to the TradesmanFinder trader terms before I can receive jobs. <span aria-hidden="true">*</span></span>
               </label>
               <FieldError id="consent-error" message={error("consent")} />
               {mutation.isError && <p role="alert" className="mt-4 text-sm text-destructive">{mutation.error.message}</p>}

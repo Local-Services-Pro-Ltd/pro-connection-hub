@@ -24,7 +24,7 @@ async def fill(page, email, consent=True, honeypot=""):
     await page.get_by_label("Postcode you work from").fill("SE18 7JH")
     await page.get_by_label("What work do you do?").fill("Boiler repairs and bathrooms across south-east London for 10 years.")
     await page.get_by_label("Your full name").fill("Test Applicant")
-    await page.get_by_label("Email", exact=True).fill(email)
+    await page.locator("#email").fill(email)
     for _ in range(40):
         q = await page.locator("span[aria-live=polite]").inner_text()
         if q and "Loading" not in q: break

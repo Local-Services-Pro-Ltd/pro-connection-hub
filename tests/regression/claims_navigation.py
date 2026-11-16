@@ -66,6 +66,19 @@ async def main() -> None:
         except Exception:
             check("claim search enforces minimum 3 characters", True)
 
+        await page.get_by_label("Business name or postcode").fill("ZZ Claim Fixture")
+        await page.get_by_role("button", name="Search", exact=True).click()
+        claim_link = page.get_by_role("link", name="Claim this listing")
+        await claim_link.wait_for()
+        check("on-page search displays the eligible result", await claim_link.count() == 1 and await page.get_by_text("ZZ Claim Fixture Eligible", exact=True).is_visible())
+        await claim_link.click()
+        await page.wait_for_url("**/claim/zz-claim-fixture-eligible")
+        check("claim page shows the selected listing", await page.get_by_text("ZZ Claim Fixture Eligible", exact=True).is_visible())
+        create_account = page.get_by_role("button", name="Create account")
+        await create_account.wait_for()
+        check("claim page asks for email sign-in or account creation", await create_account.is_visible() and await page.get_by_role("button", name="Already have an account? Sign in").is_visible())
+        check("claim form stays unavailable before sign-in", await page.get_by_label("I confirm I'm authorised to manage this business's listing.").count() == 0)
+
         await page.set_viewport_size({"width": 390, "height": 844})
         await page.goto(f"{APP}/join", wait_until="networkidle")
         mobile_width = await page.evaluate("document.documentElement.scrollWidth")
