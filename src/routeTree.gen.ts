@@ -13,7 +13,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as ApplicationStatusRouteImport } from './routes/application-status'
 import { Route as AreasRouteImport } from './routes/areas'
-import { Route as ClaimRouteImport } from './routes/claim'
 import { Route as CoverageRouteImport } from './routes/coverage'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DirectoryRouteImport } from './routes/directory'
@@ -42,6 +41,8 @@ import { Route as AdminSlaRouteImport } from './routes/admin.sla'
 import { Route as AdminWaitingListRouteImport } from './routes/admin.waiting-list'
 import { Route as AskIndexRouteImport } from './routes/ask.index'
 import { Route as AskIdRouteImport } from './routes/ask.$id'
+import { Route as ClaimIndexRouteImport } from './routes/claim.index'
+import { Route as ClaimProIdRouteImport } from './routes/claim.$proId'
 import { Route as CostsIndexRouteImport } from './routes/costs.index'
 import { Route as CostsTradeRouteImport } from './routes/costs.$trade'
 import { Route as ProIdRouteImport } from './routes/pro.$id'
@@ -80,11 +81,6 @@ const ApplicationStatusRoute = ApplicationStatusRouteImport.update({
 const AreasRoute = AreasRouteImport.update({
   id: '/areas',
   path: '/areas',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ClaimRoute = ClaimRouteImport.update({
-  id: '/claim',
-  path: '/claim',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CoverageRoute = CoverageRouteImport.update({
@@ -227,6 +223,16 @@ const AskIdRoute = AskIdRouteImport.update({
   path: '/ask/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ClaimIndexRoute = ClaimIndexRouteImport.update({
+  id: '/claim/',
+  path: '/claim/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ClaimProIdRoute = ClaimProIdRouteImport.update({
+  id: '/claim/$proId',
+  path: '/claim/$proId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CostsIndexRoute = CostsIndexRouteImport.update({
   id: '/costs/',
   path: '/costs/',
@@ -330,7 +336,6 @@ export interface FileRoutesByFullPath {
   '/account': typeof AccountRoute
   '/application-status': typeof ApplicationStatusRoute
   '/areas': typeof AreasRoute
-  '/claim': typeof ClaimRoute
   '/coverage': typeof CoverageRoute
   '/dashboard': typeof DashboardRoute
   '/directory': typeof DirectoryRoute
@@ -358,6 +363,7 @@ export interface FileRoutesByFullPath {
   '/admin/sla': typeof AdminSlaRoute
   '/admin/waiting-list': typeof AdminWaitingListRoute
   '/ask/$id': typeof AskIdRoute
+  '/claim/$proId': typeof ClaimProIdRoute
   '/costs/$trade': typeof CostsTradeRoute
   '/pro/$id': typeof ProIdRoute
   '/projects/$id': typeof ProjectsIdRoute
@@ -367,6 +373,7 @@ export interface FileRoutesByFullPath {
   '/waiting-list/manage': typeof WaitingListManageRoute
   '/waiting-list/thanks': typeof WaitingListThanksRoute
   '/ask/': typeof AskIndexRoute
+  '/claim/': typeof ClaimIndexRoute
   '/costs/': typeof CostsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
   '/trades/': typeof TradesIndexRoute
@@ -384,7 +391,6 @@ export interface FileRoutesByTo {
   '/account': typeof AccountRoute
   '/application-status': typeof ApplicationStatusRoute
   '/areas': typeof AreasRoute
-  '/claim': typeof ClaimRoute
   '/coverage': typeof CoverageRoute
   '/dashboard': typeof DashboardRoute
   '/directory': typeof DirectoryRoute
@@ -412,6 +418,7 @@ export interface FileRoutesByTo {
   '/admin/sla': typeof AdminSlaRoute
   '/admin/waiting-list': typeof AdminWaitingListRoute
   '/ask/$id': typeof AskIdRoute
+  '/claim/$proId': typeof ClaimProIdRoute
   '/costs/$trade': typeof CostsTradeRoute
   '/pro/$id': typeof ProIdRoute
   '/projects/$id': typeof ProjectsIdRoute
@@ -421,6 +428,7 @@ export interface FileRoutesByTo {
   '/waiting-list/manage': typeof WaitingListManageRoute
   '/waiting-list/thanks': typeof WaitingListThanksRoute
   '/ask': typeof AskIndexRoute
+  '/claim': typeof ClaimIndexRoute
   '/costs': typeof CostsIndexRoute
   '/projects': typeof ProjectsIndexRoute
   '/trades': typeof TradesIndexRoute
@@ -439,7 +447,6 @@ export interface FileRoutesById {
   '/account': typeof AccountRoute
   '/application-status': typeof ApplicationStatusRoute
   '/areas': typeof AreasRoute
-  '/claim': typeof ClaimRoute
   '/coverage': typeof CoverageRoute
   '/dashboard': typeof DashboardRoute
   '/directory': typeof DirectoryRoute
@@ -467,6 +474,7 @@ export interface FileRoutesById {
   '/admin/sla': typeof AdminSlaRoute
   '/admin/waiting-list': typeof AdminWaitingListRoute
   '/ask/$id': typeof AskIdRoute
+  '/claim/$proId': typeof ClaimProIdRoute
   '/costs/$trade': typeof CostsTradeRoute
   '/pro/$id': typeof ProIdRoute
   '/projects/$id': typeof ProjectsIdRoute
@@ -476,6 +484,7 @@ export interface FileRoutesById {
   '/waiting-list/manage': typeof WaitingListManageRoute
   '/waiting-list/thanks': typeof WaitingListThanksRoute
   '/ask/': typeof AskIndexRoute
+  '/claim/': typeof ClaimIndexRoute
   '/costs/': typeof CostsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
   '/trades/': typeof TradesIndexRoute
@@ -495,7 +504,6 @@ export interface FileRouteTypes {
     | '/account'
     | '/application-status'
     | '/areas'
-    | '/claim'
     | '/coverage'
     | '/dashboard'
     | '/directory'
@@ -523,6 +531,7 @@ export interface FileRouteTypes {
     | '/admin/sla'
     | '/admin/waiting-list'
     | '/ask/$id'
+    | '/claim/$proId'
     | '/costs/$trade'
     | '/pro/$id'
     | '/projects/$id'
@@ -532,6 +541,7 @@ export interface FileRouteTypes {
     | '/waiting-list/manage'
     | '/waiting-list/thanks'
     | '/ask/'
+    | '/claim/'
     | '/costs/'
     | '/projects/'
     | '/trades/'
@@ -549,7 +559,6 @@ export interface FileRouteTypes {
     | '/account'
     | '/application-status'
     | '/areas'
-    | '/claim'
     | '/coverage'
     | '/dashboard'
     | '/directory'
@@ -577,6 +586,7 @@ export interface FileRouteTypes {
     | '/admin/sla'
     | '/admin/waiting-list'
     | '/ask/$id'
+    | '/claim/$proId'
     | '/costs/$trade'
     | '/pro/$id'
     | '/projects/$id'
@@ -586,6 +596,7 @@ export interface FileRouteTypes {
     | '/waiting-list/manage'
     | '/waiting-list/thanks'
     | '/ask'
+    | '/claim'
     | '/costs'
     | '/projects'
     | '/trades'
@@ -603,7 +614,6 @@ export interface FileRouteTypes {
     | '/account'
     | '/application-status'
     | '/areas'
-    | '/claim'
     | '/coverage'
     | '/dashboard'
     | '/directory'
@@ -631,6 +641,7 @@ export interface FileRouteTypes {
     | '/admin/sla'
     | '/admin/waiting-list'
     | '/ask/$id'
+    | '/claim/$proId'
     | '/costs/$trade'
     | '/pro/$id'
     | '/projects/$id'
@@ -640,6 +651,7 @@ export interface FileRouteTypes {
     | '/waiting-list/manage'
     | '/waiting-list/thanks'
     | '/ask/'
+    | '/claim/'
     | '/costs/'
     | '/projects/'
     | '/trades/'
@@ -658,7 +670,6 @@ export interface RootRouteChildren {
   AccountRoute: typeof AccountRoute
   ApplicationStatusRoute: typeof ApplicationStatusRoute
   AreasRoute: typeof AreasRoute
-  ClaimRoute: typeof ClaimRoute
   CoverageRoute: typeof CoverageRoute
   DashboardRoute: typeof DashboardRoute
   DirectoryRoute: typeof DirectoryRoute
@@ -686,6 +697,7 @@ export interface RootRouteChildren {
   AdminSlaRoute: typeof AdminSlaRoute
   AdminWaitingListRoute: typeof AdminWaitingListRoute
   AskIdRoute: typeof AskIdRoute
+  ClaimProIdRoute: typeof ClaimProIdRoute
   CostsTradeRoute: typeof CostsTradeRoute
   ProIdRoute: typeof ProIdRoute
   ProjectsIdRoute: typeof ProjectsIdRoute
@@ -695,6 +707,7 @@ export interface RootRouteChildren {
   WaitingListManageRoute: typeof WaitingListManageRoute
   WaitingListThanksRoute: typeof WaitingListThanksRoute
   AskIndexRoute: typeof AskIndexRoute
+  ClaimIndexRoute: typeof ClaimIndexRoute
   CostsIndexRoute: typeof CostsIndexRoute
   ProjectsIndexRoute: typeof ProjectsIndexRoute
   TradesIndexRoute: typeof TradesIndexRoute
@@ -736,13 +749,6 @@ declare module '@tanstack/react-router' {
       path: '/areas'
       fullPath: '/areas'
       preLoaderRoute: typeof AreasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/claim': {
-      id: '/claim'
-      path: '/claim'
-      fullPath: '/claim'
-      preLoaderRoute: typeof ClaimRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/coverage': {
@@ -941,6 +947,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AskIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/claim/': {
+      id: '/claim/'
+      path: '/claim'
+      fullPath: '/claim/'
+      preLoaderRoute: typeof ClaimIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/claim/$proId': {
+      id: '/claim/$proId'
+      path: '/claim/$proId'
+      fullPath: '/claim/$proId'
+      preLoaderRoute: typeof ClaimProIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/costs/': {
       id: '/costs/'
       path: '/costs'
@@ -1082,7 +1102,6 @@ const rootRouteChildren: RootRouteChildren = {
   AccountRoute: AccountRoute,
   ApplicationStatusRoute: ApplicationStatusRoute,
   AreasRoute: AreasRoute,
-  ClaimRoute: ClaimRoute,
   CoverageRoute: CoverageRoute,
   DashboardRoute: DashboardRoute,
   DirectoryRoute: DirectoryRoute,
@@ -1110,6 +1129,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminSlaRoute: AdminSlaRoute,
   AdminWaitingListRoute: AdminWaitingListRoute,
   AskIdRoute: AskIdRoute,
+  ClaimProIdRoute: ClaimProIdRoute,
   CostsTradeRoute: CostsTradeRoute,
   ProIdRoute: ProIdRoute,
   ProjectsIdRoute: ProjectsIdRoute,
@@ -1119,6 +1139,7 @@ const rootRouteChildren: RootRouteChildren = {
   WaitingListManageRoute: WaitingListManageRoute,
   WaitingListThanksRoute: WaitingListThanksRoute,
   AskIndexRoute: AskIndexRoute,
+  ClaimIndexRoute: ClaimIndexRoute,
   CostsIndexRoute: CostsIndexRoute,
   ProjectsIndexRoute: ProjectsIndexRoute,
   TradesIndexRoute: TradesIndexRoute,

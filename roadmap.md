@@ -53,3 +53,9 @@
 - [x] CTAs to /join; For tradesmen 5-working-day reply
 - [x] Application-received email wording; admin shows business type
 - [x] Tests
+
+## Navigation and reviewed listing claims
+- [ ] Declutter desktop/mobile header and move appearance controls to footer
+- [ ] Centre /join, add listing search, and improve field-level form feedback
+- [ ] Add /claim/$proId account and admin-reviewed claim flow
+- [ ] Verify claim security, duplicate prevention, header widths, and screenshots

@@ -253,7 +253,7 @@ function SignIn() {
 
           <p className="mt-8 border-t border-border pt-6 text-sm text-muted-foreground">
             Are you a trade?{" "}
-            <Link to="/for-tradesmen" className="text-primary hover:underline">
+            <Link to="/join" className="text-primary hover:underline">
               Apply to join the network
             </Link>
           </p>

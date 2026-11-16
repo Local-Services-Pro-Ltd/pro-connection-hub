@@ -151,8 +151,7 @@ function Verification() {
             Apply to be checked
           </Link>
           <Link
-            to="/for-tradesmen"
-            hash="verification"
+            to="/join"
             className="inline-flex rounded-sm border border-border-strong px-6 py-3.5 font-display font-semibold hover:border-primary hover:text-primary"
           >
             Join as a tradesman

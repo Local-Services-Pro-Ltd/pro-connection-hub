@@ -43,8 +43,8 @@ async def main():
     check("unique /join title", "Join TradesmanFinder" in title, title)
     check("/join meta description", 'name="description"' in html and "2 working days" in html)
     check("/join canonical", 'rel="canonical" href="https://tradesmanfinder.org/join"' in html)
-    claim_title = re.search(r"<title>(.*?)</title>", requests.get(f"{APP}/claim", timeout=30).text, re.S).group(1)
-    check("/join title differs from /claim", claim_title != title)
+    claim_response = requests.get(f"{APP}/claim", timeout=30)
+    check("/claim redirects to /join", claim_response.url.rstrip("/").endswith("/join"), claim_response.url)
     check("/join in sitemap", "https://tradesmanfinder.org/join<" in requests.get(f"{APP}/sitemap.xml", timeout=30).text)
     for v in ["Free", "50% off", "£0", "30 days", "notice before anything is charged"]:
         check(f"tile {v} renders", v in html)

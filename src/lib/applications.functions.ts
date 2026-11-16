@@ -312,6 +312,9 @@ export type ProApplication = {
   website: string | null;
   companies_house: string | null;
   business_type: string | null;
+  kind: string;
+  claim_pro_id: string | null;
+  claimant_user_id: string | null;
   insurance_provider: string | null;
   insurance_expiry: string | null;
   accreditations: string | null;
@@ -405,7 +408,7 @@ export const reviewProApplication = createServerFn({ method: "POST" })
 
     const { data: row } = await context.supabase
       .from("pro_applications")
-      .select("company, contact_name, email, reference, tracking_token, status")
+      .select("company, contact_name, email, reference, tracking_token, status, kind, claim_pro_id")
       .eq("id", data.id)
       .maybeSingle();
 
@@ -416,7 +419,7 @@ export const reviewProApplication = createServerFn({ method: "POST" })
           "@/lib/email-templates/send-email"
         );
         const result = await sendTemplateEmail(
-          "pro-application-status",
+          row.kind === "claim" ? "pro-claim-status" : "pro-application-status",
           row.email as string,
           {
             templateData: {
@@ -428,6 +431,10 @@ export const reviewProApplication = createServerFn({ method: "POST" })
               statusUrl: row.tracking_token
                 ? `${SITE}/application-status?token=${row.tracking_token}`
                 : `${SITE}/application-status`,
+              actionUrl:
+                row.kind === "claim" && data.status === "rejected"
+                  ? `${SITE}/join#find`
+                  : undefined,
             },
             idempotencyKey: `application-${data.status}-${data.id}-${Date.now()}`,
           },

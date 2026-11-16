@@ -296,8 +296,8 @@ function ForTradesmen() {
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Link
-              to="/signin"
-              search={{ intent: "claim" as const }}
+              to="/join"
+              hash="find"
               className="rounded-sm bg-primary px-6 py-3.5 font-display font-semibold text-primary-foreground shadow-ember hover:brightness-110"
             >
               Claim your listing
