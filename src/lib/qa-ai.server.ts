@@ -11,7 +11,10 @@
  * vetted pro answers always rank above the AI note in the UI.
  */
 
-import { aiApiKey, aiAuthHeaders, aiChatUrl, aiModel, aiProvider } from "@/lib/ai-provider";
+import { aiApiKey, aiAuthHeaders, aiChatUrl, aiProvider } from "@/lib/ai-provider";
+
+/** Stable model id accepted by Gemini's OpenAI-compatible endpoint. */
+export const GEMINI_QA_MODEL = "gemini-2.5-flash";
 
 export type QaAiResult = {
   answer: string;
@@ -58,6 +61,43 @@ const SCHEMA = {
   ],
 } as const;
 
+/**
+ * Gemini's OpenAI-compatible endpoint rejects union types (`["string","null"]`)
+ * and `null` inside `enum`, so it gets nullable string fields and no `strict`.
+ */
+export const GEMINI_SCHEMA = {
+  type: "object",
+  properties: {
+    answer: SCHEMA.properties.answer,
+    safety: SCHEMA.properties.safety,
+    safety_note: { type: "string", nullable: true },
+    tags: SCHEMA.properties.tags,
+    urgency: { type: "string", nullable: true, enum: ["emergency", "soon", "planned"] },
+    suggested_trade: { type: "string", nullable: true },
+    verdict: SCHEMA.properties.verdict,
+    risk: SCHEMA.properties.risk,
+    reasons: SCHEMA.properties.reasons,
+    summary: { type: "string", nullable: true },
+  },
+  required: SCHEMA.required,
+};
+
+type ChatMessage = { role: "system" | "user"; content: string };
+
+export function buildGeminiBody(
+  messages: ChatMessage[],
+  mode: "schema" | "json_object" = "schema",
+) {
+  return {
+    model: GEMINI_QA_MODEL,
+    messages,
+    response_format:
+      mode === "json_object"
+        ? { type: "json_object" }
+        : { type: "json_schema", json_schema: { name: "qa_assist", schema: GEMINI_SCHEMA } },
+  };
+}
+
 function systemPrompt(tradeSlugs: string[]) {
   return [
     "You assist a UK tradesman directory's public Q&A. You are NOT a tradesman and must never pretend to be one.",
@@ -90,36 +130,72 @@ export async function analyseQuestion(
     .filter(Boolean)
     .join("\n");
 
-  try {
-    // Lovable keeps the existing model; Gemini (self-hosted production) uses Flash.
-    const model =
-      aiProvider() === "gemini" ? aiModel("google/gemini-2.5-flash") : "openai/gpt-5.6-sol";
-    const res = await fetch(aiChatUrl(), {
+  const provider = aiProvider();
+  const messages: ChatMessage[] = [
+    { role: "system", content: systemPrompt(tradeSlugs) },
+    { role: "user", content: userText },
+  ];
+  const post = (body: unknown) =>
+    fetch(aiChatUrl(), {
       method: "POST",
       headers: { "Content-Type": "application/json", ...aiAuthHeaders(apiKey) },
-      body: JSON.stringify({
+      body: JSON.stringify(body),
+    });
+  const logProviderError = async (res: Response, model: string) => {
+    let body = "";
+    try {
+      body = (await res.text()).slice(0, 500);
+    } catch {
+      /* ignore */
+    }
+    console.error("[qa-ai] provider error", { provider, model, status: res.status, body });
+  };
+
+  let text = "";
+  try {
+    let res: Response;
+    if (provider === "gemini") {
+      res = await post(buildGeminiBody(messages, "schema"));
+      if (res.status === 400) {
+        await logProviderError(res, GEMINI_QA_MODEL);
+        res = await post(buildGeminiBody(messages, "json_object"));
+      }
+      if (!res.ok) {
+        await logProviderError(res, GEMINI_QA_MODEL);
+        return null;
+      }
+    } else {
+      // Lovable gateway path — unchanged.
+      const model = "openai/gpt-5.6-sol";
+      res = await post({
         model,
-        messages: [
-          { role: "system", content: systemPrompt(tradeSlugs) },
-          { role: "user", content: userText },
-        ],
+        messages,
         response_format: {
           type: "json_schema",
           json_schema: { name: "qa_assist", strict: true, schema: SCHEMA },
         },
-      }),
-    });
+      });
+      if (!res.ok) {
+        await logProviderError(res, model);
+        return null;
+      }
+    }
 
-    if (!res.ok) return null;
     const json = (await res.json()) as {
       choices?: { message?: { content?: string | null } }[];
     };
-    const text = (json.choices?.[0]?.message?.content ?? "")
+    text = (json.choices?.[0]?.message?.content ?? "")
       .replace(/^```(?:json)?\s*/i, "")
       .replace(/```\s*$/, "");
 
     if (!text.trim()) return null;
-    const parsed = JSON.parse(text) as QaAiResult;
+    let parsed: QaAiResult;
+    try {
+      parsed = JSON.parse(text) as QaAiResult;
+    } catch {
+      console.error("[qa-ai] JSON parse failed", { provider, content: text.slice(0, 200) });
+      return null;
+    }
     return {
       answer: String(parsed.answer ?? "").slice(0, 4000),
       safety: ["none", "caution", "high"].includes(parsed.safety) ? parsed.safety : "none",
@@ -139,7 +215,11 @@ export async function analyseQuestion(
         : [],
       summary: parsed.summary ? String(parsed.summary).slice(0, 400) : null,
     };
-  } catch {
+  } catch (err) {
+    console.error("[qa-ai] request failed", {
+      provider,
+      message: err instanceof Error ? err.message : String(err),
+    });
     // AI assistance is best-effort — a failure must never lose the question.
     return null;
   }
