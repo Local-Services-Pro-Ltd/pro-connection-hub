@@ -14,6 +14,29 @@ const SENDER_DOMAIN = "notify.tradesmanfinder.org"
 // Can be the root domain when display_from_root is enabled — this is cosmetic only.
 const FROM_DOMAIN = "notify.tradesmanfinder.org"
 
+type Env = Record<string, string | undefined>
+const envOf = (): Env => (globalThis as { process?: { env?: Env } }).process?.env ?? {}
+
+export type EmailSender = { from: string; senderDomain: string }
+
+/**
+ * Resolves the From header and sender domain.
+ *
+ * EMAIL_FROM_DOMAIN is optional. When it is set (production on Cloudflare uses
+ * Resend with EMAIL_FROM_DOMAIN=tradesmanfinder.org), the From header becomes
+ * `TradesmanFinder <noreply@${EMAIL_FROM_DOMAIN}>` and the sender domain
+ * follows it. When it is unset, the baked-in notify.tradesmanfinder.org values
+ * are returned unchanged, so preview via Lovable Emails behaves exactly as
+ * before.
+ */
+export function resolveSender(e: Env = envOf()): EmailSender {
+  const domain = (e['EMAIL_FROM_DOMAIN'] ?? '').trim()
+  if (!domain) {
+    return { from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`, senderDomain: SENDER_DOMAIN }
+  }
+  return { from: `${SITE_NAME} <noreply@${domain}>`, senderDomain: domain }
+}
+
 export type SendTemplateEmailResult =
   | { sent: true }
   | { sent: false; reason: 'recipient_suppressed' }
@@ -61,10 +84,11 @@ export async function sendTemplateEmail(
       ? template.subject(templateData)
       : template.subject
 
+  const sender = resolveSender()
   return deliverEmail({
     to: recipient,
-    from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
-    senderDomain: SENDER_DOMAIN,
+    from: sender.from,
+    senderDomain: sender.senderDomain,
     subject,
     html,
     text,

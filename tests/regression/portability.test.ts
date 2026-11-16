@@ -1,6 +1,7 @@
 import { describe, expect, it, vi, afterEach } from "vitest";
 import { aiProvider, aiChatUrl, aiAuthHeaders, aiModel, aiApiKey } from "@/lib/ai-provider";
 import { emailProvider, deliverEmail, mapResendError } from "@/lib/email-templates/email-transport";
+import { resolveSender } from "@/lib/email-templates/send-email";
 import { policy } from "@/lib/security-headers";
 import { showGoogleSignIn } from "@/lib/auth-redirect";
 
@@ -67,5 +68,22 @@ describe("Google sign-in visibility", () => {
     expect(showGoogleSignIn("tradesmanfinder.org", undefined)).toBe(false);
     expect(showGoogleSignIn("tradesmanfinder.org", "true")).toBe(true);
     expect(showGoogleSignIn("pro-connection-hub.lovable.app", undefined)).toBe(true);
+  });
+});
+
+describe("email sender", () => {
+  it("uses EMAIL_FROM_DOMAIN when it is set", () => {
+    expect(resolveSender({ EMAIL_FROM_DOMAIN: "tradesmanfinder.org" })).toEqual({
+      from: "TradesmanFinder <noreply@tradesmanfinder.org>",
+      senderDomain: "tradesmanfinder.org",
+    });
+  });
+  it("keeps the notify subdomain when EMAIL_FROM_DOMAIN is unset or blank", () => {
+    for (const e of [{}, { EMAIL_FROM_DOMAIN: "" }, { EMAIL_FROM_DOMAIN: "   " }]) {
+      expect(resolveSender(e)).toEqual({
+        from: "TradesmanFinder <noreply@notify.tradesmanfinder.org>",
+        senderDomain: "notify.tradesmanfinder.org",
+      });
+    }
   });
 });

@@ -90,7 +90,8 @@ Cloudflare Pages env vars:
 | VITE_SUPABASE_URL | plain (build) | same as SUPABASE_URL |
 | VITE_SUPABASE_PUBLISHABLE_KEY | plain (build) | |
 | SUPABASE_SERVICE_ROLE_KEY | secret | server functions, cron routes |
-| RESEND_API_KEY | secret | when set, email goes via Resend instead of Lovable Emails; From `TradesmanFinder <noreply@notify.tradesmanfinder.org>` (verify the domain in Resend) |
+| RESEND_API_KEY | secret | when set, email goes via Resend instead of Lovable Emails (verify the sender domain in Resend) |
+| EMAIL_FROM_DOMAIN | plain | optional From/sender domain. Production: `tradesmanfinder.org`, giving From `TradesmanFinder <noreply@tradesmanfinder.org>`. Unset (preview) keeps `TradesmanFinder <noreply@notify.tradesmanfinder.org>` |
 | GEMINI_API_KEY | secret | when set, AI goes to Google Gemini instead of the Lovable AI gateway; without any key questions are saved with no AI answer |
 | SECURITY_SCAN_TOKEN | secret | cron route token |
 | STRIPE_SECRET_KEY | secret | payments stay off while ONBOARDING_FREE is on |
