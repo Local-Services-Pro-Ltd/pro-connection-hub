@@ -1,0 +1,67 @@
+name: Migrate production database
+
+# Applies database migrations to the self-managed production Supabase project
+# (the one tradesmanfinder.org uses). Lovable applies the same files to its own
+# Cloud database for preview; this keeps production in step.
+#
+# Needs one repository secret: PRODUCTION_DB_URL (Supabase → Connect →
+# Session pooler connection string, with the database password filled in).
+# Without it the job is skipped with a warning.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [production]
+    paths:
+      - "supabase/migrations/**"
+      - "drizzle/migrations/**"
+
+concurrency:
+  group: migrate-production
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PRODUCTION_DB_URL: ${{ secrets.PRODUCTION_DB_URL }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Skip when the production database secret is missing
+        if: env.PRODUCTION_DB_URL == ''
+        run: |
+          echo "::warning::PRODUCTION_DB_URL is not configured; no migrations applied."
+          echo "Production migrations skipped: PRODUCTION_DB_URL not configured." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Install psql
+        if: env.PRODUCTION_DB_URL != ''
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client
+
+      - name: Apply pending migrations in order
+        if: env.PRODUCTION_DB_URL != ''
+        run: |
+          set -euo pipefail
+          PSQL=(psql "$PRODUCTION_DB_URL" -X -q -v ON_ERROR_STOP=1)
+          "${PSQL[@]}" -c "create schema if not exists release_admin;
+            revoke all on schema release_admin from public, anon, authenticated;
+            create table if not exists release_admin.applied_migrations (
+              name text primary key,
+              applied_at timestamptz not null default now());"
+
+          applied=0
+          for file in $(ls supabase/migrations/*.sql | sort) $(ls drizzle/migrations/*.sql | sort); do
+            name="$file"
+            done_already=$("${PSQL[@]}" -tA -c "select 1 from release_admin.applied_migrations where name = '$name'")
+            if [ "$done_already" = "1" ]; then continue; fi
+            echo "Applying $name"
+            {
+              cat "$file"
+              echo
+              echo "insert into release_admin.applied_migrations(name) values ('$name');"
+            } | "${PSQL[@]}" --single-transaction -f -
+            applied=$((applied + 1))
+            echo "- $name" >> "$GITHUB_STEP_SUMMARY"
+          done
+          echo "Applied $applied migration(s)." | tee -a "$GITHUB_STEP_SUMMARY"
