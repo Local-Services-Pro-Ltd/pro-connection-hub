@@ -52,8 +52,19 @@ export const tradesQuery = queryOptions({
 
 export const areasQuery = queryOptions({
   queryKey: ["areas"],
-  queryFn: async () =>
-    unwrap(await supabase.from("areas").select("*").order("sort_order")),
+  queryFn: async () => {
+    const areas = unwrap(await supabase.from("areas").select("*").order("sort_order"));
+    // Old rollout dates are not confirmed plans. Never show an opening date
+    // alongside an area already accepting onboarding (notably Berkshire).
+    return areas.map((area) => ({
+      ...area,
+      note: /^Opening/i.test(area.note ?? "")
+        ? area.status === "live"
+          ? "Local firms are onboarding. Checks must be completed before they can quote."
+          : "Opening date to be confirmed."
+        : area.note,
+    }));
+  },
   staleTime: 5 * 60_000,
 });
 

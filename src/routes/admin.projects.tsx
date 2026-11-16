@@ -23,7 +23,7 @@ export const Route = createFileRoute("/admin/projects")({
       {
         name: "description",
         content:
-          "Internal queue for reviewing homeowner project postings before they reach vetted firms.",
+          "Internal queue for reviewing homeowner project postings before publication.",
       },
       { property: "og:title", content: "Project review queue — admin" },
       {
@@ -108,7 +108,7 @@ function AdminProjects() {
       <SectionHead
         eyebrow="Admin"
         title="Project review queue"
-        sub="Approve postings before vetted firms can see them, or reject with a note the homeowner receives by email."
+        sub="Approve postings for publication, or reject with a note the homeowner receives by email."
       />
 
       <div className="mt-8 flex flex-wrap gap-2">

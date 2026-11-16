@@ -18,7 +18,7 @@ export const Route = createFileRoute("/directory")({
       {
         name: "description",
         content:
-          "Browse local firms joining TradesmanFinder. Every firm is ID-checked and its insurance confirmed before it can quote.",
+          "Browse local firms joining TradesmanFinder. Firms must complete ID and insurance checks before they can quote.",
       },
       { property: "og:title", content: "Firm directory — TradesmanFinder" },
       {
@@ -53,7 +53,7 @@ function Directory() {
     <>
       <PageHero
         eyebrow="Directory"
-        title="Every firm listed on TradesmanFinder"
+        title="Firms onboarding now"
         sub="We're onboarding local trades now. Listed firms are marked vetting in progress until their ID and insurance checks are complete."
       />
 

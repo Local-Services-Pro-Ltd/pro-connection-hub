@@ -30,11 +30,11 @@ const HEADLINES: Record<string, string> = {
 
 const BODIES: Record<string, string> = {
   submitted:
-    "A human reads every application. We verify your insurance, registration and accreditations with the bodies that issued them — usually within two working days.",
+    "Before your firm can quote, our team must review your ID, insurance and any required registration or accreditation evidence. You can track the review from your application page.",
   pending:
     "We've moved your application back to the queue while we wait on something. You don't need to do anything unless we ask.",
   in_review:
-    "One of our team is checking your paperwork with the issuing bodies now. We'll come back to you as soon as it's done.",
+    "Your application is in review. We'll contact you when the checks are complete or if we need more evidence.",
   approved:
     "Everything checked out. We'll be in touch about getting your profile live and taking local work.",
   rejected:

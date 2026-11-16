@@ -33,7 +33,7 @@ const BODIES: Record<string, string> = {
   document_rejected:
     "Our reviewer couldn't accept one of the files you sent. Replace it from your tracking page and we'll pick the review straight back up.",
   insurance_expiring:
-    "Certified firms need live public liability cover. Send us the renewed certificate before the current one lapses so your status doesn't drop.",
+    "Firms must have current public liability insurance before they can quote. Send us the renewed certificate before the current one expires so we can check it.",
   insurance_expired:
     "Our records show your public liability cover has lapsed. Send us renewed cover from your tracking page to keep your certification on track.",
 };

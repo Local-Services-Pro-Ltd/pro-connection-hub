@@ -103,7 +103,7 @@ const steps = [
   {
     n: "02",
     title: "Get up to 3 quotes",
-    body: "We match you with local trades as they join. Every firm is ID-checked and its insurance confirmed before it can quote.",
+    body: "We match you with local trades as they join. Firms must complete ID and insurance checks before they can quote.",
   },
   {
     n: "03",
@@ -209,8 +209,8 @@ function Home() {
       <Section>
         <SectionHead
           eyebrow="Browse by trade"
-          title="Every trade, checked the same way."
-          sub="We're onboarding local trades now. Every firm is ID-checked and its insurance confirmed before it can quote."
+          title="Every trade, one onboarding standard."
+          sub="We're onboarding local trades now. Firms must complete ID and insurance checks before they can quote."
           aside={
             <Link
               to="/trades"

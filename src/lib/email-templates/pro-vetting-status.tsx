@@ -25,11 +25,11 @@ interface Props {
 const COPY: Record<VettingOutcome, { heading: string; body: string }> = {
   featured: {
     heading: "You're now featured on TradesmanFinder",
-    body: "Your checks passed and an admin has featured your firm on our homepage. Homeowners in your area will see your profile first.",
+    body: "An admin has featured your firm on our homepage. Featuring is separate from approval to quote; check your application for the status of your checks.",
   },
   unfeatured: {
     heading: "Your firm is no longer featured",
-    body: "We've taken your firm off the homepage feature slot for now. Your listing stays live and you'll keep receiving job leads as normal.",
+    body: "We've taken your firm off the homepage feature slot for now. This does not change your listing status. Firms must complete ID and insurance checks before they can quote.",
   },
   rejected: {
     heading: "We can't feature your firm yet",

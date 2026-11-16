@@ -162,8 +162,7 @@ export function SiteFooter() {
         <div className="max-w-sm">
           <Logo />
           <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-            We're onboarding UK trades now. Every firm is ID-checked and its
-            insurance confirmed before it can quote.
+            Local UK trades, ID-checked and insured before they can quote.
           </p>
         </div>
         <div>

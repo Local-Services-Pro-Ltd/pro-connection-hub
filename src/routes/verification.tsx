@@ -90,17 +90,17 @@ const checks = [
   {
     icon: BadgeCheck,
     title: "Identity",
-    body: "We ask for photo ID and company or sole-trader details during onboarding, before a firm can quote.",
+    body: "Before a firm can quote, we check photo ID against its company or sole-trader details and check the Companies House record where applicable.",
   },
   {
     icon: ShieldCheck,
     title: "Insurance",
-    body: "We ask for the public liability certificate and expiry date, and confirm them before a firm can quote.",
+    body: "Before a firm can quote, we check its public liability insurance certificate and expiry date.",
   },
   {
     icon: FileCheck2,
     title: "Trade credentials",
-    body: "Where registration is required, we ask for the relevant scheme details and evidence during onboarding.",
+    body: "Before a firm can quote for work requiring registration, we check the relevant scheme details and evidence.",
   },
   {
     icon: Star,

@@ -4,6 +4,7 @@
    invented @example.co.uk firm listings retained unpublished for testing.
 2. A firm with no stored public reviews renders "New", never a numeric rating
    or a zero-review count, and has no aggregateRating structured data.
+3. Public pages never claim "vetted pros", "live now" or a "vetted network".
 
 Usage: python3 tests/regression/public_trust.py
 Env: SUPABASE_URL (or VITE_SUPABASE_URL), SUPABASE_PUBLISHABLE_KEY (or
@@ -150,6 +151,27 @@ for pro in zero_review_pros:
         f"{pro['id']} emits no aggregateRating",
         all("aggregateRating" not in schema for schema in schemas if isinstance(schema, dict)),
     )
+
+# Check rendered text, metadata and JSON-LD, not just source strings. Include
+# every trade and each public firm because these pages share dynamic copy.
+public_paths = [
+    "/", "/areas", "/coverage", "/directory", "/trades",
+    "/how-it-works", "/verification", "/for-tradesmen", "/projects",
+    "/post-job", "/ask", "/costs", "/waiting-list",
+] + [f"/trades/{trade}" for trade in trades] + [f"/pro/{pro['id']}" for pro in pros]
+for path in public_paths:
+    response = requests.get(f"{APP}{path}", timeout=30)
+    soup = BeautifulSoup(response.text, "html.parser")
+    page_copy = soup.get_text(" ", strip=True)
+    page_copy += " " + " ".join(tag.get("content", "") for tag in soup.find_all("meta"))
+    page_copy += " " + " ".join(tag.get_text() for tag in soup.find_all("script", attrs={"type": "application/ld+json"}))
+    normalized = " ".join(page_copy.lower().split())
+    if path == "/areas":
+        berkshire = next((heading.find_parent("a") for heading in soup.find_all("h2") if heading.get_text(strip=True) == "Berkshire"), None)
+        berkshire_copy = berkshire.get_text(" ", strip=True).lower() if berkshire else ""
+        check("Berkshire has one onboarding status and no conflicting opening date", "onboarding firms" in berkshire_copy and "opening" not in berkshire_copy and "2027" not in berkshire_copy)
+    for phrase in ("vetted pros", "live now", "vetted network"):
+        check(f"{path} contains no {phrase} claim", response.status_code == 200 and phrase not in normalized, f"HTTP {response.status_code}")
 
 print(f"\n{passes} passed, {len(failures)} failed")
 sys.exit(1 if failures else 0)

@@ -240,7 +240,7 @@ function ProPage() {
               <ProjectGallery
                 projects={projects ?? []}
                 heading="Recent work — before & after"
-                emptyNote={`${pro.name.split(" ")[0]} hasn't published project photos yet. Ask for examples when you request a quote — we only show verified, customer-approved work here.`}
+                emptyNote={`${pro.name.split(" ")[0]} hasn't published project photos yet. Ask for examples of previous work when you contact the firm.`}
               />
             </div>
 

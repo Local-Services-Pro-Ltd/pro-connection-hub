@@ -229,14 +229,14 @@ function ProjectDetail() {
             <div className="rounded-md border border-border bg-card p-6">
               <p className="font-display font-semibold">Are you a firm?</p>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                Only certified, published firms can apply to projects. Get your
-                firm has completed its checks and you can quote directly here.
+                Firms must complete their ID and insurance checks before they
+                can quote. Apply to have your firm's documents reviewed.
               </p>
               <Link
                 to="/claim"
                 className="mt-5 inline-flex rounded-sm bg-primary px-5 py-2.5 font-display text-sm font-semibold text-primary-foreground shadow-ember hover:brightness-110"
               >
-                Get certified
+                Apply for checks
               </Link>
             </div>
           )}

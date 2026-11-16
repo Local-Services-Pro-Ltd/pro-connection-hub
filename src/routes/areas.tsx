@@ -19,7 +19,7 @@ export const Route = createFileRoute("/areas")({
   head: ({ loaderData }) => {
     const title = "Areas we're onboarding | TradesmanFinder";
     const description =
-      "See where TradesmanFinder is onboarding local trades. Every firm is ID-checked and its insurance confirmed before it can quote.";
+      "See where TradesmanFinder is onboarding local trades. Firms must complete ID and insurance checks before they can quote.";
     const base = loaderData?.origin ?? "";
     const image = loaderData?.origin
       ? `${loaderData.origin}/og/areas.jpg`
@@ -78,7 +78,7 @@ function Areas() {
       <LiveMapHero
         eyebrow="Area onboarding"
         title="Local means local."
-        sub="We're onboarding local trades area by area. Every firm is ID-checked and its insurance confirmed before it can quote."
+        sub="We're onboarding local trades area by area. Firms must complete ID and insurance checks before they can quote."
       />
 
       <Section>
@@ -98,7 +98,7 @@ function Areas() {
             >
               <span className="inline-flex items-center gap-2 rounded-full bg-primary/12 px-3 py-1 font-display text-[0.7rem] uppercase tracking-widest text-primary">
                 <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                Now onboarding
+                Onboarding firms
               </span>
               <h2 className="mt-5 text-2xl">{a.name}</h2>
               <p className="mt-3 leading-relaxed text-muted-foreground">

@@ -54,7 +54,7 @@ export function ReviewPanel({
       setPlace("");
       setRating(5);
       queryClient.invalidateQueries({ queryKey: ["pro", proId] });
-      toast.success("Review submitted — it'll appear once verified.");
+      toast.success("Review submitted — it'll appear once approved by a reviewer.");
     },
     onError: (e: Error) => toast.error(e.message),
   });

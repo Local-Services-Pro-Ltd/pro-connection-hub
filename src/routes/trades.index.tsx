@@ -26,7 +26,7 @@ export const Route = createFileRoute("/trades/")({
   head: ({ loaderData }) => {
     const title = "All trades — find a local tradesman | TradesmanFinder";
     const description =
-      "Browse local trades joining TradesmanFinder. Every firm is ID-checked and its insurance confirmed before it can quote.";
+      "Browse local trades joining TradesmanFinder. Firms must complete ID and insurance checks before they can quote.";
     const base = loaderData?.origin ?? "";
     const image = loaderData?.origin
       ? `${loaderData.origin}/og/trades.jpg`
@@ -106,7 +106,7 @@ function TradesIndex() {
       <PageHero
         eyebrow="Directory"
         title="Every trade, one careful onboarding process."
-        sub="We're onboarding local trades now. Every firm is ID-checked and its insurance confirmed before it can quote."
+        sub="We're onboarding local trades now. Firms must complete ID and insurance checks before they can quote."
         image={heroTrades}
         imageAlt="Builders, an electrician and a plumber at work in a warmly lit workshop"
         focal="50% 45%"

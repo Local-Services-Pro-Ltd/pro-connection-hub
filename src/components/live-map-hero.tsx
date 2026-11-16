@@ -768,7 +768,7 @@ export function LiveMapHero({
                       }}
                       className="shrink-0 rounded-sm border border-border-strong px-2.5 py-1.5 font-display text-xs font-semibold hover:bg-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                     >
-                      Live
+                      Latest
                     </button>
                   </div>
                   <div className="mt-3 flex flex-wrap items-center gap-2">

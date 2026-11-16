@@ -36,7 +36,7 @@ export const VETTING_STAGES: VettingStage[] = [
     key: "featured",
     state: "Next",
     title: "Featured on the homepage",
-    body: "A firm appears here only once those checks pass and an admin signs it off. Nothing is featured automatically.",
+    body: "An admin selects homepage features separately from approval to quote. Listed firms remain marked vetting in progress until their checks are complete.",
   },
 ];
 

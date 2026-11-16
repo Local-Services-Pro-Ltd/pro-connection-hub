@@ -127,7 +127,7 @@ function Dashboard() {
         <PageHero
           eyebrow="Trade dashboard"
           title="No listing linked to this account yet"
-          sub="Once your firm is vetted and your listing is linked, your leads, visits, photos and membership all live here."
+          sub="Once your listing is linked, you can manage your profile here. ID and insurance checks must be completed before you can quote."
         />
         <Section>
           <div className={card}>
@@ -154,8 +154,8 @@ function Dashboard() {
         title={pro.company}
         sub={
           pro.published
-            ? "Your listing is live. Keep your services, photos and availability current to win more work."
-            : "Your listing is not live yet — it goes public once vetting is approved."
+            ? "Your listing is published. Publication is not approval to quote; your firm must complete ID and insurance checks first."
+            : "Your listing is not published yet. You can prepare your services and photos while onboarding continues."
         }
       />
       <Section>

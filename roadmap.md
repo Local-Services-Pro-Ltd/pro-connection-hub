@@ -18,6 +18,7 @@
 - [ ] Photo upload on the job posting form
 
 ## Trust & legal
+- [x] Follow-up: remove remaining network-wide trust and coverage claims, and extend public-page wording checks (not published)
 - [x] Footer: Local Services Pro Ltd, company no. 12126782, 38 Bloomfield Road, London SE18 7JH, ICO 00015543780
 - [x] Owner-approved trust cleanup: hide 34 invented firms, remove Steve Test Builders, and mark four real firms as vetting in progress
 - [x] Replace unverified counts, vetting, response-time and review claims across public pages and metadata
