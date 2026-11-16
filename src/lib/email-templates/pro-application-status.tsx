@@ -30,7 +30,7 @@ const HEADLINES: Record<string, string> = {
 
 const BODIES: Record<string, string> = {
   submitted:
-    "A real person will reply within 5 working days. After that first review we'll ask for your photo ID, public liability insurance and any trade registration your work needs — all checked before you can quote. You can track your application from your status page.",
+    "A real person will reply within 2 working days. After that first review we'll ask for your photo ID, public liability insurance and any trade registration your work needs — all checked before you can quote. You can track your application from your status page.",
   pending:
     "We've moved your application back to the queue while we wait on something. You don't need to do anything unless we ask.",
   in_review:

@@ -41,7 +41,7 @@ async def main():
     html = requests.get(f"{APP}/join", timeout=30).text
     title = re.search(r"<title>(.*?)</title>", html, re.S).group(1)
     check("unique /join title", "Join TradesmanFinder" in title, title)
-    check("/join meta description", 'name="description"' in html and "5 working days" in html)
+    check("/join meta description", 'name="description"' in html and "2 working days" in html)
     check("/join canonical", 'rel="canonical" href="https://tradesmanfinder.org/join"' in html)
     claim_title = re.search(r"<title>(.*?)</title>", requests.get(f"{APP}/claim", timeout=30).text, re.S).group(1)
     check("/join title differs from /claim", claim_title != title)
@@ -67,7 +67,7 @@ async def main():
         await fill(page, email)
         await page.get_by_text("Thanks — we've got your application.").wait_for(timeout=15000)
         body = await page.locator("[role=status]").inner_text()
-        check("required-only submission succeeds", "5 working days" in body and email in body, body)
+        check("required-only submission succeeds", "2 working days" in body and email in body, body)
         await b.close()
     print(f"JOIN_EMAIL={email}")
     print(f"{passes} passed, {len(fails)} failed")

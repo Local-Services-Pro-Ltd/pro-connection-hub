@@ -26,7 +26,7 @@ export const Route = createFileRoute("/join")({
   head: () => {
     const title = "Join TradesmanFinder — get local jobs without paying for leads";
     const description =
-      "Apply to join TradesmanFinder. Free while we onboard trades, no commission and no per-lead fees. A real person replies to every application within 5 working days.";
+      "Apply to join TradesmanFinder. Free while we onboard trades, no commission and no per-lead fees. A real person replies to every application within 2 working days.";
     return {
       meta: [
         { title },
@@ -57,7 +57,7 @@ export const Route = createFileRoute("/join")({
 
 const steps = [
   { title: "Apply", body: "Tell us about your business and the work you do. It takes about 5 minutes." },
-  { title: "We review", body: "A real person looks at every application and replies within 5 working days." },
+  { title: "We review", body: "A real person looks at every application and replies within 2 working days." },
   {
     title: "Complete your checks",
     body: "We'll ask for photo ID and your public liability insurance, plus any trade registration your work needs (for example Gas Safe or NICEIC).",
@@ -222,7 +222,7 @@ function Join() {
               <BadgeCheck className="mx-auto h-8 w-8 text-success" aria-hidden="true" />
               <h2 className="mt-4 text-2xl">Thanks — we've got your application.</h2>
               <p className="mt-3 leading-relaxed text-muted-foreground">
-                A real person will reply within 5 working days. Keep an eye on{" "}
+                A real person will reply within 2 working days. Keep an eye on{" "}
                 <strong className="text-foreground">{form.email}</strong> for our message.
               </p>
               {mutation.data?.trackingToken && (
