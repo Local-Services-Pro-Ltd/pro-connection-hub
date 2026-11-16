@@ -20,7 +20,7 @@ export const Route = createFileRoute("/saved")({
       {
         property: "og:description",
         content:
-          "Compare the vetted tradespeople you saved, then book a visit or post your job.",
+          "Compare the tradespeople you saved, then read their vetting status or post your job.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

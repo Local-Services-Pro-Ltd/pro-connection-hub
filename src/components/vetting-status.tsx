@@ -68,7 +68,7 @@ export function VettingStatusPanel() {
         <Link to="/waiting-list" className="text-primary hover:underline">
           join the waiting list
         </Link>{" "}
-        to hear when your area goes live.
+        to hear when your area opens.
       </p>
     </div>
   );

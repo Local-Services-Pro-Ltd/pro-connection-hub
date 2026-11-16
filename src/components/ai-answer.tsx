@@ -30,7 +30,7 @@ export function AiAnswer({
     >
       <p className="inline-flex items-center gap-2 eyebrow">
         <Sparkles className="h-4 w-4 text-primary" />
-        AI first pass — not a vetted tradesman
+        AI first pass — not a tradesman
       </p>
 
       {high && (
@@ -76,8 +76,8 @@ export function AiAnswer({
       )}
 
       <p className="mt-4 text-xs text-muted-foreground">
-        Generated automatically from the question. Always confirm with a vetted
-        firm before starting work.
+        Generated automatically from the question. Always confirm with an
+        approved, appropriately qualified firm before starting work.
       </p>
     </div>
   );

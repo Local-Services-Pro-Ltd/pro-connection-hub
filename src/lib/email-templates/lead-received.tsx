@@ -47,8 +47,8 @@ const Email = ({
         <Heading style={heading}>New enquiry for you</Heading>
         <Text style={text}>{company ? `Hi ${company},` : "Hi there,"}</Text>
         <Text style={text}>
-          A homeowner found you in the directory and sent a job through. Reply
-          quickly — response time is part of your trust score.
+          A homeowner found you in the directory and sent a job through. Their
+          contact details are included below.
         </Text>
         <Text style={label}>Contact</Text>
         <Text style={text}>

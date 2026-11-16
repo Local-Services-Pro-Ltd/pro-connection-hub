@@ -24,13 +24,13 @@ export const VETTING_STAGES: VettingStage[] = [
     key: "applications-open",
     state: "Done",
     title: "Applications open",
-    body: "Trades in Greater London, Kent and Surrey can apply to be listed today.",
+    body: "Local trades can apply to be listed while onboarding continues in their area.",
   },
   {
     key: "checks-under-way",
     state: "In progress",
     title: "Checks under way",
-    body: "We look at public liability insurance, trade-body membership, company records and recent jobs — in person where we can.",
+    body: "We ask for ID, public liability insurance, company details and any required trade credentials before a firm can quote.",
   },
   {
     key: "featured",
@@ -44,7 +44,7 @@ export const VETTING_ACTIONS: VettingAction[] = [
   {
     key: "post-job",
     title: "Need work doing now?",
-    body: "Post the job anyway. We match it by hand to checked trades in your postcode and come back to you with names and quotes.",
+    body: "Post the job and we'll match you with local trades as they join and complete their checks.",
     href: "/post-job",
     label: "Post a job — free",
   },

@@ -34,7 +34,7 @@ export const Route = createFileRoute("/projects/$id")({
       {
         name: "description",
         content:
-          "Full brief for a homeowner project: scope, budget, target dates and photos. Vetted firms can apply directly.",
+          "Full brief for a homeowner project: scope, budget, target dates and photos. Approved firms can apply directly.",
       },
       { property: "og:title", content: "Project details | TradesmanFinder" },
       {
@@ -171,7 +171,7 @@ function ProjectDetail() {
               </p>
               {(applications.data?.length ?? 0) === 0 ? (
                 <p className="mt-3 text-sm text-muted-foreground">
-                  No applications yet. We'll email you as soon as a vetted firm
+                  No applications yet. We'll email you as soon as an approved firm
                   applies.
                 </p>
               ) : (
@@ -230,7 +230,7 @@ function ProjectDetail() {
               <p className="font-display font-semibold">Are you a firm?</p>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                 Only certified, published firms can apply to projects. Get your
-                firm verified and you can quote directly here.
+                firm has completed its checks and you can quote directly here.
               </p>
               <Link
                 to="/claim"

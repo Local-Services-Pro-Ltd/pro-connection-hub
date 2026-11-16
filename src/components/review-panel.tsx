@@ -75,7 +75,7 @@ export function ReviewPanel({
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
                   <Quote className="h-4 w-4 text-primary" />
-                  <h3 className="text-base">{r.title || "Verified job"}</h3>
+                  <h3 className="text-base">{r.title || "Customer review"}</h3>
                 </div>
                 <span className="flex items-center gap-1 text-sm">
                   <Star className="h-3.5 w-3.5 fill-accent text-accent" />
@@ -104,10 +104,8 @@ export function ReviewPanel({
         <div className="mt-5 rounded-md border border-border bg-card p-6">
           <p className="font-display text-base">Be the first to review this firm</p>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-            This firm has passed vetting but hasn't been reviewed here yet. We
-            only publish reviews from signed-in homeowners with a job on record,
-            so the first one carries real weight — tell people what the work
-            was, whether the quote held, and how the firm left the place.
+            Reviews will only come from customers who've had work done through
+            TradesmanFinder. This firm hasn't been reviewed here yet.
           </p>
         </div>
       )}
@@ -121,8 +119,8 @@ export function ReviewPanel({
             <Link to="/signin" className="text-primary hover:underline">
               Sign in
             </Link>{" "}
-            to write a review. We only publish reviews from signed-in accounts,
-            and each one is checked before it goes live.
+            to write a review. Reviews are moderated before publication and will
+            only come from customers who've had work done through TradesmanFinder.
           </p>
         ) : (
           <form

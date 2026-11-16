@@ -15,9 +15,9 @@ export const Route = createFileRoute("/ask/")({
     await context.queryClient.ensureQueryData(tradesQuery);
   },
   head: () => {
-    const title = "Ask a tradesman — free advice from vetted UK pros";
+    const title = "Ask a tradesman — free advice from local pros";
     const description =
-      "Stuck on a job? Ask a question and get answers from vetted UK tradesmen. Browse real questions on plumbing, electrics, roofing, damp and renovation costs.";
+      "Ask a question about plumbing, electrics, roofing, damp or renovation costs. Approved local firms can answer after completing their checks.";
     return {
       meta: [
         { title },
@@ -84,8 +84,8 @@ function AskIndex() {
     <Section>
       <SectionHead
         eyebrow="Ask the pros"
-        title="Free advice from vetted UK tradesmen."
-        sub="Describe the problem, and vetted firms on the network answer. Every question and answer is checked by us before it appears — no sales pitches, no anonymous noise."
+        title="Free advice from local tradesmen."
+        sub="Describe the problem and approved local firms can answer. Every question and answer is reviewed before it appears — no sales pitches, no anonymous noise."
       />
 
       <div className="mt-12 grid gap-12 lg:grid-cols-[1.2fr_1fr]">
@@ -139,8 +139,8 @@ function AskIndex() {
               <h2 className="font-display text-xl">Be the first to ask</h2>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                 Nothing published in this view yet. Ask anything about a job
-                you're planning — vetted trades answer, and we check every
-                answer before it goes live.
+                you're planning — approved trades can answer, and we check every
+                answer before it is published.
               </p>
               <p className="mt-4 text-sm text-muted-foreground">
                 For example:{" "}
@@ -167,7 +167,7 @@ function AskIndex() {
                 className="rounded-sm border border-border bg-surface p-4 text-sm"
               >
                 Thanks — your question is with our team for review. It'll appear
-                here once published, and vetted firms can answer from then on.
+                here once published, and approved firms can answer from then on.
               </p>
               <AiAnswer
                 compact

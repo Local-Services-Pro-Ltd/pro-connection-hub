@@ -1,20 +1,18 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
-import { Star, Clock, ShieldCheck, MapPin, Hammer } from "lucide-react";
+import { Star, ShieldCheck, MapPin, Hammer } from "lucide-react";
 import { Section } from "@/components/layout-bits";
 import { ReviewPanel } from "@/components/review-panel";
 import { ProjectGallery } from "@/components/project-gallery";
 import { BookingPanel } from "@/components/booking-panel";
 import { LeadForm } from "@/components/lead-form";
-import { TrustBadge, TrustBreakdown } from "@/components/trust-badge";
+
 import { SaveProButton } from "@/components/save-pro-button";
 import { tradeHero } from "@/lib/trade-media";
 
 import {
   proQuery,
-  availabilityLabels,
   proProjectsQuery,
-  proTrustQuery,
 } from "@/lib/queries";
 import {
   breadcrumbSchema,
@@ -33,7 +31,11 @@ export const Route = createFileRoute("/pro/$id")({
   loader: async ({ params, context }) => {
     const data = await context.queryClient.ensureQueryData(proQuery(params.id));
     if (!data.pro) throw notFound();
-    return { name: data.pro.company, pro: data.pro };
+    return {
+      name: data.pro.company,
+      pro: data.pro,
+      reviewCount: data.reviews.length,
+    };
   },
   head: ({ params, loaderData }) => {
     if (!loaderData) {
@@ -48,7 +50,7 @@ export const Route = createFileRoute("/pro/$id")({
     const url = `https://tradesmanfinder.org/pro/${params.id}`;
     const image = `https://tradesmanfinder.org${tradeHero(p.trade_slug)}`;
     const title = `${p.company} — ${p.name}, ${p.area} | TradesmanFinder`;
-    const description = `${p.company} in ${p.area}. ${p.rating}★ from ${p.review_count} reviews, ${p.years} years' experience. ${p.bio}`.slice(
+    const description = `${p.company} in ${p.area}. Vetting in progress. ${p.years} years' experience. ${p.bio}`.slice(
       0,
       158,
     );
@@ -62,11 +64,11 @@ export const Route = createFileRoute("/pro/$id")({
       address: { "@type": "PostalAddress", addressLocality: p.area, addressCountry: "GB" },
       employee: { "@type": "Person", name: p.name },
     };
-    if (p.review_count > 0) {
+    if ((loaderData.reviewCount ?? 0) > 0) {
       jsonLd['aggregateRating'] = {
         "@type": "AggregateRating",
         ratingValue: p.rating,
-        reviewCount: p.review_count,
+        reviewCount: loaderData.reviewCount,
         bestRating: 5,
         worstRating: 1,
       };
@@ -127,7 +129,6 @@ function ProPage() {
   const { id } = Route.useParams();
   const { data } = useSuspenseQuery(proQuery(id));
   const { data: projects } = useQuery(proProjectsQuery(id));
-  const { data: trust } = useQuery(proTrustQuery(id));
   const pro = data.pro!;
 
   const { credentials, reviews } = data;
@@ -156,38 +157,34 @@ function ProPage() {
             </h1>
             <p className="mt-3 text-lg text-muted-foreground">{pro.name}</p>
             <div className="mt-4 flex items-center gap-3">
-              {trust && <TrustBadge score={trust.score ?? 0} size="lg" />}
+              <span className="rounded-sm bg-muted px-3 py-1.5 font-display text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                Vetting in progress
+              </span>
               <SaveProButton proId={pro.id} company={pro.company} />
             </div>
 
 
 
             <div className="mt-7 flex flex-wrap gap-x-8 gap-y-4 border-t border-border pt-6 text-sm">
-              <span className="flex items-center gap-2">
-                <Star className="h-4 w-4 fill-accent text-accent" />
-                <strong className="font-display">
-                  {pro.review_count ? pro.rating : "New"}
-                </strong>
-                <span className="text-muted-foreground">
-                  ({pro.review_count} reviews)
+              {reviews.length > 0 ? (
+                <span className="flex items-center gap-2">
+                  <Star className="h-4 w-4 fill-accent text-accent" />
+                  <strong className="font-display">{pro.rating}</strong>
+                  <span className="text-muted-foreground">
+                    ({reviews.length} review{reviews.length === 1 ? "" : "s"})
+                  </span>
                 </span>
-              </span>
+              ) : (
+                <span className="text-sm text-muted-foreground">New</span>
+              )}
               <span className="flex items-center gap-2 text-muted-foreground">
                 <MapPin className="h-4 w-4 text-primary" />
                 {pro.area}
                 {pro.postcode ? ` · ${pro.postcode}` : ""}
               </span>
               <span className="flex items-center gap-2 text-muted-foreground">
-                <Clock className="h-4 w-4 text-primary" />~{pro.response_mins}{" "}
-                min reply
-              </span>
-              <span className="flex items-center gap-2 text-muted-foreground">
                 <Hammer className="h-4 w-4 text-primary" />
                 {pro.years} years' experience
-              </span>
-              <span className="flex items-center gap-2 text-muted-foreground">
-                <ShieldCheck className="h-4 w-4 text-success" />
-                {availabilityLabels[pro.availability]}
               </span>
             </div>
           </div>
@@ -251,18 +248,6 @@ function ProPage() {
           </div>
 
           <div className="space-y-6 lg:sticky lg:top-24 lg:h-fit">
-            {trust && (
-              <TrustBreakdown
-                score={trust.score ?? 0}
-                verified={trust.verified_credentials ?? 0}
-                total={trust.total_credentials ?? 0}
-                rating={pro.rating}
-                reviews={pro.review_count}
-                years={pro.years}
-                responseMins={pro.response_mins}
-              />
-            )}
-
             <BookingPanel
               proId={pro.id}
               proName={pro.name}

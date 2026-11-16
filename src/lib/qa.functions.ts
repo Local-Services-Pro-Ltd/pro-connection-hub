@@ -163,7 +163,7 @@ export const submitAnswer = createServerFn({ method: "POST" })
     if (error) {
       const message = error.message ?? "";
       if (message.includes("not_a_published_pro"))
-        throw new Error("Only vetted, published firms can answer questions.");
+        throw new Error("Only approved, published firms can answer questions.");
       if (message.includes("already_answered"))
         throw new Error("You've already answered this question.");
       if (message.includes("question_not_available"))

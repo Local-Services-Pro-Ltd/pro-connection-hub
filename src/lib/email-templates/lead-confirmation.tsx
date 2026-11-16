@@ -16,10 +16,9 @@ interface Props {
   company?: string;
   reference?: string;
   message?: string;
-  responseMins?: number;
 }
 
-const Email = ({ name, company, reference, message, responseMins }: Props) => (
+const Email = ({ name, company, reference, message }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
     <Preview>Your enquiry has been sent{company ? ` to ${company}` : ""}</Preview>
@@ -30,8 +29,8 @@ const Email = ({ name, company, reference, message, responseMins }: Props) => (
         <Text style={text}>{name ? `Hi ${name},` : "Hi there,"}</Text>
         <Text style={text}>
           We've passed your job details to{" "}
-          <strong>{company ?? "the firm you contacted"}</strong>. They typically
-          reply within {responseMins ?? 60} minutes during working hours.
+          <strong>{company ?? "the firm you contacted"}</strong>. They can reply
+          using the contact details you provided.
         </Text>
         {reference ? (
           <Text style={refBox}>Your reference: {reference}</Text>
@@ -44,9 +43,8 @@ const Email = ({ name, company, reference, message, responseMins }: Props) => (
         ) : null}
         <Hr style={rule} />
         <Text style={small}>
-          Every firm on TradesmanFinder is identity-, insurance- and
-          trade-checked before it can receive enquiries. If anything feels off,
-          reply to this email and we'll step in.
+          Firms must complete ID and insurance checks before they can quote.
+          If anything feels off, reply to this email and we'll step in.
         </Text>
       </Container>
     </Body>
@@ -56,14 +54,13 @@ const Email = ({ name, company, reference, message, responseMins }: Props) => (
 export const template = {
   component: Email,
   subject: (data: Record<string, unknown>) =>
-    `Your enquiry to ${(data['company'] as string) ?? "a vetted firm"} — TradesmanFinder`,
+    `Your enquiry to ${(data['company'] as string) ?? "a local firm"} — TradesmanFinder`,
   displayName: "Lead — homeowner confirmation",
   previewData: {
     name: "Jane",
     company: "Webb & Sons Building",
     reference: "TFL-4B2C9A11",
     message: "Rear extension, roughly 20 sqm, hoping to start in the spring.",
-    responseMins: 45,
   },
 } satisfies TemplateEntry;
 

@@ -19,7 +19,10 @@
 
 ## Trust & legal
 - [x] Footer: Local Services Pro Ltd, company no. 12126782, 38 Bloomfield Road, London SE18 7JH, ICO 00015543780
-- [ ] Review vetting/verification claims for ASA/CMA accuracy
+- [x] Owner-approved trust cleanup: hide 34 invented firms, remove Steve Test Builders, and mark four real firms as vetting in progress
+- [x] Replace unverified counts, vetting, response-time and review claims across public pages and metadata
+- [x] Add regression checks for hidden firms and zero-review ratings
+- [x] Review vetting/verification claims for ASA/CMA accuracy
 - [ ] Privacy Policy + Terms GDPR review
 
 ## SEO

@@ -15,7 +15,7 @@ export function organizationSchema() {
     url: `${SITE_URL}/`,
     logo: `${SITE_URL}/favicon.ico`,
     description:
-      "TradesmanFinder connects UK homeowners with vetted local tradespeople and free, no-obligation quotes.",
+      "TradesmanFinder is onboarding UK local trades. Every firm is ID-checked and its insurance confirmed before it can quote.",
     areaServed: { "@type": "Country", name: "United Kingdom" },
   };
 }

@@ -49,7 +49,7 @@ const Email = ({
           <Text style={text}>{name ? `Hi ${name},` : "Hi there,"}</Text>
           <Text style={text}>
             {live
-              ? `“${projectTitle ?? "Your project"}” has passed review and vetted firms in your area can now apply.`
+              ? `“${projectTitle ?? "Your project"}” has passed review and approved firms in your area can now apply.`
               : `“${projectTitle ?? "Your project"}” didn't pass review, so it hasn't gone on the board.`}
           </Text>
           {reviewerNote ? (
@@ -66,8 +66,8 @@ const Email = ({
           ) : null}
           <Hr style={rule} />
           <Text style={small}>
-            Only identity-, insurance- and trade-checked firms can see and apply
-            to postings on TradesmanFinder.
+            Firms must complete ID and insurance checks before they can quote
+            on postings through TradesmanFinder.
           </Text>
         </Container>
       </Body>

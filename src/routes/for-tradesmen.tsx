@@ -71,27 +71,27 @@ const perks = [
   },
   {
     icon: ShieldCheck,
-    title: "Reviews you own",
-    body: "Your review history and verified checks live on a profile you can link to from anywhere.",
+    title: "A clear public profile",
+    body: "Your vetting status is shown plainly. Reviews will only come from customers who've had work done through TradesmanFinder.",
   },
 ];
 
 const verificationSteps = [
   {
     title: "Identity",
-    body: "Photo ID matched against the name on the account. Takes about two minutes.",
+    body: "We ask for photo ID and match it against the name on the account before approval.",
   },
   {
     title: "Public liability",
-    body: "Upload your certificate and we check the cover level and expiry date. We'll nudge you before it lapses.",
+    body: "Upload your certificate so we can check the cover level and expiry date before approval.",
   },
   {
     title: "Trade credentials",
-    body: "Gas Safe, NICEIC, FENSA and the rest — we verify the registration number against the scheme.",
+    body: "Where your trade requires registration, we ask for the relevant scheme details and evidence before approval.",
   },
   {
     title: "Company checks",
-    body: "Companies House status and trading address, where you trade as a limited company.",
+    body: "We ask for your Companies House number and trading address where you trade as a limited company.",
   },
 ];
 
@@ -122,7 +122,7 @@ function ForTradesmen() {
       <PageHero
         eyebrow="For tradesmen"
         title="Leads that are worth answering."
-        sub="A flat monthly membership, a cap of three quotes per job, and homeowners who already know what they want. Live now across Greater London, Kent and Surrey."
+        sub="A flat monthly membership and a cap of three quotes per job. We're onboarding local trades now, with ID and insurance checks required before quoting."
         image={heroForTradesmen}
         imageAlt="A tradesman checking his phone beside his van at sunrise"
         focal="55% 40%"
@@ -166,8 +166,8 @@ function ForTradesmen() {
       <Section id="verification" className="border-y border-border bg-surface">
         <SectionHead
           eyebrow="Verification"
-          title="Badges you have to earn."
-          sub="Every badge on a TradesmanFinder profile is backed by a document we've actually looked at. Homeowners can see what was checked and when."
+          title="Checks before you can quote."
+          sub="We're onboarding firms now. Your profile shows vetting in progress until the required ID and insurance checks are complete."
         />
         <ol className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {verificationSteps.map((s, i) => (
@@ -283,7 +283,7 @@ function ForTradesmen() {
               search={{ role: "trader" as const }}
               className="rounded-sm border border-border-strong px-6 py-3.5 font-display font-semibold hover:border-primary hover:text-primary"
             >
-              I'm outside London, Kent or Surrey
+              Join the waiting list for your area
             </Link>
           </div>
         </div>

@@ -197,7 +197,7 @@ function ConfirmWaitingList() {
             to="/areas"
             className="rounded-sm bg-primary px-6 py-3 font-display text-sm font-semibold text-primary-foreground shadow-ember hover:brightness-110"
           >
-            See where we're live
+            See onboarding areas
           </Link>
         </div>
       </div>
@@ -248,7 +248,7 @@ function Prefs({ token }: { token: string }) {
             className="mt-1 h-4 w-4 rounded-sm border-input accent-[var(--color-primary)]"
           />
           <span>
-            Email me the day my area goes live
+            Email me the day my area opens
             <span className="block text-muted-foreground">
               The one email you signed up for.
             </span>

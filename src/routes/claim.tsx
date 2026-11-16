@@ -31,9 +31,9 @@ export const Route = createFileRoute("/claim")({
       : {},
   loader: ({ context }) => context.queryClient.ensureQueryData(tradesQuery),
   head: () => {
-    const title = "Get certified — apply to list your firm | TradesmanFinder";
+    const title = "Apply to list your firm | TradesmanFinder";
     const description =
-      "Apply to be a checked TradesmanFinder firm: send your company details, insurance and trade accreditations once, and we verify them before you appear in search.";
+      "Apply to join TradesmanFinder. Send your company details, insurance and trade credentials; ID and insurance checks must be complete before you can quote.";
     return {
       meta: [
         { title },
@@ -53,7 +53,7 @@ export const Route = createFileRoute("/claim")({
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "For tradesmen", path: "/for-tradesmen" },
-            { name: "Get certified", path: "/claim" },
+            { name: "Apply for vetting", path: "/claim" },
           ]),
         ),
       ],
@@ -79,17 +79,17 @@ const promises = [
   {
     icon: FileCheck2,
     title: "One set of documents",
-    body: "Company details, insurance certificate and accreditation numbers. Send them once — we chase the issuing bodies, not you.",
+    body: "Company details, photo ID, insurance certificate and any required accreditation details for onboarding.",
   },
   {
     icon: ShieldCheck,
-    title: "Checked before you're listed",
-    body: "Nothing goes live on the strength of a subscription. Your profile publishes when the checks come back clean.",
+    title: "Checked before you quote",
+    body: "Your profile shows vetting in progress until your ID and insurance checks are complete.",
   },
   {
     icon: Clock,
-    title: "Re-checked, not checked once",
-    body: "We store every expiry date and re-verify on the anniversary. Badges drop off automatically if cover lapses.",
+    title: "Keep your details current",
+    body: "We ask for insurance and credential expiry dates so you can keep your approval details up to date.",
   },
 ];
 
@@ -172,9 +172,9 @@ function Claim() {
     <>
       <Section>
         <SectionHead
-          eyebrow={plan ? `Apply — ${plan} plan` : "Get certified"}
-          title="Apply to be a checked firm."
-          sub="We don't sell listings. Send the paperwork, we verify it with the people who issued it, and your profile goes live once it checks out."
+          eyebrow={plan ? `Apply — ${plan} plan` : "Apply for vetting"}
+          title="Apply to list your firm."
+          sub="Send your onboarding paperwork. Your profile shows vetting in progress until your ID and insurance checks are complete."
         />
 
         <div className="mt-10 grid gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-3">

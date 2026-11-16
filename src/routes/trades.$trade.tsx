@@ -9,7 +9,6 @@ import { ProjectGallery } from "@/components/project-gallery";
 import {
   tradesQuery,
   prosQuery,
-  availabilityLabels,
   fetchTradeHeroImage,
   tradeProjectsQuery,
   type Trade,
@@ -81,7 +80,7 @@ export const Route = createFileRoute("/trades/$trade")({
     }
     const { trade, origin } = loaderData;
     const title = `Find a local ${trade.name.toLowerCase()} | TradesmanFinder`;
-    const description = `${trade.blurb} Compare vetted ${trade.name.toLowerCase()}s near you. Typical cost ${trade.typical_cost}.`;
+    const description = `${trade.blurb} Browse local ${trade.name.toLowerCase()}s joining TradesmanFinder. Typical cost ${trade.typical_cost}.`;
     const base = origin ?? "";
     const image =
       origin && hasTradeOgImage(trade.slug)
@@ -139,13 +138,6 @@ function TradePage() {
   );
   const { data: tradeProjects } = useQuery(tradeProjectsQuery(trade.slug));
 
-  const available = matches.filter((p) => p.availability === "immediate").length;
-  const avg = matches.length
-    ? Math.round(
-        matches.reduce((a, p) => a + p.response_mins, 0) / matches.length,
-      )
-    : 0;
-
   const copy = tradeHeroCopy(trade.slug, {
     trade: trade.name,
     tradePlural: `${trade.name}s`,
@@ -192,15 +184,9 @@ function TradePage() {
             )}
           </div>
           <div>
-            <dt className="eyebrow">{copy.stats.available}</dt>
+            <dt className="eyebrow">Directory status</dt>
             <dd className="mt-1 font-display text-xl text-primary">
-              {available} pro{available === 1 ? "" : "s"}
-            </dd>
-          </div>
-          <div>
-            <dt className="eyebrow">{copy.stats.response}</dt>
-            <dd className="mt-1 font-display text-xl">
-              {avg ? `~${avg} min` : "—"}
+              Vetting in progress
             </dd>
           </div>
         </dl>
@@ -220,10 +206,7 @@ function TradePage() {
 
 
         <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
-          <p className="eyebrow">
-            {matches.length} {trade.name.toLowerCase()}
-            {matches.length === 1 ? "" : "s"} matching
-          </p>
+          <p className="eyebrow">Firms in this trade</p>
           <SaveSearchButton
             label={`${trade.name}${search.area ? ` in ${search.area}` : ""}`}
             tradeSlug={trade.slug}
@@ -240,10 +223,15 @@ function TradePage() {
           </div>
         ) : (
           <div className="mt-6 rounded-md border border-border bg-card p-8">
-            <h2 className="text-2xl">Nothing matches those filters</h2>
+            <h2 className="text-2xl">
+              {search.area || search.budget || search.availability || search.q
+                ? "Nothing matches those filters"
+                : "We're onboarding firms in this area"}
+            </h2>
             <p className="mt-3 max-w-lg text-muted-foreground">
-              Widen the area, budget or availability — or describe the job and
-              let vetted {trade.name.toLowerCase()}s come to you.
+              {search.area || search.budget || search.availability || search.q
+                ? "Widen the area or budget, or post your job and we'll match you as soon as a firm is approved."
+                : "We're onboarding firms in this area — post your job and we'll match you as soon as one is approved."}
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Link
@@ -266,20 +254,19 @@ function TradePage() {
         )}
 
         <p className="mt-10 text-sm text-muted-foreground">
-          Availability shown is what each firm last confirmed:{" "}
-          {Object.values(availabilityLabels).join(", ").toLowerCase()}.
+          Every listed firm is marked vetting in progress until its ID and
+          insurance checks are complete.
         </p>
 
         <div className="mt-12 grid gap-8 border-t border-border pt-12 lg:grid-cols-2">
           <div>
-            <p className="eyebrow">Outside our live areas?</p>
+            <p className="eyebrow">Outside our onboarding areas?</p>
             <h2 className="mt-3 text-2xl leading-tight sm:text-3xl">
               Tell us where you need a {trade.name.toLowerCase()}.
             </h2>
             <p className="mt-3 leading-relaxed text-muted-foreground">
-              We're live across Greater London, Kent and Surrey. Leave your
-              postcode and we'll email you the day we have vetted{" "}
-              {trade.name.toLowerCase()}s covering it — you can{" "}
+              Leave your postcode and we'll email you when an approved{" "}
+              {trade.name.toLowerCase()} joins your area — you can{" "}
               <Link
                 to="/coverage"
                 className="font-medium text-primary underline underline-offset-2"

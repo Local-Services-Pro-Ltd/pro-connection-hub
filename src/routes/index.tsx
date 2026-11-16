@@ -11,7 +11,6 @@ import {
   featuredProsQuery,
   statsQuery,
   latestReviewsQuery,
-  proCountsQuery,
 } from "@/lib/queries";
 import { getRequestOrigin } from "@/lib/origin.functions";
 import { usePrefersReducedMotion } from "@/hooks/use-reduced-motion";
@@ -21,21 +20,20 @@ import heroPoster from "@/assets/hero-poster.jpg";
 export const Route = createFileRoute("/")({
   loader: async ({ context }) => {
     const qc = context.queryClient;
-    const [, , , , , , origin] = await Promise.all([
+    const [, , , , , origin] = await Promise.all([
       qc.ensureQueryData(tradesQuery),
       qc.ensureQueryData(areasQuery),
       qc.ensureQueryData(featuredProsQuery),
       qc.ensureQueryData(statsQuery),
       qc.ensureQueryData(latestReviewsQuery),
-      qc.ensureQueryData(proCountsQuery),
       getRequestOrigin(),
     ]);
     return { origin };
   },
   head: ({ loaderData }) => {
-    const title = "TradesmanFinder — Find a vetted local tradesman in the UK";
+    const title = "TradesmanFinder — Find a qualified local tradesman";
     const description =
-      "Post your job for free and compare quotes from vetted builders, plumbers, electricians, roofers and more near you. No obligation, real reviews.";
+      "Post your job free and we'll match you with local trades as they join — ID-checked and insured before they can quote.";
     const base = loaderData?.origin ?? "";
     const image = loaderData?.origin
       ? `${loaderData.origin}/og/home.jpg`
@@ -46,7 +44,7 @@ export const Route = createFileRoute("/")({
         { name: "description", content: description },
         {
           property: "og:title",
-          content: "Find a vetted local tradesman — TradesmanFinder",
+          content: "Find a qualified local tradesman — TradesmanFinder",
         },
         { property: "og:description", content: description },
         { property: "og:type", content: "website" },
@@ -54,7 +52,7 @@ export const Route = createFileRoute("/")({
         { name: "twitter:card", content: "summary_large_image" },
         {
           name: "twitter:title",
-          content: "Find a vetted local tradesman — TradesmanFinder",
+          content: "Find a qualified local tradesman — TradesmanFinder",
         },
         { name: "twitter:description", content: description },
         ...(image
@@ -105,12 +103,12 @@ const steps = [
   {
     n: "02",
     title: "Get up to 3 quotes",
-    body: "We match you with vetted local trades who are actually available for the dates you want.",
+    body: "We match you with local trades as they join. Every firm is ID-checked and its insurance confirmed before it can quote.",
   },
   {
     n: "03",
     title: "Hire on the evidence",
-    body: "Compare price, availability and written reviews from real jobs. Then leave one of your own.",
+    body: "Compare services, experience and reviews from customers who've had work done through TradesmanFinder.",
   },
 ];
 
@@ -120,17 +118,12 @@ function Home() {
   const { data: featuredPros } = useSuspenseQuery(featuredProsQuery);
   const { data: stats } = useSuspenseQuery(statsQuery);
   const { data: reviews } = useSuspenseQuery(latestReviewsQuery);
-  const { data: counts } = useSuspenseQuery(proCountsQuery);
   const reducedMotion = usePrefersReducedMotion();
 
   const ledger = [
-    // Same source as the coverage map and the trade/area pages.
-    { value: String(counts.total), label: "Verified tradesmen" },
-    { value: String(stats.trades), label: "Trades covered" },
-    {
-      value: stats.avgResponse ? `${stats.avgResponse} min` : "—",
-      label: "Average response",
-    },
+    { value: String(stats.trades), label: "Trades listed" },
+    { value: "Up to 3", label: "Quotes per job" },
+    { value: "£0", label: "To post a job" },
     { value: String(stats.reviews), label: "Customer reviews" },
   ];
 
@@ -171,14 +164,14 @@ function Home() {
 
 
         <div className="relative mx-auto flex min-h-[88vh] max-w-7xl flex-col justify-center px-5 py-24 lg:px-8">
-          <p className="eyebrow hero-ink-muted">Vetted UK trades</p>
+          <p className="eyebrow hero-ink-muted">Local trades, carefully onboarded</p>
           <h1 className="mt-4 max-w-3xl hero-ink text-5xl leading-[1.05] sm:text-6xl lg:text-7xl">
             Find a qualified local tradesman{" "}
             <span className="ember-text">who delivers.</span>
           </h1>
           <p className="mt-6 max-w-lg text-lg leading-relaxed hero-ink-muted">
-            Post your job free and get quotes from ID-checked builders,
-            plumbers and electricians in your area — usually within hours.
+            Post your job free and we'll match you with local trades as they
+            join — ID-checked and insured before they can quote.
           </p>
 
           <div className="mt-9 max-w-3xl">
@@ -217,7 +210,7 @@ function Home() {
         <SectionHead
           eyebrow="Browse by trade"
           title="Every trade, checked the same way."
-          sub="Every firm on the network is ID-verified, insured and holds the certification their trade requires."
+          sub="We're onboarding local trades now. Every firm is ID-checked and its insurance confirmed before it can quote."
           aside={
             <Link
               to="/trades"
@@ -246,7 +239,7 @@ function Home() {
                 </p>
               </div>
               <p className="font-display text-xs uppercase tracking-widest text-primary">
-                {counts.byTrade[t.slug] ?? 0} local pros
+                Now onboarding
               </p>
             </Link>
           ))}
@@ -303,7 +296,16 @@ function Home() {
 
       {/* Reviews */}
       <Section className="border-y border-border bg-surface">
-        <SectionHead eyebrow="Reviews" title="Written by people who paid." />
+        <SectionHead
+          eyebrow="Reviews"
+          title="Reviews will only come from customers who've had work done through TradesmanFinder."
+        />
+        {reviews.length === 0 ? (
+          <p className="mt-8 rounded-md border border-border bg-card p-8 text-muted-foreground">
+            No customer reviews yet. They'll appear here after work completed
+            through TradesmanFinder has been reviewed.
+          </p>
+        ) : (
         <div className="mt-10 grid gap-px overflow-hidden rounded-md border border-border bg-border lg:grid-cols-3">
           {reviews.slice(0, 3).map((r) => (
             <figure key={r.id} className="flex flex-col bg-card p-8">
@@ -324,14 +326,15 @@ function Home() {
             </figure>
           ))}
         </div>
+        )}
       </Section>
 
       {/* Areas + CTA */}
       <Section>
         <SectionHead
           eyebrow="Areas"
-          title="Live in London, Kent and Surrey."
-          sub="We're opening one area at a time so every postcode has enough vetted trades to answer the jobs in it. More of the South East is next."
+          title="Local trades are joining area by area."
+          sub="We're onboarding firms gradually and checking their ID and insurance before they can quote. Join the waiting list to hear when your area opens."
           aside={
             <Link
               to="/areas"
@@ -351,9 +354,7 @@ function Home() {
                 className="rounded-sm border border-primary/40 bg-primary/8 px-4 py-2 text-sm text-foreground transition-colors hover:border-primary hover:text-primary"
               >
                 {a.name}
-                <span className="ml-2 text-xs text-primary">
-                  {counts.byArea[a.slug] ?? 0} pros
-                </span>
+                <span className="ml-2 text-xs text-primary">Now onboarding</span>
               </Link>
             ))}
           {areas
@@ -384,8 +385,8 @@ function Home() {
                 Got a job that needs doing?
               </h2>
               <p className="mt-4 text-muted-foreground">
-                Post it in two minutes. You'll hear back from up to three local
-                trades, usually the same day.
+                Post it in two minutes. We'll match you with up to three local
+                trades as they join and complete their checks.
               </p>
             </div>
             <Link

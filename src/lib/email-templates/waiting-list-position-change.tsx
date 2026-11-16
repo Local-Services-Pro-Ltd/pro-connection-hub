@@ -52,7 +52,7 @@ const Email = ({
           </Heading>
           <Text style={text}>{name ? `Hi ${name},` : "Hi there,"}</Text>
           <Text style={text}>
-            {`Now that ${where} is live we're working through the queue in order. You're currently number ${queuePosition ?? "—"}`}
+            {`Now that ${where} is onboarding we're working through the queue in order. You're currently number ${queuePosition ?? "—"}`}
             {typeof previousPosition === "number"
               ? ` (you were ${previousPosition})`
               : ""}
@@ -61,7 +61,7 @@ const Email = ({
           <Text style={text}>
             {isTrader
               ? "Finish your profile now so you're ready when the first local jobs land."
-              : "You can post your job whenever you're ready — vetted local trades will come back to you."}
+              : "You can post your job whenever you're ready — we'll match you as approved local trades join."}
           </Text>
           {actionUrl ? (
             <Button style={button} href={actionUrl}>

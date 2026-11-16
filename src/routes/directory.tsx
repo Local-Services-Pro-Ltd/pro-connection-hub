@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { PageHero, Section } from "@/components/layout-bits";
 import { ProCard } from "@/components/pro-card";
+import { WaitingListInline } from "@/components/waiting-list-inline";
 import { directoryQuery, tradesQuery, type Pro } from "@/lib/queries";
 
 export const Route = createFileRoute("/directory")({
@@ -13,19 +14,17 @@ export const Route = createFileRoute("/directory")({
   },
   head: () => ({
     meta: [
-      {
-        title: "Firm directory — vetted tradesmen by trade | TradesmanFinder",
-      },
+      { title: "Firm directory — local trades by trade | TradesmanFinder" },
       {
         name: "description",
         content:
-          "Browse every vetted firm on TradesmanFinder by trade, with photos, ratings and reviews across Greater London, Kent and Surrey.",
+          "Browse local firms joining TradesmanFinder. Every firm is ID-checked and its insurance confirmed before it can quote.",
       },
       { property: "og:title", content: "Firm directory — TradesmanFinder" },
       {
         property: "og:description",
         content:
-          "Every vetted firm on TradesmanFinder, grouped by trade with photos and reviews.",
+          "Local firms grouped by trade, with vetting status shown clearly on every profile.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -50,40 +49,37 @@ function Directory() {
     .map((trade) => ({ trade, firms: byTrade.get(trade.slug) ?? [] }))
     .filter((g) => g.firms.length > 0);
 
-  const realCount = pros.filter((p) => !p.is_demo).length;
-  const exampleCount = pros.length - realCount;
-
   return (
     <>
       <PageHero
         eyebrow="Directory"
         title="Every firm listed on TradesmanFinder"
-        sub="Firms grouped by trade, with their photos, ratings and reviews. Listings marked “Example listing” are illustrative entries we use while the first firms complete vetting."
+        sub="We're onboarding local trades now. Listed firms are marked vetting in progress until their ID and insurance checks are complete."
       />
 
       <Section>
-        <div className="flex flex-wrap gap-x-8 gap-y-2 border-b border-border pb-6 text-sm text-muted-foreground">
-          <span>
-            <strong className="text-foreground">{realCount}</strong> vetted firms
-          </span>
-          <span>
-            <strong className="text-foreground">{exampleCount}</strong> example
-            listings
-          </span>
-          <span>
-            <strong className="text-foreground">{groups.length}</strong> trades
-            covered
-          </span>
-        </div>
+        <p className="border-b border-border pb-6 text-sm text-muted-foreground">
+          Firms must complete their ID and insurance checks before they can quote.
+        </p>
 
         {groups.length === 0 ? (
-          <p className="py-12 text-muted-foreground">
-            No firms are listed yet.{" "}
-            <Link to="/claim" className="text-primary underline">
-              Claim your listing
-            </Link>{" "}
-            to be one of the first.
-          </p>
+          <div className="mt-10 rounded-md border border-border bg-card p-8">
+            <h2 className="text-2xl">We're onboarding firms in this area</h2>
+            <p className="mt-3 max-w-xl text-muted-foreground">
+              We're onboarding firms in this area — post your job and we'll
+              match you as soon as one is approved.
+            </p>
+            <Link
+              to="/post-job"
+              search={{}}
+              className="mt-6 inline-flex rounded-sm bg-primary px-5 py-3 font-display text-sm font-semibold text-primary-foreground shadow-ember hover:brightness-110"
+            >
+              Post your job — free
+            </Link>
+            <div className="mt-8">
+              <WaitingListInline source="directory_empty" />
+            </div>
+          </div>
         ) : (
           <div className="mt-10 space-y-14">
             {groups.map(({ trade, firms }) => (

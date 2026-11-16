@@ -1,7 +1,7 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { SlidersHorizontal, X } from "lucide-react";
-import { areasQuery, budgetBands, availabilityLabels } from "@/lib/queries";
+import { areasQuery, budgetBands } from "@/lib/queries";
 
 const control =
   "rounded-sm border border-border bg-card px-3 py-2.5 text-sm text-foreground outline-none transition-colors focus:border-primary";
@@ -34,7 +34,7 @@ export function ProFiltersBar() {
         <span className="eyebrow !mb-0">Filter results</span>
       </div>
 
-      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <label className="block">
           <span className="sr-only">Keyword</span>
           <input
@@ -84,24 +84,6 @@ export function ProFiltersBar() {
         </label>
 
         <label className="block">
-          <span className="sr-only">Availability</span>
-          <select
-            value={search["availability"] ?? "any"}
-            onChange={(e) =>
-              set("availability", e.target.value === "any" ? "" : e.target.value)
-            }
-            className={`${control} w-full`}
-          >
-            <option value="any">Any availability</option>
-            {Object.entries(availabilityLabels).map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <label className="block">
           <span className="sr-only">Sort by</span>
           <select
             value={search["sort"] ?? "rating"}
@@ -110,7 +92,6 @@ export function ProFiltersBar() {
           >
             <option value="rating">Highest rated</option>
             <option value="reviews">Most reviewed</option>
-            <option value="response">Fastest to reply</option>
             <option value="experience">Most experienced</option>
           </select>
         </label>

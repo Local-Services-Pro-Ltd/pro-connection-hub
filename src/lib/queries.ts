@@ -93,7 +93,7 @@ export const planVisibilityQuery = queryOptions({
 });
 
 
-/** Live counts of published pros per trade slug and per area slug. */
+/** Internal counts of published pros per trade slug and per area slug. */
 export const proCountsQuery = queryOptions({
   queryKey: ["pro-counts"],
   queryFn: async () => {
@@ -174,7 +174,12 @@ export function proQuery(id: string) {
     queryKey: ["pro", id],
     queryFn: async () => {
       const [pro, credentials, reviews] = await Promise.all([
-        supabase.from("pros").select(PUBLIC_PRO_COLUMNS).eq("id", id).maybeSingle(),
+        supabase
+          .from("pros")
+          .select(PUBLIC_PRO_COLUMNS)
+          .eq("id", id)
+          .eq("published", true)
+          .maybeSingle(),
         supabase
           .from("pro_credentials")
           .select("*")
@@ -236,23 +241,13 @@ export const latestReviewsQuery = queryOptions({
 export const statsQuery = queryOptions({
   queryKey: ["stats"],
   queryFn: async () => {
-    const [pros, reviews, jobs] = await Promise.all([
-      supabase
-        .from("pros")
-        .select("response_mins", { count: "exact" })
-        .eq("published", true),
+    const [reviews, jobs] = await Promise.all([
       supabase.from("reviews_public").select("id", { count: "exact", head: true }),
       supabase.from("trades").select("slug", { count: "exact", head: true }),
     ]);
-    const mins = (pros.data ?? []).map((p) => p.response_mins);
-    const avg = mins.length
-      ? Math.round(mins.reduce((a, b) => a + b, 0) / mins.length)
-      : 0;
     return {
-      pros: pros.count ?? 0,
       reviews: reviews.count ?? 0,
       trades: jobs.count ?? 0,
-      avgResponse: avg,
     };
   },
   staleTime: 5 * 60_000,
@@ -576,9 +571,10 @@ export function tradeProjectsQuery(trade: string) {
       unwrap(
         await supabase
           .from("pro_projects")
-          .select("*")
+          .select("*, pros!inner(published)")
           .eq("trade_slug", trade)
           .eq("published", true)
+          .eq("pros.published", true)
           .order("created_at", { ascending: false })
           .limit(6),
       ) as ProProject[],
@@ -647,7 +643,7 @@ export type MatchedPro = {
   reason: string;
 };
 
-/** Server-side matching: the three best-fitting vetted pros for a job. */
+/** Server-side matching: the three best-fitting published firms for a job. */
 export async function matchPros(args: {
   trade: string;
   postcode?: string | undefined;
@@ -1079,7 +1075,7 @@ export function firmApplicationsQuery(proId: string | undefined) {
 
 /**
  * Whole published directory for /directory — every firm with its trade, area,
- * rating and review count, newest verified firms first.
+ * rating and review count. Unpublished test listings are never returned.
  */
 export const directoryQuery = queryOptions({
   queryKey: ["directory"],
