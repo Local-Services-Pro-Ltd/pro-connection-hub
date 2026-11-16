@@ -1892,17 +1892,31 @@ export type Database = {
         Args: { p_body: string; p_question_id: string }
         Returns: string
       }
-      apply_to_project: {
-        Args: {
-          p_available_from?: string
-          p_message: string
-          p_pro_id: string
-          p_project_id: string
-          p_quote_high?: number
-          p_quote_low?: number
-        }
-        Returns: Json
-      }
+      apply_to_project:
+        | {
+            Args: {
+              p_available_from?: string
+              p_message: string
+              p_pro_id: string
+              p_project_id: string
+              p_quote_high?: number
+              p_quote_low?: number
+            }
+            Returns: Json
+          }
+        | {
+            Args: {
+              p_available_from?: string
+              p_message: string
+              p_onboarding_free: boolean
+              p_pro_id: string
+              p_project_id: string
+              p_quote_high?: number
+              p_quote_low?: number
+              p_user_id: string
+            }
+            Returns: Json
+          }
       ask_question: {
         Args: {
           p_area?: string
@@ -1950,32 +1964,60 @@ export type Database = {
         Args: { p_id: string }
         Returns: undefined
       }
-      match_pros: {
-        Args: {
-          p_budget?: string
-          p_job_id?: string
-          p_limit?: number
-          p_postcode?: string
-          p_trade: string
-        }
-        Returns: {
-          area: string
-          availability: Database["public"]["Enums"]["availability"]
-          company: string
-          day_rate: number
-          match_score: number
-          name: string
-          photo: number
-          pro_id: string
-          rating: number
-          reason: string
-          response_mins: number
-          review_count: number
-          trade_slug: string
-          trust_score: number
-          years: number
-        }[]
-      }
+      match_pros:
+        | {
+            Args: {
+              p_budget?: string
+              p_job_id?: string
+              p_limit?: number
+              p_postcode?: string
+              p_trade: string
+            }
+            Returns: {
+              area: string
+              availability: Database["public"]["Enums"]["availability"]
+              company: string
+              day_rate: number
+              match_score: number
+              name: string
+              photo: number
+              pro_id: string
+              rating: number
+              reason: string
+              response_mins: number
+              review_count: number
+              trade_slug: string
+              trust_score: number
+              years: number
+            }[]
+          }
+        | {
+            Args: {
+              p_budget?: string
+              p_job_id?: string
+              p_limit?: number
+              p_onboarding_free?: boolean
+              p_postcode?: string
+              p_trade: string
+            }
+            Returns: {
+              area: string
+              availability: Database["public"]["Enums"]["availability"]
+              company: string
+              day_rate: number
+              match_score: number
+              name: string
+              photo: number
+              pro_id: string
+              rating: number
+              reason: string
+              response_mins: number
+              review_count: number
+              trade_slug: string
+              trust_score: number
+              years: number
+            }[]
+          }
       pro_application_id_for_token: {
         Args: { p_token: string }
         Returns: string
@@ -1994,6 +2036,17 @@ export type Database = {
         Args: { p_pro_id: string }
         Returns: {
           slot_start: string
+        }[]
+      }
+      pro_plan_entitlements: {
+        Args: { p_onboarding_free?: boolean; p_pro_id: string }
+        Returns: {
+          has_access: boolean
+          matched_job_limit: number
+          photo_portfolio: boolean
+          postcode_area_limit: number
+          priority_ranking: boolean
+          trade_category_limit: number
         }[]
       }
       project_application_counts: {

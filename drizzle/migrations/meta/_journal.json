@@ -295,6 +295,20 @@
       "when": 1794807629054,
       "tag": "0041_security_hardening_review",
       "breakpoints": true
+    },
+    {
+      "idx": 42,
+      "version": "7",
+      "when": 1794809158763,
+      "tag": "0042_enforce_free_onboarding_trade_entitlements",
+      "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "7",
+      "when": 1794809278143,
+      "tag": "0043_restrict_matching_to_server_plan_enforcement",
+      "breakpoints": true
     }
   ]
 }

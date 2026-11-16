@@ -100,10 +100,10 @@ for trade in trades:
     response = requests.post(
         f"{REST}/rpc/match_pros",
         headers=H,
-        json={"p_trade": trade, "p_limit": 100},
+        json={"p_trade": trade, "p_limit": 100, "p_onboarding_free": True},
         timeout=20,
     )
-    check(f"matching loads for {trade}", response.status_code == 200, f"{response.status_code} {response.text[:120]}")
+    check(f"public matching RPC is server-only for {trade}", response.status_code in (401, 403, 404), f"{response.status_code} {response.text[:120]}")
     if response.status_code == 200:
         matched_ids.update(row["pro_id"] for row in response.json())
 check("matching contains no invented firms", matched_ids.isdisjoint(INVENTED), str(matched_ids & INVENTED))

@@ -1,6 +1,7 @@
 import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
+import { matchPublicPros } from "@/lib/matching.functions";
 import {
   adminListPros,
   adminListProjects,
@@ -662,15 +663,15 @@ export async function matchPros(args: {
   jobId?: string | undefined;
   limit?: number;
 }): Promise<MatchedPro[]> {
-  const { data, error } = await supabase.rpc("match_pros", {
-    p_trade: args.trade,
-    p_limit: args.limit ?? 3,
-    ...(args.postcode ? { p_postcode: args.postcode } : {}),
-    ...(args.budget ? { p_budget: args.budget } : {}),
-    ...(args.jobId ? { p_job_id: args.jobId } : {}),
-  });
-  if (error) throw error;
-  return (data ?? []) as MatchedPro[];
+  return (await matchPublicPros({
+    data: {
+      trade: args.trade,
+      limit: args.limit ?? 3,
+      postcode: args.postcode,
+      budget: args.budget,
+      jobId: args.jobId,
+    },
+  })) as MatchedPro[];
 }
 
 export type ProAvailability =

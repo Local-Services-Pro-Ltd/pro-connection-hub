@@ -9,6 +9,13 @@
 - [x] Warmer empty states; 4 labelled example questions seeded (reviews left unseeded — real jobs only)
 - [x] Nav audit — all main links return a real page
 
+## Free onboarding
+- [x] One shared onboarding flag disables checkout and preserves dormant billing code
+- [x] Approved firms receive Trade-tier access in app and database enforcement
+- [x] Pricing, dashboard founding status, and trader terms explain free onboarding
+- [x] Regression tests cover checkout isolation, Trade limits, and pricing wording
+- [ ] Owner/solicitor review of the new Free onboarding period trader terms
+
 ## Functional completeness
 - [ ] Confirm Post a job submits + confirmation screen and email
 - [ ] Confirm sign-in / sign-up works for homeowners and tradespeople

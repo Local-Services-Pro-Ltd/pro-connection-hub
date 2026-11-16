@@ -5,6 +5,7 @@ import { PageHero, Section, SectionHead } from "@/components/layout-bits";
 import { useAuth } from "@/hooks/use-auth";
 import { getRequestOrigin } from "@/lib/origin.functions";
 import { plansQuery, planVisibilityQuery } from "@/lib/queries";
+import { ONBOARDING_FREE } from "@/lib/onboarding";
 import heroForTradesmen from "@/assets/hero-for-tradesmen.jpg";
 
 export const Route = createFileRoute("/for-tradesmen")({
@@ -17,10 +18,12 @@ export const Route = createFileRoute("/for-tradesmen")({
     return { origin };
   },
   head: ({ loaderData }) => {
-    const title =
-      "Join as a tradesman — real leads, no lead fees | TradesmanFinder";
-    const description =
-      "Get matched to homeowners in Greater London, Kent and Surrey. One flat monthly membership, no per-lead charges, no bidding wars.";
+    const title = ONBOARDING_FREE
+      ? "Free for trades while we onboard | TradesmanFinder"
+      : "Join as a tradesman — real leads, no lead fees | TradesmanFinder";
+    const description = ONBOARDING_FREE
+      ? "Free while we onboard trades — no card needed. Approved firms get Trade-tier features, with founding-firm discounts when charging starts."
+      : "Get matched to homeowners in Greater London, Kent and Surrey. One flat monthly membership, no per-lead charges, no bidding wars.";
     const base = loaderData?.origin ?? "";
     const image = loaderData?.origin
       ? `${loaderData.origin}/og/for-tradesmen.jpg`
@@ -57,7 +60,7 @@ const perks = [
   {
     icon: Star,
     title: "No pay-per-lead",
-    body: "One flat monthly fee. You're never charged for a job you didn't win, or a caller who never picks up.",
+    body: "Free while we onboard, with no card needed. After onboarding, one flat monthly fee — never a charge for a job you didn't win.",
   },
   {
     icon: Users,
@@ -109,20 +112,24 @@ function ForTradesmen() {
 
   // Display-only filter. Hidden tiers stay in the database and remain
   // reachable via /signin?plan=<slug> so existing links keep working.
-  const tiers = allTiers.filter((t) => {
-    const flag = visibility[t.slug];
-    if (typeof flag === "boolean") return flag;
-    // Hidden tiers are not returned to visitors at all.
-    if (Object.keys(visibility).length > 0) return false;
-    return DEFAULT_VISIBILITY[t.slug] ?? t.visible;
-  });
+  const tiers = ONBOARDING_FREE
+    ? allTiers
+    : allTiers.filter((t) => {
+        const flag = visibility[t.slug];
+        if (typeof flag === "boolean") return flag;
+        // Hidden tiers are not returned to visitors at all.
+        if (Object.keys(visibility).length > 0) return false;
+        return DEFAULT_VISIBILITY[t.slug] ?? t.visible;
+      });
 
   return (
     <>
       <PageHero
         eyebrow="For tradesmen"
-        title="Leads that are worth answering."
-        sub="A flat monthly membership and a cap of three quotes per job. We're onboarding local trades now, with ID and insurance checks required before quoting."
+        title={ONBOARDING_FREE ? "Free while we onboard trades — no card needed." : "Leads that are worth answering."}
+        sub={ONBOARDING_FREE
+          ? "Approved firms get Trade-tier features free during onboarding, with a cap of three quotes per job and no per-lead charges."
+          : "A flat monthly membership and a cap of three quotes per job. We're onboarding local trades now, with ID and insurance checks required before quoting."}
         image={heroForTradesmen}
         imageAlt="A tradesman checking his phone beside his van at sunrise"
         focal="55% 40%"
@@ -189,10 +196,17 @@ function ForTradesmen() {
 
       <Section id="pricing">
         <SectionHead
-          eyebrow="Membership"
-          title="One price. Cancel any month."
-          sub="No commission on work won, no charge per enquiry, no minimum term."
+          eyebrow={ONBOARDING_FREE ? "Prices after onboarding" : "Membership"}
+          title={ONBOARDING_FREE ? "Free now. Clear prices later." : "One price. Cancel any month."}
+          sub={ONBOARDING_FREE
+            ? "Every approved firm gets Trade-tier features free during onboarding. These are the monthly prices once charging starts."
+            : "No commission on work won, no charge per enquiry, no minimum term."}
         />
+        {ONBOARDING_FREE && (
+          <p className="mx-auto mt-6 max-w-3xl text-center text-sm leading-relaxed text-muted-foreground">
+            Join during onboarding and get 50% off for your first 12 months once charging starts. We'll email you at least 30 days before anything is charged, and you can leave any time.
+          </p>
+        )}
         <div
           className={`mt-10 grid gap-6 ${
             tiers.length > 2
@@ -223,7 +237,19 @@ function ForTradesmen() {
                   </li>
                 ))}
               </ul>
-              {user ? (
+              {ONBOARDING_FREE ? (
+                <Link
+                  to="/signin"
+                  search={{ intent: "claim" as const }}
+                  className={`mt-8 flex items-center justify-center rounded-sm px-5 py-3 font-display text-sm font-semibold ${
+                    t.featured
+                      ? "bg-primary text-primary-foreground hover:brightness-110"
+                      : "border border-border-strong hover:border-primary hover:text-primary"
+                  }`}
+                >
+                  Apply free
+                </Link>
+              ) : user ? (
                 // Already signed in — go straight to checkout in the dashboard.
                 <a
                   href="/dashboard?tab=plan"
