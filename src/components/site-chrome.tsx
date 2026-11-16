@@ -162,8 +162,7 @@ export function SiteFooter() {
         <div className="max-w-sm">
           <Logo />
           <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-            A vetted network of UK trades. Post a job free, compare real quotes,
-            hire with a paper trail.
+            Local UK trades, ID-checked and insured before they can quote.
           </p>
         </div>
         <div>
@@ -203,7 +202,7 @@ export function SiteFooter() {
             </li>
             <li>
               <Link to="/claim" search={{}} className="hover:text-foreground">
-                Get certified
+                Apply for vetting
               </Link>
             </li>
             <li>

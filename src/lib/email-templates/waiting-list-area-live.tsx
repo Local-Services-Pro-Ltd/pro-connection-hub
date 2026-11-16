@@ -35,11 +35,11 @@ const Email = ({
   return (
     <Html lang="en" dir="ltr">
       <Head />
-      <Preview>{`TradesmanFinder is now live in ${where}`}</Preview>
+      <Preview>{`TradesmanFinder is now onboarding in ${where}`}</Preview>
       <Body style={main}>
         <Container style={container}>
           <Text style={eyebrow}>TRADESMANFINDER</Text>
-          <Heading style={heading}>{`We're live in ${where}.`}</Heading>
+          <Heading style={heading}>{`We're onboarding in ${where}.`}</Heading>
           <Text style={text}>{name ? `Hi ${name},` : "Hi there,"}</Text>
           <Text style={text}>
             You asked to hear the moment we opened
@@ -51,7 +51,7 @@ const Email = ({
           <Text style={text}>
             {isTrader
               ? "Get your profile in front of local homeowners before the first jobs land."
-              : "Post your job and vetted local trades will come back to you with real quotes."}
+              : "Post your job and we'll match you as approved local trades join your area."}
           </Text>
           {actionUrl ? (
             <Button style={button} href={actionUrl}>
@@ -72,8 +72,8 @@ const Email = ({
 export const template = {
   component: Email,
   subject: (data: Record<string, unknown>) =>
-    `TradesmanFinder is live in ${String(data["areaName"] ?? data["postcode"] ?? "your area")}`,
-  displayName: "Waiting list — area is live",
+    `TradesmanFinder is onboarding in ${String(data["areaName"] ?? data["postcode"] ?? "your area")}`,
+  displayName: "Waiting list — area is onboarding",
   previewData: {
     name: "Sam",
     areaName: "Manchester",

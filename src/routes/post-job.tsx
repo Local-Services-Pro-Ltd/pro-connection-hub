@@ -39,7 +39,7 @@ export const Route = createFileRoute("/post-job")({
   head: ({ loaderData }) => {
     const title = "Post a job free — get up to 3 quotes | TradesmanFinder";
     const description =
-      "Describe your job in two minutes and get quotes from up to three vetted local tradesmen. Free to post, no obligation.";
+      "Describe your job in two minutes and we'll match you with local trades as they join — ID-checked and insured before they can quote.";
     const base = loaderData?.origin ?? "";
     const image = loaderData?.origin
       ? `${loaderData.origin}/og/post-job.jpg`
@@ -137,7 +137,7 @@ function PostJob() {
       if (!ukPostcode.test(form.postcode.trim()))
         errors.push("Enter a valid UK postcode.");
       else if (!isLiveArea(form.postcode, areas))
-        errors.push("We're not live in that postcode yet.");
+        errors.push("We're not onboarding in that postcode yet.");
 
       if (form.title.trim().length < 6)
         errors.push("Give the job a clearer title.");
@@ -197,7 +197,7 @@ function PostJob() {
       <PageHero
         eyebrow="Post a job"
         title="Tell us what needs doing."
-        sub="Two minutes. Free. Up to three vetted local trades will come back to you — usually the same day."
+        sub="Two minutes. Free. We'll match you with up to three local trades as they join and complete their checks."
         image={heroPostJob}
         imageAlt="A kitchen mid-renovation with a notepad and tape measure on the worktop"
         focal="50% 50%"
@@ -223,9 +223,9 @@ function PostJob() {
                     .{" "}
                   </>
                 ) : null}
-                We're matching vetted trades covering{" "}
-                {form.postcode.toUpperCase()} now — you'll hear from up to three
-                of them.
+                We'll match your job with local trades covering{" "}
+                {form.postcode.toUpperCase()} as they join and complete their
+                checks.
               </p>
               <MatchedPros
                 trade={form.trade_slug}
@@ -319,8 +319,8 @@ function PostJob() {
                     className="mt-2 block text-xs text-muted-foreground"
                   >
                     {postcodeLooksValid && !postcodeIsCovered
-                      ? "We're not live in this postcode yet — you can still join the waiting list."
-                      : `We're live in ${liveAreaNames.join(", ")}.`}
+                      ? "We're not onboarding in this postcode yet — you can still join the waiting list."
+                      : `We're onboarding trades in ${liveAreaNames.join(", ")}.`}
                   </span>
                 </label>
 
@@ -422,7 +422,7 @@ function PostJob() {
               <ol className="mt-4 space-y-4 text-sm text-muted-foreground">
                 <li>
                   <strong className="text-foreground">1.</strong> We match your
-                  job to vetted trades covering your postcode.
+                  job to local trades covering your postcode as they complete their checks.
                 </li>
                 <li>
                   <strong className="text-foreground">2.</strong> Up to three of
@@ -529,7 +529,7 @@ function OutOfAreaPanel({
         <p className="mt-3 max-w-md text-muted-foreground">
           {pending
             ? `We've emailed you a confirmation link — click it and your place for ${postcode.toUpperCase()} is active. Your job details are saved with the request.`
-            : "We've kept your job details with your request. The day we have vetted trades covering your postcode, we'll email you and — if you left a number — give you a ring."}
+            : "We've kept your job details with your request. When an approved trade joins your postcode, we'll email you and — if you left a number — give you a ring."}
         </p>
 
         {!pending && waiting > 1 && (
@@ -551,7 +551,7 @@ function OutOfAreaPanel({
             to="/areas"
             className="rounded-sm bg-primary px-5 py-2.5 font-display text-sm font-semibold text-primary-foreground shadow-ember hover:brightness-110"
           >
-            See where we're live
+            See onboarding areas
           </Link>
         </div>
       </div>
@@ -565,14 +565,12 @@ function OutOfAreaPanel({
       </h2>
       <div className="mt-3 max-w-xl space-y-3 text-muted-foreground">
         <p>
-          Right now we're live across Greater London, Kent and Surrey only. We
-          could take your job anyway and pass it to trades an hour up the
-          motorway — plenty of sites do — but you'd get slow replies, inflated
-          travel costs and quotes that quietly fall through.
+          We're onboarding local trades area by area. We don't want to pass
+          your job to firms a long way away or promise coverage we don't have.
         </p>
         <p>
           So we'd rather be straight with you. Leave your details below and
-          we'll come back to you the day we have vetted trades covering{" "}
+          we'll come back to you when an approved trade covers{" "}
           {postcode.toUpperCase()}. Nothing else, no spam, and you can ask us to
           delete it at any time.
         </p>
@@ -655,7 +653,7 @@ function OutOfAreaPanel({
             disabled={mutation.isPending}
             className="rounded-sm bg-primary px-6 py-3 font-display text-sm font-semibold text-primary-foreground shadow-ember hover:brightness-110 disabled:opacity-60"
           >
-            {mutation.isPending ? "Saving…" : "Tell me when you're live here"}
+            {mutation.isPending ? "Saving…" : "Tell me when you open here"}
           </button>
           <button
             type="button"

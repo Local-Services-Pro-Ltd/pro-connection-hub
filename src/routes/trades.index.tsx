@@ -4,7 +4,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { ArrowUpRight, Search } from "lucide-react";
 import { PageHero, Section } from "@/components/layout-bits";
 import { SearchBar } from "@/components/search-bar";
-import { tradesQuery, proCountsQuery } from "@/lib/queries";
+import { tradesQuery } from "@/lib/queries";
 import { getRequestOrigin } from "@/lib/origin.functions";
 import {
   tradeHero,
@@ -17,17 +17,16 @@ import heroTrades from "@/assets/hero-trades.jpg";
 
 export const Route = createFileRoute("/trades/")({
   loader: async ({ context }) => {
-    const [, , origin] = await Promise.all([
+    const [, origin] = await Promise.all([
       context.queryClient.ensureQueryData(tradesQuery),
-      context.queryClient.ensureQueryData(proCountsQuery),
       getRequestOrigin(),
     ]);
     return { origin };
   },
   head: ({ loaderData }) => {
-    const title = "All trades — find a vetted UK tradesman | TradesmanFinder";
+    const title = "All trades — find a local tradesman | TradesmanFinder";
     const description =
-      "Browse every trade on TradesmanFinder — builders, plumbers, electricians, roofers, tilers and more. Typical costs and local availability.";
+      "Browse local trades joining TradesmanFinder. Firms must complete ID and insurance checks before they can quote.";
     const base = loaderData?.origin ?? "";
     const image = loaderData?.origin
       ? `${loaderData.origin}/og/trades.jpg`
@@ -75,7 +74,6 @@ export const Route = createFileRoute("/trades/")({
 
 function TradesIndex() {
   const { data: trades } = useSuspenseQuery(tradesQuery);
-  const { data: counts } = useSuspenseQuery(proCountsQuery);
   const [q, setQ] = useState("");
   const [letter, setLetter] = useState<string>("all");
 
@@ -107,8 +105,8 @@ function TradesIndex() {
     <>
       <PageHero
         eyebrow="Directory"
-        title="Every trade, vetted the same way."
-        sub="ID check, insurance check, trade certification. No paid placement — ranking is based on reviews and response time."
+        title="Every trade, one careful onboarding process."
+        sub="We're onboarding local trades now. Firms must complete ID and insurance checks before they can quote."
         image={heroTrades}
         imageAlt="Builders, an electrician and a plumber at work in a warmly lit workshop"
         focal="50% 45%"
@@ -242,10 +240,8 @@ function TradesIndex() {
                       <dd className="mt-1">{t.typical_cost}</dd>
                     </div>
                     <div>
-                      <dt className="eyebrow">Available</dt>
-                      <dd className="mt-1 text-primary">
-                        {counts.byTrade[t.slug] ?? 0} local pros
-                      </dd>
+                      <dt className="eyebrow">Directory status</dt>
+                      <dd className="mt-1 text-primary">Now onboarding</dd>
                     </div>
                   </dl>
                 </div>

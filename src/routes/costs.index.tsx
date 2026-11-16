@@ -112,8 +112,8 @@ function CostsIndex() {
             <div>
               <h2 className="text-xl">Don't see your trade?</h2>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                Ask the pros what your job should cost, or post it and let
-                vetted tradespeople price it for you.
+                Ask the pros what your job should cost, or post it and we'll
+                match you as approved tradespeople join your area.
               </p>
             </div>
             <span className="mt-6 inline-flex items-center gap-2 font-display text-sm font-semibold text-primary">

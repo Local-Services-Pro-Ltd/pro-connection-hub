@@ -4,24 +4,22 @@ import { ArrowRight, MapPin } from "lucide-react";
 import { WaitingListInline } from "@/components/waiting-list-inline";
 import { Section, SectionHead } from "@/components/layout-bits";
 import { LiveMapHero } from "@/components/live-map-hero";
-import { areasQuery, proCountsQuery } from "@/lib/queries";
+import { areasQuery } from "@/lib/queries";
 import { getRequestOrigin } from "@/lib/origin.functions";
 import street from "@/assets/street.jpg";
 
 export const Route = createFileRoute("/areas")({
   loader: async ({ context }) => {
-    const [, , origin] = await Promise.all([
+    const [, origin] = await Promise.all([
       context.queryClient.ensureQueryData(areasQuery),
-      context.queryClient.ensureQueryData(proCountsQuery),
       getRequestOrigin(),
     ]);
     return { origin };
   },
   head: ({ loaderData }) => {
-    const title =
-      "Where we're live — Greater London, Kent & Surrey | TradesmanFinder";
+    const title = "Areas we're onboarding | TradesmanFinder";
     const description =
-      "TradesmanFinder is live across Greater London, Kent and Surrey, with more of the South East opening soon. Join the waiting list for your postcode.";
+      "See where TradesmanFinder is onboarding local trades. Firms must complete ID and insurance checks before they can quote.";
     const base = loaderData?.origin ?? "";
     const image = loaderData?.origin
       ? `${loaderData.origin}/og/areas.jpg`
@@ -32,20 +30,20 @@ export const Route = createFileRoute("/areas")({
         { name: "description", content: description },
         {
           property: "og:title",
-          content: "Where we're live — TradesmanFinder",
+          content: "Areas we're onboarding — TradesmanFinder",
         },
         { property: "og:description", content: description },
         { property: "og:type", content: "website" },
         { property: "og:url", content: `${base}/areas` },
         { name: "twitter:card", content: "summary_large_image" },
-        { name: "twitter:title", content: "Where we're live — TradesmanFinder" },
+        { name: "twitter:title", content: "Areas we're onboarding — TradesmanFinder" },
         { name: "twitter:description", content: description },
         ...(image
           ? [
               { property: "og:image", content: image },
               {
                 property: "og:image:alt",
-                content: "Live map of the areas covered by vetted tradesmen",
+                content: "Map of areas where local trades are joining TradesmanFinder",
               },
               { name: "twitter:image", content: image },
             ]
@@ -71,7 +69,6 @@ export const Route = createFileRoute("/areas")({
 
 function Areas() {
   const { data: areas } = useSuspenseQuery(areasQuery);
-  const { data: counts } = useSuspenseQuery(proCountsQuery);
 
   const live = areas.filter((a) => a.status === "live");
   const soon = areas.filter((a) => a.status !== "live");
@@ -79,16 +76,16 @@ function Areas() {
   return (
     <>
       <LiveMapHero
-        eyebrow="Live coverage"
+        eyebrow="Area onboarding"
         title="Local means local."
-        sub="We've started in Greater London, Kent and Surrey — properly covered, rather than thinly spread across the whole country. Watch jobs and vans move across the network in real time."
+        sub="We're onboarding local trades area by area. Firms must complete ID and insurance checks before they can quote."
       />
 
       <Section>
         <SectionHead
-          eyebrow="Live now"
-          title="Three areas, covered properly."
-          sub="Every trade on the network works these postcodes for a living. No one is driving in from two counties away to quote."
+          eyebrow="Now onboarding"
+          title="Local firms are joining."
+          sub="Firms are shown as vetting in progress until their ID and insurance checks are complete."
         />
         <div className="mt-10 grid gap-6 lg:grid-cols-3">
           {live.map((a) => (
@@ -101,14 +98,14 @@ function Areas() {
             >
               <span className="inline-flex items-center gap-2 rounded-full bg-primary/12 px-3 py-1 font-display text-[0.7rem] uppercase tracking-widest text-primary">
                 <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                Live
+                Onboarding firms
               </span>
               <h2 className="mt-5 text-2xl">{a.name}</h2>
               <p className="mt-3 leading-relaxed text-muted-foreground">
                 {a.note}
               </p>
               <p className="mt-8 flex items-center gap-2 font-display text-sm font-semibold text-primary">
-                {counts.byArea[a.slug] ?? 0} vetted pros
+                Browse firms
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </p>
             </Link>
@@ -121,7 +118,7 @@ function Areas() {
           <SectionHead
             eyebrow="Opening next"
             title="Rolling out across the South East."
-            sub="We open an area once enough vetted trades have signed up to answer the jobs in it. Add your postcode and you'll move it up the queue."
+            sub="We open an area as local trades join and complete their checks. Add your postcode and you'll move it up the queue."
           />
           <div className="mt-10 grid gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
             {soon.map((a) => (

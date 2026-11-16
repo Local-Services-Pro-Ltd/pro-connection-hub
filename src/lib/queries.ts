@@ -1,6 +1,19 @@
 import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
+import { matchPublicPros } from "@/lib/matching.functions";
+import {
+  adminListPros,
+  adminListProjects,
+  getMyProProfile,
+  getMyProjects,
+} from "@/lib/private-reads.functions";
+
+/** Columns anyone may read. Contact, billing and account links stay server-side. */
+export const PUBLIC_PRO_COLUMNS =
+  "id, name, company, trade_slug, area, area_slug, postcode, bio, years, response_mins, day_rate, min_job_budget, availability, services, photo, published, rating, review_count, created_at, updated_at, featured, is_demo, plan_slug";
+export const PUBLIC_PROJECT_COLUMNS =
+  "id, title, description, trade_slug, postcode, area, budget_min, budget_max, start_date, end_date, photos, status, reference, created_at, updated_at";
 
 export type Trade = Database["public"]["Tables"]["trades"]["Row"];
 export type Area = Database["public"]["Tables"]["areas"]["Row"];
@@ -40,8 +53,19 @@ export const tradesQuery = queryOptions({
 
 export const areasQuery = queryOptions({
   queryKey: ["areas"],
-  queryFn: async () =>
-    unwrap(await supabase.from("areas").select("*").order("sort_order")),
+  queryFn: async () => {
+    const areas = unwrap(await supabase.from("areas").select("*").order("sort_order"));
+    // Old rollout dates are not confirmed plans. Never show an opening date
+    // alongside an area already accepting onboarding (notably Berkshire).
+    return areas.map((area) => ({
+      ...area,
+      note: /^Opening/i.test(area.note ?? "")
+        ? area.status === "live"
+          ? "Local firms are onboarding. Checks must be completed before they can quote."
+          : "Opening date to be confirmed."
+        : area.note,
+    }));
+  },
   staleTime: 5 * 60_000,
 });
 
@@ -81,7 +105,7 @@ export const planVisibilityQuery = queryOptions({
 });
 
 
-/** Live counts of published pros per trade slug and per area slug. */
+/** Internal counts of published pros per trade slug and per area slug. */
 export const proCountsQuery = queryOptions({
   queryKey: ["pro-counts"],
   queryFn: async () => {
@@ -115,7 +139,7 @@ export function prosQuery(filters: ProFilters = {}) {
   return queryOptions({
     queryKey: ["pros", filters],
     queryFn: async () => {
-      let query = supabase.from("pros").select("*").eq("published", true);
+      let query = supabase.from("pros").select(PUBLIC_PRO_COLUMNS).eq("published", true);
 
       if (filters.trade) query = query.eq("trade_slug", filters.trade);
       if (filters.area) {
@@ -152,7 +176,7 @@ export function prosQuery(filters: ProFilters = {}) {
             .order("review_count", { ascending: false });
       }
 
-      return unwrap(await query);
+      return unwrap(await query) as unknown as Pro[];
     },
   });
 }
@@ -162,7 +186,12 @@ export function proQuery(id: string) {
     queryKey: ["pro", id],
     queryFn: async () => {
       const [pro, credentials, reviews] = await Promise.all([
-        supabase.from("pros").select("*").eq("id", id).maybeSingle(),
+        supabase
+          .from("pros")
+          .select(PUBLIC_PRO_COLUMNS)
+          .eq("id", id)
+          .eq("published", true)
+          .maybeSingle(),
         supabase
           .from("pro_credentials")
           .select("*")
@@ -194,7 +223,7 @@ export const featuredProsQuery = queryOptions({
   queryFn: async (): Promise<Pro[]> => {
     const { data, error } = await supabase
       .from("pros")
-      .select("*")
+      .select(PUBLIC_PRO_COLUMNS)
       .eq("published", true)
       .eq("featured", true)
       .order("rating", { ascending: false })
@@ -224,23 +253,13 @@ export const latestReviewsQuery = queryOptions({
 export const statsQuery = queryOptions({
   queryKey: ["stats"],
   queryFn: async () => {
-    const [pros, reviews, jobs] = await Promise.all([
-      supabase
-        .from("pros")
-        .select("response_mins", { count: "exact" })
-        .eq("published", true),
+    const [reviews, jobs] = await Promise.all([
       supabase.from("reviews_public").select("id", { count: "exact", head: true }),
       supabase.from("trades").select("slug", { count: "exact", head: true }),
     ]);
-    const mins = (pros.data ?? []).map((p) => p.response_mins);
-    const avg = mins.length
-      ? Math.round(mins.reduce((a, b) => a + b, 0) / mins.length)
-      : 0;
     return {
-      pros: pros.count ?? 0,
       reviews: reviews.count ?? 0,
       trades: jobs.count ?? 0,
-      avgResponse: avg,
     };
   },
   staleTime: 5 * 60_000,
@@ -383,7 +402,7 @@ export const adminProsQuery = queryOptions({
   queryKey: ["admin", "pros"],
   queryFn: async (): Promise<AdminProRow[]> => {
     const [pros, creds] = await Promise.all([
-      supabase.from("pros").select("*").order("company"),
+      adminListPros().then((data) => ({ data, error: null })).catch((error) => ({ data: null, error })),
       supabase.from("pro_credentials").select("pro_id, verified"),
     ]);
     if (pros.error) throw pros.error;
@@ -564,9 +583,10 @@ export function tradeProjectsQuery(trade: string) {
       unwrap(
         await supabase
           .from("pro_projects")
-          .select("*")
+          .select("*, pros!inner(published)")
           .eq("trade_slug", trade)
           .eq("published", true)
+          .eq("pros.published", true)
           .order("created_at", { ascending: false })
           .limit(6),
       ) as ProProject[],
@@ -635,7 +655,7 @@ export type MatchedPro = {
   reason: string;
 };
 
-/** Server-side matching: the three best-fitting vetted pros for a job. */
+/** Server-side matching: the three best-fitting published firms for a job. */
 export async function matchPros(args: {
   trade: string;
   postcode?: string | undefined;
@@ -643,15 +663,15 @@ export async function matchPros(args: {
   jobId?: string | undefined;
   limit?: number;
 }): Promise<MatchedPro[]> {
-  const { data, error } = await supabase.rpc("match_pros", {
-    p_trade: args.trade,
-    p_limit: args.limit ?? 3,
-    ...(args.postcode ? { p_postcode: args.postcode } : {}),
-    ...(args.budget ? { p_budget: args.budget } : {}),
-    ...(args.jobId ? { p_job_id: args.jobId } : {}),
-  });
-  if (error) throw error;
-  return (data ?? []) as MatchedPro[];
+  return (await matchPublicPros({
+    data: {
+      trade: args.trade,
+      limit: args.limit ?? 3,
+      postcode: args.postcode,
+      budget: args.budget,
+      jobId: args.jobId,
+    },
+  })) as MatchedPro[];
 }
 
 export type ProAvailability =
@@ -897,7 +917,7 @@ export function publishedProjectsQuery(trade?: string) {
     queryFn: async () => {
       let q = supabase
         .from("projects")
-        .select("*")
+        .select(PUBLIC_PROJECT_COLUMNS)
         .eq("status", "published")
         .order("created_at", { ascending: false })
         .limit(60);
@@ -914,7 +934,7 @@ export function projectQuery(id: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("projects")
-        .select("*")
+        .select(PUBLIC_PROJECT_COLUMNS)
         .eq("id", id)
         .maybeSingle();
       if (error) throw error;
@@ -939,13 +959,7 @@ export const projectApplicationCountsQuery = queryOptions({
 /** The signed-in homeowner's own postings, any status (owner RLS). */
 export const myProjectsQuery = queryOptions({
   queryKey: ["my-projects"],
-  queryFn: async () =>
-    unwrap(
-      await supabase
-        .from("projects")
-        .select("*")
-        .order("created_at", { ascending: false }),
-    ) as Project[],
+  queryFn: async () => (await getMyProjects()) as Project[],
 });
 
 /** Applications on a posting — readable by its owner and by admins. */
@@ -967,13 +981,7 @@ export function projectApplicationsQuery(projectId: string) {
 /** Every posting for the admin review queue (admin RLS). */
 export const adminProjectsQuery = queryOptions({
   queryKey: ["admin", "projects"],
-  queryFn: async () =>
-    unwrap(
-      await supabase
-        .from("projects")
-        .select("*")
-        .order("created_at", { ascending: false }),
-    ) as Project[],
+  queryFn: async () => (await adminListProjects()) as Project[],
   staleTime: 0,
 });
 
@@ -1007,13 +1015,11 @@ export function myProProfileQuery(userId: string | undefined) {
     queryKey: ["my-pro-profile", userId ?? null],
     queryFn: async () => {
       if (!userId) return null;
-      const { data, error } = await supabase
-        .from("pros")
-        .select("*")
-        .eq("user_id", userId)
-        .maybeSingle();
-      if (error) return null;
-      return (data as Pro | null) ?? null;
+      try {
+        return ((await getMyProProfile()) as Pro | null) ?? null;
+      } catch {
+        return null;
+      }
     },
     staleTime: 60_000,
   });
@@ -1081,7 +1087,7 @@ export function firmApplicationsQuery(proId: string | undefined) {
 
 /**
  * Whole published directory for /directory — every firm with its trade, area,
- * rating and review count, newest verified firms first.
+ * rating and review count. Unpublished test listings are never returned.
  */
 export const directoryQuery = queryOptions({
   queryKey: ["directory"],
@@ -1089,7 +1095,7 @@ export const directoryQuery = queryOptions({
     unwrap(
       await supabase
         .from("pros")
-        .select("*")
+        .select(PUBLIC_PRO_COLUMNS)
         .eq("published", true)
         .order("is_demo", { ascending: true })
         .order("rating", { ascending: false })

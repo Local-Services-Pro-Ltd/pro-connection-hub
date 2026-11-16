@@ -21,13 +21,13 @@ export type TradeHeroCopy = {
 
 export const defaults: TradeHeroCopy = {
   eyebrow: "Trade",
-  title: "{trade} you can actually trust.",
+  title: "Local {trade} joining TradesmanFinder.",
   sub: "{blurb}",
   areaEyebrow: "Near {area}",
   stats: {
     cost: "Typical cost",
-    available: "Free right now",
-    response: "Avg. response",
+    available: "Directory status",
+    response: "Vetting",
   },
 };
 

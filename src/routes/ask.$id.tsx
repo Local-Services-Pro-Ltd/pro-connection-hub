@@ -21,7 +21,7 @@ export const Route = createFileRoute("/ask/$id")({
       : "Question and answers | Ask the pros | TradesmanFinder";
     const description = q
       ? `${q.body ?? q.title}`.replace(/\s+/g, " ").slice(0, 155)
-      : "A homeowner's question answered by vetted UK tradesmen on TradesmanFinder.";
+      : "A homeowner's question answered by approved local tradesmen on TradesmanFinder.";
     const scripts = q
       ? [
           {
@@ -45,7 +45,7 @@ export const Route = createFileRoute("/ask/$id")({
                         url,
                         author: {
                           "@type": "Person",
-                          name: answers[0]!.author_name || "Vetted tradesman",
+                          name: answers[0]!.author_name || "Local tradesman",
                         },
                       },
                       suggestedAnswer: answers.slice(1).map((a) => ({
@@ -55,7 +55,7 @@ export const Route = createFileRoute("/ask/$id")({
                         url,
                         author: {
                           "@type": "Person",
-                          name: a.author_name || "Vetted tradesman",
+                          name: a.author_name || "Local tradesman",
                         },
                       })),
                     }
@@ -141,7 +141,7 @@ function QuestionPage() {
       )}
 
       <h2 className="mt-12 border-t border-border pt-10 font-display text-2xl">
-        {answers.length} answer{answers.length === 1 ? "" : "s"} from vetted
+        {answers.length} answer{answers.length === 1 ? "" : "s"} from local
         firms
       </h2>
 
@@ -156,7 +156,7 @@ function QuestionPage() {
 
       {answers.length === 0 && (
         <p className="mt-6 max-w-3xl rounded-md border border-border bg-card p-6 text-muted-foreground">
-          No published answers yet. Vetted firms are notified of new questions —
+          No published answers yet. Approved firms are notified of new questions —
           check back shortly, or{" "}
           <Link to="/post-job" search={{}} className="text-primary hover:underline">
             post the job
@@ -220,7 +220,7 @@ function QuestionPage() {
           )
         ) : (
           <p className="mt-4 text-muted-foreground">
-            Answering is open to vetted firms on the network.{" "}
+            Answering is open to approved firms on the network.{" "}
             <Link to="/signin" search={{}} className="text-primary hover:underline">
               Sign in
             </Link>{" "}

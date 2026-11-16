@@ -194,7 +194,7 @@ export function WaitingListInline({
 
       {covered && (
         <p className="text-sm text-muted-foreground">
-          Good news — we're already live in that postcode. You can{" "}
+          Good news — we're already onboarding trades in that postcode. You can{" "}
           <Link
             to="/post-job"
             search={{}}

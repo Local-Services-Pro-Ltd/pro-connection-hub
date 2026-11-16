@@ -188,8 +188,9 @@ function CostGuidePage() {
           <div className="min-w-0 flex-1">
             <h2 className="text-2xl">Ready for real numbers?</h2>
             <p className="mt-2 max-w-xl text-sm text-muted-foreground">
-              Describe the job once and vetted {trade.name.toLowerCase()}s come
-              back to you with priced quotes. Free, and no obligation.
+              Describe the job once and we'll match you with local{" "}
+              {trade.name.toLowerCase()}s as they join and complete their checks.
+              Free, and no obligation.
             </p>
           </div>
           <div className="flex flex-wrap gap-3">

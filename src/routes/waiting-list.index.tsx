@@ -23,7 +23,7 @@ export const Route = createFileRoute("/waiting-list/")({
   }),
   head: () => {
     const description =
-      "We're live in Greater London, Kent and Surrey. Tell us your postcode and we'll invite you the moment TradesmanFinder opens in your area.";
+      "Tell us your postcode and we'll invite you when TradesmanFinder starts onboarding local trades in your area.";
     return {
       meta: [
         { title: "Join the waiting list | TradesmanFinder" },
@@ -119,9 +119,9 @@ function WaitingList() {
           Tell us where you are.
         </h1>
         <p className="mt-4 text-muted-foreground">
-          We're live in Greater London, Kent and Surrey. Drop your postcode and
-          we'll invite you the moment your area goes live — the more sign-ups in
-          a postcode, the sooner we open it.
+          Drop your postcode and we'll invite you when we start onboarding
+          trades in your area — the more sign-ups in a postcode, the sooner we
+          open it.
         </p>
 
         <form
@@ -235,7 +235,7 @@ function WaitingList() {
           </button>
 
           <p className="text-xs text-muted-foreground">
-            One email when your area goes live. No marketing spam, unsubscribe
+            One email when your area opens. No marketing spam, unsubscribe
             any time. See our{" "}
             <Link to="/privacy" className="underline hover:text-primary">
               privacy policy

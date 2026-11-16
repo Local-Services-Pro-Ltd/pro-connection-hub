@@ -65,5 +65,12 @@ Provider setup: https://supabase.com/docs/guides/auth/social-login/auth-google
 - Confirm live-region postcode acceptance and coming-soon rejection.
 - Do not post a public test job, email real users or charge a card without approval.
 
-The separate database security CI requires repository secrets. Restoring Pages
-bindings does not populate GitHub Actions secrets or prove that scan has passed.
+The GitHub live-database security scan is optional. When `SUPABASE_URL` or
+`SUPABASE_SERVICE_ROLE_KEY` is absent from the repository secrets, GitHub Actions
+skips the live scan and access-control tests with a warning instead of failing;
+typecheck, lint, dependency audit, offline regression tests, and build still run
+and fail normally on problems. The existing daily database scan cron inside the
+backend remains the source of truth for live-database checks.
+
+Restoring Pages bindings does not populate GitHub Actions secrets or prove that
+the optional GitHub live scan has passed.

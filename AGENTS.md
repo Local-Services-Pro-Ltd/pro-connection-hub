@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Normalize legacy opening-date notes in the shared areas query so all public coverage surfaces use consistent onboarding wording rather than unconfirmed launch dates.

@@ -24,7 +24,7 @@ export const Route = createFileRoute("/projects/new")({
       {
         name: "description",
         content:
-          "List your home project with a budget, target dates and photos. Vetted UK firms apply directly once it clears review.",
+          "List your home project with a budget, target dates and photos. Approved UK firms can apply once it clears review.",
       },
       { property: "og:title", content: "Post a project | TradesmanFinder" },
       {
@@ -118,7 +118,7 @@ function NewProject() {
       <PageHero
         eyebrow="Post a project"
         title="Tell firms what you need doing."
-        sub="Budget, dates and photos make quotes far more accurate. We review every posting before vetted firms can see it."
+        sub="Budget, dates and photos make quotes far more accurate. We review every posting before approved firms can see it."
       />
 
       <Section>
@@ -295,7 +295,7 @@ function NewProject() {
               }
               className="mt-1"
             />
-            Email me whenever a vetted firm applies to this project.
+            Email me whenever an approved firm applies to this project.
           </label>
 
           <button

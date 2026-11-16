@@ -19,13 +19,13 @@ export const Route = createFileRoute("/projects/")({
       {
         name: "description",
         content:
-          "Browse UK home projects posted by homeowners — budget, dates and photos included. Vetted firms can apply directly.",
+          "Browse UK home projects posted by homeowners — budget, dates and photos included. Approved firms can apply directly.",
       },
       { property: "og:title", content: "Live project board | TradesmanFinder" },
       {
         property: "og:description",
         content:
-          "Real homeowner projects with budgets, dates and photos. Vetted firms apply directly.",
+          "Real homeowner projects with budgets, dates and photos. Approved firms apply directly.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: url },
@@ -61,7 +61,7 @@ function ProjectBoard() {
       <SectionHead
         eyebrow="Project board"
         title="Live projects waiting for quotes"
-        sub="Homeowners post the job — budget, dates and photos. Every posting is reviewed before it goes live, and only vetted firms can apply."
+        sub="Homeowners post the job — budget, dates and photos. Every posting is reviewed before publication, and only approved firms can apply."
         aside={
           <Link
             to="/projects/new"
@@ -76,8 +76,8 @@ function ProjectBoard() {
       {projects.length === 0 ? (
         <div className="mt-10 rounded-md border border-dashed border-border p-10 text-center">
           <p className="text-muted-foreground">
-            No live projects right now. Post yours and vetted firms in your area
-            will see it as soon as it clears review.
+            No projects are published right now. Post yours and approved firms
+            in your area will see it as soon as it clears review.
           </p>
           <Link
             to="/projects/new"

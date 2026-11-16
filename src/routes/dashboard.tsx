@@ -10,6 +10,12 @@ import {
   syncMembership,
 } from "@/lib/billing.functions";
 import { PageHero, Section } from "@/components/layout-bits";
+import {
+  firmEntitlements,
+  foundingPlanLabel,
+  ONBOARDING_FREE,
+  TRADE_TIER_LIMITS,
+} from "@/lib/onboarding";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import {
@@ -75,14 +81,14 @@ function Dashboard() {
     if (requested && TABS.some((t) => t.id === requested)) {
       setTab(requested as TabId);
     }
-    if (params.get("checkout") === "success") {
+    if (!ONBOARDING_FREE && params.get("checkout") === "success") {
       toast.success("Payment received — unlocking your membership.");
     }
   }, []);
 
   // Membership state always comes from Stripe, never from the redirect.
   useEffect(() => {
-    if (!user) return;
+    if (!user || ONBOARDING_FREE) return;
     void sync({})
       .then(() =>
         queryClient.invalidateQueries({ queryKey: ["my-pro-profile"] }),
@@ -127,7 +133,7 @@ function Dashboard() {
         <PageHero
           eyebrow="Trade dashboard"
           title="No listing linked to this account yet"
-          sub="Once your firm is vetted and your listing is linked, your leads, visits, photos and membership all live here."
+          sub="Once your listing is linked, you can manage your profile here. ID and insurance checks must be completed before you can quote."
         />
         <Section>
           <div className={card}>
@@ -154,8 +160,8 @@ function Dashboard() {
         title={pro.company}
         sub={
           pro.published
-            ? "Your listing is live. Keep your services, photos and availability current to win more work."
-            : "Your listing is not live yet — it goes public once vetting is approved."
+            ? "Your listing is published. Publication is not approval to quote; your firm must complete ID and insurance checks first."
+            : "Your listing is not published yet. You can prepare your services and photos while onboarding continues."
         }
       />
       <Section>
@@ -206,11 +212,9 @@ function Dashboard() {
 
 /* ----------------------------------------------------------- membership */
 
-/** A paid membership unlocks lead and visit details. */
+/** Approved firms receive the same entitlement decision on every tab. */
 function isMember(pro: Pro) {
-  return ["active", "trialing", "past_due"].includes(
-    pro.subscription_status ?? "none",
-  );
+  return firmEntitlements(pro).hasAccess;
 }
 
 function MembershipLocked({
@@ -811,6 +815,41 @@ function PhotosTab({ pro }: { pro: Pro }) {
 /* ----------------------------------------------------------------- plan */
 
 function PlanTab({ pro }: { pro: Pro }) {
+  return ONBOARDING_FREE ? <FreeFoundingPlan pro={pro} /> : <PaidPlanTab pro={pro} />;
+}
+
+function FreeFoundingPlan({ pro }: { pro: Pro }) {
+  return (
+    <div className="max-w-3xl space-y-8">
+      <div className={card}>
+        <p className="eyebrow">Current membership</p>
+        <h2 className="mt-2 text-2xl">
+          {foundingPlanLabel(pro)}
+        </h2>
+        <p className="mt-2 text-sm text-muted-foreground">
+          No card needed and no checkout. {pro.published
+            ? "Your approved firm has Trade-tier features while we onboard."
+            : "Once approved, your firm has Trade-tier features while we onboard."}
+        </p>
+        <ul className="mt-5 space-y-2 text-sm text-muted-foreground">
+          <li>· Unlimited matched jobs</li>
+          <li>· {TRADE_TIER_LIMITS.tradeCategoryLimit} trade categories</li>
+          <li>· {TRADE_TIER_LIMITS.postcodeAreaLimit} postcode areas</li>
+          <li>· Priority ranking eligibility</li>
+          <li>· Photo portfolio</li>
+        </ul>
+      </div>
+      <div className={card}>
+        <h3 className="text-lg">Founding-firm offer</h3>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+          Join during onboarding and get 50% off for your first 12 months once charging starts. We'll email you at least 30 days before anything is charged, and you can leave any time.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function PaidPlanTab({ pro }: { pro: Pro }) {
   const plans = useQuery(plansQuery);
   const current = useMemo(
     () => (plans.data ?? []).find((p) => p.slug === pro.plan_slug) ?? null,

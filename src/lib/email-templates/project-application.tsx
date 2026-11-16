@@ -34,15 +34,15 @@ const Email = ({
   <Html lang="en" dir="ltr">
     <Head />
     <Preview>
-      {company ?? "A vetted firm"} applied to your project posting
+      {company ?? "A local firm"} applied to your project posting
     </Preview>
     <Body style={main}>
       <Container style={container}>
         <Text style={eyebrow}>TRADESMANFINDER</Text>
-        <Heading style={heading}>A vetted firm wants your job</Heading>
+        <Heading style={heading}>A local firm wants your job</Heading>
         <Text style={text}>{name ? `Hi ${name},` : "Hi there,"}</Text>
         <Text style={text}>
-          <strong>{company ?? "A vetted firm"}</strong> has applied to
+          <strong>{company ?? "A local firm"}</strong> has applied to
           {projectTitle ? ` “${projectTitle}”` : " your project posting"}.
         </Text>
         {quote ? <Text style={refBox}>Indicative price: {quote}</Text> : null}
@@ -68,7 +68,7 @@ const Email = ({
 export const template = {
   component: Email,
   subject: (data: Record<string, unknown>) =>
-    `${(data['company'] as string) ?? "A vetted firm"} applied to your project — TradesmanFinder`,
+    `${(data['company'] as string) ?? "A local firm"} applied to your project — TradesmanFinder`,
   displayName: "Project — firm applied",
   previewData: {
     name: "Jane",

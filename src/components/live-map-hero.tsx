@@ -8,12 +8,9 @@ import {
   History,
   Link2,
   Check,
-  Radio,
   Download,
   Trash2,
 } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { proCountsQuery } from "@/lib/queries";
 import { usePrefersReducedMotion } from "@/hooks/use-reduced-motion";
 import { useGpsConsent } from "@/hooks/use-gps-consent";
 import { encodeShare, SHARE_DURATIONS } from "@/lib/share-position";
@@ -71,7 +68,7 @@ type Hub = {
   postcode: string;
 };
 
-/** Live "hubs" — pulsing coverage nodes for the areas we're actually live in. */
+/** Onboarding hubs — pulsing nodes for the first areas shown on the map. */
 const hubs: Hub[] = [
   { x: 1240, y: 540, r: 150, label: "Greater London", slug: "london", postcode: "EC1" },
   { x: 1385, y: 605, r: 104, label: "Kent", slug: "kent", postcode: "ME14" },
@@ -133,14 +130,6 @@ export function LiveMapHero({
   const { consent, fix, smoothed, track, error, allow, deny, reset } =
     useGpsConsent();
 
-  // Hub counts come straight from the directory — the same query the Areas
-  // page and every trade page use. Never from another visitor's browser.
-  const { data: proCounts, dataUpdatedAt } = useQuery(proCountsQuery);
-  const counts: Record<string, number> = Object.fromEntries(
-    hubs.map((h) => [h.label, proCounts?.byArea[h.slug] ?? 0]),
-  );
-  const updatedAt = proCounts ? dataUpdatedAt : null;
-  const connected = Boolean(proCounts);
   const [now, setNow] = useState(0);
   const [selected, setSelected] = useState<Hub | null>(null);
 
@@ -266,7 +255,7 @@ export function LiveMapHero({
         viewBox="0 0 1600 900"
         preserveAspectRatio="xMidYMid slice"
         role="img"
-        aria-label="Stylised live map of the UK showing tradesmen being GPS-tracked along routes between coverage areas"
+        aria-label="Stylised map of the UK showing the first trade onboarding areas"
       >
         <defs>
           <pattern
@@ -361,7 +350,7 @@ export function LiveMapHero({
             role="button"
             tabIndex={0}
             aria-pressed={selected?.label === h.label}
-            aria-label={`${h.label} coverage hub: ${counts[h.label]} tradesmen live now. Activate to open coverage details.`}
+            aria-label={`${h.label} onboarding hub. Activate to open area details.`}
             className="pointer-events-auto cursor-pointer [&:focus-visible_.hub-ring]:opacity-100"
             onClick={() => setSelected(h)}
             onKeyDown={(e) => {
@@ -433,7 +422,7 @@ export function LiveMapHero({
               fontSize="14"
               letterSpacing="1.5"
             >
-              {counts[h.label]} live now
+              Onboarding
             </text>
           </g>
         ))}
@@ -511,7 +500,7 @@ export function LiveMapHero({
       <div className="hero-veil pointer-events-none absolute inset-0 z-[1]" />
       <div className="hero-copy-scrim pointer-events-none absolute inset-0 z-[1]" />
 
-      {/* Live video feed overlay */}
+      {/* Area map animation overlay */}
       <div className="absolute right-4 top-4 z-10 w-44 overflow-hidden rounded-md border border-border-strong bg-card/85 shadow-lift backdrop-blur sm:w-60 lg:w-72">
         <div className="relative">
           <video
@@ -525,22 +514,22 @@ export function LiveMapHero({
             autoPlay={!reduced}
             onPlay={() => setPlaying(true)}
             onPause={() => setPlaying(false)}
-            aria-label="Live field feed from tradesmen on the road"
+            aria-label="Animated trade and area illustration"
           />
           <span className="absolute left-2 top-2 flex items-center gap-1.5 rounded-sm bg-background/80 px-1.5 py-0.5 font-display text-[10px] font-semibold uppercase tracking-widest text-primary">
             <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-            Live feed
+            Area map
           </span>
         </div>
         <div className="flex items-center justify-between gap-2 px-2.5 py-2">
           <p className="truncate text-[11px] text-muted-foreground">
-            Van cam · M60 corridor
+            Trade onboarding illustration
           </p>
           <button
             type="button"
             onClick={() => setPlaying((p) => !p)}
             aria-pressed={playing}
-            aria-label={playing ? "Pause live field feed" : "Play live field feed"}
+            aria-label={playing ? "Pause area map animation" : "Play area map animation"}
             className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-sm bg-primary text-primary-foreground hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             {playing ? (
@@ -551,7 +540,7 @@ export function LiveMapHero({
           </button>
         </div>
         <p className="sr-only" role="status">
-          Live field feed {playing ? "playing" : "paused"}.
+          Map animation {playing ? "playing" : "paused"}.
         </p>
 
       </div>
@@ -591,7 +580,6 @@ export function LiveMapHero({
               }`}
             >
               {h.label}
-              <span className={selected?.label === h.label ? "ml-2" : "ml-2 text-primary"}>{counts[h.label]}</span>
             </button>
           ))}
         </div>
@@ -628,22 +616,14 @@ export function LiveMapHero({
             </div>
             <dl className="mt-4 grid grid-cols-2 gap-4 text-sm" aria-live="polite">
               <div>
-                <dt className="text-muted-foreground">Live now</dt>
-                <dd className="font-display text-xl text-primary">
-                  {counts[selected.label]}
-                </dd>
+                <dt className="text-muted-foreground">Directory status</dt>
+                <dd className="font-display text-lg text-primary">Onboarding</dd>
               </div>
               <div>
-                <dt className="text-muted-foreground">Last update</dt>
-                <dd className="font-display text-xl">
-                  {updatedAt ? relTime(updatedAt, now) : "—"}
-                </dd>
+                <dt className="text-muted-foreground">Before quoting</dt>
+                <dd className="font-display text-lg">ID + insurance checks</dd>
               </div>
             </dl>
-            <p className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
-              <Radio className="h-3 w-3" aria-hidden="true" />
-              {connected ? "Live from the verified directory" : "Loading…"}
-            </p>
           </div>
         )}
 
@@ -659,8 +639,8 @@ export function LiveMapHero({
                 <ShieldCheck className="h-3 w-3" aria-hidden="true" /> Privacy — location consent
               </p>
               <p className="mt-2 text-sm text-muted-foreground">
-                We can plot your live position on the map to show trades working
-                near you. Your location stays in this browser — it's never sent
+                We can plot your position on the map. Your location stays in
+                this browser — it's never sent
                 to us or stored. The map works fine without it.
               </p>
               <div className="mt-4 flex flex-wrap gap-3">
@@ -712,7 +692,7 @@ export function LiveMapHero({
                     : fix && band
                       ? `Live GPS on · ${band.label} signal · accurate to ~${Math.round(fix.accuracy)}m · smoothed marker · updated ${relTime(fix.at, now)}`
                       : "Live GPS on · waiting for a fix…"
-                  : "Live GPS off — showing the standard coverage map."}
+                  : "GPS off — showing the standard area map."}
               </span>
               <button
                 type="button"
@@ -788,7 +768,7 @@ export function LiveMapHero({
                       }}
                       className="shrink-0 rounded-sm border border-border-strong px-2.5 py-1.5 font-display text-xs font-semibold hover:bg-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                     >
-                      Live
+                      Latest
                     </button>
                   </div>
                   <div className="mt-3 flex flex-wrap items-center gap-2">

@@ -88,16 +88,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "TradesmanFinder — Vetted UK trades, real quotes" },
+      { title: "TradesmanFinder — Find local trades" },
       {
         name: "description",
         content:
-          "Post your job free and compare quotes from vetted UK builders, plumbers, electricians and more.",
+          "Post your job free and we'll match you with local trades as they join — ID-checked and insured before they can quote.",
       },
       { property: "og:title", content: "TradesmanFinder" },
       {
         property: "og:description",
-        content: "Vetted UK trades. Free to post, no obligation.",
+        content: "Local trades, ID-checked and insured before they can quote. Free to post, no obligation.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

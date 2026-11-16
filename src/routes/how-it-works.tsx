@@ -20,15 +20,15 @@ const faqs = [
   },
   {
     q: "How many quotes will I get?",
-    a: "Up to three matched firms per job. We'd rather send you three available, checked trades than twenty who never call back.",
+    a: "Up to three matched firms per job, as local trades join and complete their checks. There's no obligation to hire anyone.",
   },
   {
     q: "Can a firm pay to be listed or featured?",
-    a: "No. A firm appears only after our checks pass, and the featured slot is set by hand after a full review — it stays empty when nothing qualifies.",
+    a: "No. Firms can be listed while their checks are underway and are clearly tagged vetting in progress. ID and insurance checks must be completed before they can quote.",
   },
   {
     q: "What happens if a tradesman's insurance expires?",
-    a: "We store every expiry date. The badge drops off the profile automatically the day cover lapses, and we re-verify credentials on their anniversary rather than once at sign-up.",
+    a: "We ask for insurance evidence and its expiry date during onboarding. A firm must keep its details current to remain approved to quote.",
   },
 ];
 
@@ -36,7 +36,7 @@ export const Route = createFileRoute("/how-it-works")({
   head: () => {
     const title = "How TradesmanFinder works — post, match, hire | TradesmanFinder";
     const description =
-      "Post a job free, get matched with up to three checked local trades, and hire on evidence: what we verify, how matching works, and what it costs.";
+      "Post a job free and get matched with local trades as they join. Learn how onboarding, ID and insurance checks, matching and reviews work.";
     return {
       meta: [
         { title },
@@ -92,13 +92,13 @@ const steps = [
     n: "02",
     icon: Handshake,
     title: "Get matched with up to three",
-    body: "We rank checked local firms on trade, area, availability and track record — then hand you the shortlist with the reasoning shown.",
+    body: "We match your job to local firms by trade and area as they join. Every firm must complete its ID and insurance checks before it can quote.",
   },
   {
     n: "03",
     icon: Scale,
     title: "Hire on the evidence",
-    body: "Compare verified credentials, before-and-after work, written reviews and reply times. Book a slot directly, or take the quotes away and think.",
+    body: "Compare services, experience, vetting status and any published work. Reviews will only come from customers who've had work done through TradesmanFinder.",
   },
 ];
 
@@ -106,27 +106,27 @@ const criteria = [
   {
     icon: BadgeCheck,
     title: "Identity and company record",
-    body: "Photo ID matched to the Companies House record or sole-trader details. No anonymous profiles.",
+    body: "Before a firm can quote, we check photo ID against its company or sole-trader details and check the Companies House record where applicable.",
   },
   {
     icon: ShieldCheck,
     title: "Public liability insurance",
-    body: "Certificate checked and the expiry date stored, so a lapsed policy removes the badge on the day.",
+    body: "Before a firm can quote, we check its public liability insurance certificate and expiry date.",
   },
   {
     icon: FileCheck2,
     title: "Trade accreditations",
-    body: "Gas Safe, NICEIC, NAPIT, FENSA and similar confirmed with the issuing body by registration number.",
+    body: "Before a firm can quote for work requiring registration, we check the relevant scheme details and evidence.",
   },
   {
     icon: Star,
     title: "Review integrity",
-    body: "Reviews are tied to a signed-in account and a real job, moderated before publishing — the critical ones included.",
+    body: "Reviews will only come from customers who've had work done through TradesmanFinder, and are moderated before publishing.",
   },
   {
     icon: RefreshCw,
     title: "Ongoing monitoring",
-    body: "Checks are dated and repeated. A firm keeps its badges by staying compliant, not by paying a subscription.",
+    body: "Firms must keep their ID, insurance and credential details current to remain approved to quote.",
   },
 ];
 
@@ -137,7 +137,7 @@ function HowItWorks() {
         <SectionHead
           eyebrow="How it works"
           title="Three steps, no phone tag."
-          sub="Most directories sell you a list. We do the checking first, match you to firms that are actually free, and show our working."
+          sub="We're onboarding local trades now. Post your job and we'll match you as firms join and complete their checks."
         />
 
         <ol className="mt-10 grid gap-px overflow-hidden rounded-md border border-border bg-border md:grid-cols-3">
@@ -177,8 +177,8 @@ function HowItWorks() {
       <Section className="border-t border-border bg-surface">
         <SectionHead
           eyebrow="Our standard"
-          title="What a checked firm has actually passed."
-          sub="Five things, every one dated and repeatable. If we can't verify it, we don't claim it."
+          title="What we check before a firm can quote."
+          sub="These are our onboarding requirements. Firms still undergoing checks are clearly marked vetting in progress."
         />
         <div className="mt-10 grid gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-2 lg:grid-cols-3">
           {criteria.map((c) => (

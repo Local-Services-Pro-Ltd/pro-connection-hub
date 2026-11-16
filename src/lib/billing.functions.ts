@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { isCheckoutEnabled, ONBOARDING_FREE } from "@/lib/onboarding";
 
 /**
  * Stripe membership billing for tradespeople.
@@ -61,8 +62,12 @@ export const createMembershipCheckout = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     // Restoring server credentials must not silently activate live payments.
     // Enable only after an explicit operational approval and checkout QA.
-    if (process.env["PAYMENTS_ENABLED"] !== "true") {
-      throw new Error("Payments are not enabled yet.");
+    if (!isCheckoutEnabled()) {
+      throw new Error(
+        ONBOARDING_FREE
+          ? "Checkout is unavailable while onboarding is free."
+          : "Payments are not enabled yet.",
+      );
     }
     const email = (context.claims as { email?: string } | undefined)?.email;
     if (!email) throw new Error("We couldn't read your account email.");
@@ -94,6 +99,8 @@ export const createMembershipCheckout = createServerFn({ method: "POST" })
 export const syncMembership = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
+    if (ONBOARDING_FREE)
+      throw new Error("Billing is unavailable while onboarding is free.");
     const email = (context.claims as { email?: string } | undefined)?.email;
     if (!email) throw new Error("We couldn't read your account email.");
 
@@ -145,6 +152,8 @@ export const syncMembership = createServerFn({ method: "POST" })
 export const openBillingPortal = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
+    if (ONBOARDING_FREE)
+      throw new Error("Billing is unavailable while onboarding is free.");
     const email = (context.claims as { email?: string } | undefined)?.email;
     if (!email) throw new Error("We couldn't read your account email.");
 

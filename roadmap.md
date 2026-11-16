@@ -9,6 +9,16 @@
 - [x] Warmer empty states; 4 labelled example questions seeded (reviews left unseeded — real jobs only)
 - [x] Nav audit — all main links return a real page
 
+## Free onboarding
+- [x] One shared onboarding flag disables checkout and preserves dormant billing code
+- [x] Approved firms receive Trade-tier access in app and database enforcement
+- [x] Pricing, dashboard founding status, and trader terms explain free onboarding
+- [x] Regression tests cover checkout isolation, Trade limits, and pricing wording
+- [ ] Owner/solicitor review of the new Free onboarding period trader terms
+
+## CI reliability
+- [x] Skip secret-dependent GitHub security checks cleanly while preserving offline CI failures
+
 ## Functional completeness
 - [ ] Confirm Post a job submits + confirmation screen and email
 - [ ] Confirm sign-in / sign-up works for homeowners and tradespeople
@@ -18,8 +28,12 @@
 - [ ] Photo upload on the job posting form
 
 ## Trust & legal
+- [x] Follow-up: remove remaining network-wide trust and coverage claims, and extend public-page wording checks (not published)
 - [x] Footer: Local Services Pro Ltd, company no. 12126782, 38 Bloomfield Road, London SE18 7JH, ICO 00015543780
-- [ ] Review vetting/verification claims for ASA/CMA accuracy
+- [x] Owner-approved trust cleanup: hide 34 invented firms, remove Steve Test Builders, and mark four real firms as vetting in progress
+- [x] Replace unverified counts, vetting, response-time and review claims across public pages and metadata
+- [x] Add regression checks for hidden firms and zero-review ratings
+- [x] Review vetting/verification claims for ASA/CMA accuracy
 - [ ] Privacy Policy + Terms GDPR review
 
 ## SEO

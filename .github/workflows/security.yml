@@ -22,6 +22,8 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: write
+    env:
+      HAS_DB_SECRETS: ${{ secrets.SUPABASE_URL != '' && secrets.SUPABASE_SERVICE_ROLE_KEY != '' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -34,6 +36,12 @@ jobs:
 
       - name: Typecheck
         run: bunx tsc --noEmit
+
+      - name: Lint
+        run: bun run lint
+
+      - name: Dependency audit
+        run: bun audit --prod
 
       - name: Authentication and coverage regression tests
         run: bun run test:deployment
@@ -52,6 +60,7 @@ jobs:
       # security suites report a finding that is not in the reviewed baseline.
       # On the nightly run it also appends a snapshot to the rolling history.
       - name: Security regression scan
+        if: env.HAS_DB_SECRETS == 'true'
         id: scan
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -65,11 +74,23 @@ jobs:
       # Behavioural checks: an anonymous / non-admin caller must not reach
       # privileged functions, and public views must stay published-only.
       - name: Access-control tests
+        if: env.HAS_DB_SECRETS == 'true'
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: python3 tests/regression/access_control.py
+
+      - name: Summarise live database checks
+        if: always()
+        run: |
+          if [ "$HAS_DB_SECRETS" = "true" ]; then
+            echo "GitHub live-database security checks were enabled for this run." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "::warning::Live database security scan skipped: SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY not configured"
+            echo "Live database security scan skipped: SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY not configured." >> "$GITHUB_STEP_SUMMARY"
+          fi
+          echo "The existing daily database scan cron inside the backend remains the source of truth for live-database checks." >> "$GITHUB_STEP_SUMMARY"
 
       # Rate limiting must actually block bursts on the public endpoints.
       - name: Rate-limit tests
@@ -80,7 +101,7 @@ jobs:
         run: python3 tests/regression/rate_limits.py
 
       - name: Commit rolling security history
-        if: github.event_name == 'schedule' && always()
+        if: always() && github.event_name == 'schedule' && env.HAS_DB_SECRETS == 'true'
         run: |
           if [ -n "$(git status --porcelain tests/regression/history)" ]; then
             git config user.name "github-actions[bot]"

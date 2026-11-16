@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { getRequest } from "@tanstack/react-start/server";
+import { ONBOARDING_FREE } from "@/lib/onboarding";
 
 /**
  * Homeowner project postings: create, sign photo URLs for the public board,
@@ -201,10 +202,17 @@ export const applyToProject = createServerFn({ method: "POST" })
     };
   })
   .handler(async ({ data, context }) => {
-    const { error } = await context.supabase.rpc("apply_to_project", {
+    // This RPC is service-role only: the shared server flag and authenticated
+    // user ID cannot be replaced by browser input to bypass plan limits.
+    const { supabaseAdmin } = await import(
+      "@/integrations/supabase/client.server"
+    );
+    const { error } = await supabaseAdmin.rpc("apply_to_project", {
       p_project_id: data.projectId,
       p_pro_id: data.proId,
+      p_user_id: context.userId,
       p_message: data.message,
+      p_onboarding_free: ONBOARDING_FREE,
       ...(data.quoteLow !== undefined ? { p_quote_low: data.quoteLow } : {}),
       ...(data.quoteHigh !== undefined ? { p_quote_high: data.quoteHigh } : {}),
       ...(data.availableFrom !== undefined
@@ -215,9 +223,6 @@ export const applyToProject = createServerFn({ method: "POST" })
 
     // Notify the homeowner (service role: the applying firm can't read the
     // poster's contact details itself).
-    const { supabaseAdmin } = await import(
-      "@/integrations/supabase/client.server"
-    );
     const [{ data: project }, { data: pro }] = await Promise.all([
       supabaseAdmin
         .from("projects")

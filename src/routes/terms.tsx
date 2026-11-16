@@ -79,12 +79,23 @@ function TermsPage() {
             </p>
           </Block>
 
+          <Block title="Free onboarding period">
+            <p>
+              TradesmanFinder is free for trades while we onboard, with no card
+              needed. Approved firms receive Trade-tier features during this
+              period. Prices after onboarding are Starter £29, Trade £79 and
+              Contractor £129 per month. Join during onboarding and get 50% off
+              for your first 12 months once charging starts. We'll email you at
+              least 30 days before anything is charged, and you can leave any time.
+            </p>
+          </Block>
+
           <Block title="Trade memberships">
             <p>
-              Trades pay a flat membership rather than per-lead fees. Membership
-              renews on the stated cycle and can be cancelled before the next
-              renewal date. Listings may be suspended where we receive credible
-              reports of poor conduct.
+              After the free onboarding period, trades pay a flat membership
+              rather than per-lead fees. Membership renews on the stated cycle
+              and can be cancelled before the next renewal date. Listings may be
+              suspended where we receive credible reports of poor conduct.
             </p>
           </Block>
 

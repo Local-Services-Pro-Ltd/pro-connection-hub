@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { ONBOARDING_FREE } from "@/lib/onboarding";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/hooks/use-auth";
@@ -131,11 +132,13 @@ function SignIn() {
           <p className="eyebrow">
             {search.intent === "claim"
               ? "Claim your listing"
-              : search.plan
-                ? `${search.plan} membership`
-                : mode === "in"
-                  ? "Welcome back"
-                  : "Create an account"}
+              : search.plan && ONBOARDING_FREE
+                ? "Free trade onboarding"
+                : search.plan
+                  ? `${search.plan} membership`
+                  : mode === "in"
+                    ? "Welcome back"
+                    : "Create an account"}
           </p>
           <h1 className="mt-3 text-4xl leading-tight">
             {mode === "in" ? "Sign in." : "Join up."}
@@ -143,9 +146,11 @@ function SignIn() {
           <p className="mt-3 text-sm text-muted-foreground">
             {search.intent === "claim"
               ? "Create an account with the email on your listing and we'll match it up, or sign in if you already have one."
-              : search.plan
-                ? "Create your account first — we'll set up your membership straight after."
-                : "Manage your jobs, quotes and reviews in one place."}
+              : search.plan && ONBOARDING_FREE
+                ? "Create your account to apply free — no card or checkout is needed."
+                : search.plan
+                  ? "Create your account first — we'll set up your membership straight after."
+                  : "Manage your jobs, quotes and reviews in one place."}
           </p>
 
 

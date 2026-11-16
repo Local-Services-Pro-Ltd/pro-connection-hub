@@ -154,16 +154,16 @@ export const submitAnswer = createServerFn({ method: "POST" })
     )
       throw new Error("Please slow down a little and try again shortly.");
 
-    const { error } = await supabaseAdmin.rpc("answer_question", {
+    // Runs as the caller so the database derives the firm from auth.uid().
+    const { error } = await context.supabase.rpc("answer_question", {
       p_question_id: data.questionId,
-      p_user_id: context.userId,
       p_body: data.body,
     });
 
     if (error) {
       const message = error.message ?? "";
       if (message.includes("not_a_published_pro"))
-        throw new Error("Only vetted, published firms can answer questions.");
+        throw new Error("Only approved, published firms can answer questions.");
       if (message.includes("already_answered"))
         throw new Error("You've already answered this question.");
       if (message.includes("question_not_available"))

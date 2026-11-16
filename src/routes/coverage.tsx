@@ -15,7 +15,7 @@ const TARGET = 25; // confirmed sign-ups we like to see before opening an area
 export const Route = createFileRoute("/coverage")({
   head: () => {
     const description =
-      "See which UK postcode areas TradesmanFinder is live in, which are close to opening, and where demand is building. Add your postcode to move yours up the queue.";
+      "See which UK postcode areas TradesmanFinder is onboarding, which are close to opening, and where demand is building. Add your postcode to move yours up the queue.";
     return {
       meta: [
         { title: "Area launch tracker | TradesmanFinder" },
@@ -114,7 +114,7 @@ function Coverage() {
             Where we open next is decided by you.
           </h1>
           <p className="mt-4 leading-relaxed text-muted-foreground">
-            We open an area once enough homeowners and vetted trades have put
+            We open an area once enough homeowners and local trades have put
             their postcode forward — roughly {TARGET} confirmed sign-ups in a
             postcode area is where it starts to make sense. Here's exactly where
             things stand.
@@ -124,9 +124,9 @@ function Coverage() {
 
       <Section className="border-y border-border bg-surface">
         <SectionHead
-          eyebrow="Live now"
-          title="Open for business."
-          sub="Post a job in these areas today and vetted local trades will come back to you."
+          eyebrow="Now onboarding"
+          title="Local firms are joining."
+          sub="Post your job and we'll match you as firms in these areas complete their checks."
         />
         <div className="mt-10 grid gap-6 lg:grid-cols-3">
           {live.map((a) => (
@@ -136,7 +136,7 @@ function Coverage() {
             >
               <span className="inline-flex items-center gap-2 rounded-full bg-primary/12 px-3 py-1 font-display text-[0.7rem] uppercase tracking-widest text-primary">
                 <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                Live
+                Now onboarding
               </span>
               <h2 className="mt-5 text-2xl">{a.name}</h2>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
@@ -158,7 +158,7 @@ function Coverage() {
           <p className="mt-8 text-muted-foreground">Loading demand…</p>
         ) : queue.length === 0 ? (
           <p className="mt-8 max-w-xl text-muted-foreground">
-            No confirmed sign-ups outside our live areas yet. Add your postcode
+            No confirmed sign-ups outside our onboarding areas yet. Add your postcode
             below and yours will be the first on the board.
           </p>
         ) : (
@@ -240,7 +240,7 @@ function Coverage() {
               to="/areas"
               className="mt-6 inline-flex font-display text-sm font-semibold text-primary underline underline-offset-4"
             >
-              See our live coverage map
+              See our area onboarding map
             </Link>
           </div>
           <WaitingListInline source="coverage_page" />

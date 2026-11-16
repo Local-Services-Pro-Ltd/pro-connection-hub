@@ -93,7 +93,7 @@ function WaitingListThanks() {
             to="/areas"
             className="rounded-sm bg-primary px-6 py-3 font-display text-sm font-semibold text-primary-foreground shadow-ember hover:brightness-110"
           >
-            See where we're live
+            See onboarding areas
           </Link>
         </div>
       </div>
