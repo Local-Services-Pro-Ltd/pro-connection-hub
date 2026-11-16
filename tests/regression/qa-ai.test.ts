@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { analyseQuestion, buildGeminiBody, GEMINI_QA_MODEL } from "@/lib/qa-ai.server";
+import { analyseQuestion, buildGeminiBody } from "@/lib/qa-ai.server";
 
 const ok = (content: object) =>
   new Response(JSON.stringify({ choices: [{ message: { content: JSON.stringify(content) } }] }), {
@@ -25,10 +25,11 @@ afterEach(() => {
 });
 
 describe("Gemini request body", () => {
-  it("uses a stable model and a Gemini-safe schema", () => {
+  it("uses the current Gemini default and a Gemini-safe schema", () => {
+    vi.stubEnv("GEMINI_API_KEY", "k");
+    vi.stubEnv("GEMINI_MODEL", "");
     const body = buildGeminiBody([{ role: "user", content: "x" }]);
-    expect(body.model).toBe("gemini-2.5-flash");
-    expect(GEMINI_QA_MODEL).toBe("gemini-2.5-flash");
+    expect(body.model).toBe("gemini-3.8-flash");
     const s = JSON.stringify(body.response_format);
     expect(s).not.toMatch(/[[,:[]null[\],}]/);
     expect(s).not.toContain('"strict"');
@@ -42,6 +43,7 @@ describe("Gemini request body", () => {
 describe("analyseQuestion on Gemini", () => {
   it("retries once with json_object after a 400 and logs without the key", async () => {
     vi.stubEnv("GEMINI_API_KEY", "secret-key");
+    vi.stubEnv("GEMINI_MODEL", "");
     const err = vi.spyOn(console, "error").mockImplementation(() => {});
     const fetchMock = vi
       .fn()
@@ -50,7 +52,10 @@ describe("analyseQuestion on Gemini", () => {
     vi.stubGlobal("fetch", fetchMock);
     const out = await analyseQuestion({ title: "Leak", body: "Sink drips" }, ["plumber"]);
     expect(fetchMock).toHaveBeenCalledTimes(2);
+    const first = JSON.parse(fetchMock.mock.calls[0][1].body);
     const second = JSON.parse(fetchMock.mock.calls[1][1].body);
+    expect(first.model).toBe("gemini-3.8-flash");
+    expect(second.model).toBe("gemini-3.8-flash");
     expect(second.response_format).toEqual({ type: "json_object" });
     expect(out?.suggested_trade).toBe("plumber");
     expect(err).toHaveBeenCalledWith(
@@ -61,6 +66,7 @@ describe("analyseQuestion on Gemini", () => {
   });
   it("returns null and logs when the retry also fails", async () => {
     vi.stubEnv("GEMINI_API_KEY", "k");
+    vi.stubEnv("GEMINI_MODEL", "");
     vi.spyOn(console, "error").mockImplementation(() => {});
     const fetchMock = vi.fn().mockImplementation(async () => new Response("no", { status: 400 }));
     vi.stubGlobal("fetch", fetchMock);

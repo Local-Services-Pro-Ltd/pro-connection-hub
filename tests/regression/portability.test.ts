@@ -11,13 +11,33 @@ describe("AI provider", () => {
     expect(aiProvider(e)).toBe("gemini");
     expect(aiChatUrl(e)).toContain("generativelanguage.googleapis.com");
     expect(aiAuthHeaders("g", e)).toEqual({ Authorization: "Bearer g" });
-    expect(aiModel("google/gemini-2.5-flash", e)).toBe("gemini-flash-latest");
+    expect(aiModel("google/gemini-2.5-flash", e)).toBe("gemini-3.8-flash");
+  });
+  it("uses gemini-3.8-flash for Gemini flash, flash-lite and pro requests", () => {
+    const e = { GEMINI_API_KEY: "g" };
+    for (const model of [
+      "gemini-2.5-flash",
+      "google/gemini-2.5-flash",
+      "gemini-flash-latest",
+      "gemini-2.5-flash-lite",
+      "gemini-flash-lite-latest",
+      "gemini-2.5-pro",
+      "gemini-pro-latest",
+    ]) {
+      expect(aiModel(model, e)).toBe("gemini-3.8-flash");
+    }
+  });
+  it("honours the GEMINI_MODEL override", () => {
+    const e = { GEMINI_API_KEY: "g", GEMINI_MODEL: "gemini-custom-model" };
+    expect(aiModel("google/gemini-2.5-flash", e)).toBe("gemini-custom-model");
+    expect(aiModel("gemini-2.5-pro", e)).toBe("gemini-custom-model");
   });
   it("uses Lovable otherwise, and nothing without keys", () => {
     const e = { LOVABLE_API_KEY: "l" };
     expect(aiProvider(e)).toBe("lovable");
     expect(aiChatUrl(e)).toContain("ai.gateway.lovable.dev");
     expect(aiAuthHeaders("l", e)).toEqual({ "Lovable-API-Key": "l" });
+    expect(aiModel("openai/gpt-5.6-sol", e)).toBe("openai/gpt-5.6-sol");
     expect(aiProvider({})).toBeNull();
     expect(aiApiKey({})).toBeUndefined();
   });

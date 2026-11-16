@@ -11,10 +11,9 @@
  * vetted pro answers always rank above the AI note in the UI.
  */
 
-import { aiApiKey, aiAuthHeaders, aiChatUrl, aiProvider } from "@/lib/ai-provider";
+import { aiApiKey, aiAuthHeaders, aiChatUrl, aiModel, aiProvider } from "@/lib/ai-provider";
 
-/** Stable model id accepted by Gemini's OpenAI-compatible endpoint. */
-export const GEMINI_QA_MODEL = "gemini-2.5-flash";
+const geminiQaModel = () => aiModel("google/gemini-2.5-flash");
 
 export type QaAiResult = {
   answer: string;
@@ -89,7 +88,7 @@ export function buildGeminiBody(
   mode: "schema" | "json_object" = "schema",
 ) {
   return {
-    model: GEMINI_QA_MODEL,
+    model: geminiQaModel(),
     messages,
     response_format:
       mode === "json_object"
@@ -155,13 +154,14 @@ export async function analyseQuestion(
   try {
     let res: Response;
     if (provider === "gemini") {
+      const model = geminiQaModel();
       res = await post(buildGeminiBody(messages, "schema"));
       if (res.status === 400) {
-        await logProviderError(res, GEMINI_QA_MODEL);
+        await logProviderError(res, model);
         res = await post(buildGeminiBody(messages, "json_object"));
       }
       if (!res.ok) {
-        await logProviderError(res, GEMINI_QA_MODEL);
+        await logProviderError(res, model);
         return null;
       }
     } else {

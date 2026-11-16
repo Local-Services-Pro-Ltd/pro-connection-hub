@@ -21,13 +21,8 @@ export function aiAuthHeaders(key: string, e: Env = env()): Record<string, strin
     ? { Authorization: `Bearer ${key}` }
     : { "Lovable-API-Key": key };
 }
-const GEMINI_ALIASES: Record<string, string> = {
-  "gemini-2.5-flash": "gemini-flash-latest",
-  "gemini-2.5-flash-lite": "gemini-flash-lite-latest",
-  "gemini-2.5-pro": "gemini-pro-latest",
-};
+const GEMINI_DEFAULT_MODEL = "gemini-3.8-flash";
 export function aiModel(model: string, e: Env = env()): string {
   if (aiProvider(e) !== "gemini") return model;
-  const bare = model.replace(/^google\//, "");
-  return GEMINI_ALIASES[bare] ?? bare;
+  return e["GEMINI_MODEL"]?.trim() || GEMINI_DEFAULT_MODEL;
 }

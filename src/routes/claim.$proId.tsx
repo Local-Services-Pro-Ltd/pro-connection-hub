@@ -240,7 +240,7 @@ function ClaimForm({ listing }: { listing: ClaimableListing }) {
         <BadgeCheck className="mx-auto h-8 w-8 text-success" aria-hidden="true" />
         <h2 className="mt-4 text-2xl">Thanks — we've got your claim.</h2>
         <p className="mt-3 leading-relaxed text-muted-foreground">
-          A real person will reply within 2 working days.
+          A member of our compliance and onboarding team will reply within 2 working days.
         </p>
         <p className="mt-3 text-sm text-muted-foreground">
           Your account is not linked to the listing yet. We'll email you after the review.
