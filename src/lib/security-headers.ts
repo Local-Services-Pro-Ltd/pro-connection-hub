@@ -19,11 +19,6 @@
 // inside `policy()` from the real per-request `env` fixes that.
 type RuntimeEnv = Record<string, string | undefined> | undefined;
 
-// Same last-resort public fallback as src/integrations/supabase/client.ts —
-// keeps the CSP's connect-src consistent with whichever URL the client
-// actually ends up using when platform env vars fail to arrive.
-const FALLBACK_SUPABASE_URL = "https://muohvxodwefhwjhdqbxh.supabase.co";
-
 // `cloudflare:workers`'s `env` is backed by the runtime's own per-request
 // async context, independent of whatever parameters a framework's custom
 // server-entry wrapper does or doesn't forward — the most reliable source.
@@ -47,7 +42,7 @@ async function resolveSupabaseUrl(env: RuntimeEnv): Promise<string> {
     env?.["VITE_SUPABASE_URL"] ??
     process.env["SUPABASE_URL"] ??
     process.env["VITE_SUPABASE_URL"] ??
-    FALLBACK_SUPABASE_URL;
+    "";
   return raw.replace(/\/+$/, "");
 }
 
@@ -59,9 +54,9 @@ const LOVABLE_FRAME_ANCESTORS = [
   "https://*.lovableproject.com",
 ];
 
-async function policy(env: RuntimeEnv): Promise<string> {
+export async function policy(env: RuntimeEnv): Promise<string> {
   const supabaseUrl = await resolveSupabaseUrl(env);
-  const supabaseWs = supabaseUrl.replace(/^https:/, "wss:");
+  const supabaseWs = supabaseUrl && supabaseUrl.replace(/^https:/, "wss:");
   const connect = [
     "'self'",
     supabaseUrl,
@@ -76,7 +71,7 @@ async function policy(env: RuntimeEnv): Promise<string> {
     "script-src 'self' 'unsafe-inline'",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' data: https://fonts.gstatic.com",
-    "img-src 'self' data: blob: https:",
+    `img-src 'self' data: blob: https:${supabaseUrl ? " " + supabaseUrl : ""}`,
     "media-src 'self' data: blob:",
     `connect-src ${connect.join(" ")}`,
     "object-src 'none'",

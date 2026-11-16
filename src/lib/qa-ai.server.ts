@@ -11,6 +11,8 @@
  * vetted pro answers always rank above the AI note in the UI.
  */
 
+import { aiApiKey, aiAuthHeaders, aiChatUrl, aiModel, aiProvider } from "@/lib/ai-provider";
+
 export type QaAiResult = {
   answer: string;
   safety: "none" | "caution" | "high";
@@ -77,7 +79,7 @@ export async function analyseQuestion(
   question: { title: string; body: string; trade?: string; area?: string },
   tradeSlugs: string[],
 ): Promise<QaAiResult | null> {
-  const apiKey = process.env["LOVABLE_API_KEY"];
+  const apiKey = aiApiKey();
   if (!apiKey) return null;
 
   const userText = [
@@ -90,63 +92,31 @@ export async function analyseQuestion(
     .join("\n");
 
   try {
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/responses", {
+    // Lovable keeps the existing model; Gemini (self-hosted production) uses Flash.
+    const model = aiProvider() === "gemini" ? aiModel("google/gemini-2.5-flash") : "openai/gpt-5.6-sol";
+    const res = await fetch(aiChatUrl(), {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Lovable-API-Key": apiKey,
-        "X-Lovable-AIG-SDK": "fetch",
-      },
+      headers: { "Content-Type": "application/json", ...aiAuthHeaders(apiKey) },
       body: JSON.stringify({
-        model: "openai/gpt-5.6-sol",
-        stream: true,
-        instructions: systemPrompt(tradeSlugs),
-        input: [{ role: "user", content: [{ type: "input_text", text: userText }] }],
-        text: {
-          format: {
-            type: "json_schema",
-            name: "qa_assist",
-            strict: true,
-            schema: SCHEMA,
-          },
+        model,
+        messages: [
+          { role: "system", content: systemPrompt(tradeSlugs) },
+          { role: "user", content: userText },
+        ],
+        response_format: {
+          type: "json_schema",
+          json_schema: { name: "qa_assist", strict: true, schema: SCHEMA },
         },
       }),
     });
 
-    if (!res.ok || !res.body) return null;
-
-    // Read the SSE stream and accumulate the output text deltas.
-    const reader = res.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = "";
-    let text = "";
-
-    for (;;) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      buffer += decoder.decode(value, { stream: true });
-      const lines = buffer.split("\n");
-      buffer = lines.pop() ?? "";
-      for (const line of lines) {
-        if (!line.startsWith("data:")) continue;
-        const payload = line.slice(5).trim();
-        if (!payload || payload === "[DONE]") continue;
-        try {
-          const event = JSON.parse(payload) as {
-            type?: string;
-            delta?: string;
-            response?: { output_text?: string };
-          };
-          if (event.type === "response.output_text.delta" && event.delta) {
-            text += event.delta;
-          } else if (event.type === "response.completed" && event.response?.output_text) {
-            if (!text) text = event.response.output_text;
-          }
-        } catch {
-          // Ignore malformed keep-alive frames.
-        }
-      }
-    }
+    if (!res.ok) return null;
+    const json = (await res.json()) as {
+      choices?: { message?: { content?: string | null } }[];
+    };
+    const text = (json.choices?.[0]?.message?.content ?? "")
+      .replace(/^```(?:json)?\s*/i, "")
+      .replace(/```\s*$/, "");
 
     if (!text.trim()) return null;
     const parsed = JSON.parse(text) as QaAiResult;

@@ -9,6 +9,7 @@
  * is lost.
  */
 import { EmailAPIError } from "@lovable.dev/email-js";
+import { TransportError } from "@/lib/email-templates/email-transport";
 import { sendTemplateEmail } from "@/lib/email-templates/send-email";
 
 export async function sendWaitingListConfirmation(payload: {
@@ -37,7 +38,7 @@ export async function sendWaitingListConfirmation(payload: {
     // normal outcome, never something to retry around.
     return { sent: result.sent };
   } catch (error) {
-    if (error instanceof EmailAPIError) {
+    if (error instanceof EmailAPIError || error instanceof TransportError) {
       console.info(
         `[waiting-list] confirmation email not sent (${error.code})`,
       );

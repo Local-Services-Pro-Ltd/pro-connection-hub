@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/hooks/use-auth";
 import { googleReturnUrl, safeAuthDestination, usesLovableAuth } from "@/lib/auth-redirect";
+import { getAuthOptions } from "@/lib/auth-options.functions";
 import heroPoster from "@/assets/hero-poster.jpg";
 
 type SignInSearch = {
@@ -45,6 +46,7 @@ export const Route = createFileRoute("/signin")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
+  loader: () => getAuthOptions(),
   component: SignIn,
 });
 
@@ -54,6 +56,7 @@ const field =
 function SignIn() {
   const navigate = useNavigate();
   const search = Route.useSearch();
+  const { google: googleEnabled } = Route.useLoaderData();
   const { user, loading } = useAuth();
   // Arriving from a pricing tier or a "claim your listing" link means the
   // trade almost certainly needs an account, so open on sign-up.
@@ -173,6 +176,7 @@ function SignIn() {
             </div>
           ) : (
             <>
+              {googleEnabled && (<>
               <button
                 type="button"
                 onClick={google}
@@ -192,6 +196,7 @@ function SignIn() {
                 <span className="h-px flex-1 bg-border" /> or
                 <span className="h-px flex-1 bg-border" />
               </div>
+              </>)}
 
               <form onSubmit={submit} className="space-y-5">
                 {mode === "up" && (
