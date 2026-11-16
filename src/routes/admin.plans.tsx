@@ -15,7 +15,6 @@ import {
   planVisibilityAuditQuery,
 } from "@/lib/queries";
 
-
 export const Route = createFileRoute("/admin/plans")({
   head: () => ({
     meta: [
@@ -118,18 +117,16 @@ function AdminPlansBoard() {
       order: number;
     }) => {
       setPendingSlug(slug);
-      const { error: upsertError } = await supabase
-        .from("plan_visibility")
-        .upsert(
-          {
-            plan_slug: slug,
-            display_name: displayName,
-            is_public: next,
-            display_order: order,
-            updated_by: user?.id ?? null,
-          },
-          { onConflict: "plan_slug" },
-        );
+      const { error: upsertError } = await supabase.from("plan_visibility").upsert(
+        {
+          plan_slug: slug,
+          display_name: displayName,
+          is_public: next,
+          display_order: order,
+          updated_by: user?.id ?? null,
+        },
+        { onConflict: "plan_slug" },
+      );
       if (upsertError) throw upsertError;
       return next;
     },
@@ -139,12 +136,9 @@ function AdminPlansBoard() {
       await queryClient.invalidateQueries({
         queryKey: ["admin", "plan-visibility-audit"],
       });
-      toast.success(
-        next ? "Tier is now visible on the pricing page" : "Tier is now hidden",
-      );
+      toast.success(next ? "Tier is now visible on the pricing page" : "Tier is now hidden");
     },
-    onError: (e: Error) =>
-      toast.error(e.message || "Couldn't save that change."),
+    onError: (e: Error) => toast.error(e.message || "Couldn't save that change."),
     onSettled: () => setPendingSlug(null),
   });
 
@@ -166,9 +160,7 @@ function AdminPlansBoard() {
     );
   }
 
-  const visibilityBySlug = new Map(
-    data.visibility.map((v) => [v.plan_slug, v]),
-  );
+  const visibilityBySlug = new Map(data.visibility.map((v) => [v.plan_slug, v]));
 
   return (
     <Section>
@@ -193,9 +185,7 @@ function AdminPlansBoard() {
                   <h2 className="text-xl">{row?.display_name ?? plan.name}</h2>
                   <span
                     className={`rounded-sm px-2 py-0.5 font-display text-[11px] uppercase tracking-widest ${
-                      isPublic
-                        ? "bg-primary/15 text-primary"
-                        : "bg-muted text-muted-foreground"
+                      isPublic ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground"
                     }`}
                   >
                     {isPublic ? "Visible" : "Hidden"}
@@ -212,8 +202,7 @@ function AdminPlansBoard() {
                 ) : null}
                 {row?.updated_at ? (
                   <p className="mt-2 text-xs text-muted-foreground/80">
-                    Last changed{" "}
-                    {new Date(row.updated_at).toLocaleString("en-GB")}
+                    Last changed {new Date(row.updated_at).toLocaleString("en-GB")}
                   </p>
                 ) : null}
               </div>
@@ -233,11 +222,7 @@ function AdminPlansBoard() {
                 }
                 className="inline-flex items-center gap-2 rounded-sm border border-border-strong px-5 py-2.5 font-display text-sm font-semibold transition-colors hover:border-primary hover:text-primary disabled:opacity-60"
               >
-                {isPublic ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
+                {isPublic ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 {busy ? "Saving…" : isPublic ? "Hide tier" : "Show tier"}
               </button>
             </div>
@@ -248,7 +233,6 @@ function AdminPlansBoard() {
       <BlockedSubmissions />
 
       <AuditLog />
-
 
       <p className="mt-8 text-sm text-muted-foreground">
         Changes go live on the{" "}
@@ -278,13 +262,11 @@ function AuditLog() {
         </h2>
       </div>
       <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-        Every visibility change is recorded automatically with the admin who
-        made it. Entries can't be edited or deleted by anyone.
+        Every visibility change is recorded automatically with the admin who made it. Entries can't
+        be edited or deleted by anyone.
       </p>
 
       <ExportAudit />
-
-
 
       {isPending ? (
         <p className="mt-6 text-sm text-muted-foreground">Loading history…</p>
@@ -293,15 +275,11 @@ function AuditLog() {
           Couldn't load the change history.
         </p>
       ) : data.length === 0 ? (
-        <p className="mt-6 text-sm text-muted-foreground">
-          No changes recorded yet.
-        </p>
+        <p className="mt-6 text-sm text-muted-foreground">No changes recorded yet.</p>
       ) : (
         <div className="mt-6 overflow-x-auto rounded-md border border-border">
           <table className="w-full min-w-[640px] text-left text-sm">
-            <caption className="sr-only">
-              Plan visibility change history, newest first
-            </caption>
+            <caption className="sr-only">Plan visibility change history, newest first</caption>
             <thead className="bg-surface">
               <tr className="text-xs uppercase tracking-widest text-muted-foreground">
                 <th scope="col" className="px-5 py-3 font-medium">
@@ -324,9 +302,7 @@ function AuditLog() {
                   <td className="whitespace-nowrap px-5 py-3 text-muted-foreground">
                     {new Date(row.created_at).toLocaleString("en-GB")}
                   </td>
-                  <td className="px-5 py-3">
-                    {row.display_name || row.plan_slug}
-                  </td>
+                  <td className="px-5 py-3">{row.display_name || row.plan_slug}</td>
                   <td className="px-5 py-3">
                     {row.action === "shown"
                       ? "Made visible"
@@ -514,8 +490,8 @@ function BlockedSubmissions() {
         </div>
       </div>
       <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-        Waiting-list and out-of-area post-job attempts stopped by rate limiting,
-        the human check or the hidden spam trap.
+        Waiting-list and out-of-area post-job attempts stopped by rate limiting, the human check or
+        the hidden spam trap.
       </p>
 
       {isPending ? (
@@ -538,9 +514,7 @@ function BlockedSubmissions() {
           </p>
           <div className="mt-6 overflow-x-auto rounded-md border border-border">
             <table className="w-full min-w-[560px] text-left text-sm">
-              <caption className="sr-only">
-                Daily totals of blocked form submissions
-              </caption>
+              <caption className="sr-only">Daily totals of blocked form submissions</caption>
               <thead className="bg-surface">
                 <tr className="text-xs uppercase tracking-widest text-muted-foreground">
                   <th scope="col" className="px-5 py-3 font-medium">
@@ -567,12 +541,8 @@ function BlockedSubmissions() {
                       <td className="whitespace-nowrap px-5 py-3 text-muted-foreground">
                         {i === 0 ? new Date(day).toLocaleDateString("en-GB") : ""}
                       </td>
-                      <td className="px-5 py-3">
-                        {BLOCK_FORMS[entry.form] ?? entry.form}
-                      </td>
-                      <td className="px-5 py-3">
-                        {BLOCK_REASONS[entry.reason] ?? entry.reason}
-                      </td>
+                      <td className="px-5 py-3">{BLOCK_FORMS[entry.form] ?? entry.form}</td>
+                      <td className="px-5 py-3">{BLOCK_REASONS[entry.reason] ?? entry.reason}</td>
                       <td className="px-5 py-3 font-medium">{entry.hits}</td>
                     </tr>
                   )),

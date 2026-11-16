@@ -150,9 +150,7 @@ function HowItWorks() {
                 </span>
               </div>
               <h2 className="mt-4 text-xl">{s.title}</h2>
-              <p className="mt-3 leading-relaxed text-muted-foreground">
-                {s.body}
-              </p>
+              <p className="mt-3 leading-relaxed text-muted-foreground">{s.body}</p>
             </li>
           ))}
         </ol>
@@ -185,9 +183,7 @@ function HowItWorks() {
             <div key={c.title} className="bg-card p-8">
               <c.icon className="h-5 w-5 text-primary" aria-hidden="true" />
               <h2 className="mt-4 text-lg">{c.title}</h2>
-              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                {c.body}
-              </p>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{c.body}</p>
             </div>
           ))}
         </div>
@@ -205,9 +201,7 @@ function HowItWorks() {
           {faqs.map((f) => (
             <div key={f.q} className="bg-card p-8">
               <dt className="font-display text-lg">{f.q}</dt>
-              <dd className="mt-3 leading-relaxed text-muted-foreground">
-                {f.a}
-              </dd>
+              <dd className="mt-3 leading-relaxed text-muted-foreground">{f.a}</dd>
             </div>
           ))}
         </dl>

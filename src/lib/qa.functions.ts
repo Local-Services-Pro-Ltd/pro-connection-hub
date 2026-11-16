@@ -48,10 +48,8 @@ export const submitQuestion = createServerFn({ method: "POST" })
   .inputValidator((input: AskQuestionInput) => {
     const title = (input.title ?? "").trim();
     const body = (input.body ?? "").trim();
-    if (title.length < 10)
-      throw new Error("Please give your question a fuller title.");
-    if (body.length < 20)
-      throw new Error("Please add a little more detail to your question.");
+    if (title.length < 10) throw new Error("Please give your question a fuller title.");
+    if (body.length < 20) throw new Error("Please add a little more detail to your question.");
     return {
       title: title.slice(0, 160),
       body: body.slice(0, 4000),
@@ -64,9 +62,7 @@ export const submitQuestion = createServerFn({ method: "POST" })
     };
   })
   .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import(
-      "@/integrations/supabase/client.server"
-    );
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     if (data.website) throw new Error("Something went wrong. Please try again.");
 
@@ -74,9 +70,7 @@ export const submitQuestion = createServerFn({ method: "POST" })
     verifyChallenge(data.checkToken, data.checkAnswer);
 
     if (await rateLimited(supabaseAdmin, `qa:ask:${callerKey()}`, 3, 900))
-      throw new Error(
-        "That's a few questions in a short space of time. Please try again shortly.",
-      );
+      throw new Error("That's a few questions in a short space of time. Please try again shortly.");
 
     const { data: questionId, error } = await supabaseAdmin.rpc("ask_question", {
       p_title: data.title,
@@ -90,8 +84,7 @@ export const submitQuestion = createServerFn({ method: "POST" })
 
     // Best-effort AI pass: labelled first answer, safety gating, auto-tags and
     // a private moderation suggestion. Never blocks or fails the submission.
-    let ai: Awaited<ReturnType<typeof import("@/lib/qa-ai.server").analyseQuestion>> =
-      null;
+    let ai: Awaited<ReturnType<typeof import("@/lib/qa-ai.server").analyseQuestion>> = null;
     try {
       const { analyseQuestion } = await import("@/lib/qa-ai.server");
       const { data: trades } = await supabaseAdmin.from("trades").select("slug");
@@ -117,7 +110,6 @@ export const submitQuestion = createServerFn({ method: "POST" })
           p_risk: ai.risk,
           p_reasons: ai.reasons,
           ...(ai.summary ? { p_summary: ai.summary } : {}),
-
         });
       }
     } catch {
@@ -132,7 +124,6 @@ export const submitQuestion = createServerFn({ method: "POST" })
     };
   });
 
-
 export type AnswerInput = { questionId: string; body: string };
 
 /** Only the signed-in owner of a published firm may answer; still moderated. */
@@ -140,18 +131,13 @@ export const submitAnswer = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: AnswerInput) => {
     const body = (input.body ?? "").trim();
-    if (body.length < 20)
-      throw new Error("Please write a slightly fuller answer.");
+    if (body.length < 20) throw new Error("Please write a slightly fuller answer.");
     return { questionId: (input.questionId ?? "").trim(), body: body.slice(0, 4000) };
   })
   .handler(async ({ data, context }) => {
-    const { supabaseAdmin } = await import(
-      "@/integrations/supabase/client.server"
-    );
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    if (
-      await rateLimited(supabaseAdmin, `qa:answer:${context.userId}`, 10, 3600)
-    )
+    if (await rateLimited(supabaseAdmin, `qa:answer:${context.userId}`, 10, 3600))
       throw new Error("Please slow down a little and try again shortly.");
 
     // Runs as the caller so the database derives the firm from auth.uid().
@@ -205,7 +191,6 @@ export const listPendingQa = createServerFn({ method: "GET" })
       reviews: reviews.data ?? [],
     };
   });
-
 
 export const moderateQa = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])

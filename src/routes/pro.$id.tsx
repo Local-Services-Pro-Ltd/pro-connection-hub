@@ -10,22 +10,14 @@ import { LeadForm } from "@/components/lead-form";
 import { SaveProButton } from "@/components/save-pro-button";
 import { tradeHero } from "@/lib/trade-media";
 
-import {
-  proQuery,
-  proProjectsQuery,
-} from "@/lib/queries";
-import {
-  breadcrumbSchema,
-  ldScript,
-  organizationSchema,
-} from "@/lib/structured-data";
+import { proQuery, proProjectsQuery } from "@/lib/queries";
+import { breadcrumbSchema, ldScript, organizationSchema } from "@/lib/structured-data";
 
 import pro1 from "@/assets/pro-1.jpg";
 import pro2 from "@/assets/pro-2.jpg";
 import pro3 from "@/assets/pro-3.jpg";
 
 const photos: Record<number, string> = { 1: pro1, 2: pro2, 3: pro3 };
-
 
 export const Route = createFileRoute("/pro/$id")({
   loader: async ({ params, context }) => {
@@ -50,10 +42,11 @@ export const Route = createFileRoute("/pro/$id")({
     const url = `https://tradesmanfinder.org/pro/${params.id}`;
     const image = `https://tradesmanfinder.org${tradeHero(p.trade_slug)}`;
     const title = `${p.company} — ${p.name}, ${p.area} | TradesmanFinder`;
-    const description = `${p.company} in ${p.area}. Vetting in progress. ${p.years} years' experience. ${p.bio}`.slice(
-      0,
-      158,
-    );
+    const description =
+      `${p.company} in ${p.area}. Vetting in progress. ${p.years} years' experience. ${p.bio}`.slice(
+        0,
+        158,
+      );
     const jsonLd: Record<string, unknown> = {
       "@context": "https://schema.org",
       "@type": "ProfessionalService",
@@ -65,7 +58,7 @@ export const Route = createFileRoute("/pro/$id")({
       employee: { "@type": "Person", name: p.name },
     };
     if ((loaderData.reviewCount ?? 0) > 0) {
-      jsonLd['aggregateRating'] = {
+      jsonLd["aggregateRating"] = {
         "@type": "AggregateRating",
         ratingValue: p.rating,
         reviewCount: loaderData.reviewCount,
@@ -105,7 +98,6 @@ export const Route = createFileRoute("/pro/$id")({
       ],
     };
   },
-
 
   errorComponent: ({ error }) => (
     <Section>
@@ -149,12 +141,8 @@ function ProPage() {
           />
 
           <div>
-            <p className="eyebrow capitalize">
-              {pro.trade_slug.replace("-", " ")}
-            </p>
-            <h1 className="mt-3 text-4xl leading-tight sm:text-5xl">
-              {pro.company}
-            </h1>
+            <p className="eyebrow capitalize">{pro.trade_slug.replace("-", " ")}</p>
+            <h1 className="mt-3 text-4xl leading-tight sm:text-5xl">{pro.company}</h1>
             <p className="mt-3 text-lg text-muted-foreground">{pro.name}</p>
             <div className="mt-4 flex items-center gap-3">
               <span className="rounded-sm bg-muted px-3 py-1.5 font-display text-xs font-semibold uppercase tracking-widest text-muted-foreground">
@@ -162,8 +150,6 @@ function ProPage() {
               </span>
               <SaveProButton proId={pro.id} company={pro.company} />
             </div>
-
-
 
             <div className="mt-7 flex flex-wrap gap-x-8 gap-y-4 border-t border-border pt-6 text-sm">
               {reviews.length > 0 ? (
@@ -195,9 +181,7 @@ function ProPage() {
         <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_320px]">
           <div>
             <h2 className="text-2xl">About</h2>
-            <p className="mt-4 max-w-2xl leading-relaxed text-muted-foreground">
-              {pro.bio}
-            </p>
+            <p className="mt-4 max-w-2xl leading-relaxed text-muted-foreground">{pro.bio}</p>
 
             <h2 className="mt-12 text-2xl">Services</h2>
             <ul className="mt-5 grid gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-2">
@@ -248,49 +232,39 @@ function ProPage() {
           </div>
 
           <div className="space-y-6 lg:sticky lg:top-24 lg:h-fit">
-            <BookingPanel
-              proId={pro.id}
-              proName={pro.name}
-              postcode={pro.postcode ?? ""}
-            />
+            <BookingPanel proId={pro.id} proName={pro.name} postcode={pro.postcode ?? ""} />
 
-            <LeadForm
-              proId={pro.id}
-              proName={pro.name}
-              company={pro.company}
-            />
+            <LeadForm proId={pro.id} proName={pro.name} company={pro.company} />
 
             <aside className="rounded-md border border-border bg-card p-6">
-
-            <p className="eyebrow">Request a quote</p>
-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              Describe your job and {pro.name.split(" ")[0]} will come back to
-              you with a price. No fee, no obligation.
-            </p>
-            {pro.day_rate && (
-              <p className="mt-4 font-display text-lg">
-                From £{pro.day_rate}
-                <span className="text-sm text-muted-foreground"> / day</span>
+              <p className="eyebrow">Request a quote</p>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                Describe your job and {pro.name.split(" ")[0]} will come back to you with a price.
+                No fee, no obligation.
               </p>
-            )}
-            <Link
-              to="/post-job"
-              search={{ trade: pro.trade_slug, pro: pro.id }}
-              className="mt-6 flex items-center justify-center rounded-sm bg-primary px-5 py-3 font-display text-sm font-semibold text-primary-foreground shadow-ember hover:brightness-110"
-            >
-              Request a quote
-            </Link>
-            <Link
-              to="/trades/$trade"
-              params={{ trade: pro.trade_slug }}
-              search={pro.area_slug ? { area: pro.area_slug } : {}}
-              className="mt-3 flex items-center justify-center rounded-sm border border-border-strong px-5 py-3 font-display text-sm font-semibold hover:border-primary hover:text-primary"
-            >
-              Compare similar pros
-            </Link>
+              {pro.day_rate && (
+                <p className="mt-4 font-display text-lg">
+                  From £{pro.day_rate}
+                  <span className="text-sm text-muted-foreground"> / day</span>
+                </p>
+              )}
+              <Link
+                to="/post-job"
+                search={{ trade: pro.trade_slug, pro: pro.id }}
+                className="mt-6 flex items-center justify-center rounded-sm bg-primary px-5 py-3 font-display text-sm font-semibold text-primary-foreground shadow-ember hover:brightness-110"
+              >
+                Request a quote
+              </Link>
+              <Link
+                to="/trades/$trade"
+                params={{ trade: pro.trade_slug }}
+                search={pro.area_slug ? { area: pro.area_slug } : {}}
+                className="mt-3 flex items-center justify-center rounded-sm border border-border-strong px-5 py-3 font-display text-sm font-semibold hover:border-primary hover:text-primary"
+              >
+                Compare similar pros
+              </Link>
             </aside>
           </div>
-
         </div>
       </Section>
     </>

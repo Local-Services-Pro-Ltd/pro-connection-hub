@@ -52,16 +52,13 @@ function AdminQa() {
       status: "published" | "rejected";
     }) => moderate({ data: vars }),
     onSuccess: (_r, vars) => {
-      toast.success(
-        vars.status === "published" ? "Published." : "Rejected — kept private.",
-      );
+      toast.success(vars.status === "published" ? "Published." : "Rejected — kept private.");
       void refetch();
     },
     onError: (e: Error) => toast.error(e.message),
   });
 
-  if (loading || (user && checkingRole))
-    return <Section>Checking access…</Section>;
+  if (loading || (user && checkingRole)) return <Section>Checking access…</Section>;
 
   if (!isAdmin) {
     return (
@@ -77,17 +74,9 @@ function AdminQa() {
   const answers = data?.answers ?? [];
   const reviews = data?.reviews ?? [];
   const reviewFor = (id: string) => reviews.find((r) => r.question_id === id);
-  const questionTitle = (id: string) =>
-    questions.find((q) => q.id === id)?.title ?? "Question";
+  const questionTitle = (id: string) => questions.find((q) => q.id === id)?.title ?? "Question";
 
-
-  const Actions = ({
-    target,
-    id,
-  }: {
-    target: "question" | "answer";
-    id: string;
-  }) => (
+  const Actions = ({ target, id }: { target: "question" | "answer"; id: string }) => (
     <div className="mt-4 flex gap-2">
       <button
         onClick={() => mutation.mutate({ target, id, status: "published" })}
@@ -113,8 +102,7 @@ function AdminQa() {
       />
 
       <h2 className="mt-12 font-display text-2xl">
-        Questions ({questions.filter((q) => q.status === "pending").length}{" "}
-        pending)
+        Questions ({questions.filter((q) => q.status === "pending").length} pending)
       </h2>
       <ul className="mt-6 grid gap-4">
         {questions.map((q) => (
@@ -124,9 +112,7 @@ function AdminQa() {
               {q.area ? ` · ${q.area}` : ""}
             </p>
             <h3 className="mt-2 font-display text-lg">{q.title}</h3>
-            <p className="mt-2 whitespace-pre-line text-sm text-muted-foreground">
-              {q.body}
-            </p>
+            <p className="mt-2 whitespace-pre-line text-sm text-muted-foreground">{q.body}</p>
 
             {(() => {
               const r = reviewFor(q.id);
@@ -141,9 +127,7 @@ function AdminQa() {
                 <div className={`mt-4 rounded-sm border ${tone} bg-surface p-4`}>
                   <p className="eyebrow">
                     AI suggests: {r.verdict} · {r.risk} risk
-                    {q.ai_safety && q.ai_safety !== "none"
-                      ? ` · ${q.ai_safety} safety`
-                      : ""}
+                    {q.ai_safety && q.ai_safety !== "none" ? ` · ${q.ai_safety} safety` : ""}
                     {q.ai_urgency ? ` · ${q.ai_urgency}` : ""}
                   </p>
                   {r.summary && <p className="mt-2 text-sm">{r.summary}</p>}
@@ -157,9 +141,7 @@ function AdminQa() {
                   {(q.ai_tags ?? []).length > 0 && (
                     <p className="mt-2 text-xs text-muted-foreground">
                       Tags: {(q.ai_tags ?? []).join(", ")}
-                      {q.ai_suggested_trade
-                        ? ` · suggested trade: ${q.ai_suggested_trade}`
-                        : ""}
+                      {q.ai_suggested_trade ? ` · suggested trade: ${q.ai_suggested_trade}` : ""}
                     </p>
                   )}
                   {q.ai_answer && (
@@ -175,7 +157,6 @@ function AdminQa() {
             })()}
 
             <Actions target="question" id={q.id} />
-
           </li>
         ))}
       </ul>
@@ -189,9 +170,7 @@ function AdminQa() {
             <p className="eyebrow">
               {a.status} · {a.author_name}
             </p>
-            <p className="mt-2 text-sm text-muted-foreground">
-              On: {questionTitle(a.question_id)}
-            </p>
+            <p className="mt-2 text-sm text-muted-foreground">On: {questionTitle(a.question_id)}</p>
             <p className="mt-3 whitespace-pre-line text-sm">{a.body}</p>
             <Actions target="answer" id={a.id} />
           </li>

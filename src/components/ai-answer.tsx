@@ -13,14 +13,7 @@ type Props = {
  * Clearly-labelled AI first pass. It always sits below vetted pro answers —
  * it is a starting point, never the authoritative answer.
  */
-export function AiAnswer({
-  answer,
-  safety,
-  safetyNote,
-  tags,
-  urgency,
-  compact,
-}: Props) {
+export function AiAnswer({ answer, safety, safetyNote, tags, urgency, compact }: Props) {
   if (!answer) return null;
   const high = safety === "high";
 
@@ -53,9 +46,7 @@ export function AiAnswer({
         </p>
       )}
 
-      <p className="mt-4 whitespace-pre-line leading-relaxed text-muted-foreground">
-        {answer}
-      </p>
+      <p className="mt-4 whitespace-pre-line leading-relaxed text-muted-foreground">{answer}</p>
 
       {(tags?.length || urgency) && (
         <ul className="mt-4 flex flex-wrap gap-2">
@@ -76,8 +67,8 @@ export function AiAnswer({
       )}
 
       <p className="mt-4 text-xs text-muted-foreground">
-        Generated automatically from the question. Always confirm with an
-        approved, appropriately qualified firm before starting work.
+        Generated automatically from the question. Always confirm with an approved, appropriately
+        qualified firm before starting work.
       </p>
     </div>
   );

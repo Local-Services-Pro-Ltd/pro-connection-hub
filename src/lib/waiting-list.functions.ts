@@ -28,12 +28,10 @@ function clean(value: string | undefined, max: number) {
 }
 
 /** Issues the arithmetic human check shown above the submit button. */
-export const getHumanCheck = createServerFn({ method: "GET" }).handler(
-  async () => {
-    const { issueChallenge } = await import("@/lib/human-check.server");
-    return issueChallenge();
-  },
-);
+export const getHumanCheck = createServerFn({ method: "GET" }).handler(async () => {
+  const { issueChallenge } = await import("@/lib/human-check.server");
+  return issueChallenge();
+});
 
 /**
  * Records a blocked attempt so the admin dashboard can show daily totals.
@@ -76,8 +74,7 @@ export const submitWaitingList = createServerFn({ method: "POST" })
     const postcode = (input.postcode ?? "").trim().toUpperCase();
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))
       throw new Error("Please enter a valid email address.");
-    if (postcode.length < 2)
-      throw new Error("Please enter a valid UK postcode.");
+    if (postcode.length < 2) throw new Error("Please enter a valid UK postcode.");
     if (input.role !== "homeowner" && input.role !== "trader")
       throw new Error("Please tell us whether you're a homeowner or a trade.");
     return {
@@ -96,11 +93,8 @@ export const submitWaitingList = createServerFn({ method: "POST" })
     };
   })
   .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import(
-      "@/integrations/supabase/client.server"
-    );
-    const form =
-      data.source === "post_job_gate" ? "post_job_out_of_area" : "waiting_list";
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const form = data.source === "post_job_gate" ? "post_job_out_of_area" : "waiting_list";
 
     // 1. Honeypot. Bots fill every field they find; humans never see this one.
     if (data.website) {
@@ -128,14 +122,11 @@ export const submitWaitingList = createServerFn({ method: "POST" })
     ];
 
     for (const [bucket, limit, windowSeconds] of limits) {
-      const { data: allowed, error } = await supabaseAdmin.rpc(
-        "hit_rate_limit",
-        {
-          p_bucket: bucket,
-          p_limit: limit,
-          p_window_seconds: windowSeconds,
-        },
-      );
+      const { data: allowed, error } = await supabaseAdmin.rpc("hit_rate_limit", {
+        p_bucket: bucket,
+        p_limit: limit,
+        p_window_seconds: windowSeconds,
+      });
       // A rate-limiter outage must not block genuine sign-ups.
       if (!error && allowed === false) {
         await logBlock(supabaseAdmin, form, "rate_limit");
@@ -146,24 +137,20 @@ export const submitWaitingList = createServerFn({ method: "POST" })
     }
 
     // 4. Record the sign-up (created unconfirmed, with a confirmation token).
-    const { data: result, error } = await supabaseAdmin.rpc(
-      "add_to_waiting_list",
-      {
-        p_email: data.email,
-        p_postcode: data.postcode,
-        p_role: data.role,
-        ...(data.trade ? { p_trade: data.trade } : {}),
-        p_source: data.source ?? "waiting_list_page",
-        ...(data.name ? { p_name: data.name } : {}),
-        ...(data.phone ? { p_phone: data.phone } : {}),
-        ...(data.note ? { p_note: data.note } : {}),
-      },
-    );
+    const { data: result, error } = await supabaseAdmin.rpc("add_to_waiting_list", {
+      p_email: data.email,
+      p_postcode: data.postcode,
+      p_role: data.role,
+      ...(data.trade ? { p_trade: data.trade } : {}),
+      p_source: data.source ?? "waiting_list_page",
+      ...(data.name ? { p_name: data.name } : {}),
+      ...(data.phone ? { p_phone: data.phone } : {}),
+      ...(data.note ? { p_note: data.note } : {}),
+    });
 
     if (error) {
       const message = error.message ?? "";
-      if (message.includes("invalid_email"))
-        throw new Error("Please enter a valid email address.");
+      if (message.includes("invalid_email")) throw new Error("Please enter a valid email address.");
       if (message.includes("invalid_postcode"))
         throw new Error("Please enter a valid UK postcode.");
       throw new Error("Something went wrong. Please try again.");
@@ -191,10 +178,9 @@ export const submitWaitingList = createServerFn({ method: "POST" })
     // already exist in their postcode area. Aggregate only.
     const waitingIn = async () => {
       try {
-        const { data: total } = await supabaseAdmin.rpc(
-          "waiting_list_area_total",
-          { p_area: area },
-        );
+        const { data: total } = await supabaseAdmin.rpc("waiting_list_area_total", {
+          p_area: area,
+        });
         return Number(total ?? 0);
       } catch {
         return 0;
@@ -202,8 +188,7 @@ export const submitWaitingList = createServerFn({ method: "POST" })
     };
 
     // Already confirmed on an earlier sign-up — nothing more to do.
-    if (row.confirmed)
-      return { id, area, pending: false, waiting: await waitingIn() };
+    if (row.confirmed) return { id, area, pending: false, waiting: await waitingIn() };
 
     // 5. Double opt-in: the entry stays inactive until this link is clicked.
     const confirmUrl = `${requestOrigin()}/waiting-list/confirm?token=${encodeURIComponent(row.token ?? "")}`;
@@ -258,17 +243,13 @@ async function rateLimited(
 
 /** Completes double opt-in from the link in the confirmation email. */
 export const confirmWaitingList = createServerFn({ method: "POST" })
-  .inputValidator(
-    (input: { token: string; checkToken?: string; checkAnswer?: string }) => ({
-      token: (input.token ?? "").trim().slice(0, 128),
-      checkToken: (input.checkToken ?? "").trim(),
-      checkAnswer: (input.checkAnswer ?? "").trim(),
-    }),
-  )
+  .inputValidator((input: { token: string; checkToken?: string; checkAnswer?: string }) => ({
+    token: (input.token ?? "").trim().slice(0, 128),
+    checkToken: (input.checkToken ?? "").trim(),
+    checkAnswer: (input.checkAnswer ?? "").trim(),
+  }))
   .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import(
-      "@/integrations/supabase/client.server"
-    );
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     // Human check first: stops scripted token guessing outright.
     const { verifyChallenge } = await import("@/lib/human-check.server");
@@ -287,15 +268,12 @@ export const confirmWaitingList = createServerFn({ method: "POST" })
       ])
     ) {
       await logBlock(supabaseAdmin, "waiting_list_confirm", "rate_limit");
-      throw new Error(
-        "Too many attempts just now. Please wait a minute and try again.",
-      );
+      throw new Error("Too many attempts just now. Please wait a minute and try again.");
     }
 
-    const { data: result, error } = await supabaseAdmin.rpc(
-      "confirm_waiting_list",
-      { p_token: data.token },
-    );
+    const { data: result, error } = await supabaseAdmin.rpc("confirm_waiting_list", {
+      p_token: data.token,
+    });
     if (error) throw new Error("We couldn't confirm that link. Please retry.");
     const row = (result ?? {}) as {
       ok?: boolean;
@@ -318,18 +296,13 @@ export const getWaitingListEntry = createServerFn({ method: "POST" })
     token: (input.token ?? "").trim().slice(0, 128),
   }))
   .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import(
-      "@/integrations/supabase/client.server"
-    );
-    if (
-      await rateLimited(supabaseAdmin, [[`wlr:ip:${callerKey()}`, 20, 600]])
-    ) {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    if (await rateLimited(supabaseAdmin, [[`wlr:ip:${callerKey()}`, 20, 600]])) {
       throw new Error("Too many attempts just now. Please try again shortly.");
     }
-    const { data: result, error } = await supabaseAdmin.rpc(
-      "waiting_list_details",
-      { p_token: data.token },
-    );
+    const { data: result, error } = await supabaseAdmin.rpc("waiting_list_details", {
+      p_token: data.token,
+    });
     if (error) throw new Error("We couldn't load that link.");
     const row = (result ?? {}) as {
       ok?: boolean;
@@ -371,9 +344,7 @@ export const updateWaitingListEntry = createServerFn({ method: "POST" })
     }),
   )
   .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import(
-      "@/integrations/supabase/client.server"
-    );
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     if (data.website) {
       await logBlock(supabaseAdmin, "waiting_list_edit", "honeypot");
       throw new Error("Something went wrong. Please try again.");
@@ -395,14 +366,11 @@ export const updateWaitingListEntry = createServerFn({ method: "POST" })
       throw new Error("Too many changes just now. Please try again shortly.");
     }
 
-    const { data: result, error } = await supabaseAdmin.rpc(
-      "waiting_list_update_details",
-      {
-        p_token: data.token,
-        p_postcode: data.postcode,
-        p_trade: data.trade,
-      },
-    );
+    const { data: result, error } = await supabaseAdmin.rpc("waiting_list_update_details", {
+      p_token: data.token,
+      p_postcode: data.postcode,
+      p_trade: data.trade,
+    });
     if (error) throw new Error("We couldn't save that. Please try again.");
     const row = (result ?? {}) as {
       ok?: boolean;
@@ -412,8 +380,7 @@ export const updateWaitingListEntry = createServerFn({ method: "POST" })
       trade?: string | null;
     };
     if (!row.ok) {
-      if (row.reason === "invalid_postcode")
-        throw new Error("Please enter a valid UK postcode.");
+      if (row.reason === "invalid_postcode") throw new Error("Please enter a valid UK postcode.");
       throw new Error("That link is no longer valid.");
     }
     return {
@@ -423,36 +390,24 @@ export const updateWaitingListEntry = createServerFn({ method: "POST" })
     };
   });
 
-
 /**
  * Updates one person's email preferences. Gated by the secret token from
  * their confirmation link — no account needed, and no way to enumerate rows.
  * Platform-managed unsubscribe still applies on top of this.
  */
 export const updateWaitingListPrefs = createServerFn({ method: "POST" })
-  .inputValidator(
-    (input: {
-      token: string;
-      notifyLaunch: boolean;
-      notifyUpdates: boolean;
-    }) => ({
-      token: (input.token ?? "").trim().slice(0, 128),
-      notifyLaunch: Boolean(input.notifyLaunch),
-      notifyUpdates: Boolean(input.notifyUpdates),
-    }),
-  )
+  .inputValidator((input: { token: string; notifyLaunch: boolean; notifyUpdates: boolean }) => ({
+    token: (input.token ?? "").trim().slice(0, 128),
+    notifyLaunch: Boolean(input.notifyLaunch),
+    notifyUpdates: Boolean(input.notifyUpdates),
+  }))
   .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import(
-      "@/integrations/supabase/client.server"
-    );
-    const { data: result, error } = await supabaseAdmin.rpc(
-      "waiting_list_set_prefs",
-      {
-        p_token: data.token,
-        p_notify_launch: data.notifyLaunch,
-        p_notify_updates: data.notifyUpdates,
-      },
-    );
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: result, error } = await supabaseAdmin.rpc("waiting_list_set_prefs", {
+      p_token: data.token,
+      p_notify_launch: data.notifyLaunch,
+      p_notify_updates: data.notifyUpdates,
+    });
     if (error) throw new Error("We couldn't save that. Please try again.");
     const row = (result ?? {}) as {
       ok?: boolean;
@@ -474,10 +429,7 @@ async function assertAdmin(context: {
           a: string,
           b: string,
         ) => {
-          eq: (
-            a: string,
-            b: string,
-          ) => { maybeSingle: () => Promise<{ data: unknown }> };
+          eq: (a: string, b: string) => { maybeSingle: () => Promise<{ data: unknown }> };
         };
       };
     };
@@ -504,7 +456,6 @@ export type AreaWaiter = {
   launch_notified_at: string | null;
   trade: string | null;
   last_position_notified: number | null;
-
 };
 
 /** Admin-only: who is waiting in a postcode area, with their queue position. */
@@ -516,13 +467,10 @@ export const listAreaWaiting = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context as never);
     if (!data.area) return [] as AreaWaiter[];
-    const { supabaseAdmin } = await import(
-      "@/integrations/supabase/client.server"
-    );
-    const { data: rows, error } = await supabaseAdmin.rpc(
-      "waiting_list_area_recipients",
-      { p_area: data.area },
-    );
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: rows, error } = await supabaseAdmin.rpc("waiting_list_area_recipients", {
+      p_area: data.area,
+    });
     if (error) throw new Error(error.message);
     return (rows ?? []) as AreaWaiter[];
   });
@@ -542,9 +490,7 @@ export const notifyAreaLive = createServerFn({ method: "POST" })
     await assertAdmin(context as never);
     if (!data.id) throw new Error("Missing sign-up id");
 
-    const { supabaseAdmin } = await import(
-      "@/integrations/supabase/client.server"
-    );
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: row, error } = await supabaseAdmin
       .from("waiting_list")
       .select("id, email, name, postcode, role, confirmed_at, notify_launch")
@@ -557,39 +503,27 @@ export const notifyAreaLive = createServerFn({ method: "POST" })
 
     const outward = row.postcode.split(" ")[0] ?? row.postcode;
     const area = outward.replace(/[^A-Z]/g, "");
-    const { data: recipients } = await supabaseAdmin.rpc(
-      "waiting_list_area_recipients",
-      { p_area: area },
-    );
+    const { data: recipients } = await supabaseAdmin.rpc("waiting_list_area_recipients", {
+      p_area: area,
+    });
     const position =
-      ((recipients ?? []) as AreaWaiter[]).find((r) => r.id === row.id)
-        ?.queue_position ?? 1;
+      ((recipients ?? []) as AreaWaiter[]).find((r) => r.id === row.id)?.queue_position ?? 1;
 
-    const origin =
-      process.env["PUBLIC_SITE_URL"] ?? "https://www.tradesmanfinder.org";
+    const origin = process.env["PUBLIC_SITE_URL"] ?? "https://www.tradesmanfinder.org";
 
     try {
-      const { sendTemplateEmail } = await import(
-        "@/lib/email-templates/send-email"
-      );
-      const result = await sendTemplateEmail(
-        "waiting-list-area-live",
-        row.email,
-        {
-          templateData: {
-            ...(row.name ? { name: row.name } : {}),
-            areaName: data.areaName || area,
-            postcode: row.postcode,
-            role: row.role,
-            queuePosition: position,
-            actionUrl:
-              row.role === "trader"
-                ? `${origin}/for-tradesmen`
-                : `${origin}/post-job`,
-          },
-          idempotencyKey: `waiting-list-live-${row.id}-${area}`,
+      const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
+      const result = await sendTemplateEmail("waiting-list-area-live", row.email, {
+        templateData: {
+          ...(row.name ? { name: row.name } : {}),
+          areaName: data.areaName || area,
+          postcode: row.postcode,
+          role: row.role,
+          queuePosition: position,
+          actionUrl: row.role === "trader" ? `${origin}/for-tradesmen` : `${origin}/post-job`,
         },
-      );
+        idempotencyKey: `waiting-list-live-${row.id}-${area}`,
+      });
       if (result.sent) {
         await supabaseAdmin.rpc("waiting_list_mark_launch_notified", {
           p_id: row.id,
@@ -621,9 +555,7 @@ export const notifyQueuePositionChange = createServerFn({ method: "POST" })
     await assertAdmin(context as never);
     if (!data.id) throw new Error("Missing sign-up id");
 
-    const { supabaseAdmin } = await import(
-      "@/integrations/supabase/client.server"
-    );
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: row, error } = await supabaseAdmin
       .from("waiting_list")
       .select(
@@ -639,44 +571,30 @@ export const notifyQueuePositionChange = createServerFn({ method: "POST" })
 
     const outward = row.postcode.split(" ")[0] ?? row.postcode;
     const area = outward.replace(/[^A-Z]/g, "");
-    const { data: recipients } = await supabaseAdmin.rpc(
-      "waiting_list_area_recipients",
-      { p_area: area },
-    );
+    const { data: recipients } = await supabaseAdmin.rpc("waiting_list_area_recipients", {
+      p_area: area,
+    });
     const position =
-      ((recipients ?? []) as AreaWaiter[]).find((r) => r.id === row.id)
-        ?.queue_position ?? 1;
+      ((recipients ?? []) as AreaWaiter[]).find((r) => r.id === row.id)?.queue_position ?? 1;
     const previous = row.last_position_notified;
     if (previous === position) return { sent: false, reason: "unchanged" };
 
-    const origin =
-      process.env["PUBLIC_SITE_URL"] ?? "https://www.tradesmanfinder.org";
+    const origin = process.env["PUBLIC_SITE_URL"] ?? "https://www.tradesmanfinder.org";
 
     try {
-      const { sendTemplateEmail } = await import(
-        "@/lib/email-templates/send-email"
-      );
-      const result = await sendTemplateEmail(
-        "waiting-list-position-change",
-        row.email,
-        {
-          templateData: {
-            ...(row.name ? { name: row.name } : {}),
-            areaName: data.areaName || area,
-            postcode: row.postcode,
-            role: row.role,
-            queuePosition: position,
-            ...(typeof previous === "number"
-              ? { previousPosition: previous }
-              : {}),
-            actionUrl:
-              row.role === "trader"
-                ? `${origin}/for-tradesmen`
-                : `${origin}/post-job`,
-          },
-          idempotencyKey: `waiting-list-position-${row.id}-${position}`,
+      const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
+      const result = await sendTemplateEmail("waiting-list-position-change", row.email, {
+        templateData: {
+          ...(row.name ? { name: row.name } : {}),
+          areaName: data.areaName || area,
+          postcode: row.postcode,
+          role: row.role,
+          queuePosition: position,
+          ...(typeof previous === "number" ? { previousPosition: previous } : {}),
+          actionUrl: row.role === "trader" ? `${origin}/for-tradesmen` : `${origin}/post-job`,
         },
-      );
+        idempotencyKey: `waiting-list-position-${row.id}-${position}`,
+      });
       if (result.sent) {
         await supabaseAdmin.rpc("waiting_list_mark_position_notified", {
           p_id: row.id,

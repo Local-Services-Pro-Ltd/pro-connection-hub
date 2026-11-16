@@ -1,27 +1,14 @@
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Calculator, Minus, Plus } from "lucide-react";
-import {
-  conditions,
-  estimate,
-  gbp,
-  regions,
-  urgencies,
-  type CostGuide,
-} from "@/lib/cost-guides";
+import { conditions, estimate, gbp, regions, urgencies, type CostGuide } from "@/lib/cost-guides";
 
 /**
  * Interactive project cost estimator. Everything is client-side arithmetic on
  * the published rate card in cost-guides.ts — no quotes, no lead capture, so
  * a visitor can price a job before deciding to talk to anyone.
  */
-export function CostCalculator({
-  guide,
-  tradeName,
-}: {
-  guide: CostGuide;
-  tradeName: string;
-}) {
+export function CostCalculator({ guide, tradeName }: { guide: CostGuide; tradeName: string }) {
   const [qty, setQty] = useState<Record<string, number>>(() =>
     Object.fromEntries(guide.jobs.map((j, i) => [j.id, i === 0 ? j.defaultQty : 0])),
   );
@@ -35,10 +22,7 @@ export function CostCalculator({
     (conditions.find((c) => c.id === condition)?.factor ?? 1);
 
   const lines = useMemo(
-    () =>
-      guide.jobs
-        .map((job) => ({ job, qty: qty[job.id] ?? 0 }))
-        .filter((l) => l.qty > 0),
+    () => guide.jobs.map((job) => ({ job, qty: qty[job.id] ?? 0 })).filter((l) => l.qty > 0),
     [guide.jobs, qty],
   );
 
@@ -47,8 +31,7 @@ export function CostCalculator({
     ? Math.max(
         1,
         Math.round(
-          ((total.low + total.high) / 2 / ((guide.dayRate[0] + guide.dayRate[1]) / 2)) *
-            10,
+          ((total.low + total.high) / 2 / ((guide.dayRate[0] + guide.dayRate[1]) / 2)) * 10,
         ) / 10,
       )
     : 0;
@@ -88,9 +71,7 @@ export function CostCalculator({
                     }`}
                   >
                     <div className="min-w-0 flex-1">
-                      <p className="font-display text-sm font-semibold">
-                        {job.label}
-                      </p>
+                      <p className="font-display text-sm font-semibold">{job.label}</p>
                       <p className="mt-1 text-xs text-muted-foreground">
                         {gbp(job.low)}–{gbp(job.high)} per {job.unit} · {job.note}
                       </p>
@@ -171,8 +152,8 @@ export function CostCalculator({
                 {gbp(total.low)} – {gbp(total.high)}
               </p>
               <p className="mt-2 text-xs text-muted-foreground">
-                Labour and standard materials, excluding VAT. Roughly {days}{" "}
-                working {days === 1 ? "day" : "days"} on site.
+                Labour and standard materials, excluding VAT. Roughly {days} working{" "}
+                {days === 1 ? "day" : "days"} on site.
               </p>
               <ul className="mt-4 space-y-1.5 border-t border-border pt-4 text-xs text-muted-foreground">
                 {lines.map((l) => (
@@ -180,9 +161,7 @@ export function CostCalculator({
                     <span className="truncate">
                       {l.qty} × {l.job.label}
                     </span>
-                    <span className="shrink-0">
-                      {gbp(Math.round(l.job.low * l.qty * factor))}+
-                    </span>
+                    <span className="shrink-0">{gbp(Math.round(l.job.low * l.qty * factor))}+</span>
                   </li>
                 ))}
               </ul>

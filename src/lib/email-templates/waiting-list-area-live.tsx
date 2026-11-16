@@ -21,14 +21,7 @@ interface Props {
   actionUrl?: string;
 }
 
-const Email = ({
-  name,
-  areaName,
-  postcode,
-  role,
-  queuePosition,
-  actionUrl,
-}: Props) => {
+const Email = ({ name, areaName, postcode, role, queuePosition, actionUrl }: Props) => {
   const where = areaName || postcode || "your area";
   const isTrader = role === "trader";
 
@@ -60,8 +53,8 @@ const Email = ({
           ) : null}
           <Hr style={hr} />
           <Text style={small}>
-            You're getting this because you joined the TradesmanFinder waiting
-            list for this postcode area.
+            You're getting this because you joined the TradesmanFinder waiting list for this
+            postcode area.
           </Text>
         </Container>
       </Body>

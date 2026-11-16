@@ -5,11 +5,7 @@ import { Download, Lock, RefreshCw, ScrollText } from "lucide-react";
 import { Section, SectionHead } from "@/components/layout-bits";
 import { downloadText } from "@/lib/track-export";
 import { useAuth } from "@/hooks/use-auth";
-import {
-  fetchProFeatureAuditAll,
-  isAdminQuery,
-  type ProFeatureAudit,
-} from "@/lib/queries";
+import { fetchProFeatureAuditAll, isAdminQuery, type ProFeatureAudit } from "@/lib/queries";
 
 export const Route = createFileRoute("/admin/audit")({
   head: () => ({
@@ -132,10 +128,7 @@ function AuditBoard() {
   }, [data, active, term, days]);
 
   const counts = useMemo(() => {
-    const map = Object.fromEntries(ACTIONS.map((a) => [a, 0])) as Record<
-      Action,
-      number
-    >;
+    const map = Object.fromEntries(ACTIONS.map((a) => [a, 0])) as Record<Action, number>;
     for (const r of rows) {
       if (r.action in map) map[r.action as Action] += 1;
     }
@@ -143,9 +136,7 @@ function AuditBoard() {
   }, [rows]);
 
   function toggle(a: Action) {
-    setActive((cur) =>
-      cur.includes(a) ? cur.filter((x) => x !== a) : [...cur, a],
-    );
+    setActive((cur) => (cur.includes(a) ? cur.filter((x) => x !== a) : [...cur, a]));
   }
 
   function exportCsv() {
@@ -308,20 +299,14 @@ function AuditBoard() {
                 </td>
                 <td className="px-4 py-3">
                   {r.pro_name}
-                  <span className="block font-mono text-xs text-muted-foreground">
-                    {r.pro_id}
-                  </span>
+                  <span className="block font-mono text-xs text-muted-foreground">{r.pro_id}</span>
                 </td>
                 <td className="px-4 py-3 text-muted-foreground">
                   {r.published ? "Published" : "Unpublished"} ·{" "}
                   {r.is_featured ? "Featured" : "Not featured"}
                 </td>
-                <td className="px-4 py-3 text-muted-foreground">
-                  {r.verified_credentials}
-                </td>
-                <td className="px-4 py-3 text-muted-foreground">
-                  {r.changed_by_email ?? "—"}
-                </td>
+                <td className="px-4 py-3 text-muted-foreground">{r.verified_credentials}</td>
+                <td className="px-4 py-3 text-muted-foreground">{r.changed_by_email ?? "—"}</td>
               </tr>
             ))}
           </tbody>

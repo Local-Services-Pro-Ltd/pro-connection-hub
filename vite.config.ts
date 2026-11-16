@@ -33,14 +33,8 @@ export default defineConfig({
       alias: {
         // Email rendering needs entities v4; a nested v7 copy drops ./lib/decode.js
         // and breaks SSR, so pin every import to the hoisted v4 install.
-        "entities/lib/decode.js": path.resolve(
-          dirname,
-          "node_modules/entities/lib/decode.js",
-        ),
-        "entities/lib/encode.js": path.resolve(
-          dirname,
-          "node_modules/entities/lib/encode.js",
-        ),
+        "entities/lib/decode.js": path.resolve(dirname, "node_modules/entities/lib/decode.js"),
+        "entities/lib/encode.js": path.resolve(dirname, "node_modules/entities/lib/encode.js"),
         entities: path.resolve(dirname, "node_modules/entities"),
       },
     },

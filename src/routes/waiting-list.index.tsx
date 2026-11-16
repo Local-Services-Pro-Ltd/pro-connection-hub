@@ -69,9 +69,7 @@ function WaitingList() {
   const search = Route.useSearch();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
-  const [postcode, setPostcode] = useState(
-    (search.postcode ?? "").toUpperCase(),
-  );
+  const [postcode, setPostcode] = useState((search.postcode ?? "").toUpperCase());
   const [role, setRole] = useState<Role>(search.role ?? "homeowner");
   const [trade, setTrade] = useState("");
   const [notifyUpdates, setNotifyUpdates] = useState(false);
@@ -115,13 +113,10 @@ function WaitingList() {
     <Section>
       <div className="mx-auto max-w-xl">
         <p className="eyebrow">Waiting list</p>
-        <h1 className="mt-3 text-4xl leading-tight sm:text-5xl">
-          Tell us where you are.
-        </h1>
+        <h1 className="mt-3 text-4xl leading-tight sm:text-5xl">Tell us where you are.</h1>
         <p className="mt-4 text-muted-foreground">
-          Drop your postcode and we'll invite you when we start onboarding
-          trades in your area — the more sign-ups in a postcode, the sooner we
-          open it.
+          Drop your postcode and we'll invite you when we start onboarding trades in your area — the
+          more sign-ups in a postcode, the sooner we open it.
         </p>
 
         <form
@@ -193,9 +188,7 @@ function WaitingList() {
               onChange={(e) => setTrade(e.target.value)}
               className={field}
             >
-              <option value="">
-                {role === "trader" ? "Select your trade" : "Any trade"}
-              </option>
+              <option value="">{role === "trader" ? "Select your trade" : "Any trade"}</option>
               {trades.map((t) => (
                 <option key={t.slug} value={t.slug}>
                   {t.name}
@@ -212,9 +205,8 @@ function WaitingList() {
               className="mt-1 h-4 w-4 rounded-sm border-input accent-[var(--color-primary)]"
             />
             <span>
-              Also send me occasional progress updates on my area before it
-              opens. You can change this any time from the link in your
-              confirmation email.
+              Also send me occasional progress updates on my area before it opens. You can change
+              this any time from the link in your confirmation email.
             </span>
           </label>
 
@@ -235,8 +227,7 @@ function WaitingList() {
           </button>
 
           <p className="text-xs text-muted-foreground">
-            One email when your area opens. No marketing spam, unsubscribe
-            any time. See our{" "}
+            One email when your area opens. No marketing spam, unsubscribe any time. See our{" "}
             <Link to="/privacy" className="underline hover:text-primary">
               privacy policy
             </Link>

@@ -48,10 +48,7 @@ export default function ProjectPhotoUploader({
           toast.error(`Couldn't upload ${file.name}.`);
           continue;
         }
-        setUploads((u) => [
-          ...u,
-          { path, name: file.name, preview: URL.createObjectURL(file) },
-        ]);
+        setUploads((u) => [...u, { path, name: file.name, preview: URL.createObjectURL(file) }]);
       }
     } finally {
       setBusy(false);

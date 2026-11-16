@@ -3,11 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { MapPin, TrendingUp } from "lucide-react";
 import { Section, SectionHead } from "@/components/layout-bits";
 import { WaitingListInline } from "@/components/waiting-list-inline";
-import {
-  areasQuery,
-  waitingListDemandQuery,
-  waitingListTrendQuery,
-} from "@/lib/queries";
+import { areasQuery, waitingListDemandQuery, waitingListTrendQuery } from "@/lib/queries";
 
 const SITE = "https://tradesmanfinder.org";
 const TARGET = 25; // confirmed sign-ups we like to see before opening an area
@@ -51,9 +47,7 @@ export const Route = createFileRoute("/coverage")({
  * project when an area is likely to reach the launch threshold. Aggregate
  * figures only — nothing personal is involved.
  */
-function weeklyRates(
-  trend: { postcode_area: string; week: string; signups: number }[],
-) {
+function weeklyRates(trend: { postcode_area: string; week: string; signups: number }[]) {
   const byArea = new Map<string, number[]>();
   for (const p of trend) {
     const list = byArea.get(p.postcode_area) ?? [];
@@ -81,16 +75,14 @@ function launchWindow(total: number, perWeek: number) {
   const to = new Date(from);
   to.setDate(to.getDate() + Math.max(14, Math.round(weeks * 0.4) * 7));
 
-  const fmt = (d: Date) =>
-    d.toLocaleDateString("en-GB", { month: "long", year: "numeric" });
+  const fmt = (d: Date) => d.toLocaleDateString("en-GB", { month: "long", year: "numeric" });
   const a = fmt(from);
   const b = fmt(to);
   return a === b ? `Estimated launch: ${a}` : `Estimated launch: ${a}–${b}`;
 }
 
 function statusFor(total: number) {
-  if (total >= TARGET)
-    return { label: "Nearly there", tone: "text-primary" as const };
+  if (total >= TARGET) return { label: "Nearly there", tone: "text-primary" as const };
   if (total >= Math.round(TARGET * 0.5))
     return { label: "Demand building", tone: "text-foreground" as const };
   return { label: "Early interest", tone: "text-muted-foreground" as const };
@@ -114,10 +106,9 @@ function Coverage() {
             Where we open next is decided by you.
           </h1>
           <p className="mt-4 leading-relaxed text-muted-foreground">
-            We open an area once enough homeowners and local trades have put
-            their postcode forward — roughly {TARGET} confirmed sign-ups in a
-            postcode area is where it starts to make sense. Here's exactly where
-            things stand.
+            We open an area once enough homeowners and local trades have put their postcode forward
+            — roughly {TARGET} confirmed sign-ups in a postcode area is where it starts to make
+            sense. Here's exactly where things stand.
           </p>
         </div>
       </Section>
@@ -130,18 +121,13 @@ function Coverage() {
         />
         <div className="mt-10 grid gap-6 lg:grid-cols-3">
           {live.map((a) => (
-            <div
-              key={a.slug}
-              className="rounded-md border border-border bg-card p-7"
-            >
+            <div key={a.slug} className="rounded-md border border-border bg-card p-7">
               <span className="inline-flex items-center gap-2 rounded-full bg-primary/12 px-3 py-1 font-display text-[0.7rem] uppercase tracking-widest text-primary">
                 <span className="h-1.5 w-1.5 rounded-full bg-primary" />
                 Now onboarding
               </span>
               <h2 className="mt-5 text-2xl">{a.name}</h2>
-              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                {a.note}
-              </p>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{a.note}</p>
             </div>
           ))}
         </div>
@@ -158,8 +144,8 @@ function Coverage() {
           <p className="mt-8 text-muted-foreground">Loading demand…</p>
         ) : queue.length === 0 ? (
           <p className="mt-8 max-w-xl text-muted-foreground">
-            No confirmed sign-ups outside our onboarding areas yet. Add your postcode
-            below and yours will be the first on the board.
+            No confirmed sign-ups outside our onboarding areas yet. Add your postcode below and
+            yours will be the first on the board.
           </p>
         ) : (
           <ul className="mt-10 grid gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-2 lg:grid-cols-3">
@@ -170,10 +156,7 @@ function Coverage() {
                 <li key={d.postcode_area} className="bg-card p-7">
                   <div className="flex items-center justify-between">
                     <span className="inline-flex items-center gap-2 font-display text-lg font-semibold">
-                      <MapPin
-                        className="h-4 w-4 text-muted-foreground"
-                        aria-hidden="true"
-                      />
+                      <MapPin className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
                       {d.postcode_area}
                     </span>
                     <span
@@ -190,10 +173,7 @@ function Coverage() {
                     aria-valuemax={100}
                     aria-label={`${d.postcode_area} progress towards launch`}
                   >
-                    <div
-                      className="h-full rounded-full bg-primary"
-                      style={{ width: `${pct}%` }}
-                    />
+                    <div className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
                   </div>
                   <p className="mt-4 text-sm text-muted-foreground">
                     {d.total} waiting — {d.homeowners} homeowner
@@ -228,13 +208,9 @@ function Coverage() {
               Move your area up the queue.
             </h2>
             <p className="mt-4 leading-relaxed text-muted-foreground">
-              <TrendingUp
-                className="mr-2 inline h-4 w-4 text-primary"
-                aria-hidden="true"
-              />
-              Every confirmed sign-up counts towards opening your postcode.
-              Trades count double in practice — we can't open an area without
-              people to do the work.
+              <TrendingUp className="mr-2 inline h-4 w-4 text-primary" aria-hidden="true" />
+              Every confirmed sign-up counts towards opening your postcode. Trades count double in
+              practice — we can't open an area without people to do the work.
             </p>
             <Link
               to="/areas"
@@ -264,8 +240,8 @@ function TrendBoard({
   if (trend.length === 0) {
     return (
       <p className="mt-8 max-w-xl text-muted-foreground">
-        No confirmed sign-ups in the last eight weeks yet — as soon as people
-        start joining, the weekly growth for each area shows up here.
+        No confirmed sign-ups in the last eight weeks yet — as soon as people start joining, the
+        weekly growth for each area shows up here.
       </p>
     );
   }
@@ -292,24 +268,16 @@ function TrendBoard({
         const total = Number(points[points.length - 1]?.cumulative ?? 0);
         const latest = Number(points[points.length - 1]?.signups ?? 0);
         return (
-          <li
-            key={area}
-            className="rounded-md border border-border bg-card p-6"
-          >
+          <li key={area} className="rounded-md border border-border bg-card p-6">
             <div className="flex items-baseline justify-between">
               <span className="font-display text-lg font-semibold">{area}</span>
-              <span className="font-display text-sm text-muted-foreground">
-                {total} confirmed
-              </span>
+              <span className="font-display text-sm text-muted-foreground">{total} confirmed</span>
             </div>
             <div
               className="mt-5 flex h-16 items-end gap-1.5"
               role="img"
               aria-label={`${area}: ${points
-                .map(
-                  (p) =>
-                    `${new Date(p.week).toLocaleDateString("en-GB")} ${p.signups}`,
-                )
+                .map((p) => `${new Date(p.week).toLocaleDateString("en-GB")} ${p.signups}`)
                 .join(", ")}`}
             >
               {points.map((p) => (
@@ -322,9 +290,7 @@ function TrendBoard({
                 />
               ))}
             </div>
-            <p className="mt-4 text-sm text-muted-foreground">
-              {latest} new in the latest week
-            </p>
+            <p className="mt-4 text-sm text-muted-foreground">{latest} new in the latest week</p>
           </li>
         );
       })}

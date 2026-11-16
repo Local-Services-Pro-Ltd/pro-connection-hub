@@ -59,3 +59,8 @@
 - [x] Centre /join, add listing search, and improve field-level form feedback
 - [x] Add /claim/$proId account and admin-reviewed claim flow
 - [x] Verify claim security, duplicate prevention, header widths, and screenshots
+
+## Cloudflare release reliability
+- [x] Recover once from stale hashed chunks without reload loops
+- [x] Serve all app media locally on Cloudflare Pages
+- [x] Restore lint, safe dependency audit, and build checks

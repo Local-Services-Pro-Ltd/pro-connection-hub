@@ -79,7 +79,6 @@ async function runScan(request: Request): Promise<Response> {
     });
   }
 
-
   const rows = (data ?? []) as CheckRow[];
   const failures = rows.filter((r) => r.passed === false);
   const source = new URL(request.url).searchParams.get("source") ?? "scheduled";

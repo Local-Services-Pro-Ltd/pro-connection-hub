@@ -40,9 +40,7 @@ const BASELINE_PATH = "tests/regression/security-baseline.json";
 const baseline = existsSync(BASELINE_PATH)
   ? JSON.parse(readFileSync(BASELINE_PATH, "utf8"))
   : { accepted: [] };
-const accepted = new Set(
-  (baseline.accepted ?? []).map((a) => `${a.suite}:${a.check_name}`),
-);
+const accepted = new Set((baseline.accepted ?? []).map((a) => `${a.suite}:${a.check_name}`));
 
 const res = await fetch(`${url}/rest/v1/rpc/security_regression_run`, {
   method: "POST",
@@ -61,9 +59,7 @@ if (!res.ok) {
 
 const checks = await res.json();
 const failures = checks.filter((c) => c.passed === false);
-const newFindings = failures.filter(
-  (c) => !accepted.has(`${c.suite}:${c.check_name}`),
-);
+const newFindings = failures.filter((c) => !accepted.has(`${c.suite}:${c.check_name}`));
 
 const lines = [];
 lines.push(`# Security scan — ${checks.length} checks`);
@@ -76,11 +72,13 @@ for (const c of checks) {
       ? "skipped"
       : c.passed === true
         ? "pass"
-      : accepted.has(`${c.suite}:${c.check_name}`)
-        ? "accepted"
-        : "NEW FINDING";
+        : accepted.has(`${c.suite}:${c.check_name}`)
+          ? "accepted"
+          : "NEW FINDING";
   lines.push(
-    `| ${state} | ${c.suite} | ${c.check_name} | ${String(c.detail ?? "").replace(/\|/g, "\\|").slice(0, 180)} |`,
+    `| ${state} | ${c.suite} | ${c.check_name} | ${String(c.detail ?? "")
+      .replace(/\|/g, "\\|")
+      .slice(0, 180)} |`,
   );
 }
 const summary = lines.join("\n");
@@ -150,9 +148,7 @@ if (keepHistory) {
 
   if (previous) {
     const before = new Set(
-      previous.checks
-        .filter((c) => c.passed === false)
-        .map((c) => `${c.suite}/${c.check_name}`),
+      previous.checks.filter((c) => c.passed === false).map((c) => `${c.suite}/${c.check_name}`),
     );
     const regressions = failures
       .map((c) => `${c.suite}/${c.check_name}`)
@@ -192,6 +188,4 @@ if (newFindings.length > 0) {
   process.exit(1);
 }
 
-console.log(
-  `\nNo new security findings (${failures.length} accepted baseline finding(s)).`,
-);
+console.log(`\nNo new security findings (${failures.length} accepted baseline finding(s)).`);

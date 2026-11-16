@@ -84,7 +84,6 @@ export const Route = createFileRoute("/ask/$id")({
   component: QuestionPage,
 });
 
-
 const input =
   "w-full rounded-sm border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-primary";
 
@@ -141,8 +140,7 @@ function QuestionPage() {
       )}
 
       <h2 className="mt-12 border-t border-border pt-10 font-display text-2xl">
-        {answers.length} answer{answers.length === 1 ? "" : "s"} from local
-        firms
+        {answers.length} answer{answers.length === 1 ? "" : "s"} from local firms
       </h2>
 
       <ul className="mt-6 grid max-w-3xl gap-4">
@@ -156,8 +154,8 @@ function QuestionPage() {
 
       {answers.length === 0 && (
         <p className="mt-6 max-w-3xl rounded-md border border-border bg-card p-6 text-muted-foreground">
-          No published answers yet. Approved firms are notified of new questions —
-          check back shortly, or{" "}
+          No published answers yet. Approved firms are notified of new questions — check back
+          shortly, or{" "}
           <Link to="/post-job" search={{}} className="text-primary hover:underline">
             post the job
           </Link>{" "}
@@ -177,14 +175,12 @@ function QuestionPage() {
         </div>
       )}
 
-
       <div className="mt-12 max-w-3xl border-t border-border pt-10">
         <h2 className="font-display text-2xl">Answer this question</h2>
         {user ? (
           sent ? (
             <p role="status" className="mt-4 text-muted-foreground">
-              Thanks — your answer is with our team for review and will appear
-              once published.
+              Thanks — your answer is with our team for review and will appear once published.
             </p>
           ) : (
             <form

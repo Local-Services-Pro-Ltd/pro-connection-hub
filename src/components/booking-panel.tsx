@@ -3,11 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CalendarCheck, Check } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  bookedSlotsQuery,
-  proAvailabilityQuery,
-  type ProAvailability,
-} from "@/lib/queries";
+import { bookedSlotsQuery, proAvailabilityQuery, type ProAvailability } from "@/lib/queries";
 import { useAuth } from "@/hooks/use-auth";
 
 const HOURS = [8, 10, 13, 15];
@@ -48,7 +44,6 @@ function buildSlots(windows: ProAvailability[]): Date[] {
   return out;
 }
 
-
 const reasons: Record<string, string> = {
   unknown_pro: "That tradesperson isn't taking bookings right now.",
   invalid_slot: "Pick a time in the future.",
@@ -61,7 +56,6 @@ const reasons: Record<string, string> = {
   too_far_ahead: "Bookings open up to 90 days ahead — pick a nearer date.",
   notes_too_long: "Shorten the job notes a little.",
 };
-
 
 export function BookingPanel({
   proId,
@@ -107,8 +101,7 @@ export function BookingPanel({
       });
       if (error) throw error;
       const res = data as { ok: boolean; reason?: string; reference?: string };
-      if (!res.ok)
-        throw new Error(reasons[res.reason ?? ""] ?? "Couldn't book that slot.");
+      if (!res.ok) throw new Error(reasons[res.reason ?? ""] ?? "Couldn't book that slot.");
       return res.reference!;
     },
     onSuccess: (ref) => {
@@ -137,9 +130,8 @@ export function BookingPanel({
               minute: "2-digit",
             })}
           </strong>
-          . Reference{" "}
-          <strong className="font-display text-foreground">{reference}</strong>.
-          You'll get a confirmation once it's accepted.
+          . Reference <strong className="font-display text-foreground">{reference}</strong>. You'll
+          get a confirmation once it's accepted.
         </p>
       </div>
     );
@@ -152,8 +144,7 @@ export function BookingPanel({
         Book a visit
       </p>
       <p className="mt-3 text-sm text-muted-foreground">
-        Pick a slot rather than waiting on a callback. Free to request, and you
-        can cancel any time.
+        Pick a slot rather than waiting on a callback. Free to request, and you can cancel any time.
       </p>
 
       <div className="mt-5 max-h-72 space-y-4 overflow-y-auto pr-1">

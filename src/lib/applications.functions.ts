@@ -79,7 +79,6 @@ export type ApplicationStatus = {
   timeline: ApplicationStatusEvent[];
 };
 
-
 function clean(value: string | undefined, max: number) {
   const trimmed = (value ?? "").trim();
   return trimmed ? trimmed.slice(0, max) : undefined;
@@ -92,23 +91,19 @@ export const submitProApplication = createServerFn({ method: "POST" })
     const email = (input.email ?? "").trim().toLowerCase();
     const postcode = (input.postcode ?? "").trim().toUpperCase();
     if (company.length < 2) throw new Error("Please enter your company name.");
-    if (contactName.length < 2)
-      throw new Error("Please enter the main contact's name.");
+    if (contactName.length < 2) throw new Error("Please enter the main contact's name.");
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))
       throw new Error("Please enter a valid email address.");
-    if (postcode.length < 2)
-      throw new Error("Please enter the postcode you work from.");
+    if (postcode.length < 2) throw new Error("Please enter the postcode you work from.");
     const businessType = clean(input.businessType, 30);
     if (businessType && !BUSINESS_TYPES.includes(businessType as BusinessType))
       throw new Error("Please choose how your business is set up.");
     if (input.source === "join") {
-      if (!businessType)
-        throw new Error("Please choose how your business is set up.");
+      if (!businessType) throw new Error("Please choose how your business is set up.");
       if (!clean(input.tradeSlug, 60)) throw new Error("Please choose your main trade.");
       if ((clean(input.about, 2000) ?? "").length < 10)
         throw new Error("Please tell us a little about the work you do.");
-      if (input.consent !== true)
-        throw new Error("Please confirm the declaration before sending.");
+      if (input.consent !== true) throw new Error("Please confirm the declaration before sending.");
     }
     const expiry = clean(input.insuranceExpiry, 10);
     if (expiry && !/^\d{4}-\d{2}-\d{2}$/.test(expiry))
@@ -134,9 +129,7 @@ export const submitProApplication = createServerFn({ method: "POST" })
     };
   })
   .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import(
-      "@/integrations/supabase/client.server"
-    );
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const logBlock = async (reason: string) => {
       try {
@@ -170,10 +163,11 @@ export const submitProApplication = createServerFn({ method: "POST" })
       [`app:email:${data.email}`, 3, 86_400],
     ];
     for (const [bucket, limit, windowSeconds] of limits) {
-      const { data: allowed, error } = await supabaseAdmin.rpc(
-        "hit_rate_limit",
-        { p_bucket: bucket, p_limit: limit, p_window_seconds: windowSeconds },
-      );
+      const { data: allowed, error } = await supabaseAdmin.rpc("hit_rate_limit", {
+        p_bucket: bucket,
+        p_limit: limit,
+        p_window_seconds: windowSeconds,
+      });
       if (!error && allowed === false) {
         await logBlock("rate_limit");
         throw new Error(
@@ -182,37 +176,25 @@ export const submitProApplication = createServerFn({ method: "POST" })
       }
     }
 
-    const { data: id, error } = await supabaseAdmin.rpc(
-      "submit_pro_application",
-      {
-        p_company: data.company,
-        p_contact_name: data.contactName,
-        p_email: data.email,
-        p_postcode: data.postcode,
-        ...(data.tradeSlug ? { p_trade_slug: data.tradeSlug } : {}),
-        ...(data.phone ? { p_phone: data.phone } : {}),
-        p_years: data.years,
-        ...(data.website ? { p_website: data.website } : {}),
-        ...(data.companiesHouse
-          ? { p_companies_house: data.companiesHouse }
-          : {}),
-        ...(data.insuranceProvider
-          ? { p_insurance_provider: data.insuranceProvider }
-          : {}),
-        ...(data.insuranceExpiry
-          ? { p_insurance_expiry: data.insuranceExpiry }
-          : {}),
-        ...(data.accreditations
-          ? { p_accreditations: data.accreditations }
-          : {}),
-        p_about: data.about,
-      },
-    );
+    const { data: id, error } = await supabaseAdmin.rpc("submit_pro_application", {
+      p_company: data.company,
+      p_contact_name: data.contactName,
+      p_email: data.email,
+      p_postcode: data.postcode,
+      ...(data.tradeSlug ? { p_trade_slug: data.tradeSlug } : {}),
+      ...(data.phone ? { p_phone: data.phone } : {}),
+      p_years: data.years,
+      ...(data.website ? { p_website: data.website } : {}),
+      ...(data.companiesHouse ? { p_companies_house: data.companiesHouse } : {}),
+      ...(data.insuranceProvider ? { p_insurance_provider: data.insuranceProvider } : {}),
+      ...(data.insuranceExpiry ? { p_insurance_expiry: data.insuranceExpiry } : {}),
+      ...(data.accreditations ? { p_accreditations: data.accreditations } : {}),
+      p_about: data.about,
+    });
 
     if (error) {
       const message = error.message ?? "";
-      if (message.includes("invalid_email"))
-        throw new Error("Please enter a valid email address.");
+      if (message.includes("invalid_email")) throw new Error("Please enter a valid email address.");
       if (message.includes("invalid_postcode"))
         throw new Error("Please enter a valid UK postcode.");
       console.error("[applications] insert failed", error);
@@ -242,9 +224,7 @@ export const submitProApplication = createServerFn({ method: "POST" })
       : `${SITE}/application-status`;
 
     try {
-      const { sendTemplateEmail } = await import(
-        "@/lib/email-templates/send-email"
-      );
+      const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
       await sendTemplateEmail("pro-application-status", data.email, {
         templateData: {
           company: data.company,
@@ -273,9 +253,7 @@ export const getApplicationStatus = createServerFn({ method: "POST" })
     return { token: token.slice(0, 120) };
   })
   .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import(
-      "@/integrations/supabase/client.server"
-    );
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const forwarded = getRequestHeader("x-forwarded-for") ?? "";
     const ip = (forwarded.split(",")[0] ?? "").trim() || "unknown";
@@ -285,13 +263,11 @@ export const getApplicationStatus = createServerFn({ method: "POST" })
       p_limit: 40,
       p_window_seconds: 600,
     });
-    if (allowed === false)
-      throw new Error("Too many lookups. Please try again shortly.");
+    if (allowed === false) throw new Error("Too many lookups. Please try again shortly.");
 
-    const { data: status, error } = await supabaseAdmin.rpc(
-      "pro_application_status",
-      { p_token: data.token },
-    );
+    const { data: status, error } = await supabaseAdmin.rpc("pro_application_status", {
+      p_token: data.token,
+    });
     if (error) {
       console.error("[applications] status lookup failed", error);
       throw new Error("Something went wrong. Please try again.");
@@ -339,7 +315,6 @@ export type ProApplication = {
   verified_at: string | null;
 };
 
-
 async function assertAdmin(context: {
   supabase: { rpc: (fn: string, args: Record<string, unknown>) => unknown };
   userId: string;
@@ -368,13 +343,7 @@ export const listProApplications = createServerFn({ method: "GET" })
 /** Move an application through the vetting pipeline. Admin-only. */
 export const reviewProApplication = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(
-    (input: {
-      id: string;
-      status: string;
-      note?: string;
-      notify?: boolean;
-    }) => {
+  .inputValidator((input: { id: string; status: string; note?: string; notify?: boolean }) => {
     const allowed = [
       "pending",
       "in_review",
@@ -385,14 +354,13 @@ export const reviewProApplication = createServerFn({ method: "POST" })
     ];
     if (!allowed.includes(input.status)) throw new Error("Unknown status.");
     if (!input.id) throw new Error("Missing application.");
-      return {
-        id: input.id,
-        status: input.status,
-        note: (input.note ?? "").trim().slice(0, 500),
-        notify: input.notify !== false,
-      };
-    },
-  )
+    return {
+      id: input.id,
+      status: input.status,
+      note: (input.note ?? "").trim().slice(0, 500),
+      notify: input.notify !== false,
+    };
+  })
   .handler(async ({ data, context }) => {
     await assertAdmin(context as never);
     const { error } = await context.supabase
@@ -415,9 +383,7 @@ export const reviewProApplication = createServerFn({ method: "POST" })
     let notified = false;
     if (data.notify !== false && row?.email && data.status !== "pending") {
       try {
-        const { sendTemplateEmail } = await import(
-          "@/lib/email-templates/send-email"
-        );
+        const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
         const result = await sendTemplateEmail(
           row.kind === "claim" ? "pro-claim-status" : "pro-application-status",
           row.email as string,
@@ -475,8 +441,7 @@ export const listProApplicationAudit = createServerFn({ method: "POST" })
       .select("*")
       .order("created_at", { ascending: false })
       .limit(data.limit);
-    if (data.applicationId)
-      query = query.eq("application_id", data.applicationId);
+    if (data.applicationId) query = query.eq("application_id", data.applicationId);
     const { data: rows, error } = await query;
     if (error) throw new Error(error.message);
     return (rows ?? []) as ProApplicationAudit[];
@@ -490,10 +455,9 @@ const DOCS_BUCKET = "application-docs";
 
 async function tokenApplicationId(token: string) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { data, error } = await supabaseAdmin.rpc(
-    "pro_application_id_for_token",
-    { p_token: token },
-  );
+  const { data, error } = await supabaseAdmin.rpc("pro_application_id_for_token", {
+    p_token: token,
+  });
   if (error) {
     console.error("[applications] token lookup failed", error);
     throw new Error("Something went wrong. Please try again.");
@@ -530,8 +494,7 @@ export const uploadApplicationDocument = createServerFn({ method: "POST" })
       const token = (input.token ?? "").trim();
       if (token.length < 8) throw new Error("That tracking link isn't valid.");
       const kind = (input.kind ?? "other").trim();
-      if (!DOCUMENT_KINDS.some((d) => d.key === kind))
-        throw new Error("Unknown document type.");
+      if (!DOCUMENT_KINDS.some((d) => d.key === kind)) throw new Error("Unknown document type.");
       const fileName = (input.fileName ?? "").trim().slice(0, 160);
       const mimeType = (input.mimeType ?? "").trim();
       const dataBase64 = (input.dataBase64 ?? "").trim();
@@ -552,8 +515,7 @@ export const uploadApplicationDocument = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const bytes = Buffer.from(data.dataBase64, "base64");
-    if (bytes.byteLength > MAX_DOCUMENT_BYTES)
-      throw new Error("That file is too large.");
+    if (bytes.byteLength > MAX_DOCUMENT_BYTES) throw new Error("That file is too large.");
 
     const ext = ALLOWED_DOCUMENT_TYPES[data.mimeType] ?? "bin";
     const path = `${applicationId}/${data.kind}-${Date.now()}.${ext}`;
@@ -596,54 +558,42 @@ export const uploadApplicationDocument = createServerFn({ method: "POST" })
 
 /** Applicant answers a change request and resubmits. */
 export const resubmitApplication = createServerFn({ method: "POST" })
-  .inputValidator(
-    (input: {
-      token: string;
-      updates: Record<string, string>;
-      message?: string;
-    }) => {
-      const token = (input.token ?? "").trim();
-      if (token.length < 8) throw new Error("That tracking link isn't valid.");
-      const allowed = [
-        "contact_name",
-        "phone",
-        "website",
-        "companies_house",
-        "insurance_provider",
-        "insurance_expiry",
-        "accreditations",
-        "about",
-      ];
-      const updates: Record<string, string> = {};
-      for (const [key, value] of Object.entries(input.updates ?? {})) {
-        if (!allowed.includes(key)) continue;
-        const trimmed = String(value ?? "").trim();
-        if (!trimmed) continue;
-        if (
-          key === "insurance_expiry" &&
-          !/^\d{4}-\d{2}-\d{2}$/.test(trimmed)
-        )
-          throw new Error("Insurance expiry must be a valid date.");
-        updates[key] = trimmed.slice(0, 2000);
-      }
-      return {
-        token,
-        updates,
-        message: (input.message ?? "").trim().slice(0, 1000),
-      };
-    },
-  )
+  .inputValidator((input: { token: string; updates: Record<string, string>; message?: string }) => {
+    const token = (input.token ?? "").trim();
+    if (token.length < 8) throw new Error("That tracking link isn't valid.");
+    const allowed = [
+      "contact_name",
+      "phone",
+      "website",
+      "companies_house",
+      "insurance_provider",
+      "insurance_expiry",
+      "accreditations",
+      "about",
+    ];
+    const updates: Record<string, string> = {};
+    for (const [key, value] of Object.entries(input.updates ?? {})) {
+      if (!allowed.includes(key)) continue;
+      const trimmed = String(value ?? "").trim();
+      if (!trimmed) continue;
+      if (key === "insurance_expiry" && !/^\d{4}-\d{2}-\d{2}$/.test(trimmed))
+        throw new Error("Insurance expiry must be a valid date.");
+      updates[key] = trimmed.slice(0, 2000);
+    }
+    return {
+      token,
+      updates,
+      message: (input.message ?? "").trim().slice(0, 1000),
+    };
+  })
   .handler(async ({ data }) => {
     await limitByIp("appresubmit:ip", 10, 900);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: result, error } = await supabaseAdmin.rpc(
-      "pro_application_resubmit",
-      {
-        p_token: data.token,
-        p_updates: data.updates,
-        ...(data.message ? { p_message: data.message } : {}),
-      },
-    );
+    const { data: result, error } = await supabaseAdmin.rpc("pro_application_resubmit", {
+      p_token: data.token,
+      p_updates: data.updates,
+      ...(data.message ? { p_message: data.message } : {}),
+    });
     if (error) {
       const message = error.message ?? "";
       if (message.includes("not_found"))
@@ -735,14 +685,11 @@ export const runApplicationVerification = createServerFn({ method: "POST" })
   })
   .handler(async ({ data, context }) => {
     await assertAdmin(context as never);
-    const { runVerificationForApplication } = await import(
-      "@/lib/application-checks.server"
-    );
+    const { runVerificationForApplication } = await import("@/lib/application-checks.server");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const email =
-      ((context.claims as Record<string, unknown> | undefined)?.["email"] as
-        | string
-        | undefined) ?? null;
+      ((context.claims as Record<string, unknown> | undefined)?.["email"] as string | undefined) ??
+      null;
     return runVerificationForApplication(context.supabase, data.id, {
       source: "manual",
       triggeredBy: context.userId,
@@ -751,31 +698,22 @@ export const runApplicationVerification = createServerFn({ method: "POST" })
     });
   });
 
-
 /** Ask the firm for specific missing fields and pause the clock. */
 export const requestApplicationChanges = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(
-    (input: {
-      id: string;
-      fields: string[];
-      note?: string;
-      notify?: boolean;
-    }) => {
-      if (!input.id) throw new Error("Missing application.");
-      const fields = (input.fields ?? [])
-        .map((f) => String(f).trim())
-        .filter((f) => f in REQUESTABLE_FIELD_LABEL);
-      if (fields.length === 0)
-        throw new Error("Pick at least one thing to ask the firm for.");
-      return {
-        id: input.id,
-        fields,
-        note: (input.note ?? "").trim().slice(0, 500),
-        notify: input.notify !== false,
-      };
-    },
-  )
+  .inputValidator((input: { id: string; fields: string[]; note?: string; notify?: boolean }) => {
+    if (!input.id) throw new Error("Missing application.");
+    const fields = (input.fields ?? [])
+      .map((f) => String(f).trim())
+      .filter((f) => f in REQUESTABLE_FIELD_LABEL);
+    if (fields.length === 0) throw new Error("Pick at least one thing to ask the firm for.");
+    return {
+      id: input.id,
+      fields,
+      note: (input.note ?? "").trim().slice(0, 500),
+      notify: input.notify !== false,
+    };
+  })
   .handler(async ({ data, context }) => {
     await assertAdmin(context as never);
     const { error } = await context.supabase
@@ -799,29 +737,21 @@ export const requestApplicationChanges = createServerFn({ method: "POST" })
     let notified = false;
     if (data.notify && row?.email) {
       try {
-        const { sendTemplateEmail } = await import(
-          "@/lib/email-templates/send-email"
-        );
-        const asked = data.fields
-          .map((f) => REQUESTABLE_FIELD_LABEL[f])
-          .join(", ");
-        const result = await sendTemplateEmail(
-          "pro-application-status",
-          row.email as string,
-          {
-            templateData: {
-              company: row.company,
-              contactName: row.contact_name,
-              reference: row.reference,
-              status: "changes_requested",
-              reviewerNote: `We need: ${asked}.${data.note ? ` ${data.note}` : ""}`,
-              statusUrl: row.tracking_token
-                ? `${SITE}/application-status?token=${row.tracking_token}`
-                : `${SITE}/application-status`,
-            },
-            idempotencyKey: `application-changes-${data.id}-${Date.now()}`,
+        const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
+        const asked = data.fields.map((f) => REQUESTABLE_FIELD_LABEL[f]).join(", ");
+        const result = await sendTemplateEmail("pro-application-status", row.email as string, {
+          templateData: {
+            company: row.company,
+            contactName: row.contact_name,
+            reference: row.reference,
+            status: "changes_requested",
+            reviewerNote: `We need: ${asked}.${data.note ? ` ${data.note}` : ""}`,
+            statusUrl: row.tracking_token
+              ? `${SITE}/application-status?token=${row.tracking_token}`
+              : `${SITE}/application-status`,
           },
-        );
+          idempotencyKey: `application-changes-${data.id}-${Date.now()}`,
+        });
         notified = result.sent;
       } catch (emailError) {
         console.error("[applications] change request email failed", emailError);
@@ -835,22 +765,12 @@ export const requestApplicationChanges = createServerFn({ method: "POST" })
 export const escalateApplication = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator(
-    (input: {
-      id: string;
-      note?: string;
-      priority?: string;
-      dueInHours?: number;
-    }) => {
+    (input: { id: string; note?: string; priority?: string; dueInHours?: number }) => {
       if (!input.id) throw new Error("Missing application.");
-      const priority = ["normal", "high", "urgent"].includes(
-        input.priority ?? "",
-      )
+      const priority = ["normal", "high", "urgent"].includes(input.priority ?? "")
         ? (input.priority as string)
         : "high";
-      const dueInHours = Math.min(
-        Math.max(Number(input.dueInHours ?? 24) || 24, 1),
-        720,
-      );
+      const dueInHours = Math.min(Math.max(Number(input.dueInHours ?? 24) || 24, 1), 720);
       return {
         id: input.id,
         note: (input.note ?? "").trim().slice(0, 500),
@@ -1019,9 +939,7 @@ export const getApplicationEvidencePack = createServerFn({ method: "POST" })
         .order("created_at", { ascending: true }),
       context.supabase
         .from("application_reminders")
-        .select(
-          "kind, detail, created_at, delivery_status, attempts, last_error, delivered_at",
-        )
+        .select("kind, detail, created_at, delivery_status, attempts, last_error, delivered_at")
         .eq("application_id", data.id)
         .order("created_at", { ascending: true }),
       context.supabase
@@ -1042,9 +960,7 @@ export const getApplicationEvidencePack = createServerFn({ method: "POST" })
         const size = Number(row.size_bytes ?? 0);
         let preview_data_url: string | null = null;
         if (mime.startsWith("image/") && size > 0 && size <= MAX_INLINE) {
-          const { data: file } = await supabaseAdmin.storage
-            .from(DOCS_BUCKET)
-            .download(path);
+          const { data: file } = await supabaseAdmin.storage.from(DOCS_BUCKET).download(path);
           if (file) {
             const buffer = Buffer.from(await file.arrayBuffer());
             preview_data_url = `data:${mime};base64,${buffer.toString("base64")}`;
@@ -1053,10 +969,9 @@ export const getApplicationEvidencePack = createServerFn({ method: "POST" })
         const { data: signed } = await supabaseAdmin.storage
           .from(DOCS_BUCKET)
           .createSignedUrl(path, 1800);
-        const {
-          file_path: _omit,
-          ...rest
-        } = row as Record<string, unknown> & { file_path: string };
+        const { file_path: _omit, ...rest } = row as Record<string, unknown> & {
+          file_path: string;
+        };
         return {
           ...rest,
           preview_data_url,
@@ -1066,7 +981,6 @@ export const getApplicationEvidencePack = createServerFn({ method: "POST" })
     );
 
     const verification = app.verification as unknown;
-
 
     return {
       application: {
@@ -1253,9 +1167,7 @@ export const setReminderPreferences = createServerFn({ method: "POST" })
     return { token: token.slice(0, 120), prefs: input.prefs ?? {} };
   })
   .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import(
-      "@/integrations/supabase/client.server"
-    );
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const forwarded = getRequestHeader("x-forwarded-for") ?? "";
     const ip = (forwarded.split(",")[0] ?? "").trim() || "unknown";
@@ -1265,13 +1177,12 @@ export const setReminderPreferences = createServerFn({ method: "POST" })
       p_limit: 20,
       p_window_seconds: 600,
     });
-    if (allowed === false)
-      throw new Error("Too many changes. Please try again shortly.");
+    if (allowed === false) throw new Error("Too many changes. Please try again shortly.");
 
-    const { data: saved, error } = await supabaseAdmin.rpc(
-      "pro_application_set_reminder_prefs",
-      { p_token: data.token, p_prefs: data.prefs as never },
-    );
+    const { data: saved, error } = await supabaseAdmin.rpc("pro_application_set_reminder_prefs", {
+      p_token: data.token,
+      p_prefs: data.prefs as never,
+    });
     if (error) {
       console.error("[applications] reminder prefs failed", error);
       throw new Error("We couldn't save your preferences. Please try again.");
@@ -1279,4 +1190,3 @@ export const setReminderPreferences = createServerFn({ method: "POST" })
     if (!saved) throw new Error("We couldn't find an application for that link.");
     return saved as unknown as Record<string, boolean>;
   });
-

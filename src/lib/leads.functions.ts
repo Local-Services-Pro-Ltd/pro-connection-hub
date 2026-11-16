@@ -40,12 +40,9 @@ export const sendProLead = createServerFn({ method: "POST" })
     if (name.length < 2) throw new Error("Please tell us your name.");
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))
       throw new Error("Please enter a valid email address.");
-    if (postcode.length < 2)
-      throw new Error("Please enter the job's postcode.");
+    if (postcode.length < 2) throw new Error("Please enter the job's postcode.");
     if (message.length < 20)
-      throw new Error(
-        "Please describe the job in a little more detail (20 characters or more).",
-      );
+      throw new Error("Please describe the job in a little more detail (20 characters or more).");
     return {
       proId: input.proId.slice(0, 120),
       name: name.slice(0, 80),
@@ -61,9 +58,7 @@ export const sendProLead = createServerFn({ method: "POST" })
     };
   })
   .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import(
-      "@/integrations/supabase/client.server"
-    );
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     // 1. Honeypot — only bots fill a hidden field.
     if (data.website) {
@@ -94,10 +89,11 @@ export const sendProLead = createServerFn({ method: "POST" })
       [`lead:pair:${data.email}:${data.proId}`, 2, 86_400],
     ];
     for (const [bucket, limit, windowSeconds] of limits) {
-      const { data: allowed, error } = await supabaseAdmin.rpc(
-        "hit_rate_limit",
-        { p_bucket: bucket, p_limit: limit, p_window_seconds: windowSeconds },
-      );
+      const { data: allowed, error } = await supabaseAdmin.rpc("hit_rate_limit", {
+        p_bucket: bucket,
+        p_limit: limit,
+        p_window_seconds: windowSeconds,
+      });
       if (!error && allowed === false) {
         await supabaseAdmin
           .rpc("log_form_block", { p_form: "pro_lead", p_reason: "rate_limit" })
@@ -111,32 +107,27 @@ export const sendProLead = createServerFn({ method: "POST" })
     // 4. The firm must exist and be live in the directory.
     const { data: pro, error: proError } = await supabaseAdmin
       .from("pros")
-      .select(
-        "id, name, company, contact_email, trade_slug, response_mins, published",
-      )
+      .select("id, name, company, contact_email, trade_slug, response_mins, published")
       .eq("id", data.proId)
       .maybeSingle();
     if (proError) throw new Error("We couldn't reach that firm just now.");
-    if (!pro || !pro.published)
-      throw new Error("That firm isn't taking enquiries at the moment.");
+    if (!pro || !pro.published) throw new Error("That firm isn't taking enquiries at the moment.");
 
     const reference = `TFL-${randomUUID().replace(/-/g, "").slice(0, 8).toUpperCase()}`;
 
-    const { error: insertError } = await supabaseAdmin
-      .from("pro_leads")
-      .insert({
-        pro_id: pro.id,
-        name: data.name,
-        email: data.email,
-        phone: data.phone ?? null,
-        postcode: data.postcode,
-        trade_slug: pro.trade_slug,
-        message: data.message,
-        budget_band: data.budgetBand ?? null,
-        timing: data.timing ?? null,
-        reference,
-        delivered_to_firm: Boolean(pro.contact_email),
-      });
+    const { error: insertError } = await supabaseAdmin.from("pro_leads").insert({
+      pro_id: pro.id,
+      name: data.name,
+      email: data.email,
+      phone: data.phone ?? null,
+      postcode: data.postcode,
+      trade_slug: pro.trade_slug,
+      message: data.message,
+      budget_band: data.budgetBand ?? null,
+      timing: data.timing ?? null,
+      reference,
+      delivered_to_firm: Boolean(pro.contact_email),
+    });
     if (insertError) {
       console.error("[lead] insert failed", insertError);
       throw new Error("We couldn't send that enquiry. Please try again.");
@@ -144,9 +135,7 @@ export const sendProLead = createServerFn({ method: "POST" })
 
     // 5. Confirmation to the homeowner, notification to the firm. A delivery
     // problem must never lose the lead — it is already recorded above.
-    const { sendTemplateEmail } = await import(
-      "@/lib/email-templates/send-email"
-    );
+    const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
 
     try {
       await sendTemplateEmail("lead-confirmation", data.email, {

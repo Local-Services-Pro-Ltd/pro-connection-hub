@@ -4,8 +4,8 @@
 // supplied by the areas table. Used by /post-job before creating a job and
 // by the waiting-list handoff. Errs on the side of accepting borderline cases.
 
-export type LiveArea = "london" | "kent" | "surrey" | "berkshire" |
-  "manchester" | "birmingham" | "bristol" | "leeds";
+export type LiveArea =
+  "london" | "kent" | "surrey" | "berkshire" | "manchester" | "birmingham" | "bristol" | "leeds";
 
 export type CoverageArea = { slug: string; status: string };
 
@@ -82,8 +82,8 @@ export function liveAreaFor(postcode: string, areas: readonly CoverageArea[]): L
 export function liveAreasFor(postcode: string, areas: readonly CoverageArea[]): LiveArea[] {
   const prefix = outwardPrefix(postcode);
   if (!prefix) return [];
-  const live = new Set(areas.filter(a => a.status === "live").map(a => a.slug));
-  return (Object.keys(AREA_POSTCODE_PREFIXES) as LiveArea[]).filter((a) =>
-    live.has(a) && AREA_POSTCODE_PREFIXES[a].includes(prefix),
+  const live = new Set(areas.filter((a) => a.status === "live").map((a) => a.slug));
+  return (Object.keys(AREA_POSTCODE_PREFIXES) as LiveArea[]).filter(
+    (a) => live.has(a) && AREA_POSTCODE_PREFIXES[a].includes(prefix),
   );
 }

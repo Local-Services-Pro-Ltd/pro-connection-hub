@@ -33,9 +33,7 @@ const Email = ({
 }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>
-      {company ?? "A local firm"} applied to your project posting
-    </Preview>
+    <Preview>{company ?? "A local firm"} applied to your project posting</Preview>
     <Body style={main}>
       <Container style={container}>
         <Text style={eyebrow}>TRADESMANFINDER</Text>
@@ -46,9 +44,7 @@ const Email = ({
           {projectTitle ? ` “${projectTitle}”` : " your project posting"}.
         </Text>
         {quote ? <Text style={refBox}>Indicative price: {quote}</Text> : null}
-        {availableFrom ? (
-          <Text style={text}>Available from {availableFrom}.</Text>
-        ) : null}
+        {availableFrom ? <Text style={text}>Available from {availableFrom}.</Text> : null}
         {message ? <Text style={quoteStyle}>{message}</Text> : null}
         {projectUrl ? (
           <Button style={button} href={projectUrl}>
@@ -57,8 +53,8 @@ const Email = ({
         ) : null}
         <Hr style={rule} />
         <Text style={small}>
-          You're getting this because you asked for notifications on this
-          posting. Turn them off any time from your account.
+          You're getting this because you asked for notifications on this posting. Turn them off any
+          time from your account.
         </Text>
       </Container>
     </Body>
@@ -68,7 +64,7 @@ const Email = ({
 export const template = {
   component: Email,
   subject: (data: Record<string, unknown>) =>
-    `${(data['company'] as string) ?? "A local firm"} applied to your project — TradesmanFinder`,
+    `${(data["company"] as string) ?? "A local firm"} applied to your project — TradesmanFinder`,
   displayName: "Project — firm applied",
   previewData: {
     name: "Jane",

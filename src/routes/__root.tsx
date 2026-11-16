@@ -17,11 +17,7 @@ import { AuthProvider } from "../hooks/use-auth";
 import { ThemeProvider, themeBootstrapScript } from "../hooks/use-theme";
 import { CookieConsent } from "../components/cookie-consent";
 import { ldScript, websiteSchema } from "../lib/structured-data";
-
-
-
-
-
+import { installChunkErrorRecovery, recoverFromDynamicImportError } from "../lib/chunk-recovery";
 
 function NotFoundComponent() {
   return (
@@ -49,6 +45,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const router = useRouter();
   useEffect(() => {
+    if (recoverFromDynamicImportError(error, window)) return;
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
   }, [error]);
 
@@ -97,7 +94,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "TradesmanFinder" },
       {
         property: "og:description",
-        content: "Local trades, ID-checked and insured before they can quote. Free to post, no obligation.",
+        content:
+          "Local trades, ID-checked and insured before they can quote. Free to post, no obligation.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -130,7 +128,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     scripts: [ldScript(websiteSchema())],
   }),
 
-
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
@@ -154,26 +151,25 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  useEffect(() => installChunkErrorRecovery(window), []);
 
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-      <AuthProvider>
-      <div className="flex min-h-screen flex-col">
-        <SiteHeader />
-        <main className="flex-1">
-          {/* Required: nested routes render here. */}
-          <Outlet />
-        </main>
-        <Toaster position="bottom-right" />
+        <AuthProvider>
+          <div className="flex min-h-screen flex-col">
+            <SiteHeader />
+            <main className="flex-1">
+              {/* Required: nested routes render here. */}
+              <Outlet />
+            </main>
+            <Toaster position="bottom-right" />
 
-        <SiteFooter />
-        <CookieConsent />
-
-      </div>
-      </AuthProvider>
+            <SiteFooter />
+            <CookieConsent />
+          </div>
+        </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );
-
 }

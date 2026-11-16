@@ -14,8 +14,9 @@ import {
 } from "@/lib/queries";
 import { getRequestOrigin } from "@/lib/origin.functions";
 import { usePrefersReducedMotion } from "@/hooks/use-reduced-motion";
-import heroVideo from "@/assets/hero.mp4.asset.json";
 import heroPoster from "@/assets/hero-poster.jpg";
+
+const HERO_VIDEO_URL = "/media/hero.mp4";
 
 export const Route = createFileRoute("/")({
   loader: async ({ context }) => {
@@ -35,9 +36,7 @@ export const Route = createFileRoute("/")({
     const description =
       "Post your job free and we'll match you with local trades as they join — ID-checked and insured before they can quote.";
     const base = loaderData?.origin ?? "";
-    const image = loaderData?.origin
-      ? `${loaderData.origin}/og/home.jpg`
-      : undefined;
+    const image = loaderData?.origin ? `${loaderData.origin}/og/home.jpg` : undefined;
     return {
       meta: [
         { title },
@@ -75,7 +74,6 @@ export const Route = createFileRoute("/")({
           fetchpriority: "high",
         },
       ],
-
     };
   },
 
@@ -146,7 +144,7 @@ function Home() {
           <video
             data-hero-media
             className="absolute inset-0 h-full w-full object-cover"
-            src={heroVideo.url}
+            src={HERO_VIDEO_URL}
             poster={heroPoster}
             autoPlay
             muted
@@ -155,23 +153,20 @@ function Home() {
             preload="metadata"
             aria-hidden="true"
           />
-
         )}
 
         <div className="absolute inset-0 bg-background/32" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/22 to-transparent" />
         <div className="hero-copy-scrim pointer-events-none absolute inset-0" />
 
-
         <div className="relative mx-auto flex min-h-[88vh] max-w-7xl flex-col justify-center px-5 py-24 lg:px-8">
           <p className="eyebrow hero-ink-muted">Local trades, carefully onboarded</p>
           <h1 className="mt-4 max-w-3xl hero-ink text-5xl leading-[1.05] sm:text-6xl lg:text-7xl">
-            Find a qualified local tradesman{" "}
-            <span className="ember-text">who delivers.</span>
+            Find a qualified local tradesman <span className="ember-text">who delivers.</span>
           </h1>
           <p className="mt-6 max-w-lg text-lg leading-relaxed hero-ink-muted">
-            Post your job free and we'll match you with local trades as they
-            join — ID-checked and insured before they can quote.
+            Post your job free and we'll match you with local trades as they join — ID-checked and
+            insured before they can quote.
           </p>
 
           <div className="mt-9 max-w-3xl">
@@ -179,14 +174,12 @@ function Home() {
           </div>
 
           <ul className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm hero-ink-muted">
-            {["Free to post", "No obligation", "Written reviews only"].map(
-              (item) => (
-                <li key={item} className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-primary" />
-                  {item}
-                </li>
-              ),
-            )}
+            {["Free to post", "No obligation", "Written reviews only"].map((item) => (
+              <li key={item} className="flex items-center gap-2">
+                <Check className="h-4 w-4 text-primary" />
+                {item}
+              </li>
+            ))}
           </ul>
         </div>
       </section>
@@ -196,9 +189,7 @@ function Home() {
         <div className="mx-auto grid max-w-7xl grid-cols-2 divide-x divide-y divide-border border-border px-0 lg:grid-cols-4 lg:divide-y-0">
           {ledger.map((s) => (
             <div key={s.label} className="px-6 py-8 lg:px-8 lg:py-10">
-              <p className="font-display text-3xl font-bold lg:text-4xl">
-                {s.value}
-              </p>
+              <p className="font-display text-3xl font-bold lg:text-4xl">{s.value}</p>
               <p className="mt-1 text-sm text-muted-foreground">{s.label}</p>
             </div>
           ))}
@@ -234,9 +225,7 @@ function Home() {
                   <h3 className="text-lg">{t.name}</h3>
                   <ArrowUpRight className="h-4 w-4 shrink-0 text-muted-foreground transition-all group-hover:-translate-y-0.5 group-hover:text-primary" />
                 </div>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  {t.blurb}
-                </p>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t.blurb}</p>
               </div>
               <p className="font-display text-xs uppercase tracking-widest text-primary">
                 Now onboarding
@@ -252,13 +241,9 @@ function Home() {
         <div className="mt-10 grid gap-px overflow-hidden rounded-md border border-border bg-border lg:grid-cols-3">
           {steps.map((s) => (
             <div key={s.n} className="bg-card p-8">
-              <span className="font-display text-5xl font-bold text-primary/25">
-                {s.n}
-              </span>
+              <span className="font-display text-5xl font-bold text-primary/25">{s.n}</span>
               <h3 className="mt-6 text-xl">{s.title}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                {s.body}
-              </p>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{s.body}</p>
             </div>
           ))}
         </div>
@@ -274,7 +259,10 @@ function Home() {
               title="People who turn up."
               sub="Hand-picked firms we've checked ourselves — insurance, trade bodies and past work."
             />
-            <div data-testid="featured-pros" className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div
+              data-testid="featured-pros"
+              className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+            >
               {featuredPros.map((p) => (
                 <ProCard key={p.id} pro={p} />
               ))}
@@ -290,9 +278,7 @@ function Home() {
             <VettingStatusPanel />
           </div>
         )}
-
       </Section>
-
 
       {/* Reviews */}
       <Section className="border-y border-border bg-surface">
@@ -302,30 +288,28 @@ function Home() {
         />
         {reviews.length === 0 ? (
           <p className="mt-8 rounded-md border border-border bg-card p-8 text-muted-foreground">
-            No customer reviews yet. They'll appear here after work completed
-            through TradesmanFinder has been reviewed.
+            No customer reviews yet. They'll appear here after work completed through
+            TradesmanFinder has been reviewed.
           </p>
         ) : (
-        <div className="mt-10 grid gap-px overflow-hidden rounded-md border border-border bg-border lg:grid-cols-3">
-          {reviews.slice(0, 3).map((r) => (
-            <figure key={r.id} className="flex flex-col bg-card p-8">
-              <div className="flex items-center justify-between">
-                <Quote className="h-5 w-5 text-primary" />
-                <span className="flex items-center gap-1 text-sm">
-                  <Star className="h-3.5 w-3.5 fill-accent text-accent" />
-                  {r.rating}
-                </span>
-              </div>
-              <blockquote className="mt-5 flex-1 text-base leading-relaxed">
-                {r.body}
-              </blockquote>
-              <figcaption className="mt-6 border-t border-border pt-4 text-sm text-muted-foreground">
-                <span className="text-foreground">{r.author_name}</span>
-                {r.job_type ? ` · ${r.job_type}` : ""}
-              </figcaption>
-            </figure>
-          ))}
-        </div>
+          <div className="mt-10 grid gap-px overflow-hidden rounded-md border border-border bg-border lg:grid-cols-3">
+            {reviews.slice(0, 3).map((r) => (
+              <figure key={r.id} className="flex flex-col bg-card p-8">
+                <div className="flex items-center justify-between">
+                  <Quote className="h-5 w-5 text-primary" />
+                  <span className="flex items-center gap-1 text-sm">
+                    <Star className="h-3.5 w-3.5 fill-accent text-accent" />
+                    {r.rating}
+                  </span>
+                </div>
+                <blockquote className="mt-5 flex-1 text-base leading-relaxed">{r.body}</blockquote>
+                <figcaption className="mt-6 border-t border-border pt-4 text-sm text-muted-foreground">
+                  <span className="text-foreground">{r.author_name}</span>
+                  {r.job_type ? ` · ${r.job_type}` : ""}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
         )}
       </Section>
 
@@ -377,16 +361,13 @@ function Home() {
           and we'll tell you the day we open your postcode.
         </p>
 
-
         <div className="mt-16 overflow-hidden rounded-md border border-border bg-card p-8 lg:p-14">
           <div className="grid items-end gap-8 lg:grid-cols-[1.4fr_auto]">
             <div className="max-w-xl">
-              <h2 className="text-3xl leading-tight sm:text-4xl">
-                Got a job that needs doing?
-              </h2>
+              <h2 className="text-3xl leading-tight sm:text-4xl">Got a job that needs doing?</h2>
               <p className="mt-4 text-muted-foreground">
-                Post it in two minutes. We'll match you with up to three local
-                trades as they join and complete their checks.
+                Post it in two minutes. We'll match you with up to three local trades as they join
+                and complete their checks.
               </p>
             </div>
             <Link

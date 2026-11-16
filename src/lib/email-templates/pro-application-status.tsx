@@ -41,14 +41,7 @@ const BODIES: Record<string, string> = {
     "We couldn't verify everything we need. The note below explains exactly what was missing — you're welcome to apply again once it's sorted.",
 };
 
-const Email = ({
-  company,
-  contactName,
-  reference,
-  status,
-  reviewerNote,
-  statusUrl,
-}: Props) => {
+const Email = ({ company, contactName, reference, status, reviewerNote, statusUrl }: Props) => {
   const key = status ?? "submitted";
   return (
     <Html lang="en" dir="ltr">
@@ -57,12 +50,8 @@ const Email = ({
       <Body style={main}>
         <Container style={container}>
           <Text style={eyebrow}>TRADESMANFINDER</Text>
-          <Heading style={heading}>
-            {HEADLINES[key] ?? "Certification update"}
-          </Heading>
-          <Text style={text}>
-            {contactName ? `Hi ${contactName},` : "Hi there,"}
-          </Text>
+          <Heading style={heading}>{HEADLINES[key] ?? "Certification update"}</Heading>
+          <Text style={text}>{contactName ? `Hi ${contactName},` : "Hi there,"}</Text>
           <Text style={text}>{BODIES[key] ?? BODIES["submitted"]}</Text>
           <Text style={text}>
             {`Firm: ${company ?? "—"}`}
@@ -79,9 +68,8 @@ const Email = ({
           ) : null}
           <Hr style={hr} />
           <Text style={small}>
-            You're getting this because your firm applied for TradesmanFinder
-            certification. Keep the tracking link — it's the only way to see
-            your progress.
+            You're getting this because your firm applied for TradesmanFinder certification. Keep
+            the tracking link — it's the only way to see your progress.
           </Text>
         </Container>
       </Body>

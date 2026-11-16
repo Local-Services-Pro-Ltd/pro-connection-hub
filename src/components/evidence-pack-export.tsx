@@ -2,10 +2,7 @@ import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { FileDown, Printer } from "lucide-react";
-import {
-  getApplicationEvidencePack,
-  type EvidencePack,
-} from "@/lib/applications.functions";
+import { getApplicationEvidencePack, type EvidencePack } from "@/lib/applications.functions";
 import {
   CHECK_OUTCOME_LABEL,
   DOCUMENT_KIND_LABEL,
@@ -98,11 +95,8 @@ function buildCsv(pack: EvidencePack) {
 function buildHtml(pack: EvidencePack) {
   const a = pack.application;
   const esc = (v: unknown) =>
-    String(v ?? "—").replace(/[<>&]/g, (c) =>
-      c === "<" ? "&lt;" : c === ">" ? "&gt;" : "&amp;",
-    );
-  const section = (title: string, body: string) =>
-    `<h2>${title}</h2>${body}`;
+    String(v ?? "—").replace(/[<>&]/g, (c) => (c === "<" ? "&lt;" : c === ">" ? "&gt;" : "&amp;"));
+  const section = (title: string, body: string) => `<h2>${title}</h2>${body}`;
   const rows = (items: string[][]) =>
     `<table><tbody>${items
       .map(

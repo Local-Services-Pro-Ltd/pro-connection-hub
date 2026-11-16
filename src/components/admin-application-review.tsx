@@ -48,9 +48,7 @@ export function AdminApplicationReview({
   const escalate = useServerFn(escalateApplication);
   const loadRuns = useServerFn(listVerificationRuns);
 
-  const [fields, setFields] = useState<string[]>(
-    application.requested_fields ?? [],
-  );
+  const [fields, setFields] = useState<string[]>(application.requested_fields ?? []);
   const [changeNote, setChangeNote] = useState("");
   const [escalationNote, setEscalationNote] = useState("");
 
@@ -78,8 +76,7 @@ export function AdminApplicationReview({
   });
 
   const docMutation = useMutation({
-    mutationFn: (vars: { id: string; status: string }) =>
-      reviewDoc({ data: vars }),
+    mutationFn: (vars: { id: string; status: string }) => reviewDoc({ data: vars }),
     onSuccess: () => {
       void docs.refetch();
       onChanged();
@@ -122,9 +119,7 @@ export function AdminApplicationReview({
     onError: (e: Error) => toast.error(e.message),
   });
 
-  const verification = application.verification as
-    | VerificationResult
-    | Record<string, never>;
+  const verification = application.verification as VerificationResult | Record<string, never>;
 
   return (
     <div className="mt-5 grid gap-5 border-t border-border pt-5">
@@ -155,17 +150,13 @@ export function AdminApplicationReview({
                 <span className="font-display text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                   {c.label}
                 </span>
-                <span className={outcomeClass[c.outcome]}>
-                  {CHECK_OUTCOME_LABEL[c.outcome]}
-                </span>
+                <span className={outcomeClass[c.outcome]}>{CHECK_OUTCOME_LABEL[c.outcome]}</span>
                 <span className="text-muted-foreground">{c.detail}</span>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="mt-3 text-sm text-muted-foreground">
-            No checks run yet.
-          </p>
+          <p className="mt-3 text-sm text-muted-foreground">No checks run yet.</p>
         )}
 
         {/* Re-run history */}
@@ -184,36 +175,25 @@ export function AdminApplicationReview({
                 </span>
                 <span
                   className={
-                    r.outcome === "error"
-                      ? "text-destructive"
-                      : (outcomeClass[r.outcome] ?? "")
+                    r.outcome === "error" ? "text-destructive" : (outcomeClass[r.outcome] ?? "")
                   }
                 >
                   {r.outcome === "error"
                     ? "Failed"
-                    : (CHECK_OUTCOME_LABEL[
-                        r.outcome as keyof typeof CHECK_OUTCOME_LABEL
-                      ] ?? r.outcome)}
+                    : (CHECK_OUTCOME_LABEL[r.outcome as keyof typeof CHECK_OUTCOME_LABEL] ??
+                      r.outcome)}
                 </span>
                 {r.duration_ms !== null && (
-                  <span className="text-xs text-muted-foreground">
-                    {r.duration_ms}ms
-                  </span>
+                  <span className="text-xs text-muted-foreground">{r.duration_ms}ms</span>
                 )}
                 {r.triggered_by_email && (
-                  <span className="text-xs text-muted-foreground">
-                    {r.triggered_by_email}
-                  </span>
+                  <span className="text-xs text-muted-foreground">{r.triggered_by_email}</span>
                 )}
-                {r.error && (
-                  <span className="text-destructive">{r.error}</span>
-                )}
+                {r.error && <span className="text-destructive">{r.error}</span>}
               </li>
             ))}
             {(runs.data ?? []).length === 0 && (
-              <li className="text-sm text-muted-foreground">
-                No runs recorded yet.
-              </li>
+              <li className="text-sm text-muted-foreground">No runs recorded yet.</li>
             )}
           </ul>
         </details>
@@ -221,9 +201,7 @@ export function AdminApplicationReview({
 
       {/* Documents */}
       <div>
-        <h3 className="font-display text-sm font-semibold uppercase tracking-widest">
-          Documents
-        </h3>
+        <h3 className="font-display text-sm font-semibold uppercase tracking-widest">Documents</h3>
         <ul className="mt-3 grid gap-2 text-sm">
           {(docs.data ?? []).map((doc) => (
             <li
@@ -246,24 +224,19 @@ export function AdminApplicationReview({
                 <span>{doc.file_name}</span>
               )}
               <span className="text-xs text-muted-foreground">
-                {formatBytes(doc.size_bytes)} ·{" "}
-                {DOCUMENT_STATUS_LABEL[doc.status] ?? doc.status}
+                {formatBytes(doc.size_bytes)} · {DOCUMENT_STATUS_LABEL[doc.status] ?? doc.status}
               </span>
               <button
                 className={`${btn} ml-auto`}
                 disabled={docMutation.isPending}
-                onClick={() =>
-                  docMutation.mutate({ id: doc.id, status: "verified" })
-                }
+                onClick={() => docMutation.mutate({ id: doc.id, status: "verified" })}
               >
                 Verify
               </button>
               <button
                 className={btn}
                 disabled={docMutation.isPending}
-                onClick={() =>
-                  docMutation.mutate({ id: doc.id, status: "rejected" })
-                }
+                onClick={() => docMutation.mutate({ id: doc.id, status: "rejected" })}
               >
                 Reject
               </button>
@@ -291,9 +264,7 @@ export function AdminApplicationReview({
                 type="button"
                 aria-pressed={on}
                 onClick={() =>
-                  setFields((cur) =>
-                    on ? cur.filter((k) => k !== f.key) : [...cur, f.key],
-                  )
+                  setFields((cur) => (on ? cur.filter((k) => k !== f.key) : [...cur, f.key]))
                 }
                 className={`rounded-sm border px-3 py-1.5 text-xs ${
                   on
@@ -329,8 +300,8 @@ export function AdminApplicationReview({
           Evidence pack
         </h3>
         <p className="mt-2 text-sm text-muted-foreground">
-          Every check, document status, reminder and timeline entry for this
-          firm, as a spreadsheet or a printable record.
+          Every check, document status, reminder and timeline entry for this firm, as a spreadsheet
+          or a printable record.
         </p>
         <div className="mt-3">
           <EvidencePackExport
@@ -342,9 +313,7 @@ export function AdminApplicationReview({
 
       {/* Escalation */}
       <div>
-        <h3 className="font-display text-sm font-semibold uppercase tracking-widest">
-          Escalation
-        </h3>
+        <h3 className="font-display text-sm font-semibold uppercase tracking-widest">Escalation</h3>
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <input
             value={escalationNote}
@@ -362,11 +331,8 @@ export function AdminApplicationReview({
           </button>
           {application.escalated_at && (
             <span className="text-xs text-primary">
-              Escalated{" "}
-              {new Date(application.escalated_at).toLocaleString("en-GB")}
-              {application.escalation_note
-                ? ` — ${application.escalation_note}`
-                : ""}
+              Escalated {new Date(application.escalated_at).toLocaleString("en-GB")}
+              {application.escalation_note ? ` — ${application.escalation_note}` : ""}
             </span>
           )}
         </div>

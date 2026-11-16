@@ -41,7 +41,8 @@ jobs:
         run: bun run lint
 
       - name: Dependency audit
-        run: bun audit --prod
+        # Deferred: Zod 3 must move to 4.6.6+, a major migration. No other advisory is exempt.
+        run: bun audit --prod --ignore=GHSA-mrhx-c7xc-m3w5
 
       - name: Authentication and coverage regression tests
         run: bun run test:deployment

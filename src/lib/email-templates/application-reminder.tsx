@@ -38,14 +38,7 @@ const BODIES: Record<string, string> = {
     "Our records show your public liability cover has lapsed. Send us renewed cover from your tracking page to keep your certification on track.",
 };
 
-const Email = ({
-  company,
-  contactName,
-  reference,
-  kind,
-  detail,
-  statusUrl,
-}: Props) => {
+const Email = ({ company, contactName, reference, kind, detail, statusUrl }: Props) => {
   const key = kind ?? "documents_pending";
   return (
     <Html lang="en" dir="ltr">
@@ -54,12 +47,8 @@ const Email = ({
       <Body style={main}>
         <Container style={container}>
           <Text style={eyebrow}>TRADESMANFINDER</Text>
-          <Heading style={heading}>
-            {HEADLINES[key] ?? "Certification reminder"}
-          </Heading>
-          <Text style={text}>
-            {contactName ? `Hi ${contactName},` : "Hi there,"}
-          </Text>
+          <Heading style={heading}>{HEADLINES[key] ?? "Certification reminder"}</Heading>
+          <Text style={text}>{contactName ? `Hi ${contactName},` : "Hi there,"}</Text>
           <Text style={text}>{BODIES[key] ?? BODIES["documents_pending"]}</Text>
           <Text style={text}>
             {`Firm: ${company ?? "—"}`}
@@ -74,8 +63,8 @@ const Email = ({
           ) : null}
           <Hr style={hr} />
           <Text style={small}>
-            You're getting this because your firm has an open TradesmanFinder
-            certification application.
+            You're getting this because your firm has an open TradesmanFinder certification
+            application.
           </Text>
         </Container>
       </Body>

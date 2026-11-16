@@ -6,12 +6,7 @@ import { toast } from "sonner";
 import { Lock } from "lucide-react";
 import { Section, SectionHead } from "@/components/layout-bits";
 import { reviewProject } from "@/lib/projects.functions";
-import {
-  adminProjectsQuery,
-  formatBudget,
-  isAdminQuery,
-  projectStatusLabels,
-} from "@/lib/queries";
+import { adminProjectsQuery, formatBudget, isAdminQuery, projectStatusLabels } from "@/lib/queries";
 import { useAuth } from "@/hooks/use-auth";
 
 const filters = ["pending", "published", "rejected", "closed", "all"] as const;
@@ -22,8 +17,7 @@ export const Route = createFileRoute("/admin/projects")({
       { title: "Project review queue — admin | TradesmanFinder" },
       {
         name: "description",
-        content:
-          "Internal queue for reviewing homeowner project postings before publication.",
+        content: "Internal queue for reviewing homeowner project postings before publication.",
       },
       { property: "og:title", content: "Project review queue — admin" },
       {
@@ -40,9 +34,7 @@ export const Route = createFileRoute("/admin/projects")({
 
 function AdminProjects() {
   const { user, loading } = useAuth();
-  const { data: isAdmin, isLoading: checking } = useQuery(
-    isAdminQuery(user?.id),
-  );
+  const { data: isAdmin, isLoading: checking } = useQuery(isAdminQuery(user?.id));
   const queryClient = useQueryClient();
   const { data: projects } = useQuery({
     ...adminProjectsQuery,
@@ -53,10 +45,7 @@ function AdminProjects() {
   const [notes, setNotes] = useState<Record<string, string>>({});
 
   const decide = useMutation({
-    mutationFn: async (input: {
-      projectId: string;
-      status: "published" | "rejected";
-    }) =>
+    mutationFn: async (input: { projectId: string; status: "published" | "rejected" }) =>
       review({
         data: {
           projectId: input.projectId,
@@ -99,9 +88,7 @@ function AdminProjects() {
     );
   }
 
-  const rows = (projects ?? []).filter((p) =>
-    filter === "all" ? true : p.status === filter,
-  );
+  const rows = (projects ?? []).filter((p) => (filter === "all" ? true : p.status === filter));
 
   return (
     <Section>
@@ -129,9 +116,7 @@ function AdminProjects() {
       </div>
 
       {rows.length === 0 ? (
-        <p className="mt-10 text-sm text-muted-foreground">
-          Nothing in this view.
-        </p>
+        <p className="mt-10 text-sm text-muted-foreground">Nothing in this view.</p>
       ) : (
         <ul className="mt-8 space-y-6">
           {rows.map((p) => (
@@ -167,9 +152,7 @@ function AdminProjects() {
                     <textarea
                       rows={2}
                       value={notes[p.id] ?? ""}
-                      onChange={(e) =>
-                        setNotes({ ...notes, [p.id]: e.target.value })
-                      }
+                      onChange={(e) => setNotes({ ...notes, [p.id]: e.target.value })}
                       className="mt-2 w-full rounded-sm border border-border-strong bg-background px-4 py-2.5 text-sm outline-none focus:border-primary"
                     />
                   </label>
@@ -177,9 +160,7 @@ function AdminProjects() {
                     <button
                       type="button"
                       disabled={decide.isPending}
-                      onClick={() =>
-                        decide.mutate({ projectId: p.id, status: "published" })
-                      }
+                      onClick={() => decide.mutate({ projectId: p.id, status: "published" })}
                       className="rounded-sm bg-primary px-5 py-2.5 font-display text-sm font-semibold text-primary-foreground shadow-ember hover:brightness-110 disabled:opacity-60"
                     >
                       Publish
@@ -187,9 +168,7 @@ function AdminProjects() {
                     <button
                       type="button"
                       disabled={decide.isPending}
-                      onClick={() =>
-                        decide.mutate({ projectId: p.id, status: "rejected" })
-                      }
+                      onClick={() => decide.mutate({ projectId: p.id, status: "rejected" })}
                       className="rounded-sm border border-border-strong px-5 py-2.5 font-display text-sm font-semibold hover:border-primary hover:text-primary disabled:opacity-60"
                     >
                       Reject

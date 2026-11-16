@@ -23,9 +23,7 @@ const summary = existsSync(summaryFile)
   : { total: 0, failed: 0, failures: [] };
 
 const runUrl =
-  process.env.GITHUB_SERVER_URL &&
-  process.env.GITHUB_REPOSITORY &&
-  process.env.GITHUB_RUN_ID
+  process.env.GITHUB_SERVER_URL && process.env.GITHUB_REPOSITORY && process.env.GITHUB_RUN_ID
     ? `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`
     : undefined;
 
@@ -61,22 +59,19 @@ if (process.env.SLACK_WEBHOOK_URL) {
 }
 
 if (process.env.APP_URL && process.env.SECURITY_SCAN_TOKEN) {
-  const res = await fetch(
-    `${process.env.APP_URL.replace(/\/$/, "")}/api/public/security-alert`,
-    {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        "x-security-scan-token": process.env.SECURITY_SCAN_TOKEN,
-      },
-      body: JSON.stringify({
-        failures,
-        total: summary.total ?? 0,
-        source: `ci: ${reason}`,
-        url: runUrl,
-      }),
+  const res = await fetch(`${process.env.APP_URL.replace(/\/$/, "")}/api/public/security-alert`, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "x-security-scan-token": process.env.SECURITY_SCAN_TOKEN,
     },
-  );
+    body: JSON.stringify({
+      failures,
+      total: summary.total ?? 0,
+      source: `ci: ${reason}`,
+      url: runUrl,
+    }),
+  });
   if (res.ok) {
     delivered = true;
     console.log("Email/Slack alert relayed through the app.");

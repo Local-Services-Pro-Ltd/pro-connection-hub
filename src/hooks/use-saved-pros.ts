@@ -33,9 +33,7 @@ export function useSavedPros() {
   }, []);
 
   const toggle = useCallback((id: string) => {
-    const next = read().includes(id)
-      ? read().filter((x) => x !== id)
-      : [...read(), id];
+    const next = read().includes(id) ? read().filter((x) => x !== id) : [...read(), id];
     window.localStorage.setItem(KEY, JSON.stringify(next));
     window.dispatchEvent(new Event(EVENT));
     return next.includes(id);

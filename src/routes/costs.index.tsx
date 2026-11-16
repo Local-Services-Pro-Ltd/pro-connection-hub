@@ -47,8 +47,7 @@ export const Route = createFileRoute("/costs/")({
 function CostsIndex() {
   const { data: trades } = useSuspenseQuery(tradesQuery);
   const guides = allCostGuides();
-  const nameOf = (slug: string) =>
-    trades.find((t) => t.slug === slug)?.name ?? slug;
+  const nameOf = (slug: string) => trades.find((t) => t.slug === slug)?.name ?? slug;
 
   return (
     <>
@@ -97,8 +96,7 @@ function CostsIndex() {
                     {g.intro}
                   </p>
                   <p className="mt-4 border-t border-border pt-4 text-xs text-muted-foreground">
-                    Day rate {gbp(g.dayRate[0])}–{gbp(g.dayRate[1])} · jobs from{" "}
-                    {gbp(cheapest)}
+                    Day rate {gbp(g.dayRate[0])}–{gbp(g.dayRate[1])} · jobs from {gbp(cheapest)}
                   </p>
                 </div>
               </Link>
@@ -112,8 +110,8 @@ function CostsIndex() {
             <div>
               <h2 className="text-xl">Don't see your trade?</h2>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                Ask the pros what your job should cost, or post it and we'll
-                match you as approved tradespeople join your area.
+                Ask the pros what your job should cost, or post it and we'll match you as approved
+                tradespeople join your area.
               </p>
             </div>
             <span className="mt-6 inline-flex items-center gap-2 font-display text-sm font-semibold text-primary">
@@ -124,9 +122,9 @@ function CostsIndex() {
         </div>
 
         <p className="mt-10 max-w-2xl text-sm text-muted-foreground">
-          Prices are typical South East figures excluding VAT, updated for 2026.
-          They are a guide to help you sanity-check a quote — the only real price
-          is the one a tradesperson gives you after seeing the job.
+          Prices are typical South East figures excluding VAT, updated for 2026. They are a guide to
+          help you sanity-check a quote — the only real price is the one a tradesperson gives you
+          after seeing the job.
         </p>
       </Section>
     </>

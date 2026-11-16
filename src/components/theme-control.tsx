@@ -27,16 +27,10 @@ export function ThemeControl() {
       <button
         type="button"
         onClick={toggle}
-        aria-label={
-          theme === "light" ? "Switch to dark theme" : "Switch to light theme"
-        }
+        aria-label={theme === "light" ? "Switch to dark theme" : "Switch to light theme"}
         className="grid h-11 w-11 place-items-center rounded-sm border border-border text-muted-foreground transition-colors hover:border-border-strong hover:text-foreground"
       >
-        {theme === "light" ? (
-          <Moon className="h-4 w-4" />
-        ) : (
-          <Sun className="h-4 w-4" />
-        )}
+        {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
       </button>
       <button
         type="button"
@@ -69,16 +63,10 @@ export function ThemeControl() {
               className="flex w-full items-center justify-between gap-3 rounded-sm px-2.5 py-2 text-left hover:bg-muted"
             >
               <span>
-                <span className="block font-display text-sm font-semibold">
-                  {t.label}
-                </span>
-                <span className="block text-xs text-muted-foreground">
-                  {t.hint}
-                </span>
+                <span className="block font-display text-sm font-semibold">{t.label}</span>
+                <span className="block text-xs text-muted-foreground">{t.hint}</span>
               </span>
-              {theme === t.value && (
-                <Check className="h-4 w-4 shrink-0 text-primary" />
-              )}
+              {theme === t.value && <Check className="h-4 w-4 shrink-0 text-primary" />}
             </button>
           ))}
         </div>

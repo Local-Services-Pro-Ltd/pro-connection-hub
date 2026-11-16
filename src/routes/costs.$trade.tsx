@@ -140,9 +140,7 @@ function CostGuidePage() {
                   <tr key={j.id} className="border-b border-border align-top">
                     <td className="py-3 pr-4">
                       {j.label}
-                      <span className="mt-1 block text-xs text-muted-foreground">
-                        {j.note}
-                      </span>
+                      <span className="mt-1 block text-xs text-muted-foreground">{j.note}</span>
                     </td>
                     <td className="py-3 pr-4 text-muted-foreground">per {j.unit}</td>
                     <td className="whitespace-nowrap py-3 text-right">
@@ -175,9 +173,7 @@ function CostGuidePage() {
               {guide.faqs.map((f) => (
                 <div key={f.q} className="border-b border-border pb-5">
                   <dt className="font-display font-semibold">{f.q}</dt>
-                  <dd className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                    {f.a}
-                  </dd>
+                  <dd className="mt-2 text-sm leading-relaxed text-muted-foreground">{f.a}</dd>
                 </div>
               ))}
             </dl>
@@ -188,9 +184,8 @@ function CostGuidePage() {
           <div className="min-w-0 flex-1">
             <h2 className="text-2xl">Ready for real numbers?</h2>
             <p className="mt-2 max-w-xl text-sm text-muted-foreground">
-              Describe the job once and we'll match you with local{" "}
-              {trade.name.toLowerCase()}s as they join and complete their checks.
-              Free, and no obligation.
+              Describe the job once and we'll match you with local {trade.name.toLowerCase()}s as
+              they join and complete their checks. Free, and no obligation.
             </p>
           </div>
           <div className="flex flex-wrap gap-3">

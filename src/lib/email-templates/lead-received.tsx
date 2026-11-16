@@ -1,14 +1,5 @@
 import * as React from "react";
-import {
-  Body,
-  Container,
-  Head,
-  Heading,
-  Hr,
-  Html,
-  Preview,
-  Text,
-} from "@react-email/components";
+import { Body, Container, Head, Heading, Hr, Html, Preview, Text } from "@react-email/components";
 import type { TemplateEntry } from "./registry";
 
 interface Props {
@@ -38,17 +29,15 @@ const Email = ({
 }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>
-      New enquiry{postcode ? ` in ${postcode}` : ""} from TradesmanFinder
-    </Preview>
+    <Preview>New enquiry{postcode ? ` in ${postcode}` : ""} from TradesmanFinder</Preview>
     <Body style={main}>
       <Container style={container}>
         <Text style={eyebrow}>TRADESMANFINDER</Text>
         <Heading style={heading}>New enquiry for you</Heading>
         <Text style={text}>{company ? `Hi ${company},` : "Hi there,"}</Text>
         <Text style={text}>
-          A homeowner found you in the directory and sent a job through. Their
-          contact details are included below.
+          A homeowner found you in the directory and sent a job through. Their contact details are
+          included below.
         </Text>
         <Text style={label}>Contact</Text>
         <Text style={text}>
@@ -73,8 +62,7 @@ const Email = ({
         {reference ? <Text style={refBox}>Reference: {reference}</Text> : null}
         <Hr style={rule} />
         <Text style={small}>
-          Sent because this enquiry was addressed to your listing on
-          TradesmanFinder.
+          Sent because this enquiry was addressed to your listing on TradesmanFinder.
         </Text>
       </Container>
     </Body>
@@ -84,7 +72,7 @@ const Email = ({
 export const template = {
   component: Email,
   subject: (data: Record<string, unknown>) =>
-    `New enquiry${data['postcode'] ? ` in ${data['postcode']}` : ""} — TradesmanFinder`,
+    `New enquiry${data["postcode"] ? ` in ${data["postcode"]}` : ""} — TradesmanFinder`,
   displayName: "Lead — firm notification",
   previewData: {
     company: "Webb & Sons Building",

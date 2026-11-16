@@ -25,9 +25,7 @@ export const Route = createFileRoute("/for-tradesmen")({
       ? "Free while we onboard trades — no card needed. Approved firms get Trade-tier features, with founding-firm discounts when charging starts."
       : "Get matched to homeowners in Greater London, Kent and Surrey. One flat monthly membership, no per-lead charges, no bidding wars.";
     const base = loaderData?.origin ?? "";
-    const image = loaderData?.origin
-      ? `${loaderData.origin}/og/for-tradesmen.jpg`
-      : undefined;
+    const image = loaderData?.origin ? `${loaderData.origin}/og/for-tradesmen.jpg` : undefined;
     return {
       meta: [
         { title },
@@ -126,10 +124,16 @@ function ForTradesmen() {
     <>
       <PageHero
         eyebrow="For tradesmen"
-        title={ONBOARDING_FREE ? "Free while we onboard trades — no card needed." : "Leads that are worth answering."}
-        sub={ONBOARDING_FREE
-          ? "Approved firms get Trade-tier features free during onboarding, with a cap of three quotes per job and no per-lead charges. A real person replies to every application within 2 working days."
-          : "A flat monthly membership and a cap of three quotes per job. We're onboarding local trades now, with ID and insurance checks required before quoting. A real person replies to every application within 2 working days."}
+        title={
+          ONBOARDING_FREE
+            ? "Free while we onboard trades — no card needed."
+            : "Leads that are worth answering."
+        }
+        sub={
+          ONBOARDING_FREE
+            ? "Approved firms get Trade-tier features free during onboarding, with a cap of three quotes per job and no per-lead charges. A real person replies to every application within 2 working days."
+            : "A flat monthly membership and a cap of three quotes per job. We're onboarding local trades now, with ID and insurance checks required before quoting. A real person replies to every application within 2 working days."
+        }
         image={heroForTradesmen}
         imageAlt="A tradesman checking his phone beside his van at sunrise"
         focal="55% 40%"
@@ -152,18 +156,13 @@ function ForTradesmen() {
       </PageHero>
 
       <Section>
-        <SectionHead
-          eyebrow="Why bother"
-          title="Built by people sick of lead fees."
-        />
+        <SectionHead eyebrow="Why bother" title="Built by people sick of lead fees." />
         <div className="mt-8 grid gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-2">
           {perks.map((p) => (
             <div key={p.title} className="bg-card p-8">
               <p.icon className="h-5 w-5 text-primary" aria-hidden="true" />
               <h3 className="mt-4 text-xl">{p.title}</h3>
-              <p className="mt-3 leading-relaxed text-muted-foreground">
-                {p.body}
-              </p>
+              <p className="mt-3 leading-relaxed text-muted-foreground">{p.body}</p>
             </div>
           ))}
         </div>
@@ -177,17 +176,12 @@ function ForTradesmen() {
         />
         <ol className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {verificationSteps.map((s, i) => (
-            <li
-              key={s.title}
-              className="rounded-md border border-border bg-card p-7"
-            >
+            <li key={s.title} className="rounded-md border border-border bg-card p-7">
               <span className="font-display text-xs uppercase tracking-widest text-primary">
                 Step {i + 1}
               </span>
               <h3 className="mt-3 text-lg">{s.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                {s.body}
-              </p>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{s.body}</p>
             </li>
           ))}
         </ol>
@@ -197,20 +191,21 @@ function ForTradesmen() {
         <SectionHead
           eyebrow={ONBOARDING_FREE ? "Prices after onboarding" : "Membership"}
           title={ONBOARDING_FREE ? "Free now. Clear prices later." : "One price. Cancel any month."}
-          sub={ONBOARDING_FREE
-            ? "Every approved firm gets Trade-tier features free during onboarding. These are the monthly prices once charging starts."
-            : "No commission on work won, no charge per enquiry, no minimum term."}
+          sub={
+            ONBOARDING_FREE
+              ? "Every approved firm gets Trade-tier features free during onboarding. These are the monthly prices once charging starts."
+              : "No commission on work won, no charge per enquiry, no minimum term."
+          }
         />
         {ONBOARDING_FREE && (
           <p className="mx-auto mt-6 max-w-3xl text-center text-sm leading-relaxed text-muted-foreground">
-            Join during onboarding and get 50% off for your first 12 months once charging starts. We'll email you at least 30 days before anything is charged, and you can leave any time.
+            Join during onboarding and get 50% off for your first 12 months once charging starts.
+            We'll email you at least 30 days before anything is charged, and you can leave any time.
           </p>
         )}
         <div
           className={`mt-10 grid gap-6 ${
-            tiers.length > 2
-              ? "lg:grid-cols-3"
-              : "mx-auto max-w-4xl sm:grid-cols-2"
+            tiers.length > 2 ? "lg:grid-cols-3" : "mx-auto max-w-4xl sm:grid-cols-2"
           }`}
         >
           {tiers.map((t) => (
@@ -223,9 +218,7 @@ function ForTradesmen() {
               <p className="eyebrow">{t.name}</p>
               <p className="mt-4 font-display text-4xl font-bold">
                 {t.price}
-                <span className="text-base font-medium text-muted-foreground">
-                  {t.per}
-                </span>
+                <span className="text-base font-medium text-muted-foreground">{t.per}</span>
               </p>
               <p className="mt-2 text-sm text-muted-foreground">{t.line}</p>
               <ul className="mt-6 flex-1 space-y-3 border-t border-border pt-6 text-sm">
@@ -287,12 +280,10 @@ function ForTradesmen() {
 
       <Section className="border-t border-border bg-surface">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl leading-tight sm:text-4xl">
-            Already listed with us?
-          </h2>
+          <h2 className="text-3xl leading-tight sm:text-4xl">Already listed with us?</h2>
           <p className="mt-4 text-muted-foreground">
-            If we've built a profile for your business, claim it to add photos,
-            set your postcodes and start receiving jobs.
+            If we've built a profile for your business, claim it to add photos, set your postcodes
+            and start receiving jobs.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Link

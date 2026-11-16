@@ -90,9 +90,7 @@ function Dashboard() {
   useEffect(() => {
     if (!user || ONBOARDING_FREE) return;
     void sync({})
-      .then(() =>
-        queryClient.invalidateQueries({ queryKey: ["my-pro-profile"] }),
-      )
+      .then(() => queryClient.invalidateQueries({ queryKey: ["my-pro-profile"] }))
       .catch(() => {});
   }, [user, sync, queryClient]);
 
@@ -138,8 +136,8 @@ function Dashboard() {
         <Section>
           <div className={card}>
             <p className="text-sm text-muted-foreground">
-              Apply to join the directory and we'll link your listing to this
-              account as soon as your documents are approved.
+              Apply to join the directory and we'll link your listing to this account as soon as
+              your documents are approved.
             </p>
             <Link
               to="/join"
@@ -196,10 +194,7 @@ function Dashboard() {
             (isMember(pro) ? (
               <VisitsTab pro={pro} />
             ) : (
-              <MembershipLocked
-                what="booked visits"
-                onOpen={() => setTab("plan")}
-              />
+              <MembershipLocked what="booked visits" onOpen={() => setTab("plan")} />
             ))}
           {tab === "profile" && <ProfileTab pro={pro} />}
           {tab === "photos" && <PhotosTab pro={pro} />}
@@ -217,21 +212,14 @@ function isMember(pro: Pro) {
   return firmEntitlements(pro).hasAccess;
 }
 
-function MembershipLocked({
-  what,
-  onOpen,
-}: {
-  what: string;
-  onOpen: () => void;
-}) {
+function MembershipLocked({ what, onOpen }: { what: string; onOpen: () => void }) {
   return (
     <div className={`${card} max-w-2xl`}>
       <p className="eyebrow">Membership needed</p>
       <h2 className="mt-2 text-2xl">Unlock your {what}</h2>
       <p className="mt-2 text-sm text-muted-foreground">
-        Your listing stays live either way. A paid membership opens the contact
-        details on every enquiry, your booked visits and priority placement in
-        the directory.
+        Your listing stays live either way. A paid membership opens the contact details on every
+        enquiry, your booked visits and priority placement in the directory.
       </p>
       <button
         type="button"
@@ -258,8 +246,8 @@ function LeadsTab({ pro }: { pro: Pro }) {
           <p className="mt-3 text-sm text-muted-foreground">Loading…</p>
         ) : (leads.data ?? []).length === 0 ? (
           <p className="mt-3 text-sm text-muted-foreground">
-            No enquiries yet. Homeowners reach you from your profile page and
-            from the matching results after they post a job.
+            No enquiries yet. Homeowners reach you from your profile page and from the matching
+            results after they post a job.
           </p>
         ) : (
           <ul className="mt-4 space-y-4">
@@ -268,8 +256,7 @@ function LeadsTab({ pro }: { pro: Pro }) {
                 <div className="flex flex-wrap items-baseline justify-between gap-3">
                   <h3 className="text-base">{lead.name}</h3>
                   <span className="text-xs uppercase tracking-widest text-muted-foreground">
-                    {new Date(lead.created_at).toLocaleDateString("en-GB")} ·{" "}
-                    {lead.reference}
+                    {new Date(lead.created_at).toLocaleDateString("en-GB")} · {lead.reference}
                   </span>
                 </div>
                 <p className="mt-1 text-sm text-muted-foreground">
@@ -322,8 +309,7 @@ function LeadsTab({ pro }: { pro: Pro }) {
                   View posting
                 </Link>
                 <span className="text-muted-foreground">
-                  Applied {new Date(a.created_at).toLocaleDateString("en-GB")} ·{" "}
-                  {a.status}
+                  Applied {new Date(a.created_at).toLocaleDateString("en-GB")} · {a.status}
                 </span>
               </li>
             ))}
@@ -389,8 +375,8 @@ function VisitsTab({ pro }: { pro: Pro }) {
       {render("Upcoming visits", upcoming)}
       {render("Past visits", past)}
       <p className="text-sm text-muted-foreground">
-        Visit windows homeowners can book come from your availability — ask us
-        to change them any time.
+        Visit windows homeowners can book come from your availability — ask us to change them any
+        time.
       </p>
     </div>
   );
@@ -444,8 +430,7 @@ function ProfileTab({ pro }: { pro: Pro }) {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  const set = (key: keyof typeof form, value: string) =>
-    setForm((f) => ({ ...f, [key]: value }));
+  const set = (key: keyof typeof form, value: string) => setForm((f) => ({ ...f, [key]: value }));
 
   return (
     <form
@@ -593,8 +578,8 @@ function ProfileTab({ pro }: { pro: Pro }) {
       </div>
 
       <p className="text-sm text-muted-foreground">
-        Your trade category, service area and vetting badges are set during
-        vetting — contact us to change them.
+        Your trade category, service area and vetting badges are set during vetting — contact us to
+        change them.
       </p>
 
       <button
@@ -636,9 +621,7 @@ function PhotosTab({ pro }: { pro: Pro }) {
         .from(BUCKET)
         .upload(path, file, { upsert: true, cacheControl: "31536000" });
       if (error) throw error;
-      const { data } = await supabase.storage
-        .from(BUCKET)
-        .createSignedUrl(path, SIGNED_URL_TTL);
+      const { data } = await supabase.storage.from(BUCKET).createSignedUrl(path, SIGNED_URL_TTL);
       const url = data?.signedUrl ?? "";
       if (!url) throw new Error("Could not create a link for that upload.");
       if (which === "before") setBeforeUrl(url);
@@ -730,12 +713,8 @@ function PhotosTab({ pro }: { pro: Pro }) {
                 if (f) void upload(f, "before");
               }}
             />
-            {busy === "before" && (
-              <p className="mt-1 text-xs text-muted-foreground">Uploading…</p>
-            )}
-            {beforeUrl && (
-              <p className="mt-1 text-xs text-success">Before photo ready</p>
-            )}
+            {busy === "before" && <p className="mt-1 text-xs text-muted-foreground">Uploading…</p>}
+            {beforeUrl && <p className="mt-1 text-xs text-success">Before photo ready</p>}
           </div>
           <div>
             <label className={label} htmlFor="p-after">
@@ -751,12 +730,8 @@ function PhotosTab({ pro }: { pro: Pro }) {
                 if (f) void upload(f, "after");
               }}
             />
-            {busy === "after" && (
-              <p className="mt-1 text-xs text-muted-foreground">Uploading…</p>
-            )}
-            {afterUrl && (
-              <p className="mt-1 text-xs text-success">After photo ready</p>
-            )}
+            {busy === "after" && <p className="mt-1 text-xs text-muted-foreground">Uploading…</p>}
+            {afterUrl && <p className="mt-1 text-xs text-success">After photo ready</p>}
           </div>
         </div>
         <button
@@ -773,8 +748,7 @@ function PhotosTab({ pro }: { pro: Pro }) {
         <h2 className="text-lg">Your portfolio</h2>
         {(projects.data ?? []).length === 0 ? (
           <p className="mt-3 text-sm text-muted-foreground">
-            No jobs added yet. Before-and-after photos are the single biggest
-            driver of enquiries.
+            No jobs added yet. Before-and-after photos are the single biggest driver of enquiries.
           </p>
         ) : (
           <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -790,14 +764,10 @@ function PhotosTab({ pro }: { pro: Pro }) {
                 )}
                 <div className="p-4">
                   <h3 className="text-base">{row.title}</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {row.summary}
-                  </p>
+                  <p className="mt-1 text-sm text-muted-foreground">{row.summary}</p>
                   <button
                     type="button"
-                    onClick={() =>
-                      toggle.mutate({ id: row.id, published: row.published })
-                    }
+                    onClick={() => toggle.mutate({ id: row.id, published: row.published })}
                     className="mt-3 text-sm text-primary underline"
                   >
                     {row.published ? "Hide from profile" : "Show on profile"}
@@ -823,11 +793,10 @@ function FreeFoundingPlan({ pro }: { pro: Pro }) {
     <div className="max-w-3xl space-y-8">
       <div className={card}>
         <p className="eyebrow">Current membership</p>
-        <h2 className="mt-2 text-2xl">
-          {foundingPlanLabel(pro)}
-        </h2>
+        <h2 className="mt-2 text-2xl">{foundingPlanLabel(pro)}</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          No card needed and no checkout. {pro.published
+          No card needed and no checkout.{" "}
+          {pro.published
             ? "Your approved firm has Trade-tier features while we onboard."
             : "Once approved, your firm has Trade-tier features while we onboard."}
         </p>
@@ -842,7 +811,8 @@ function FreeFoundingPlan({ pro }: { pro: Pro }) {
       <div className={card}>
         <h3 className="text-lg">Founding-firm offer</h3>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-          Join during onboarding and get 50% off for your first 12 months once charging starts. We'll email you at least 30 days before anything is charged, and you can leave any time.
+          Join during onboarding and get 50% off for your first 12 months once charging starts.
+          We'll email you at least 30 days before anything is charged, and you can leave any time.
         </p>
       </div>
     </div>
@@ -867,9 +837,7 @@ function PaidPlanTab({ pro }: { pro: Pro }) {
       const { url } = await checkout({ data: { planSlug } });
       window.location.href = url;
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "We couldn't open checkout.",
-      );
+      toast.error(error instanceof Error ? error.message : "We couldn't open checkout.");
       setBusy(null);
     }
   }
@@ -880,11 +848,7 @@ function PaidPlanTab({ pro }: { pro: Pro }) {
       const { url } = await portal({});
       window.location.href = url;
     } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "We couldn't open your billing page.",
-      );
+      toast.error(error instanceof Error ? error.message : "We couldn't open your billing page.");
       setBusy(null);
     }
   }
@@ -893,9 +857,7 @@ function PaidPlanTab({ pro }: { pro: Pro }) {
     <div className="max-w-3xl space-y-8">
       <div className={card}>
         <p className="eyebrow">Current membership</p>
-        <h2 className="mt-2 text-2xl">
-          {current ? current.name : "No paid membership"}
-        </h2>
+        <h2 className="mt-2 text-2xl">{current ? current.name : "No paid membership"}</h2>
         <p className="mt-2 text-sm text-muted-foreground">
           {active
             ? `Active${

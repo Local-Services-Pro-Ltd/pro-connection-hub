@@ -1,9 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import {
-  guardPublicRequest,
-  logApiDenial,
-  secretMatches,
-} from "@/lib/api-guard.server";
+import { guardPublicRequest, logApiDenial, secretMatches } from "@/lib/api-guard.server";
 
 /**
  * Alert relay for the CI security job.

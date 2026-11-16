@@ -44,8 +44,7 @@ export const Route = createFileRoute("/projects/")({
   }),
   // Resolve the board on the server so the page never ships a permanent
   // "loading" state if hydration is slow or blocked.
-  loader: ({ context }) =>
-    context.queryClient.ensureQueryData(publishedProjectsQuery()),
+  loader: ({ context }) => context.queryClient.ensureQueryData(publishedProjectsQuery()),
   component: ProjectBoard,
 });
 
@@ -76,8 +75,8 @@ function ProjectBoard() {
       {projects.length === 0 ? (
         <div className="mt-10 rounded-md border border-dashed border-border p-10 text-center">
           <p className="text-muted-foreground">
-            No projects are published right now. Post yours and approved firms
-            in your area will see it as soon as it clears review.
+            No projects are published right now. Post yours and approved firms in your area will see
+            it as soon as it clears review.
           </p>
           <Link
             to="/projects/new"
@@ -90,10 +89,7 @@ function ProjectBoard() {
       ) : (
         <ul className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {projects.map((p) => (
-            <li
-              key={p.id}
-              className="flex flex-col rounded-md border border-border bg-card p-6"
-            >
+            <li key={p.id} className="flex flex-col rounded-md border border-border bg-card p-6">
               <p className="eyebrow">{tradeName(p.trade_slug)}</p>
               <h2 className="mt-3 text-xl leading-snug">
                 <Link

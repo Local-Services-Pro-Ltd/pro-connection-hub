@@ -61,11 +61,7 @@ function Stat({
       <p className="eyebrow">{label}</p>
       <p
         className={`font-display text-3xl font-semibold ${
-          tone === "alert"
-            ? "text-destructive"
-            : tone === "good"
-              ? "text-success"
-              : ""
+          tone === "alert" ? "text-destructive" : tone === "good" ? "text-success" : ""
         }`}
       >
         {value}
@@ -113,8 +109,7 @@ function AdminSla() {
   });
 
   const escalation = useMutation({
-    mutationFn: (id: string) =>
-      escalate({ data: { id, priority: "urgent", dueInHours: 24 } }),
+    mutationFn: (id: string) => escalate({ data: { id, priority: "urgent", dueInHours: 24 } }),
     onSuccess: () => {
       toast.success("Escalated — due within 24 hours.");
       void sla.refetch();
@@ -123,8 +118,7 @@ function AdminSla() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  if (loading || (user && checkingRole))
-    return <Section>Checking access…</Section>;
+  if (loading || (user && checkingRole)) return <Section>Checking access…</Section>;
 
   if (!isAdmin)
     return (
@@ -139,10 +133,7 @@ function AdminSla() {
   const open = (apps.data ?? []).filter((a) => OPEN_STATUSES.includes(a.status));
   const overdue = open
     .filter((a) => a.due_at && new Date(a.due_at).getTime() < now)
-    .sort(
-      (a, b) =>
-        new Date(a.due_at ?? 0).getTime() - new Date(b.due_at ?? 0).getTime(),
-    );
+    .sort((a, b) => new Date(a.due_at ?? 0).getTime() - new Date(b.due_at ?? 0).getTime());
   const s = sla.data;
 
   return (
@@ -166,10 +157,7 @@ function AdminSla() {
           value={s?.escalated ?? "—"}
           tone={(s?.escalated ?? 0) > 0 ? "alert" : "default"}
         />
-        <Stat
-          label="Avg first response"
-          value={hours(s?.avg_first_response_hours)}
-        />
+        <Stat label="Avg first response" value={hours(s?.avg_first_response_hours)} />
         <Stat label="Avg decision" value={hours(s?.avg_decision_hours)} />
         <Stat label="Waiting on the firm" value={s?.awaiting_firm ?? "—"} />
         <Stat
@@ -181,18 +169,14 @@ function AdminSla() {
           value={s?.insurance_expired ?? "—"}
           tone={(s?.insurance_expired ?? 0) > 0 ? "alert" : "good"}
         />
-        <Stat
-          label="Insurance expiring (60 days)"
-          value={s?.insurance_expiring_60d ?? "—"}
-        />
+        <Stat label="Insurance expiring (60 days)" value={s?.insurance_expiring_60d ?? "—"} />
       </div>
 
       <div className="mt-8 rounded-md border border-border bg-card p-7">
         <h2 className="text-2xl">Nightly checks and reminders</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          Every night we re-run the Companies House and insurance checks on open
-          applications and email firms about missing paperwork, rejected
-          documents and cover that's about to lapse.
+          Every night we re-run the Companies House and insurance checks on open applications and
+          email firms about missing paperwork, rejected documents and cover that's about to lapse.
         </p>
         <ul className="mt-4 grid gap-2 text-sm sm:grid-cols-2">
           <li>
@@ -213,29 +197,18 @@ function AdminSla() {
             <span className="eyebrow !mb-0">Retried last run</span>{" "}
             {job.data?.last_result?.retried ?? 0}
           </li>
-          <li
-            className={
-              (job.data?.pending_retries ?? 0) > 0 ? "text-primary" : undefined
-            }
-          >
-            <span className="eyebrow !mb-0">Awaiting retry</span>{" "}
-            {job.data?.pending_retries ?? 0}
+          <li className={(job.data?.pending_retries ?? 0) > 0 ? "text-primary" : undefined}>
+            <span className="eyebrow !mb-0">Awaiting retry</span> {job.data?.pending_retries ?? 0}
           </li>
           <li
-            className={
-              (job.data?.dead_letters?.length ?? 0) > 0
-                ? "text-destructive"
-                : undefined
-            }
+            className={(job.data?.dead_letters?.length ?? 0) > 0 ? "text-destructive" : undefined}
           >
             <span className="eyebrow !mb-0">Dead-lettered</span>{" "}
             {job.data?.dead_letters?.length ?? 0}
           </li>
           <li
             className={
-              job.data?.last_error || job.data?.paused_reason
-                ? "text-destructive"
-                : "text-success"
+              job.data?.last_error || job.data?.paused_reason ? "text-destructive" : "text-success"
             }
           >
             <span className="eyebrow !mb-0">Health</span>{" "}
@@ -252,8 +225,8 @@ function AdminSla() {
         <div className="mt-6 rounded-md border border-destructive/40 bg-card p-7">
           <h3 className="text-lg">Reminder emails that gave up</h3>
           <p className="mt-1 text-sm text-muted-foreground">
-            Each of these failed five attempts with backoff. Fix the cause, then
-            put it back on the queue.
+            Each of these failed five attempts with backoff. Fix the cause, then put it back on the
+            queue.
           </p>
           <ul className="mt-4 grid gap-3">
             {(job.data?.dead_letters ?? []).map((d) => (
@@ -265,8 +238,7 @@ function AdminSla() {
                   <p className="font-display text-sm font-semibold">
                     {d.company ?? "Unknown firm"}{" "}
                     <span className="font-normal text-muted-foreground">
-                      {d.reference ?? ""} ·{" "}
-                      {REMINDER_KIND_LABEL[d.kind] ?? d.kind}
+                      {d.reference ?? ""} · {REMINDER_KIND_LABEL[d.kind] ?? d.kind}
                     </span>
                   </p>
                   <p className="text-destructive">
@@ -289,9 +261,7 @@ function AdminSla() {
       <h2 className="mt-12 text-2xl">Overdue and stuck</h2>
       <ul className="mt-5 grid gap-3">
         {overdue.map((a) => {
-          const late = Math.floor(
-            (now - new Date(a.due_at as string).getTime()) / 86_400_000,
-          );
+          const late = Math.floor((now - new Date(a.due_at as string).getTime()) / 86_400_000);
           return (
             <li
               key={a.id}
@@ -301,8 +271,7 @@ function AdminSla() {
                 <p className="font-display text-base font-semibold">
                   {a.company}{" "}
                   <span className="text-sm font-normal text-muted-foreground">
-                    {a.reference ?? ""} ·{" "}
-                    {APPLICATION_STATUS_LABEL[a.status] ?? a.status}
+                    {a.reference ?? ""} · {APPLICATION_STATUS_LABEL[a.status] ?? a.status}
                   </span>
                 </p>
                 <p className="text-sm text-destructive">

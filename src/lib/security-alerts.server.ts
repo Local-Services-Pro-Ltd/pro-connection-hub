@@ -29,10 +29,7 @@ async function postSlack(input: AlertInput): Promise<boolean> {
 
   const lines = input.failures
     .slice(0, 15)
-    .map(
-      (f) =>
-        `• *${f.check_name ?? "check"}* (${f.suite ?? "suite"}) — ${f.detail ?? ""}`,
-    )
+    .map((f) => `• *${f.check_name ?? "check"}* (${f.suite ?? "suite"}) — ${f.detail ?? ""}`)
     .join("\n");
 
   const text =
@@ -47,18 +44,14 @@ async function postSlack(input: AlertInput): Promise<boolean> {
     body: JSON.stringify({ text }),
   });
   if (!res.ok) {
-    console.error(
-      `[security-alert] Slack webhook failed [${res.status}]: ${await res.text()}`,
-    );
+    console.error(`[security-alert] Slack webhook failed [${res.status}]: ${await res.text()}`);
     return false;
   }
   return true;
 }
 
 async function sendEmail(input: AlertInput): Promise<boolean> {
-  const { sendTemplateEmail } = await import(
-    "@/lib/email-templates/send-email"
-  );
+  const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
   await sendTemplateEmail("security-scan-alert", "", {
     templateData: {
       failures: input.failures,
@@ -70,17 +63,10 @@ async function sendEmail(input: AlertInput): Promise<boolean> {
   return true;
 }
 
-export async function sendSecurityAlert(
-  input: AlertInput,
-): Promise<AlertResult> {
-  const [slack, email] = await Promise.allSettled([
-    postSlack(input),
-    sendEmail(input),
-  ]);
-  if (slack.status === "rejected")
-    console.error("[security-alert] slack failed", slack.reason);
-  if (email.status === "rejected")
-    console.error("[security-alert] email failed", email.reason);
+export async function sendSecurityAlert(input: AlertInput): Promise<AlertResult> {
+  const [slack, email] = await Promise.allSettled([postSlack(input), sendEmail(input)]);
+  if (slack.status === "rejected") console.error("[security-alert] slack failed", slack.reason);
+  if (email.status === "rejected") console.error("[security-alert] email failed", email.reason);
   return {
     slack: slack.status === "fulfilled" && slack.value,
     email: email.status === "fulfilled" && email.value,

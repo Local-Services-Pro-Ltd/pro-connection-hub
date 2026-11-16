@@ -34,8 +34,7 @@ export function MatchedPros({
   if (isError || !data || data.length === 0)
     return (
       <p className="mt-6 text-sm text-muted-foreground">
-        We're onboarding firms in this area — we'll match your job as soon as
-        one is approved.
+        We're onboarding firms in this area — we'll match your job as soon as one is approved.
       </p>
     );
 
@@ -43,15 +42,12 @@ export function MatchedPros({
     <div className="mt-8">
       <h3 className="text-xl">Your top {data.length} matches</h3>
       <p className="mt-2 text-sm text-muted-foreground">
-        Matched by trade and location. These firms are still being vetted and
-        must complete their ID and insurance checks before they can quote.
+        Matched by trade and location. These firms are still being vetted and must complete their ID
+        and insurance checks before they can quote.
       </p>
       <ul className="mt-5 grid gap-4">
         {data.map((m: MatchedPro, i) => (
-          <li
-            key={m.pro_id}
-            className="flex gap-4 rounded-md border border-border bg-card p-4"
-          >
+          <li key={m.pro_id} className="flex gap-4 rounded-md border border-border bg-card p-4">
             <img
               src={photos[m.photo] ?? pro1}
               alt={`${m.name} of ${m.company}`}

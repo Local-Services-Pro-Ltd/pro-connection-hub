@@ -53,10 +53,7 @@ const Email = ({
           <Text style={text}>{name ? `Hi ${name},` : "Hi there,"}</Text>
           <Text style={text}>
             {`Now that ${where} is onboarding we're working through the queue in order. You're currently number ${queuePosition ?? "—"}`}
-            {typeof previousPosition === "number"
-              ? ` (you were ${previousPosition})`
-              : ""}
-            .
+            {typeof previousPosition === "number" ? ` (you were ${previousPosition})` : ""}.
           </Text>
           <Text style={text}>
             {isTrader
@@ -70,9 +67,8 @@ const Email = ({
           ) : null}
           <Hr style={hr} />
           <Text style={small}>
-            You're getting this because you asked for launch updates for this
-            postcode area. You can change that from the link in your
-            confirmation email.
+            You're getting this because you asked for launch updates for this postcode area. You can
+            change that from the link in your confirmation email.
           </Text>
         </Container>
       </Body>

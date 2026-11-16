@@ -1,12 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Cookie, X } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import {
-  CHANGE_EVENT,
-  OPEN_EVENT,
-  readCookiePrefs,
-  writeCookiePrefs,
-} from "@/lib/cookie-consent";
+import { CHANGE_EVENT, OPEN_EVENT, readCookiePrefs, writeCookiePrefs } from "@/lib/cookie-consent";
 import { Action } from "@/components/site-chrome";
 
 export function CookieConsent() {
@@ -63,8 +58,8 @@ export function CookieConsent() {
           <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-4 lg:flex-row lg:items-center lg:justify-between lg:px-8">
             <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
               <Cookie className="mr-2 inline h-4 w-4 text-primary" />
-              We use cookies that keep the site working, plus optional ones for
-              analytics and personalised results. You choose.{" "}
+              We use cookies that keep the site working, plus optional ones for analytics and
+              personalised results. You choose.{" "}
               <Link to="/privacy" className="underline hover:text-foreground">
                 Privacy Policy
               </Link>
@@ -120,8 +115,8 @@ export function CookieConsent() {
                   </span>
                 </div>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  Sign-in sessions, security, and remembering your theme or
-                  consent choices. The site can't work without these.
+                  Sign-in sessions, security, and remembering your theme or consent choices. The
+                  site can't work without these.
                 </p>
               </li>
 
@@ -146,9 +141,7 @@ export function CookieConsent() {
               >
                 Reject optional
               </Action>
-              <Action onClick={() => save({ analytics, personalisation })}>
-                Save preferences
-              </Action>
+              <Action onClick={() => save({ analytics, personalisation })}>Save preferences</Action>
             </div>
           </div>
         </div>
@@ -189,9 +182,7 @@ function ToggleRow({
           />
         </button>
       </div>
-      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-        {description}
-      </p>
+      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{description}</p>
     </li>
   );
 }

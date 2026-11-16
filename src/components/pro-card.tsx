@@ -29,11 +29,7 @@ export function ProCard({ pro }: { pro: Pro }) {
         <span className="absolute left-3 top-3 rounded-sm bg-background/85 px-2 py-1 font-display text-[11px] font-semibold uppercase tracking-widest text-primary capitalize backdrop-blur">
           {pro.trade_slug.replace("-", " ")}
         </span>
-        <SaveProButton
-          proId={pro.id}
-          company={pro.company}
-          className="absolute bottom-3 right-3"
-        />
+        <SaveProButton proId={pro.id} company={pro.company} className="absolute bottom-3 right-3" />
         <span className="absolute right-3 top-3 rounded-sm bg-muted px-2 py-1 font-display text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
           {pro.is_demo ? "Example listing" : "Vetting in progress"}
         </span>
@@ -52,9 +48,7 @@ export function ProCard({ pro }: { pro: Pro }) {
         </div>
         <p className="mt-1 text-sm text-muted-foreground">
           {pro.name} · {pro.area}
-          {hasReviews
-            ? ` · ${pro.review_count} review${pro.review_count === 1 ? "" : "s"}`
-            : ""}
+          {hasReviews ? ` · ${pro.review_count} review${pro.review_count === 1 ? "" : "s"}` : ""}
         </p>
         <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
           ID and insurance checks must be completed before this firm can quote.

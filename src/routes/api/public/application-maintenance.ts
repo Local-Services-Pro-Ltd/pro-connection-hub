@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { timingSafeEqual } from "crypto";
+import type { Database } from "@/integrations/supabase/types";
 import { guardPublicRequest } from "@/lib/api-guard.server";
 import {
   DOCUMENT_KINDS,
@@ -77,9 +79,7 @@ type ReminderRow = {
  * dead-lettered after MAX_ATTEMPTS so an admin can see and requeue them.
  */
 async function deliverReminder(
-  supabaseAdmin: {
-    from: (t: string) => any;
-  },
+  supabaseAdmin: SupabaseClient<Database>,
   row: ReminderRow,
 ): Promise<{ sent: boolean; dead?: boolean; error?: string }> {
   const app = row.application;
@@ -88,8 +88,7 @@ async function deliverReminder(
 
   const fail = async (message: string) => {
     const dead = attempts >= MAX_ATTEMPTS;
-    const backoff =
-      BACKOFF_MINUTES[Math.min(attempts - 1, BACKOFF_MINUTES.length - 1)] ?? 1440;
+    const backoff = BACKOFF_MINUTES[Math.min(attempts - 1, BACKOFF_MINUTES.length - 1)] ?? 1440;
     await supabaseAdmin
       .from("application_reminders")
       .update({
@@ -214,9 +213,10 @@ async function run(request: Request): Promise<Response> {
       .limit(50);
 
     for (const item of queued ?? []) {
-      const app = (item as Record<string, unknown>)["pro_applications"] as
-        | Record<string, unknown>
-        | null;
+      const app = (item as Record<string, unknown>)["pro_applications"] as Record<
+        string,
+        unknown
+      > | null;
       if (!app) continue;
       const result = await deliverReminder(supabaseAdmin, {
         id: item.id as string,
@@ -243,9 +243,7 @@ async function run(request: Request): Promise<Response> {
       .limit(BATCH);
     if (error) throw new Error(error.message);
 
-    const { runVerificationForApplication } = await import(
-      "@/lib/application-checks.server"
-    );
+    const { runVerificationForApplication } = await import("@/lib/application-checks.server");
     for (const row of rows ?? []) {
       try {
         await runVerificationForApplication(supabaseAdmin, row.id as string, {
@@ -265,13 +263,9 @@ async function run(request: Request): Promise<Response> {
         .eq("application_id", row.id as string);
 
       const missing = DOCUMENT_KINDS.filter((d) => d.required).filter(
-        (d) =>
-          !(docs ?? []).some(
-            (doc) => doc.kind === d.key && doc.status !== "rejected",
-          ),
+        (d) => !(docs ?? []).some((doc) => doc.kind === d.key && doc.status !== "rejected"),
       );
-      const ageDays =
-        (Date.now() - new Date(row.created_at as string).getTime()) / 86_400_000;
+      const ageDays = (Date.now() - new Date(row.created_at as string).getTime()) / 86_400_000;
       if (missing.length > 0 && ageDays >= 2) {
         plans.push({
           kind: "documents_pending",

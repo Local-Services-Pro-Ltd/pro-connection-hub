@@ -87,16 +87,11 @@ export function ProjectGallery({
       {heading && <h2 className="text-2xl">{heading}</h2>}
       <ul className="mt-5 grid gap-5 sm:grid-cols-2">
         {projects.map((p) => (
-          <li
-            key={p.id}
-            className="overflow-hidden rounded-md border border-border bg-card"
-          >
+          <li key={p.id} className="overflow-hidden rounded-md border border-border bg-card">
             <BeforeAfter project={p} />
             <div className="p-5">
               <h3 className="text-base">{p.title}</h3>
-              {p.summary && (
-                <p className="mt-1.5 text-sm text-muted-foreground">{p.summary}</p>
-              )}
+              {p.summary && <p className="mt-1.5 text-sm text-muted-foreground">{p.summary}</p>}
               {p.completed_on && (
                 <p className="mt-2 text-xs text-muted-foreground">
                   Completed{" "}

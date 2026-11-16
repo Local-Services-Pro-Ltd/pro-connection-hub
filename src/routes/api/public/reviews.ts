@@ -24,10 +24,7 @@ async function handler({ request }: { request: Request }): Promise<Response> {
 
   const params = new URL(request.url).searchParams;
   const proId = params.get("pro_id");
-  const limit = Math.min(
-    Math.max(Number(params.get("limit") ?? 20) || 20, 1),
-    MAX_LIMIT,
-  );
+  const limit = Math.min(Math.max(Number(params.get("limit") ?? 20) || 20, 1), MAX_LIMIT);
 
   if (proId && !/^[A-Za-z0-9-]{1,64}$/.test(proId)) {
     return badRequest("pro_id must be an alphanumeric listing id");

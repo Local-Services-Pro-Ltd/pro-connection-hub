@@ -10,13 +10,7 @@ import type { PublicReview } from "@/lib/queries";
 const field =
   "w-full rounded-sm border border-input bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/70 outline-none transition-colors focus:border-primary";
 
-export function ReviewPanel({
-  proId,
-  reviews,
-}: {
-  proId: string;
-  reviews: PublicReview[];
-}) {
+export function ReviewPanel({ proId, reviews }: { proId: string; reviews: PublicReview[] }) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [rating, setRating] = useState(5);
@@ -29,8 +23,7 @@ export function ReviewPanel({
     mutationFn: async () => {
       if (!user) throw new Error("Sign in to leave a review.");
       const trimmed = body.trim();
-      if (trimmed.length < 20)
-        throw new Error("Please write at least 20 characters.");
+      if (trimmed.length < 20) throw new Error("Please write at least 20 characters.");
       const { error } = await supabase.from("reviews").insert({
         pro_id: proId,
         author_id: user.id,
@@ -63,9 +56,7 @@ export function ReviewPanel({
     <>
       <div className="mt-12 flex items-baseline justify-between gap-4">
         <h2 className="text-2xl">Reviews</h2>
-        <span className="text-sm text-muted-foreground">
-          {reviews.length} published
-        </span>
+        <span className="text-sm text-muted-foreground">{reviews.length} published</span>
       </div>
 
       {reviews.length > 0 ? (
@@ -82,9 +73,7 @@ export function ReviewPanel({
                   {r.rating}
                 </span>
               </div>
-              <p className="mt-3 leading-relaxed text-muted-foreground">
-                {r.body}
-              </p>
+              <p className="mt-3 leading-relaxed text-muted-foreground">{r.body}</p>
               <p className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-3 text-xs text-muted-foreground">
                 <ShieldCheck className="h-3.5 w-3.5 text-success" />
                 <span className="text-foreground">{r.author_name}</span>
@@ -104,8 +93,8 @@ export function ReviewPanel({
         <div className="mt-5 rounded-md border border-border bg-card p-6">
           <p className="font-display text-base">Be the first to review this firm</p>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-            Reviews will only come from customers who've had work done through
-            TradesmanFinder. This firm hasn't been reviewed here yet.
+            Reviews will only come from customers who've had work done through TradesmanFinder. This
+            firm hasn't been reviewed here yet.
           </p>
         </div>
       )}
@@ -119,8 +108,8 @@ export function ReviewPanel({
             <Link to="/signin" className="text-primary hover:underline">
               Sign in
             </Link>{" "}
-            to write a review. Reviews are moderated before publication and will
-            only come from customers who've had work done through TradesmanFinder.
+            to write a review. Reviews are moderated before publication and will only come from
+            customers who've had work done through TradesmanFinder.
           </p>
         ) : (
           <form
@@ -187,8 +176,7 @@ export function ReviewPanel({
               {mutation.isPending ? "Submitting…" : "Submit review"}
             </button>
             <p className="text-xs text-muted-foreground">
-              Reviews are moderated before publication and are linked to your
-              account.
+              Reviews are moderated before publication and are linked to your account.
             </p>
           </form>
         )}

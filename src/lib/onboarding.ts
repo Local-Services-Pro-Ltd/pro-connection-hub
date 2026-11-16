@@ -49,9 +49,7 @@ export function firmEntitlements(pro: FirmPlanState) {
     };
   }
 
-  const paid = ["active", "trialing", "past_due"].includes(
-    pro.subscription_status,
-  );
+  const paid = ["active", "trialing", "past_due"].includes(pro.subscription_status);
 
   if (ONBOARDING_FREE || (paid && pro.plan_slug === "trade")) {
     return { hasAccess: true, ...TRADE_TIER_LIMITS };

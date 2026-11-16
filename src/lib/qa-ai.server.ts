@@ -32,8 +32,7 @@ const SCHEMA = {
   properties: {
     answer: {
       type: "string",
-      description:
-        "Practical first-pass guidance for a UK homeowner, 80-160 words, plain English.",
+      description: "Practical first-pass guidance for a UK homeowner, 80-160 words, plain English.",
     },
     safety: { type: "string", enum: ["none", "caution", "high"] },
     safety_note: { type: ["string", "null"] },
@@ -93,7 +92,8 @@ export async function analyseQuestion(
 
   try {
     // Lovable keeps the existing model; Gemini (self-hosted production) uses Flash.
-    const model = aiProvider() === "gemini" ? aiModel("google/gemini-2.5-flash") : "openai/gpt-5.6-sol";
+    const model =
+      aiProvider() === "gemini" ? aiModel("google/gemini-2.5-flash") : "openai/gpt-5.6-sol";
     const res = await fetch(aiChatUrl(), {
       method: "POST",
       headers: { "Content-Type": "application/json", ...aiAuthHeaders(apiKey) },
@@ -132,9 +132,7 @@ export async function analyseQuestion(
         parsed.suggested_trade && tradeSlugs.includes(parsed.suggested_trade)
           ? parsed.suggested_trade
           : null,
-      verdict: ["publish", "review", "reject"].includes(parsed.verdict)
-        ? parsed.verdict
-        : "review",
+      verdict: ["publish", "review", "reject"].includes(parsed.verdict) ? parsed.verdict : "review",
       risk: ["low", "medium", "high"].includes(parsed.risk) ? parsed.risk : "low",
       reasons: Array.isArray(parsed.reasons)
         ? parsed.reasons.slice(0, 6).map((r) => String(r).slice(0, 200))

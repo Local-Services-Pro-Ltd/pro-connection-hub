@@ -1,10 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, CheckCircle2, Clock, ShieldCheck } from "lucide-react";
-import {
-  VETTING_ACTIONS,
-  VETTING_STAGES,
-  type VettingStage,
-} from "@/lib/vetting-status";
+import { VETTING_ACTIONS, VETTING_STAGES, type VettingStage } from "@/lib/vetting-status";
 
 /**
  * Shown on the homepage while no firm has been featured yet. It tells people
@@ -35,9 +31,7 @@ export function VettingStatusPanel() {
               </span>
             </div>
             <h3 className="mt-4 text-lg">{s.title}</h3>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              {s.body}
-            </p>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{s.body}</p>
           </li>
         ))}
       </ol>
@@ -46,9 +40,7 @@ export function VettingStatusPanel() {
         {VETTING_ACTIONS.map((a) => (
           <div key={a.key} className="bg-card p-8">
             <h3 className="text-xl">{a.title}</h3>
-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              {a.body}
-            </p>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{a.body}</p>
             <Link
               to={a.href}
               className="mt-6 inline-flex items-center gap-2 text-sm text-primary hover:underline"

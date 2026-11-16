@@ -6,14 +6,8 @@ import { PageHero, Section } from "@/components/layout-bits";
 import { SearchBar } from "@/components/search-bar";
 import { tradesQuery } from "@/lib/queries";
 import { getRequestOrigin } from "@/lib/origin.functions";
-import {
-  tradeHero,
-  hasTradePhoto,
-  tradeAlt,
-  tradeFocal,
-} from "@/lib/trade-media";
+import { tradeHero, hasTradePhoto, tradeAlt, tradeFocal } from "@/lib/trade-media";
 import heroTrades from "@/assets/hero-trades.jpg";
-
 
 export const Route = createFileRoute("/trades/")({
   loader: async ({ context }) => {
@@ -28,9 +22,7 @@ export const Route = createFileRoute("/trades/")({
     const description =
       "Browse local trades joining TradesmanFinder. Firms must complete ID and insurance checks before they can quote.";
     const base = loaderData?.origin ?? "";
-    const image = loaderData?.origin
-      ? `${loaderData.origin}/og/trades.jpg`
-      : undefined;
+    const image = loaderData?.origin ? `${loaderData.origin}/og/trades.jpg` : undefined;
     return {
       meta: [
         { title },
@@ -77,10 +69,7 @@ function TradesIndex() {
   const [q, setQ] = useState("");
   const [letter, setLetter] = useState<string>("all");
 
-  const letters = useMemo(
-    () => "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""),
-    [],
-  );
+  const letters = useMemo(() => "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""), []);
   const available = useMemo(
     () => new Set(trades.map((t) => t.name.charAt(0).toUpperCase())),
     [trades],
@@ -89,8 +78,7 @@ function TradesIndex() {
   const visible = useMemo(() => {
     const needle = q.trim().toLowerCase();
     return trades.filter((t) => {
-      const matchesLetter =
-        letter === "all" || t.name.charAt(0).toUpperCase() === letter;
+      const matchesLetter = letter === "all" || t.name.charAt(0).toUpperCase() === letter;
       const matchesQuery =
         !needle ||
         t.name.toLowerCase().includes(needle) ||
@@ -99,7 +87,6 @@ function TradesIndex() {
       return matchesLetter && matchesQuery;
     });
   }, [trades, q, letter]);
-
 
   return (
     <>
@@ -250,7 +237,6 @@ function TradesIndex() {
           </div>
         )}
       </Section>
-
     </>
   );
 }

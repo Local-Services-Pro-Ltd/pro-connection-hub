@@ -21,30 +21,19 @@ interface Props {
   reference?: string;
 }
 
-const Email = ({
-  name,
-  projectTitle,
-  status,
-  reviewerNote,
-  projectUrl,
-  reference,
-}: Props) => {
+const Email = ({ name, projectTitle, status, reviewerNote, projectUrl, reference }: Props) => {
   const live = status !== "rejected";
   return (
     <Html lang="en" dir="ltr">
       <Head />
       <Preview>
-        {live
-          ? "Your project posting is live"
-          : "We couldn't publish your project posting"}
+        {live ? "Your project posting is live" : "We couldn't publish your project posting"}
       </Preview>
       <Body style={main}>
         <Container style={container}>
           <Text style={eyebrow}>TRADESMANFINDER</Text>
           <Heading style={heading}>
-            {live
-              ? "Your posting is live"
-              : "We couldn't publish your posting"}
+            {live ? "Your posting is live" : "We couldn't publish your posting"}
           </Heading>
           <Text style={text}>{name ? `Hi ${name},` : "Hi there,"}</Text>
           <Text style={text}>
@@ -66,8 +55,8 @@ const Email = ({
           ) : null}
           <Hr style={rule} />
           <Text style={small}>
-            Firms must complete ID and insurance checks before they can quote
-            on postings through TradesmanFinder.
+            Firms must complete ID and insurance checks before they can quote on postings through
+            TradesmanFinder.
           </Text>
         </Container>
       </Body>
@@ -78,7 +67,7 @@ const Email = ({
 export const template = {
   component: Email,
   subject: (data: Record<string, unknown>) =>
-    data['status'] === "rejected"
+    data["status"] === "rejected"
       ? "About your TradesmanFinder project posting"
       : "Your project posting is live — TradesmanFinder",
   displayName: "Project — review decision",

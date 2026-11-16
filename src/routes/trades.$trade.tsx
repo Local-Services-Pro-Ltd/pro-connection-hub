@@ -16,15 +16,9 @@ import {
 } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
 import { hasCostGuide } from "@/lib/cost-guides";
-import {
-  tradeHero,
-  tradeFocal,
-  tradeAlt,
-  hasTradeOgImage,
-} from "@/lib/trade-media";
+import { tradeHero, tradeFocal, tradeAlt, hasTradeOgImage } from "@/lib/trade-media";
 import { tradeHeroCopy } from "@/lib/trade-copy";
 import { getRequestOrigin } from "@/lib/origin.functions";
-
 
 type Search = {
   area?: string;
@@ -34,16 +28,13 @@ type Search = {
   sort?: string;
 };
 
-const str = (v: unknown) =>
-  typeof v === "string" && v.trim() ? v.trim() : undefined;
+const str = (v: unknown) => (typeof v === "string" && v.trim() ? v.trim() : undefined);
 
 export const Route = createFileRoute("/trades/$trade")({
   validateSearch: (search: Record<string, unknown>): Search => ({
     ...(str(search["area"]) ? { area: str(search["area"])! } : {}),
     ...(str(search["budget"]) ? { budget: str(search["budget"])! } : {}),
-    ...(str(search["availability"])
-      ? { availability: str(search["availability"])! }
-      : {}),
+    ...(str(search["availability"]) ? { availability: str(search["availability"])! } : {}),
     ...(str(search["q"]) ? { q: str(search["q"])! } : {}),
     ...(str(search["sort"]) ? { sort: str(search["sort"])! } : {}),
   }),
@@ -56,9 +47,7 @@ export const Route = createFileRoute("/trades/$trade")({
       .maybeSingle();
     if (!data) throw notFound();
     const [, , origin, heroOverride] = await Promise.all([
-      context.queryClient.ensureQueryData(
-        prosQuery({ trade: params.trade, ...deps }),
-      ),
+      context.queryClient.ensureQueryData(prosQuery({ trade: params.trade, ...deps })),
       context.queryClient.ensureQueryData(tradesQuery),
       getRequestOrigin(),
       fetchTradeHeroImage(params.trade),
@@ -83,9 +72,7 @@ export const Route = createFileRoute("/trades/$trade")({
     const description = `${trade.blurb} Browse local ${trade.name.toLowerCase()}s joining TradesmanFinder. Typical cost ${trade.typical_cost}.`;
     const base = origin ?? "";
     const image =
-      origin && hasTradeOgImage(trade.slug)
-        ? `${origin}/og/trade-${trade.slug}.jpg`
-        : undefined;
+      origin && hasTradeOgImage(trade.slug) ? `${origin}/og/trade-${trade.slug}.jpg` : undefined;
     return {
       meta: [
         { title },
@@ -133,9 +120,7 @@ export const Route = createFileRoute("/trades/$trade")({
 function TradePage() {
   const { trade, heroOverride } = Route.useLoaderData();
   const search = Route.useSearch();
-  const { data: matches } = useSuspenseQuery(
-    prosQuery({ trade: trade.slug, ...search }),
-  );
+  const { data: matches } = useSuspenseQuery(prosQuery({ trade: trade.slug, ...search }));
   const { data: tradeProjects } = useQuery(tradeProjectsQuery(trade.slug));
 
   const copy = tradeHeroCopy(trade.slug, {
@@ -147,8 +132,7 @@ function TradePage() {
 
   // Admin overrides (/admin/hero-images) win over the bundled photo.
   const heroImage = heroOverride?.image_url || tradeHero(trade.slug);
-  const heroAlt =
-    heroOverride?.alt_text?.trim() || tradeAlt(trade.slug, trade.name);
+  const heroAlt = heroOverride?.alt_text?.trim() || tradeAlt(trade.slug, trade.name);
   const base = tradeFocal(trade.slug);
   const focal = {
     focal: heroOverride?.focal || base.focal,
@@ -166,7 +150,6 @@ function TradePage() {
         focal={focal.focal}
         focalMobile={focal.focalMobile}
       >
-
         <dl className="flex flex-wrap gap-x-12 gap-y-4 border-t border-border pt-6">
           <div>
             <dt className="eyebrow">{copy.stats.cost}</dt>
@@ -185,9 +168,7 @@ function TradePage() {
           </div>
           <div>
             <dt className="eyebrow">Directory status</dt>
-            <dd className="mt-1 font-display text-xl text-primary">
-              Vetting in progress
-            </dd>
+            <dd className="mt-1 font-display text-xl text-primary">Vetting in progress</dd>
           </div>
         </dl>
       </PageHero>
@@ -203,7 +184,6 @@ function TradePage() {
         )}
 
         <ProFiltersBar />
-
 
         <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
           <p className="eyebrow">Firms in this trade</p>
@@ -254,8 +234,8 @@ function TradePage() {
         )}
 
         <p className="mt-10 text-sm text-muted-foreground">
-          Every listed firm is marked vetting in progress until its ID and
-          insurance checks are complete.
+          Every listed firm is marked vetting in progress until its ID and insurance checks are
+          complete.
         </p>
 
         <div className="mt-12 grid gap-8 border-t border-border pt-12 lg:grid-cols-2">
@@ -265,8 +245,8 @@ function TradePage() {
               Tell us where you need a {trade.name.toLowerCase()}.
             </h2>
             <p className="mt-3 leading-relaxed text-muted-foreground">
-              Leave your postcode and we'll email you when an approved{" "}
-              {trade.name.toLowerCase()} joins your area — you can{" "}
+              Leave your postcode and we'll email you when an approved {trade.name.toLowerCase()}{" "}
+              joins your area — you can{" "}
               <Link
                 to="/coverage"
                 className="font-medium text-primary underline underline-offset-2"
@@ -276,11 +256,7 @@ function TradePage() {
               in the meantime.
             </p>
           </div>
-          <WaitingListInline
-            source="trade_page"
-            defaultTrade={trade.name}
-            compact
-          />
+          <WaitingListInline source="trade_page" defaultTrade={trade.name} compact />
         </div>
       </Section>
     </>

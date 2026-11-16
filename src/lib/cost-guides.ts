@@ -233,7 +233,7 @@ const guides: CostGuide[] = [
     tips: [
       "Buy your own paint if you want a specific brand — trade discounts vary.",
       "Empty and clear rooms before day one; it removes half a day of moving.",
-      "Agree the number of coats in writing, not just \"paint the room\".",
+      'Agree the number of coats in writing, not just "paint the room".',
     ],
     faqs: [
       {
@@ -1018,10 +1018,7 @@ function round(value: number): number {
   return Math.round(value / 5) * 5;
 }
 
-export function estimate(
-  lines: { job: CostJob; qty: number }[],
-  factor: number,
-): Estimate {
+export function estimate(lines: { job: CostJob; qty: number }[], factor: number): Estimate {
   const low = lines.reduce((sum, l) => sum + l.job.low * l.qty, 0) * factor;
   const high = lines.reduce((sum, l) => sum + l.job.high * l.qty, 0) * factor;
   return { low: round(low), high: round(high) };

@@ -1,14 +1,5 @@
 import * as React from "react";
-import {
-  Body,
-  Container,
-  Head,
-  Heading,
-  Hr,
-  Html,
-  Preview,
-  Text,
-} from "@react-email/components";
+import { Body, Container, Head, Heading, Hr, Html, Preview, Text } from "@react-email/components";
 import type { TemplateEntry } from "./registry";
 
 interface Failure {
@@ -27,20 +18,17 @@ interface Props {
 const Email = ({ failures = [], total = 0, ranAt, environment }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>
-      {`TradesmanFinder security scan: ${failures.length} failing check(s)`}
-    </Preview>
+    <Preview>{`TradesmanFinder security scan: ${failures.length} failing check(s)`}</Preview>
     <Body style={main}>
       <Container style={container}>
         <Text style={eyebrow}>TRADESMANFINDER · SECURITY</Text>
         <Heading style={heading}>
-          {failures.length} security check{failures.length === 1 ? "" : "s"}{" "}
-          failed
+          {failures.length} security check{failures.length === 1 ? "" : "s"} failed
         </Heading>
         <Text style={text}>
           The scheduled security regression scan ran{ranAt ? ` at ${ranAt}` : ""}
-          {environment ? ` on ${environment}` : ""} and found problems in{" "}
-          {failures.length} of {total} checks.
+          {environment ? ` on ${environment}` : ""} and found problems in {failures.length} of{" "}
+          {total} checks.
         </Text>
         <Hr style={rule} />
         {failures.map((f, i) => (
@@ -54,17 +42,32 @@ const Email = ({ failures = [], total = 0, ranAt, environment }: Props) => (
         ))}
         <Hr style={rule} />
         <Text style={small}>
-          Review the findings in the admin area under Plan settings → Security.
-          This alert is sent automatically after each deployment scan.
+          Review the findings in the admin area under Plan settings → Security. This alert is sent
+          automatically after each deployment scan.
         </Text>
       </Container>
     </Body>
   </Html>
 );
 
-const main = { backgroundColor: "#f6f4f1", fontFamily: "Helvetica, Arial, sans-serif", color: "#1b1a19" };
-const container = { backgroundColor: "#ffffff", padding: "32px", maxWidth: "560px", margin: "24px auto" };
-const eyebrow = { fontSize: "12px", letterSpacing: "0.12em", color: "#b4531f", margin: "0 0 12px", fontWeight: 700 };
+const main = {
+  backgroundColor: "#f6f4f1",
+  fontFamily: "Helvetica, Arial, sans-serif",
+  color: "#1b1a19",
+};
+const container = {
+  backgroundColor: "#ffffff",
+  padding: "32px",
+  maxWidth: "560px",
+  margin: "24px auto",
+};
+const eyebrow = {
+  fontSize: "12px",
+  letterSpacing: "0.12em",
+  color: "#b4531f",
+  margin: "0 0 12px",
+  fontWeight: 700,
+};
 const heading = { fontSize: "24px", lineHeight: "1.25", margin: "0 0 16px", color: "#1b1a19" };
 const text = { fontSize: "16px", lineHeight: "1.6", margin: "0 0 16px" };
 const item = { fontSize: "14px", lineHeight: "1.6", margin: "0 0 12px", color: "#3b3835" };
