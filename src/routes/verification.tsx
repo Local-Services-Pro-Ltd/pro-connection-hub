@@ -145,8 +145,7 @@ function Verification() {
         />
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
-            to="/claim"
-            search={{}}
+            to="/join"
             className="inline-flex rounded-sm bg-primary px-6 py-3.5 font-display font-semibold text-primary-foreground shadow-ember hover:brightness-110"
           >
             Apply to be checked

@@ -731,6 +731,7 @@ export type Database = {
           about: string
           accreditations: string | null
           applicant_message: string | null
+          business_type: string | null
           changes_requested_at: string | null
           companies_house: string | null
           company: string
@@ -767,6 +768,7 @@ export type Database = {
           about?: string
           accreditations?: string | null
           applicant_message?: string | null
+          business_type?: string | null
           changes_requested_at?: string | null
           companies_house?: string | null
           company: string
@@ -803,6 +805,7 @@ export type Database = {
           about?: string
           accreditations?: string | null
           applicant_message?: string | null
+          business_type?: string | null
           changes_requested_at?: string | null
           companies_house?: string | null
           company?: string

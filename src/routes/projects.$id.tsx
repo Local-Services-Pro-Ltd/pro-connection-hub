@@ -233,7 +233,7 @@ function ProjectDetail() {
                 can quote. Apply to have your firm's documents reviewed.
               </p>
               <Link
-                to="/claim"
+                to="/join"
                 className="mt-5 inline-flex rounded-sm bg-primary px-5 py-2.5 font-display text-sm font-semibold text-primary-foreground shadow-ember hover:brightness-110"
               >
                 Apply for checks

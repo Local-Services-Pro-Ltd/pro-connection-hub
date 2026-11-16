@@ -24,6 +24,12 @@ const STATUSES = [
   "rejected",
 ] as const;
 
+const BUSINESS_TYPE_LABEL: Record<string, string> = {
+  sole_trader: "Sole trader",
+  partnership: "Partnership",
+  limited_company: "Limited company",
+};
+
 export const Route = createFileRoute("/admin/applications")({
   head: () => ({
     meta: [
@@ -294,6 +300,7 @@ function AdminApplications() {
               </span>
             </div>
             <p className="mt-2 text-sm text-muted-foreground">
+              {a.business_type ? `${BUSINESS_TYPE_LABEL[a.business_type] ?? a.business_type} · ` : ""}
               {a.contact_name} · {a.email}
               {a.phone ? ` · ${a.phone}` : ""} · {a.postcode} ·{" "}
               {a.trade_slug ?? "trade not given"} · {a.years} yrs

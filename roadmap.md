@@ -46,3 +46,10 @@
 - [ ] Mobile pass (job form, trade filters)
 - [ ] Analytics with conversion tracking on Post a job / For tradesmen
 - [ ] Reduce "coming soon" clutter
+
+## /join application redesign
+- [x] /join page (hero, fact tiles, steps, accordion, form, success)
+- [x] business_type column + optional insurance/CH/accreditations at submission
+- [x] CTAs to /join; For tradesmen 5-working-day reply
+- [x] Application-received email wording; admin shows business type
+- [x] Tests

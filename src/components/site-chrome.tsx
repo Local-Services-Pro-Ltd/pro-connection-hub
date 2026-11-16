@@ -201,8 +201,8 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
-              <Link to="/claim" search={{}} className="hover:text-foreground">
-                Apply for vetting
+              <Link to="/join" className="hover:text-foreground">
+                Apply to join
               </Link>
             </li>
             <li>
