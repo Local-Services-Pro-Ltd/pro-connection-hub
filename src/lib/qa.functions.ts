@@ -154,9 +154,9 @@ export const submitAnswer = createServerFn({ method: "POST" })
     )
       throw new Error("Please slow down a little and try again shortly.");
 
-    const { error } = await supabaseAdmin.rpc("answer_question", {
+    // Runs as the caller so the database derives the firm from auth.uid().
+    const { error } = await context.supabase.rpc("answer_question", {
       p_question_id: data.questionId,
-      p_user_id: context.userId,
       p_body: data.body,
     });
 

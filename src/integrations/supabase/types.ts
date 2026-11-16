@@ -1889,7 +1889,7 @@ export type Database = {
         Returns: Json
       }
       answer_question: {
-        Args: { p_body: string; p_question_id: string; p_user_id: string }
+        Args: { p_body: string; p_question_id: string }
         Returns: string
       }
       apply_to_project: {

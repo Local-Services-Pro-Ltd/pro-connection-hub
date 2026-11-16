@@ -5,7 +5,7 @@ import { Section, SectionHead } from "@/components/layout-bits";
 import { ProCard } from "@/components/pro-card";
 import { useSavedPros } from "@/hooks/use-saved-pros";
 import { supabase } from "@/integrations/supabase/client";
-import type { Pro } from "@/lib/queries";
+import { PUBLIC_PRO_COLUMNS, type Pro } from "@/lib/queries";
 
 export const Route = createFileRoute("/saved")({
   head: () => ({
@@ -37,7 +37,7 @@ function SavedPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("pros")
-        .select("*")
+        .select(PUBLIC_PRO_COLUMNS)
         .in("id", ids)
         .eq("published", true);
       if (error) throw error;

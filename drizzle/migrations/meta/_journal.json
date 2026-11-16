@@ -288,6 +288,13 @@
       "when": 1789640697408,
       "tag": "0040_pro_demo_flag_and_membership",
       "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1794807629054,
+      "tag": "0041_security_hardening_review",
+      "breakpoints": true
     }
   ]
 }

@@ -112,6 +112,8 @@ function ForTradesmen() {
   const tiers = allTiers.filter((t) => {
     const flag = visibility[t.slug];
     if (typeof flag === "boolean") return flag;
+    // Hidden tiers are not returned to visitors at all.
+    if (Object.keys(visibility).length > 0) return false;
     return DEFAULT_VISIBILITY[t.slug] ?? t.visible;
   });
 

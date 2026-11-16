@@ -12,6 +12,7 @@ import {
 import {
   formatBudget,
   myProProfileQuery,
+  myProjectsQuery,
   projectApplicationsQuery,
   projectQuery,
   tradesQuery,
@@ -75,7 +76,8 @@ function ProjectDetail() {
   const sign = useServerFn(signProjectPhotos);
   const [photos, setPhotos] = useState<string[]>([]);
 
-  const isOwner = !!user && project?.user_id === user.id;
+  const { data: myProjects } = useQuery({ ...myProjectsQuery, enabled: !!user });
+  const isOwner = !!user && !!myProjects?.some((p) => p.id === id);
   const applications = useQuery({
     ...projectApplicationsQuery(id),
     enabled: isOwner,
