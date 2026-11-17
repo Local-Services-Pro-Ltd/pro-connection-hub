@@ -10,7 +10,8 @@ import { LeadForm } from "@/components/lead-form";
 import { SaveProButton } from "@/components/save-pro-button";
 import { tradeHero } from "@/lib/trade-media";
 
-import { proQuery, proProjectsQuery } from "@/lib/queries";
+import { areasQuery, proQuery, proProjectsQuery } from "@/lib/queries";
+import { formatProLocation } from "@/lib/pro-location";
 import { breadcrumbSchema, ldScript, organizationSchema } from "@/lib/structured-data";
 
 import pro1 from "@/assets/pro-1.jpg";
@@ -21,7 +22,10 @@ const photos: Record<number, string> = { 1: pro1, 2: pro2, 3: pro3 };
 
 export const Route = createFileRoute("/pro/$id")({
   loader: async ({ params, context }) => {
-    const data = await context.queryClient.ensureQueryData(proQuery(params.id));
+    const [data] = await Promise.all([
+      context.queryClient.ensureQueryData(proQuery(params.id)),
+      context.queryClient.ensureQueryData(areasQuery),
+    ]);
     if (!data.pro) throw notFound();
     return {
       name: data.pro.company,
@@ -120,8 +124,10 @@ export const Route = createFileRoute("/pro/$id")({
 function ProPage() {
   const { id } = Route.useParams();
   const { data } = useSuspenseQuery(proQuery(id));
+  const { data: areas } = useSuspenseQuery(areasQuery);
   const { data: projects } = useQuery(proProjectsQuery(id));
   const pro = data.pro!;
+  const location = formatProLocation(pro, areas);
 
   const { credentials, reviews } = data;
 
@@ -165,7 +171,7 @@ function ProPage() {
               )}
               <span className="flex items-center gap-2 text-muted-foreground">
                 <MapPin className="h-4 w-4 text-primary" />
-                {pro.area}
+                {location}
                 {pro.postcode ? ` · ${pro.postcode}` : ""}
               </span>
               <span className="flex items-center gap-2 text-muted-foreground">

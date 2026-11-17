@@ -101,13 +101,13 @@ export function SiteHeader() {
           <Link
             to="/post-job"
             search={{}}
-            className="hidden whitespace-nowrap rounded-sm bg-primary px-3 py-2.5 font-display text-xs font-semibold text-primary-foreground shadow-ember hover:brightness-110 lg:inline-flex xl:px-4 xl:text-sm"
+            className="hidden h-10 whitespace-nowrap rounded-sm bg-primary px-4 py-0 font-display text-sm font-semibold text-primary-foreground shadow-ember hover:brightness-110 lg:inline-flex lg:items-center"
           >
             Post a job
           </Link>
           <Link
             to="/join"
-            className="hidden whitespace-nowrap rounded-sm border-2 border-primary bg-background px-3 py-2 font-display text-xs font-semibold text-foreground hover:bg-muted lg:inline-flex xl:px-4 xl:text-sm"
+            className="hidden h-10 whitespace-nowrap rounded-sm border border-primary bg-background px-4 py-0 font-display text-sm font-semibold text-foreground hover:bg-muted lg:inline-flex lg:items-center"
           >
             For trades: Join or claim
           </Link>
@@ -130,14 +130,14 @@ export function SiteHeader() {
               to="/post-job"
               search={{}}
               onClick={() => setOpen(false)}
-              className="inline-flex w-full items-center justify-center rounded-sm bg-primary px-5 py-3.5 font-display font-semibold text-primary-foreground shadow-ember"
+              className="inline-flex h-11 w-full items-center justify-center rounded-sm bg-primary px-5 py-0 font-display font-semibold text-primary-foreground shadow-ember"
             >
               Post a job
             </Link>
             <Link
               to="/join"
               onClick={() => setOpen(false)}
-              className="inline-flex w-full items-center justify-center rounded-sm border-2 border-primary bg-background px-5 py-3 font-display font-semibold text-foreground"
+              className="inline-flex h-11 w-full items-center justify-center rounded-sm border border-primary bg-background px-5 py-0 font-display font-semibold text-foreground"
             >
               For trades: Join or claim
             </Link>
@@ -182,7 +182,7 @@ export function Action({
   className?: string;
 } & React.ButtonHTMLAttributes<HTMLButtonElement>) {
   const base =
-    "inline-flex items-center gap-2 rounded-sm px-4 py-2.5 font-display text-sm font-semibold tracking-tight transition-all duration-300";
+    "inline-flex h-10 items-center gap-2 rounded-sm px-5 py-0 font-display text-sm font-semibold tracking-tight transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50";
   const styles = {
     ember:
       "bg-primary text-primary-foreground shadow-ember hover:brightness-110 active:translate-y-px",

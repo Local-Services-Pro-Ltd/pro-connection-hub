@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/use-auth";
 import type { PublicReview } from "@/lib/queries";
 
 const field =
-  "w-full rounded-sm border border-input bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/70 outline-none transition-colors focus:border-primary";
+  "w-full rounded-sm border border-input bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none transition-colors focus:border-primary";
 
 export function ReviewPanel({ proId, reviews }: { proId: string; reviews: PublicReview[] }) {
   const { user } = useAuth();

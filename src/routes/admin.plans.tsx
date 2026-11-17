@@ -201,7 +201,7 @@ function AdminPlansBoard() {
                   </p>
                 ) : null}
                 {row?.updated_at ? (
-                  <p className="mt-2 text-xs text-muted-foreground/80">
+                  <p className="mt-2 text-xs text-muted-foreground">
                     Last changed {new Date(row.updated_at).toLocaleString("en-GB")}
                   </p>
                 ) : null}

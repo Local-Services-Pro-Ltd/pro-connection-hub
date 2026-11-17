@@ -138,21 +138,33 @@ const POPULAR_TRADES: { slug: string; icon: LucideIcon }[] = [
   { slug: "handyman", icon: Wrench },
 ];
 
-const TRUST_POINTS: { icon: LucideIcon; title: string; body: string }[] = [
+const TRUST_POINTS: {
+  icon: LucideIcon;
+  title: string;
+  body: string;
+  image: string;
+  imageAlt: string;
+}[] = [
   {
     icon: IdCard,
     title: "ID checked",
     body: "We confirm who's behind every firm before it can quote.",
+    image: "/images/home/electrician-consumer-unit.webp",
+    imageAlt: "An electrician inspecting a consumer unit",
   },
   {
     icon: ShieldCheck,
     title: "Insurance checked",
     body: "Public liability insurance, plus any trade registration the work needs, such as Gas Safe or NICEIC.",
+    image: "/images/home/roofer-tiled-roof.webp",
+    imageAlt: "A roofer working on a tiled roof",
   },
   {
     icon: MessageSquareQuote,
     title: "Real reviews only",
     body: "Reviews come only from customers who've had work done through TradesmanFinder.",
+    image: "/images/home/finished-kitchen.webp",
+    imageAlt: "A finished kitchen with wooden cabinetry",
   },
 ];
 
@@ -241,9 +253,20 @@ function Home() {
       >
         <div className="mx-auto grid max-w-7xl gap-3 md:grid-cols-2">
           <div className="rounded-md border border-border bg-card p-4 sm:p-5">
-            <div className="flex items-center gap-3">
-              <HomeIcon className="h-6 w-6 shrink-0 text-primary" aria-hidden="true" />
-              <h2 className="text-xl">I need a tradesman</h2>
+            <div className="flex items-center gap-4">
+              <img
+                src="/images/home/plumber-pipework.webp"
+                alt="A plumber fitting pipework under a sink"
+                loading="lazy"
+                decoding="async"
+                width={1200}
+                height={800}
+                className="h-20 w-24 shrink-0 rounded-sm object-cover"
+              />
+              <div className="flex items-center gap-3">
+                <HomeIcon className="h-6 w-6 shrink-0 text-primary" aria-hidden="true" />
+                <h2 className="text-xl">I need a tradesman</h2>
+              </div>
             </div>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
               Post your job free and we'll match you with checked local trades.
@@ -266,9 +289,20 @@ function Home() {
           </div>
 
           <div className="rounded-md border border-border bg-card p-4 sm:p-5">
-            <div className="flex items-center gap-3">
-              <HardHat className="h-6 w-6 shrink-0 text-primary" aria-hidden="true" />
-              <h2 className="text-xl">I'm a tradesperson</h2>
+            <div className="flex items-center gap-4">
+              <img
+                src="/images/home/roofer-tiled-roof.webp"
+                alt="A roofer working on a tiled roof"
+                loading="lazy"
+                decoding="async"
+                width={1200}
+                height={800}
+                className="h-20 w-24 shrink-0 rounded-sm object-cover"
+              />
+              <div className="flex items-center gap-3">
+                <HardHat className="h-6 w-6 shrink-0 text-primary" aria-hidden="true" />
+                <h2 className="text-xl">I'm a tradesperson</h2>
+              </div>
             </div>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
               Free to join while we onboard trades. No per-lead fees.
@@ -349,7 +383,7 @@ function Home() {
         <div className="mt-10 grid gap-px overflow-hidden rounded-md border border-border bg-border lg:grid-cols-3">
           {steps.map((s) => (
             <div key={s.n} className="bg-card p-8">
-              <span className="font-display text-5xl font-bold text-primary/25">{s.n}</span>
+              <span className="font-display text-5xl font-bold text-primary/70">{s.n}</span>
               <h3 className="mt-6 text-xl">{s.title}</h3>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{s.body}</p>
             </div>
@@ -381,11 +415,22 @@ function Home() {
         <SectionHead eyebrow="Trust" title="How we keep it trustworthy" />
         <div className="mt-8 grid gap-px overflow-hidden rounded-md border border-border bg-border md:grid-cols-3">
           {TRUST_POINTS.map((p) => (
-            <div key={p.title} className="flex gap-4 bg-card p-6">
-              <p.icon className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
-              <div>
-                <h3 className="text-lg">{p.title}</h3>
-                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{p.body}</p>
+            <div key={p.title} className="bg-card">
+              <img
+                src={p.image}
+                alt={p.imageAlt}
+                loading="lazy"
+                decoding="async"
+                width={1200}
+                height={800}
+                className="aspect-[16/7] w-full object-cover"
+              />
+              <div className="flex gap-4 p-6">
+                <p.icon className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
+                <div>
+                  <h3 className="text-lg">{p.title}</h3>
+                  <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{p.body}</p>
+                </div>
               </div>
             </div>
           ))}
@@ -450,7 +495,7 @@ function Home() {
             .map((a) => (
               <span
                 key={a.slug}
-                className="rounded-sm border border-dashed border-border px-4 py-2 text-sm text-muted-foreground/70"
+                className="rounded-sm border border-dashed border-border px-4 py-2 text-sm text-muted-foreground"
               >
                 {a.name}
                 <span className="ml-2 text-xs">Coming soon</span>

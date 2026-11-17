@@ -37,7 +37,7 @@ export const Route = createFileRoute("/enterprise")({
 });
 
 const field =
-  "mt-2 w-full rounded-sm border border-input bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/70 outline-none transition-colors focus:border-primary";
+  "mt-2 w-full rounded-sm border border-input bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none transition-colors focus:border-primary";
 
 function Enterprise() {
   const [name, setName] = useState("");

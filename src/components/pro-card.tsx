@@ -1,6 +1,8 @@
 import { Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { Star } from "lucide-react";
-import { type Pro } from "@/lib/queries";
+import { areasQuery, type Pro } from "@/lib/queries";
+import { formatProLocation } from "@/lib/pro-location";
 import { SaveProButton } from "@/components/save-pro-button";
 import pro1 from "@/assets/pro-1.jpg";
 import pro2 from "@/assets/pro-2.jpg";
@@ -10,6 +12,8 @@ const photos: Record<number, string> = { 1: pro1, 2: pro2, 3: pro3 };
 
 export function ProCard({ pro }: { pro: Pro }) {
   const hasReviews = pro.review_count > 0;
+  const { data: areas = [] } = useQuery(areasQuery);
+  const location = formatProLocation(pro, areas);
 
   return (
     <Link
@@ -20,7 +24,7 @@ export function ProCard({ pro }: { pro: Pro }) {
       <div className="relative aspect-[4/3] overflow-hidden bg-muted">
         <img
           src={photos[pro.photo] ?? pro1}
-          alt={`${pro.name}, ${pro.trade_slug.replace("-", " ")} in ${pro.area}`}
+          alt={`${pro.name}, ${pro.trade_slug.replace("-", " ")} in ${location}`}
           loading="lazy"
           width={800}
           height={800}
@@ -47,7 +51,7 @@ export function ProCard({ pro }: { pro: Pro }) {
           )}
         </div>
         <p className="mt-1 text-sm text-muted-foreground">
-          {pro.name} · {pro.area}
+          {pro.name} · {location}
           {hasReviews ? ` · ${pro.review_count} review${pro.review_count === 1 ? "" : "s"}` : ""}
         </p>
         <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
