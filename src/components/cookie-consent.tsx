@@ -55,8 +55,14 @@ export function CookieConsent() {
           aria-label="Cookie consent"
           className="fixed inset-x-0 bottom-0 z-[60] border-t border-border bg-background/98 backdrop-blur-xl"
         >
-          <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-4 lg:flex-row lg:items-center lg:justify-between lg:px-8">
-            <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+          <div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-3 sm:gap-4 sm:px-5 sm:py-4 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+            <p className="text-xs leading-5 text-muted-foreground sm:hidden">
+              We use cookies to run the site and, if you agree, for analytics.{" "}
+              <Link to="/privacy" className="underline hover:text-foreground">
+                Privacy
+              </Link>
+            </p>
+            <p className="hidden max-w-2xl text-sm leading-relaxed text-muted-foreground sm:block">
               <Cookie className="mr-2 inline h-4 w-4 text-primary" />
               We use cookies that keep the site working, plus optional ones for analytics and
               personalised results. You choose.{" "}
@@ -65,7 +71,29 @@ export function CookieConsent() {
               </Link>
               .
             </p>
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="grid grid-cols-2 gap-2 sm:hidden">
+              <Action
+                variant="outline"
+                className="justify-center px-2 py-2 text-xs"
+                onClick={() => save({ analytics: false, personalisation: false })}
+              >
+                Reject optional
+              </Action>
+              <Action
+                className="justify-center px-2 py-2 text-xs"
+                onClick={() => save({ analytics: true, personalisation: true })}
+              >
+                Accept all
+              </Action>
+            </div>
+            <button
+              type="button"
+              className="mx-auto text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground sm:hidden"
+              onClick={() => setPanel(true)}
+            >
+              Manage preferences
+            </button>
+            <div className="hidden flex-wrap items-center gap-2 sm:flex">
               <Action variant="ghost" onClick={() => setPanel(true)}>
                 Manage preferences
               </Action>
