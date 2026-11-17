@@ -49,8 +49,8 @@ const Email = ({ company, contactName, status, reviewerNote, actionUrl }: Props)
             </Text>
           ) : (
             <Text style={text}>
-              A real person is reviewing your claim. Your account is not linked to the listing until
-              the claim is approved.
+              A member of our compliance and onboarding team is reviewing your claim. Your account
+              is not linked to the listing until the claim is approved.
             </Text>
           )}
           {actionUrl ? (
