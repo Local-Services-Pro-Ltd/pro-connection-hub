@@ -5,7 +5,15 @@
 // by the waiting-list handoff. Errs on the side of accepting borderline cases.
 
 export type LiveArea =
-  "london" | "kent" | "surrey" | "berkshire" | "manchester" | "birmingham" | "bristol" | "leeds";
+  | "london"
+  | "kent"
+  | "surrey"
+  | "berkshire"
+  | "manchester"
+  | "birmingham"
+  | "bristol"
+  | "leeds"
+  | "buckinghamshire";
 
 export type CoverageArea = { slug: string; status: string };
 
@@ -39,6 +47,8 @@ const AREA_POSTCODE_PREFIXES: Record<LiveArea, string[]> = {
   birmingham: ["B"],
   bristol: ["BS"],
   leeds: ["LS"],
+  // SL stays under Berkshire; overlaps are returned by liveAreasFor.
+  buckinghamshire: ["HP", "MK"],
 };
 
 export const LIVE_AREA_NAMES: Record<LiveArea, string> = {
@@ -50,6 +60,7 @@ export const LIVE_AREA_NAMES: Record<LiveArea, string> = {
   birmingham: "Birmingham",
   bristol: "Bristol",
   leeds: "Leeds",
+  buckinghamshire: "Buckinghamshire",
 };
 
 /** "se1 7pb" -> "SE". Empty string when unparseable. */
