@@ -74,3 +74,48 @@ describe("analyseQuestion on Gemini", () => {
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 });
+
+describe("AI timeout budget", () => {
+  it("returns null within the budget when fetch never resolves", async () => {
+    vi.useFakeTimers();
+    try {
+      vi.stubEnv("GEMINI_API_KEY", "k");
+      vi.stubEnv("GEMINI_MODEL", "");
+      const fetchMock = vi.fn(() => new Promise<Response>(() => {}));
+      vi.stubGlobal("fetch", fetchMock);
+      const err = vi.spyOn(console, "error").mockImplementation(() => {});
+      const p = analyseQuestion({ title: "Leak", body: "Sink leaks" }, ["plumber"]);
+      await vi.advanceTimersByTimeAsync(20_000);
+      await expect(p).resolves.toBeNull();
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(err).toHaveBeenCalledWith(
+        "[qa-ai] timeout",
+        expect.objectContaining({ provider: "gemini" }),
+      );
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+  it("Gemini body asks for low reasoning effort", () => {
+    vi.stubEnv("GEMINI_API_KEY", "k");
+    expect(buildGeminiBody([{ role: "user", content: "x" }])).toMatchObject({
+      reasoning_effort: "low",
+    });
+    expect(buildGeminiBody([{ role: "user", content: "x" }], "json_object")).toMatchObject({
+      reasoning_effort: "low",
+    });
+  });
+  it("Lovable path body is unchanged (no reasoning_effort)", async () => {
+    vi.stubEnv("GEMINI_API_KEY", "");
+    vi.stubEnv("LOVABLE_API_KEY", "k");
+    const fetchMock = vi.fn(async () => ok(result));
+    vi.stubGlobal("fetch", fetchMock);
+    await analyseQuestion({ title: "Leak", body: "Sink leaks" }, ["plumber"]);
+    const body = JSON.parse(
+      (fetchMock.mock.calls[0] as unknown as [string, RequestInit])[1].body as string,
+    );
+    expect(body.model).toBe("openai/gpt-5.6-sol");
+    expect(body.reasoning_effort).toBeUndefined();
+    expect(body.response_format.json_schema.strict).toBe(true);
+  });
+});

@@ -81,6 +81,13 @@ export const GEMINI_SCHEMA = {
   required: SCHEMA.required,
 };
 
+export const AI_ATTEMPT_TIMEOUT_MS = 20_000;
+export const AI_TOTAL_BUDGET_MS = 25_000;
+
+class AiTimeoutError extends Error {
+  override name = "TimeoutError";
+}
+
 type ChatMessage = { role: "system" | "user"; content: string };
 
 export function buildGeminiBody(
@@ -90,6 +97,7 @@ export function buildGeminiBody(
   return {
     model: geminiQaModel(),
     messages,
+    reasoning_effort: "low",
     response_format:
       mode === "json_object"
         ? { type: "json_object" }
@@ -134,12 +142,33 @@ export async function analyseQuestion(
     { role: "system", content: systemPrompt(tradeSlugs) },
     { role: "user", content: userText },
   ];
-  const post = (body: unknown) =>
-    fetch(aiChatUrl(), {
+  const started = Date.now();
+  const deadline = started + AI_TOTAL_BUDGET_MS;
+  // Each attempt gets at most 20s, and all attempts share one ~25s budget.
+  const post = (body: unknown): Promise<Response> => {
+    const ms = Math.max(0, Math.min(AI_ATTEMPT_TIMEOUT_MS, deadline - Date.now()));
+    if (ms <= 0) return Promise.reject(new AiTimeoutError());
+    const controller = new AbortController();
+    const signal =
+      typeof AbortSignal.any === "function"
+        ? AbortSignal.any([controller.signal, AbortSignal.timeout(ms)])
+        : controller.signal;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const timeout = new Promise<never>((_, reject) => {
+      timer = setTimeout(() => {
+        controller.abort();
+        reject(new AiTimeoutError());
+      }, ms);
+    });
+    const req = fetch(aiChatUrl(), {
       method: "POST",
       headers: { "Content-Type": "application/json", ...aiAuthHeaders(apiKey) },
       body: JSON.stringify(body),
+      signal,
     });
+    return Promise.race([req, timeout]).finally(() => clearTimeout(timer));
+  };
+  const currentModel = provider === "gemini" ? geminiQaModel() : "openai/gpt-5.6-sol";
   const logProviderError = async (res: Response, model: string) => {
     let body = "";
     try {
@@ -166,7 +195,7 @@ export async function analyseQuestion(
       }
     } else {
       // Lovable gateway path — unchanged.
-      const model = "openai/gpt-5.6-sol";
+      const model = currentModel;
       res = await post({
         model,
         messages,
@@ -216,6 +245,11 @@ export async function analyseQuestion(
       summary: parsed.summary ? String(parsed.summary).slice(0, 400) : null,
     };
   } catch (err) {
+    const name = err instanceof Error ? err.name : "";
+    if (err instanceof AiTimeoutError || name === "TimeoutError" || name === "AbortError") {
+      console.error("[qa-ai] timeout", { provider, model: currentModel, ms: Date.now() - started });
+      return null;
+    }
     console.error("[qa-ai] request failed", {
       provider,
       message: err instanceof Error ? err.message : String(err),
