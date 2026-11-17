@@ -41,8 +41,12 @@ jobs:
         run: bun run lint
 
       - name: Dependency audit
-        # Deferred: Zod 3 must move to 4.6.6+, a major migration. No other advisory is exempt.
-        run: bun audit --prod --ignore=GHSA-mrhx-c7xc-m3w5
+        # Deferred: Zod 3 must move to 4.6.6+, a major migration.
+        # Temporary (added 17 Nov 2026): picomatch ReDoS GHSA-fc5q-39xc-vjpf has no patched
+        # release yet (latest is 4.0.7). Build-time only, fixed patterns. Remove this ignore and
+        # pin the patched version as soon as it is published.
+        # No other advisory is exempt.
+        run: bun audit --prod --ignore=GHSA-mrhx-c7xc-m3w5 --ignore=GHSA-fc5q-39xc-vjpf
 
       - name: Authentication and coverage regression tests
         run: bun run test:deployment
