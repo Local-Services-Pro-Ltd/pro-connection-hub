@@ -168,7 +168,7 @@ export async function analyseQuestion(
     });
     return Promise.race([req, timeout]).finally(() => clearTimeout(timer));
   };
-  let currentModel = provider === "gemini" ? geminiQaModel() : "openai/gpt-5.6-sol";
+  const currentModel = provider === "gemini" ? geminiQaModel() : "openai/gpt-5.6-sol";
   const logProviderError = async (res: Response, model: string) => {
     let body = "";
     try {
