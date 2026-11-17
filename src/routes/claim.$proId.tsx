@@ -4,6 +4,7 @@ import { queryOptions, useMutation, useSuspenseQuery } from "@tanstack/react-que
 import { useServerFn } from "@tanstack/react-start";
 import { BadgeCheck, Building2 } from "lucide-react";
 import { Section } from "@/components/layout-bits";
+import { PasswordInput } from "@/components/password-input";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import {
@@ -85,6 +86,7 @@ function EmailAccount({ proId }: { proId: string }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordVisibilityReset, setPasswordVisibilityReset] = useState(0);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [checkEmail, setCheckEmail] = useState(false);
@@ -104,10 +106,12 @@ function EmailAccount({ proId }: { proId: string }) {
           },
         });
         if (signUpError) throw signUpError;
+        setPasswordVisibilityReset((current) => current + 1);
         if (!data.session) setCheckEmail(true);
       } else {
         const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
         if (signInError) throw signInError;
+        setPasswordVisibilityReset((current) => current + 1);
       }
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Something went wrong. Please try again.");
@@ -171,18 +175,21 @@ function EmailAccount({ proId }: { proId: string }) {
             className={field}
           />
         </label>
-        <label className="block">
-          <span className="eyebrow">Password</span>
-          <input
+        <div>
+          <label htmlFor="claim-password" className="eyebrow block">
+            Password
+          </label>
+          <PasswordInput
+            id="claim-password"
+            key={passwordVisibilityReset}
             required
-            type="password"
             minLength={8}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             autoComplete={mode === "up" ? "new-password" : "current-password"}
             className={field}
           />
-        </label>
+        </div>
         {mode === "in" && (
           <div className="-mt-3 text-right">
             <Link to="/forgot-password" className="text-sm text-primary hover:underline">

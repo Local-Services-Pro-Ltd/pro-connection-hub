@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Section } from "@/components/layout-bits";
+import { PasswordInput } from "@/components/password-input";
+import { PasswordMatchHint } from "@/components/password-match-hint";
 import { supabase } from "@/integrations/supabase/client";
 import { EXPIRED_RESET_LINK_MESSAGE, validatePasswordReset } from "@/lib/password-recovery";
 
@@ -168,30 +170,35 @@ function ResetPassword() {
             onSubmit={submit}
             className="mt-8 space-y-5 rounded-md border border-border bg-card p-7"
           >
-            <label className="block">
-              <span className="eyebrow">New password</span>
-              <input
+            <div>
+              <label htmlFor="new-password" className="eyebrow block">
+                New password
+              </label>
+              <PasswordInput
+                id="new-password"
                 required
-                type="password"
                 minLength={8}
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
                 autoComplete="new-password"
                 className={field}
               />
-            </label>
-            <label className="block">
-              <span className="eyebrow">Confirm password</span>
-              <input
+            </div>
+            <div>
+              <label htmlFor="confirm-password" className="eyebrow block">
+                Confirm password
+              </label>
+              <PasswordInput
+                id="confirm-password"
                 required
-                type="password"
                 minLength={8}
                 value={confirmation}
                 onChange={(event) => setConfirmation(event.target.value)}
                 autoComplete="new-password"
                 className={field}
               />
-            </label>
+              <PasswordMatchHint password={password} confirmation={confirmation} />
+            </div>
             {error && (
               <p role="alert" className="text-sm text-destructive">
                 {error}

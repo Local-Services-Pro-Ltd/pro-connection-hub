@@ -7,6 +7,7 @@ import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/hooks/use-auth";
 import { googleReturnUrl, safeAuthDestination, usesLovableAuth } from "@/lib/auth-redirect";
 import { getAuthOptions } from "@/lib/auth-options.functions";
+import { PasswordInput } from "@/components/password-input";
 import heroPoster from "@/assets/hero-poster.jpg";
 
 type SignInSearch = {
@@ -63,6 +64,7 @@ function SignIn() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordVisibilityReset, setPasswordVisibilityReset] = useState(0);
   const [busy, setBusy] = useState(false);
   const [checkEmail, setCheckEmail] = useState(false);
   const [googleBusy, setGoogleBusy] = useState(false);
@@ -87,6 +89,7 @@ function SignIn() {
           },
         });
         if (error) throw error;
+        setPasswordVisibilityReset((current) => current + 1);
         if (!data.session) {
           setCheckEmail(true);
           return;
@@ -98,6 +101,7 @@ function SignIn() {
           password,
         });
         if (error) throw error;
+        setPasswordVisibilityReset((current) => current + 1);
         toast.success("Signed in");
       }
     } catch (err) {
@@ -217,17 +221,21 @@ function SignIn() {
                     className={`${field} mt-2`}
                   />
                 </label>
-                <label className="block">
-                  <span className="eyebrow">Password</span>
-                  <input
+                <div>
+                  <label htmlFor="signin-password" className="eyebrow block">
+                    Password
+                  </label>
+                  <PasswordInput
+                    id="signin-password"
+                    key={passwordVisibilityReset}
                     required
-                    type="password"
                     minLength={8}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    autoComplete={mode === "up" ? "new-password" : "current-password"}
                     className={`${field} mt-2`}
                   />
-                </label>
+                </div>
                 {mode === "in" && (
                   <div className="-mt-3 text-right">
                     <Link to="/forgot-password" className="text-sm text-primary hover:underline">

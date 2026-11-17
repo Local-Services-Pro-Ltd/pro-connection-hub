@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
   EXPIRED_RESET_LINK_MESSAGE,
@@ -28,5 +29,17 @@ describe("password recovery", () => {
 
   it("accepts matching passwords of at least eight characters", () => {
     expect(validatePasswordReset("eightchars", "eightchars")).toBeNull();
+  });
+
+  it("uses the shared visibility control for every account password field", () => {
+    const signIn = readFileSync("src/routes/signin.tsx", "utf8");
+    const claim = readFileSync("src/routes/claim.$proId.tsx", "utf8");
+    const reset = readFileSync("src/routes/reset-password.tsx", "utf8");
+
+    expect(signIn).toContain("<PasswordInput");
+    expect(claim).toContain("<PasswordInput");
+    expect(reset.match(/<PasswordInput/g)).toHaveLength(2);
+    expect(reset).toContain("<PasswordMatchHint");
+    expect(`${signIn}\n${claim}\n${reset}`).not.toContain('type="password"');
   });
 });

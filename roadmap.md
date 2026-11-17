@@ -82,3 +82,4 @@
 - [x] Add sign-in and claim-form links to password recovery
 - [x] Add noindex forgot-password and reset-password routes with human checks and recovery-session handling
 - [x] Add regression coverage and run lint, typecheck, tests, and build
+- [x] Add accessible password visibility controls and live reset-password match hints
