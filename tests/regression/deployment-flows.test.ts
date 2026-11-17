@@ -32,7 +32,7 @@ test("OAuth returns to the same host and preserves an internal destination", () 
     assert.equal(safeAuthDestination(bad), "/account");
 });
 
-test("all eight launched regions accept representative postcodes", () => {
+test("all ten launched regions accept representative postcodes", () => {
   const samples = {
     london: "SE18 7JH",
     kent: "ME14 1XQ",
@@ -42,6 +42,8 @@ test("all eight launched regions accept representative postcodes", () => {
     birmingham: "B1 1AA",
     bristol: "BS1 1AA",
     leeds: "LS1 1AA",
+    buckinghamshire: "HP6 6AA",
+    hertfordshire: "SG12 9AA",
   };
   const areas = Object.keys(samples).map((slug) => ({ slug, status: "live" }));
   for (const [slug, postcode] of Object.entries(samples)) {
@@ -61,4 +63,38 @@ test("overlapping postcode coverage respects live status and input normalisation
   ];
   assert.deepEqual(liveAreasFor("cr0 1aa", areas), ["london", "surrey"]);
   assert.equal(isLiveArea("LS1 1AA", [{ slug: "london", status: "live" }]), false);
+});
+
+test("Buckinghamshire covers HP and MK only while live; SL stays Berkshire", () => {
+  const live = [
+    { slug: "buckinghamshire", status: "live" },
+    { slug: "berkshire", status: "live" },
+  ];
+  const soon = [
+    { slug: "buckinghamshire", status: "coming_soon" },
+    { slug: "berkshire", status: "live" },
+  ];
+  for (const pc of ["HP6 6AA", "MK9 3AA"]) {
+    assert.equal(isLiveArea(pc, live), true, pc);
+    assert.equal(liveAreaFor(pc, live), "buckinghamshire");
+    assert.equal(isLiveArea(pc, soon), false, pc);
+  }
+  assert.deepEqual(liveAreasFor("SL1 1AA", live), ["berkshire"]);
+});
+
+test("Hertfordshire covers SG and AL only while live; EN1 still matches London", () => {
+  const live = [
+    { slug: "london", status: "live" },
+    { slug: "hertfordshire", status: "live" },
+  ];
+  const soon = [
+    { slug: "london", status: "live" },
+    { slug: "hertfordshire", status: "coming_soon" },
+  ];
+  for (const pc of ["SG12 9AA", "AL1 1AA"]) {
+    assert.equal(liveAreaFor(pc, live), "hertfordshire", pc);
+    assert.equal(isLiveArea(pc, soon), false, pc);
+  }
+  assert.deepEqual(liveAreasFor("EN1 1AA", live), ["london", "hertfordshire"]);
+  assert.deepEqual(liveAreasFor("EN1 1AA", soon), ["london"]);
 });

@@ -1943,6 +1943,7 @@ export type Database = {
             }
             Returns: Json
           }
+      area_slugs_for_postcode: { Args: { p: string }; Returns: string[] }
       ask_question: {
         Args: {
           p_area?: string
@@ -2044,6 +2045,34 @@ export type Database = {
               years: number
             }[]
           }
+      match_pros_ranked: {
+        Args: {
+          p_limit: number
+          p_onboarding_free: boolean
+          p_plan_aware: boolean
+          p_postcode: string
+          p_trade: string
+        }
+        Returns: {
+          area: string
+          availability: Database["public"]["Enums"]["availability"]
+          company: string
+          day_rate: number
+          match_score: number
+          name: string
+          photo: number
+          pro_id: string
+          rating: number
+          reason: string
+          response_mins: number
+          review_count: number
+          trade_slug: string
+          trust_score: number
+          years: number
+        }[]
+      }
+      postcode_letters: { Args: { p: string }; Returns: string }
+      postcode_outward: { Args: { p: string }; Returns: string }
       pro_application_id_for_token: {
         Args: { p_token: string }
         Returns: string
