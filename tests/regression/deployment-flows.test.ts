@@ -32,7 +32,7 @@ test("OAuth returns to the same host and preserves an internal destination", () 
     assert.equal(safeAuthDestination(bad), "/account");
 });
 
-test("all nine launched regions accept representative postcodes", () => {
+test("all ten launched regions accept representative postcodes", () => {
   const samples = {
     london: "SE18 7JH",
     kent: "ME14 1XQ",
@@ -43,6 +43,7 @@ test("all nine launched regions accept representative postcodes", () => {
     bristol: "BS1 1AA",
     leeds: "LS1 1AA",
     buckinghamshire: "HP6 6AA",
+    hertfordshire: "SG12 9AA",
   };
   const areas = Object.keys(samples).map((slug) => ({ slug, status: "live" }));
   for (const [slug, postcode] of Object.entries(samples)) {
@@ -79,4 +80,21 @@ test("Buckinghamshire covers HP and MK only while live; SL stays Berkshire", () 
     assert.equal(isLiveArea(pc, soon), false, pc);
   }
   assert.deepEqual(liveAreasFor("SL1 1AA", live), ["berkshire"]);
+});
+
+test("Hertfordshire covers SG and AL only while live; EN1 still matches London", () => {
+  const live = [
+    { slug: "london", status: "live" },
+    { slug: "hertfordshire", status: "live" },
+  ];
+  const soon = [
+    { slug: "london", status: "live" },
+    { slug: "hertfordshire", status: "coming_soon" },
+  ];
+  for (const pc of ["SG12 9AA", "AL1 1AA"]) {
+    assert.equal(liveAreaFor(pc, live), "hertfordshire", pc);
+    assert.equal(isLiveArea(pc, soon), false, pc);
+  }
+  assert.deepEqual(liveAreasFor("EN1 1AA", live), ["london", "hertfordshire"]);
+  assert.deepEqual(liveAreasFor("EN1 1AA", soon), ["london"]);
 });

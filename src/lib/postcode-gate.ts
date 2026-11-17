@@ -13,7 +13,8 @@ export type LiveArea =
   | "birmingham"
   | "bristol"
   | "leeds"
-  | "buckinghamshire";
+  | "buckinghamshire"
+  | "hertfordshire";
 
 export type CoverageArea = { slug: string; status: string };
 
@@ -49,6 +50,8 @@ const AREA_POSTCODE_PREFIXES: Record<LiveArea, string[]> = {
   leeds: ["LS"],
   // SL stays under Berkshire; overlaps are returned by liveAreasFor.
   buckinghamshire: ["HP", "MK"],
+  // WD/EN overlap London and HP overlaps Buckinghamshire; all are returned.
+  hertfordshire: ["SG", "AL", "WD", "EN", "HP"],
 };
 
 export const LIVE_AREA_NAMES: Record<LiveArea, string> = {
@@ -61,6 +64,7 @@ export const LIVE_AREA_NAMES: Record<LiveArea, string> = {
   bristol: "Bristol",
   leeds: "Leeds",
   buckinghamshire: "Buckinghamshire",
+  hertfordshire: "Hertfordshire",
 };
 
 /** "se1 7pb" -> "SE". Empty string when unparseable. */
