@@ -18,7 +18,7 @@ export type LiveArea =
 
 export type CoverageArea = { slug: string; status: string };
 
-const AREA_POSTCODE_PREFIXES: Record<LiveArea, string[]> = {
+export const AREA_POSTCODE_PREFIXES: Record<LiveArea, string[]> = {
   london: [
     "EC",
     "WC",
