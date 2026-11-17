@@ -31,7 +31,9 @@ import {
 } from "@/lib/queries";
 import { getRequestOrigin } from "@/lib/origin.functions";
 import { usePrefersReducedMotion } from "@/hooks/use-reduced-motion";
-import heroPoster from "@/assets/hero-poster.jpg";
+const heroPoster = "/media/hero-poster.webp";
+const HERO_MOBILE_VIDEO_URL = "/media/hero-mobile.mp4";
+const HERO_MOBILE_POSTER = "/media/hero-mobile-poster.webp";
 
 const HERO_VIDEO_URL = "/media/hero.mp4";
 
@@ -149,22 +151,22 @@ const TRUST_POINTS: {
     icon: IdCard,
     title: "ID checked",
     body: "We confirm who's behind every firm before it can quote.",
-    image: "/images/home/electrician-consumer-unit.webp",
-    imageAlt: "An electrician inspecting a consumer unit",
+    image: "/images/home/trust-id.webp",
+    imageAlt: "A tradesperson holding a blank photo ID card at a kitchen table",
   },
   {
     icon: ShieldCheck,
     title: "Insurance checked",
     body: "Public liability insurance, plus any trade registration the work needs, such as Gas Safe or NICEIC.",
-    image: "/images/home/roofer-tiled-roof.webp",
-    imageAlt: "A roofer working on a tiled roof",
+    image: "/images/home/trust-insurance.webp",
+    imageAlt: "A roofer in a safety harness working on a tiled roof",
   },
   {
     icon: MessageSquareQuote,
     title: "Real reviews only",
     body: "Reviews come only from customers who've had work done through TradesmanFinder.",
-    image: "/images/home/finished-kitchen.webp",
-    imageAlt: "A finished kitchen with wooden cabinetry",
+    image: "/images/home/trust-reviews.webp",
+    imageAlt: "A homeowner smiling at her phone in a freshly painted living room",
   },
 ];
 
@@ -195,9 +197,11 @@ function Home() {
             data-hero-media
             className="absolute inset-0 h-full w-full object-cover"
             src={heroPoster}
+            srcSet={`${HERO_MOBILE_POSTER} 810w, ${heroPoster} 1920w`}
+            sizes="100vw"
             alt=""
-            width={1600}
-            height={900}
+            width={1920}
+            height={1080}
             decoding="async"
             fetchPriority="high"
           />
@@ -205,7 +209,6 @@ function Home() {
           <video
             data-hero-media
             className="absolute inset-0 h-full w-full object-cover"
-            src={HERO_VIDEO_URL}
             poster={heroPoster}
             autoPlay
             muted
@@ -213,7 +216,11 @@ function Home() {
             playsInline
             preload="metadata"
             aria-hidden="true"
-          />
+          >
+            {/* Portrait cut for phones; browsers pick the first matching source. */}
+            <source src={HERO_MOBILE_VIDEO_URL} type="video/mp4" media="(max-width: 767px)" />
+            <source src={HERO_VIDEO_URL} type="video/mp4" />
+          </video>
         )}
 
         <div className="absolute inset-0 bg-background/32" />
@@ -255,11 +262,11 @@ function Home() {
           <div className="rounded-md border border-border bg-card p-4 sm:p-5">
             <div className="flex items-center gap-4">
               <img
-                src="/images/home/plumber-pipework.webp"
-                alt="A plumber fitting pipework under a sink"
+                src="/images/home/path-homeowner.webp"
+                alt="A homeowner chatting with a tradesperson in his kitchen"
                 loading="lazy"
                 decoding="async"
-                width={1200}
+                width={800}
                 height={800}
                 className="h-20 w-24 shrink-0 rounded-sm object-cover"
               />
@@ -291,11 +298,11 @@ function Home() {
           <div className="rounded-md border border-border bg-card p-4 sm:p-5">
             <div className="flex items-center gap-4">
               <img
-                src="/images/home/roofer-tiled-roof.webp"
-                alt="A roofer working on a tiled roof"
+                src="/images/home/path-trade.webp"
+                alt="A tradesperson checking her phone beside a van on a residential street"
                 loading="lazy"
                 decoding="async"
-                width={1200}
+                width={800}
                 height={800}
                 className="h-20 w-24 shrink-0 rounded-sm object-cover"
               />
