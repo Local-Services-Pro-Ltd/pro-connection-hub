@@ -228,6 +228,13 @@ function SignIn() {
                     className={`${field} mt-2`}
                   />
                 </label>
+                {mode === "in" && (
+                  <div className="-mt-3 text-right">
+                    <Link to="/forgot-password" className="text-sm text-primary hover:underline">
+                      Forgot password?
+                    </Link>
+                  </div>
+                )}
                 <button
                   type="submit"
                   disabled={busy}

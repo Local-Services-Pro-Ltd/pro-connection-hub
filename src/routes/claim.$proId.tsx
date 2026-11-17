@@ -183,6 +183,13 @@ function EmailAccount({ proId }: { proId: string }) {
             className={field}
           />
         </label>
+        {mode === "in" && (
+          <div className="-mt-3 text-right">
+            <Link to="/forgot-password" className="text-sm text-primary hover:underline">
+              Forgot password?
+            </Link>
+          </div>
+        )}
         {error && (
           <p role="alert" className="text-sm text-destructive">
             {error}
@@ -348,7 +355,8 @@ function ClaimListing() {
           Manage your business on TradesmanFinder.
         </h1>
         <p className="mt-5 text-lg leading-relaxed text-muted-foreground">
-          Confirm you're authorised to manage this listing. A real person reviews every claim.
+          Confirm you're authorised to manage this listing. Our compliance and onboarding team
+          reviews every claim.
         </p>
         <div className="mt-8">
           <ListingSummary listing={listing} />

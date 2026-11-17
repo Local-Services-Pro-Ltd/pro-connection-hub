@@ -131,8 +131,8 @@ function ForTradesmen() {
         }
         sub={
           ONBOARDING_FREE
-            ? "Approved firms get Trade-tier features free during onboarding, with a cap of three quotes per job and no per-lead charges. A real person replies to every application within 2 working days."
-            : "A flat monthly membership and a cap of three quotes per job. We're onboarding local trades now, with ID and insurance checks required before quoting. A real person replies to every application within 2 working days."
+            ? "Approved firms get Trade-tier features free during onboarding, with a cap of three quotes per job and no per-lead charges. Our compliance and onboarding team replies to every application within 2 working days."
+            : "A flat monthly membership and a cap of three quotes per job. We're onboarding local trades now, with ID and insurance checks required before quoting. Our compliance and onboarding team replies to every application within 2 working days."
         }
         image={heroForTradesmen}
         imageAlt="A tradesman checking his phone beside his van at sunrise"

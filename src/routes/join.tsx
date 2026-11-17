@@ -27,7 +27,7 @@ export const Route = createFileRoute("/join")({
   head: () => {
     const title = "Join TradesmanFinder — get local jobs without paying for leads";
     const description =
-      "Apply to join TradesmanFinder. Free while we onboard trades, no commission and no per-lead fees. A real person replies to every application within 2 working days.";
+      "Apply to join TradesmanFinder. Free while we onboard trades, no commission and no per-lead fees. Our compliance and onboarding team replies to every application within 2 working days.";
     return {
       meta: [
         { title },
@@ -63,7 +63,7 @@ const steps = [
   },
   {
     title: "We review",
-    body: "A real person looks at every application and replies within 2 working days.",
+    body: "Our compliance and onboarding team looks at every application and replies within 2 working days.",
   },
   {
     title: "Complete your checks",
@@ -391,8 +391,9 @@ function Join() {
               <BadgeCheck className="mx-auto h-8 w-8 text-success" aria-hidden="true" />
               <h2 className="mt-4 text-2xl">Thanks — we've got your application.</h2>
               <p className="mt-3 leading-relaxed text-muted-foreground">
-                A real person will reply within 2 working days. Keep an eye on{" "}
-                <strong className="text-foreground">{form.email}</strong> for our message.
+                A member of our compliance and onboarding team will reply within 2 working days.
+                Keep an eye on <strong className="text-foreground">{form.email}</strong> for our
+                message.
               </p>
               {mutation.data?.trackingToken && (
                 <Link

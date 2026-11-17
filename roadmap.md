@@ -1,15 +1,18 @@
 # TradesmanFinder launch roadmap
 
 ## Data consistency
+
 - [x] Single source of truth for pro counts (map hero now reads the directory)
 - [x] Every listed pro relocated into a live area (London, Kent, Surrey)
 
 ## Broken / empty sections
+
 - [x] Project board renders server-side (no permanent "Loading the board…")
 - [x] Warmer empty states; 4 labelled example questions seeded (reviews left unseeded — real jobs only)
 - [x] Nav audit — all main links return a real page
 
 ## Free onboarding
+
 - [x] One shared onboarding flag disables checkout and preserves dormant billing code
 - [x] Approved firms receive Trade-tier access in app and database enforcement
 - [x] Pricing, dashboard founding status, and trader terms explain free onboarding
@@ -17,9 +20,11 @@
 - [ ] Owner/solicitor review of the new Free onboarding period trader terms
 
 ## CI reliability
+
 - [x] Skip secret-dependent GitHub security checks cleanly while preserving offline CI failures
 
 ## Functional completeness
+
 - [ ] Confirm Post a job submits + confirmation screen and email
 - [ ] Confirm sign-in / sign-up works for homeowners and tradespeople
 - [x] Tradesperson dashboard (/dashboard): leads, visits, profile editing, portfolio photos, membership
@@ -28,6 +33,7 @@
 - [ ] Photo upload on the job posting form
 
 ## Trust & legal
+
 - [x] Follow-up: remove remaining network-wide trust and coverage claims, and extend public-page wording checks (not published)
 - [x] Footer: Local Services Pro Ltd, company no. 12126782, 38 Bloomfield Road, London SE18 7JH, ICO 00015543780
 - [x] Owner-approved trust cleanup: hide 34 invented firms, remove Steve Test Builders, and mark four real firms as vetting in progress
@@ -37,17 +43,20 @@
 - [ ] Privacy Policy + Terms GDPR review
 
 ## SEO
+
 - [ ] Unique title/description on every page
 - [ ] robots.txt, sitemap.xml, no stray noindex
 - [ ] LocalBusiness/Service schema on trade and area pages
 - [ ] Canonicals across all trade pages
 
 ## Polish
+
 - [ ] Mobile pass (job form, trade filters)
 - [ ] Analytics with conversion tracking on Post a job / For tradesmen
 - [ ] Reduce "coming soon" clutter
 
 ## /join application redesign
+
 - [x] /join page (hero, fact tiles, steps, accordion, form, success)
 - [x] business_type column + optional insurance/CH/accreditations at submission
 - [x] CTAs to /join; For tradesmen 2-working-day reply
@@ -55,12 +64,21 @@
 - [x] Tests
 
 ## Navigation and reviewed listing claims
+
 - [x] Declutter desktop/mobile header and move appearance controls to footer
 - [x] Centre /join, add listing search, and improve field-level form feedback
 - [x] Add /claim/$proId account and admin-reviewed claim flow
 - [x] Verify claim security, duplicate prevention, header widths, and screenshots
 
 ## Cloudflare release reliability
+
 - [x] Recover once from stale hashed chunks without reload loops
 - [x] Serve all app media locally on Cloudflare Pages
 - [x] Restore lint, safe dependency audit, and build checks
+
+## Account recovery and onboarding wording
+
+- [x] Replace "A real person" with compliance and onboarding team wording everywhere
+- [x] Add sign-in and claim-form links to password recovery
+- [x] Add noindex forgot-password and reset-password routes with human checks and recovery-session handling
+- [x] Add regression coverage and run lint, typecheck, tests, and build
