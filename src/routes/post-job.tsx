@@ -15,6 +15,8 @@ import { HumanCheck, useHumanCheck } from "@/components/human-check";
 
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { JobHelper } from "@/components/job-helper";
+import type { JobSuggestion } from "@/lib/job-helper.types";
 
 type Search = { trade?: string; pro?: string };
 
@@ -34,7 +36,7 @@ export const Route = createFileRoute("/post-job")({
   head: ({ loaderData }) => {
     const title = "Post a job free — get up to 3 quotes | TradesmanFinder";
     const description =
-      "Describe your job in two minutes and we'll match you with local trades as they join — ID-checked and insured before they can quote.";
+      "Describe your job in two minutes. We'll show you up to three local firms, and only the ones you choose get your details.";
     const base = loaderData?.origin ?? "";
     const image = loaderData?.origin ? `${loaderData.origin}/og/post-job.jpg` : undefined;
     return {
@@ -178,12 +180,27 @@ function PostJob() {
     },
   });
 
+  const useSuggestion = (suggestion: JobSuggestion) => {
+    setForm((current) => ({
+      ...current,
+      trade_slug: suggestion.trade_slug ?? "",
+      title: suggestion.title,
+      description: suggestion.description,
+    }));
+    requestAnimationFrame(() => {
+      document.getElementById("job-post-form")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    });
+  };
+
   return (
     <>
       <PageBanner
         eyebrow="Post a job"
         title="Tell us what needs doing."
-        sub="Two minutes. Free. We'll match you with up to three local trades as they join and complete their checks."
+        sub="Two minutes. Free. Local firms can see your job and say they're interested, but only the ones you choose get your details."
         image="/images/pages/post-job.webp"
         imageAlt="A homeowner taking a photo of a leaking pipe on their phone"
       />
@@ -250,141 +267,152 @@ function PostJob() {
               onReset={() => setOutOfArea(null)}
             />
           ) : (
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (postcodeLooksValid && !postcodeIsCovered) {
-                  setOutOfArea(form.postcode.trim());
-                  return;
-                }
-                mutation.mutate();
-              }}
+            <div className="space-y-6">
+              <JobHelper trades={trades} onUse={useSuggestion} />
+              <form
+                id="job-post-form"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (postcodeLooksValid && !postcodeIsCovered) {
+                    setOutOfArea(form.postcode.trim());
+                    return;
+                  }
+                  mutation.mutate();
+                }}
 
-              className="space-y-6 rounded-md border border-border bg-card p-6 lg:p-9"
-            >
-              <div className="grid gap-6 sm:grid-cols-2">
+                className="space-y-6 rounded-md border border-border bg-card p-6 lg:p-9"
+              >
+                <div className="grid gap-6 sm:grid-cols-2">
+                  <label className="block">
+                    <span className="eyebrow">Trade needed</span>
+                    <select
+                      required
+                      value={form.trade_slug}
+                      onChange={(e) => set("trade_slug")(e.target.value)}
+                      className={`${field} mt-2`}
+                    >
+                      <option value="">Choose a trade</option>
+                      {trades.map((t) => (
+                        <option key={t.slug} value={t.slug}>
+                          {t.name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="block">
+                    <span className="eyebrow">Postcode</span>
+                    <input
+                      required
+                      value={form.postcode}
+                      onChange={(e) => set("postcode")(e.target.value)}
+                      placeholder="e.g. SE1 7PB"
+                      aria-describedby="postcode-coverage"
+                      className={`${field} mt-2`}
+                    />
+                    <span
+                      id="postcode-coverage"
+                      className="mt-2 block text-xs text-muted-foreground"
+                    >
+                      {postcodeLooksValid && !postcodeIsCovered
+                        ? "We're not onboarding in this postcode yet — you can still join the waiting list."
+                        : `We're onboarding trades in ${liveAreaNames.join(", ")}.`}
+                    </span>
+                  </label>
+                </div>
+
                 <label className="block">
-                  <span className="eyebrow">Trade needed</span>
-                  <select
-                    required
-                    value={form.trade_slug}
-                    onChange={(e) => set("trade_slug")(e.target.value)}
-                    className={`${field} mt-2`}
-                  >
-                    <option value="">Choose a trade</option>
-                    {trades.map((t) => (
-                      <option key={t.slug} value={t.slug}>
-                        {t.name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label className="block">
-                  <span className="eyebrow">Postcode</span>
+                  <span className="eyebrow">Job title</span>
                   <input
                     required
-                    value={form.postcode}
-                    onChange={(e) => set("postcode")(e.target.value)}
-                    placeholder="e.g. SE1 7PB"
-                    aria-describedby="postcode-coverage"
+                    value={form.title}
+                    onChange={(e) => set("title")(e.target.value)}
+                    maxLength={140}
+                    placeholder="Replace leaking bathroom radiator"
                     className={`${field} mt-2`}
                   />
-                  <span id="postcode-coverage" className="mt-2 block text-xs text-muted-foreground">
-                    {postcodeLooksValid && !postcodeIsCovered
-                      ? "We're not onboarding in this postcode yet — you can still join the waiting list."
-                      : `We're onboarding trades in ${liveAreaNames.join(", ")}.`}
+                </label>
+
+                <label className="block">
+                  <span className="eyebrow">Describe the job</span>
+                  <textarea
+                    required
+                    rows={6}
+                    value={form.description}
+                    onChange={(e) => set("description")(e.target.value)}
+                    maxLength={4000}
+                    placeholder="What needs doing, access details, anything a trade should know before quoting."
+                    className={`${field} mt-2 resize-y`}
+                  />
+                  <span className="mt-1 block text-xs text-muted-foreground">
+                    {form.description.trim().length}/4000
+                  </span>
+                  <span className="mt-2 block text-xs text-muted-foreground">
+                    Local firms in this trade can read your job description, so please don't include
+                    your phone number or address.
                   </span>
                 </label>
-              </div>
 
-              <label className="block">
-                <span className="eyebrow">Job title</span>
-                <input
-                  required
-                  value={form.title}
-                  onChange={(e) => set("title")(e.target.value)}
-                  maxLength={140}
-                  placeholder="Replace leaking bathroom radiator"
-                  className={`${field} mt-2`}
-                />
-              </label>
+                <div className="grid gap-6 sm:grid-cols-2">
+                  <label className="block">
+                    <span className="eyebrow">When</span>
+                    <select
+                      value={form.timing}
+                      onChange={(e) => set("timing")(e.target.value)}
+                      className={`${field} mt-2`}
+                    >
+                      {timings.map((t) => (
+                        <option key={t}>{t}</option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="block">
+                    <span className="eyebrow">Budget guide</span>
+                    <select
+                      value={form.budget_band}
+                      onChange={(e) => set("budget_band")(e.target.value)}
+                      className={`${field} mt-2`}
+                    >
+                      {budgetBands.map((b) => (
+                        <option key={b.value} value={b.value}>
+                          {b.value === "any" ? "Not sure yet" : b.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
 
-              <label className="block">
-                <span className="eyebrow">Describe the job</span>
-                <textarea
-                  required
-                  rows={6}
-                  value={form.description}
-                  onChange={(e) => set("description")(e.target.value)}
-                  maxLength={4000}
-                  placeholder="What needs doing, access details, anything a trade should know before quoting."
-                  className={`${field} mt-2 resize-y`}
-                />
-                <span className="mt-1 block text-xs text-muted-foreground">
-                  {form.description.trim().length}/4000
-                </span>
-              </label>
+                <div className="grid gap-6 border-t border-border pt-6 sm:grid-cols-2">
+                  <label className="block">
+                    <span className="eyebrow">Your name</span>
+                    <input
+                      required
+                      value={form.contact_name}
+                      onChange={(e) => set("contact_name")(e.target.value)}
+                      maxLength={80}
+                      className={`${field} mt-2`}
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="eyebrow">Email</span>
+                    <input
+                      required
+                      type="email"
+                      value={form.contact_email}
+                      onChange={(e) => set("contact_email")(e.target.value)}
+                      className={`${field} mt-2`}
+                    />
+                  </label>
+                </div>
 
-              <div className="grid gap-6 sm:grid-cols-2">
-                <label className="block">
-                  <span className="eyebrow">When</span>
-                  <select
-                    value={form.timing}
-                    onChange={(e) => set("timing")(e.target.value)}
-                    className={`${field} mt-2`}
-                  >
-                    {timings.map((t) => (
-                      <option key={t}>{t}</option>
-                    ))}
-                  </select>
-                </label>
-                <label className="block">
-                  <span className="eyebrow">Budget guide</span>
-                  <select
-                    value={form.budget_band}
-                    onChange={(e) => set("budget_band")(e.target.value)}
-                    className={`${field} mt-2`}
-                  >
-                    {budgetBands.map((b) => (
-                      <option key={b.value} value={b.value}>
-                        {b.value === "any" ? "Not sure yet" : b.label}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              </div>
-
-              <div className="grid gap-6 border-t border-border pt-6 sm:grid-cols-2">
-                <label className="block">
-                  <span className="eyebrow">Your name</span>
-                  <input
-                    required
-                    value={form.contact_name}
-                    onChange={(e) => set("contact_name")(e.target.value)}
-                    maxLength={80}
-                    className={`${field} mt-2`}
-                  />
-                </label>
-                <label className="block">
-                  <span className="eyebrow">Email</span>
-                  <input
-                    required
-                    type="email"
-                    value={form.contact_email}
-                    onChange={(e) => set("contact_email")(e.target.value)}
-                    className={`${field} mt-2`}
-                  />
-                </label>
-              </div>
-
-              <button
-                type="submit"
-                disabled={mutation.isPending}
-                className="w-full rounded-sm bg-primary px-6 py-3.5 font-display font-semibold text-primary-foreground shadow-ember transition-all hover:brightness-110 disabled:opacity-60"
-              >
-                {mutation.isPending ? "Posting…" : "Post job — free"}
-              </button>
-            </form>
+                <button
+                  type="submit"
+                  disabled={mutation.isPending}
+                  className="w-full rounded-sm bg-primary px-6 py-3.5 font-display font-semibold text-primary-foreground shadow-ember transition-all hover:brightness-110 disabled:opacity-60"
+                >
+                  {mutation.isPending ? "Posting…" : "Post job — free"}
+                </button>
+              </form>
+            </div>
           )}
 
           <aside className="h-fit space-y-6 rounded-md border border-border bg-surface p-6 lg:sticky lg:top-24">
@@ -392,22 +420,22 @@ function PostJob() {
               <p className="eyebrow">What happens next</p>
               <ol className="mt-4 space-y-4 text-sm text-muted-foreground">
                 <li>
-                  <strong className="text-foreground">1.</strong> We match your job to local trades
-                  covering your postcode as they complete their checks.
+                  <strong className="text-foreground">1.</strong> We show your job to local firms in
+                  your trade and area, and match you with up to three of them.
                 </li>
                 <li>
-                  <strong className="text-foreground">2.</strong> Up to three of them contact you
-                  with a price and availability.
+                  <strong className="text-foreground">2.</strong> Firms can say they're interested.
+                  You see who they are, read their profiles and choose who to contact. Nobody gets
+                  your details until you do.
                 </li>
                 <li>
-                  <strong className="text-foreground">3.</strong> You choose — or you don't. There's
-                  no fee either way.
+                  <strong className="text-foreground">3.</strong> Only the firms you contact can
+                  reply. No fee, no obligation.
                 </li>
               </ol>
             </div>
             <div className="border-t border-border pt-6 text-sm text-muted-foreground">
-              We never sell your details, and your phone number is only shared with trades you
-              choose to speak to.
+              We never sell your details or pass them to firms you haven't chosen.
               {!user && (
                 <>
                   {" "}

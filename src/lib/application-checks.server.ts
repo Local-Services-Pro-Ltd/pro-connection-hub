@@ -16,7 +16,10 @@ import {
 
 type Client = SupabaseClient<Database>;
 
-async function companiesHouseCheck(company: string, chNumber: string): Promise<VerificationCheck> {
+export async function companiesHouseCheck(
+  company: string,
+  chNumber: string,
+): Promise<VerificationCheck> {
   if (!chNumber) {
     return {
       key: "companies_house",
@@ -203,4 +206,124 @@ async function runChecks(
   await log(result.overall, null, result.checks);
 
   return result;
+}
+
+export type CredentialMaintenanceCounts = {
+  processed: number;
+  expired_unverified: number;
+  companies_house_checked: number;
+  companies_house_unverified: number;
+  warnings: number;
+  failures: number;
+};
+
+type CompaniesHouseLookup = typeof companiesHouseCheck;
+
+/** Nightly expiry and live-register maintenance, capped at 200 selected rows. */
+export async function maintainProCredentials(
+  client: Client,
+  now = new Date(),
+  lookup: CompaniesHouseLookup = companiesHouseCheck,
+): Promise<CredentialMaintenanceCounts> {
+  const today = now.toISOString().slice(0, 10);
+  const counts: CredentialMaintenanceCounts = {
+    processed: 0,
+    expired_unverified: 0,
+    companies_house_checked: 0,
+    companies_house_unverified: 0,
+    warnings: 0,
+    failures: 0,
+  };
+
+  const { data: expiredRows, error: expiredError } = await client
+    .from("pro_credentials")
+    .select("id, pro_id, expires_on")
+    .eq("verified", true)
+    .not("expires_on", "is", null)
+    .lt("expires_on", today)
+    .order("expires_on", { ascending: true })
+    .limit(200);
+  if (expiredError) throw new Error(expiredError.message);
+
+  counts.processed += (expiredRows ?? []).length;
+  for (const row of expiredRows ?? []) {
+    const { error } = await client
+      .from("pro_credentials")
+      .update({ verified: false })
+      .eq("id", row.id)
+      .eq("verified", true);
+    if (error) {
+      counts.failures += 1;
+      console.error("[application-maintenance] credential expiry update failed", {
+        credentialId: row.id,
+        error: error.message,
+      });
+      continue;
+    }
+    counts.expired_unverified += 1;
+    console.info("[application-maintenance] expired credential unverified", {
+      credentialId: row.id,
+      proId: row.pro_id,
+      expiresOn: row.expires_on,
+    });
+  }
+
+  const remaining = 200 - counts.processed;
+  if (remaining === 0) return counts;
+
+  const { data: companyRows, error: companyError } = await client
+    .from("pro_credentials")
+    .select("id, pro_id, reference, pros!inner(company, published)")
+    .eq("verified", true)
+    .eq("kind", "companies_house")
+    .eq("pros.published", true)
+    .order("created_at", { ascending: true })
+    .limit(remaining);
+  if (companyError) throw new Error(companyError.message);
+
+  counts.processed += (companyRows ?? []).length;
+  for (const row of companyRows ?? []) {
+    const relation = row.pros as unknown as { company: string }[] | { company: string } | null;
+    const firm = Array.isArray(relation) ? relation[0] : relation;
+    let check: VerificationCheck;
+    try {
+      check = await lookup(firm?.company ?? "", row.reference ?? "");
+    } catch (lookupError) {
+      counts.failures += 1;
+      console.error("[application-maintenance] Companies House credential check failed", {
+        credentialId: row.id,
+        error: (lookupError as Error).message,
+      });
+      continue;
+    }
+
+    counts.companies_house_checked += 1;
+    if (check.outcome === "warn") {
+      counts.warnings += 1;
+      continue;
+    }
+    if (check.outcome !== "fail") continue;
+
+    const { error } = await client
+      .from("pro_credentials")
+      .update({ verified: false })
+      .eq("id", row.id)
+      .eq("verified", true);
+    if (error) {
+      counts.failures += 1;
+      console.error("[application-maintenance] Companies House update failed", {
+        credentialId: row.id,
+        error: error.message,
+      });
+      continue;
+    }
+    counts.companies_house_unverified += 1;
+    console.info("[application-maintenance] failed Companies House credential unverified", {
+      credentialId: row.id,
+      proId: row.pro_id,
+      outcome: check.detail,
+    });
+  }
+
+  return counts;
 }

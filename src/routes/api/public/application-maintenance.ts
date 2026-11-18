@@ -199,6 +199,14 @@ async function run(request: Request): Promise<Response> {
   let dead = 0;
   let failed = 0;
   let lastError: string | null = null;
+  let credentials = {
+    processed: 0,
+    expired_unverified: 0,
+    companies_house_checked: 0,
+    companies_house_unverified: 0,
+    warnings: 0,
+    failures: 0,
+  };
 
   try {
     // Phase 1 — retry queue: anything left pending from an earlier run.
@@ -243,7 +251,8 @@ async function run(request: Request): Promise<Response> {
       .limit(BATCH);
     if (error) throw new Error(error.message);
 
-    const { runVerificationForApplication } = await import("@/lib/application-checks.server");
+    const { runVerificationForApplication, maintainProCredentials } =
+      await import("@/lib/application-checks.server");
     for (const row of rows ?? []) {
       try {
         await runVerificationForApplication(supabaseAdmin, row.id as string, {
@@ -336,6 +345,12 @@ async function run(request: Request): Promise<Response> {
       }
     }
 
+    credentials = await maintainProCredentials(supabaseAdmin);
+    failed += credentials.failures;
+    if (credentials.failures > 0) {
+      lastError = `${credentials.failures} credential maintenance update${credentials.failures === 1 ? "" : "s"} failed.`;
+    }
+
     await supabaseAdmin.rpc("release_job_lease", {
       p_name: JOB,
       p_result: {
@@ -344,16 +359,17 @@ async function run(request: Request): Promise<Response> {
         retried,
         dead,
         failed,
+        credentials,
         at: new Date().toISOString(),
       },
       ...(lastError ? { p_error: lastError } : {}),
     });
 
-    return json({ ok: true, checked, reminders, retried, dead, failed });
+    return json({ ok: true, checked, reminders, retried, dead, failed, credentials });
   } catch (runError) {
     await supabaseAdmin.rpc("release_job_lease", {
       p_name: JOB,
-      p_result: { checked, reminders, retried, dead, failed },
+      p_result: { checked, reminders, retried, dead, failed, credentials },
       p_error: (runError as Error).message,
     });
     return json({ error: (runError as Error).message }, 500);

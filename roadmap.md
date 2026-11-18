@@ -99,3 +99,29 @@
 - [x] Add reusable PageBanner imagery to the requested inner pages
 - [x] Add local fallback trade photography with missing-image handling
 - [x] Verify Light/Dim/Dark at desktop and phone widths, run checks, and commit without publishing
+
+## Official-register credential checks
+
+- [x] Add shared register links and verified/expired/pending credential states
+- [x] Show dated register checks and renewal states on firm profiles
+- [x] Add an admin-only credential editor with verification timestamps
+- [x] Maintain expired and inactive Companies House credentials in the nightly job
+- [x] Exclude expired credentials from displayed trust counts and scores
+- [x] Run regression checks, typecheck and lint; commit without publishing or database changes
+
+## AI job helper and contact-choice wording
+
+- [x] Add a rate-limited, validated AI job helper server function with Gemini settings and safe failure
+- [x] Add the optional helper, preview, form pre-fill and existing cost-guide range to /post-job
+- [x] Replace only the requested homeowner contact-choice wording and metadata
+- [x] Add regression tests and run existing tests, typecheck, lint and browser checks
+- [x] Commit without publishing or changing database schema
+
+## Firm job interest and local area pages
+
+- [x] Add authenticated, privacy-safe job listing and interest server functions using the existing job_interest table
+- [x] Send the homeowner interest email and add dashboard/account interest interfaces
+- [x] Add live-area and area-trade routes, regional cost ranges, metadata, breadcrumbs and sitemap entries
+- [x] Apply only the requested job-promise wording and description privacy hint
+- [x] Add privacy and area-region tests; run typecheck, lint, existing tests and browser checks
+- [x] Commit without publishing or changing migrations, tables, columns or policies

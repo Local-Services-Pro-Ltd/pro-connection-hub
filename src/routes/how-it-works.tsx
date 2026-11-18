@@ -21,7 +21,7 @@ const faqs = [
   },
   {
     q: "How many quotes will I get?",
-    a: "Up to three matched firms per job, as local trades join and complete their checks. There's no obligation to hire anyone.",
+    a: "Up to three matched firms per job, and any local firm in your trade can say it's interested. You choose which, if any, to contact. Only those firms get your details, and there's no obligation to hire.",
   },
   {
     q: "Can a firm pay to be listed or featured?",
@@ -93,7 +93,7 @@ const steps = [
     n: "02",
     icon: Handshake,
     title: "Get matched with up to three",
-    body: "We match your job to local firms by trade and area as they join. Every firm must complete its ID and insurance checks before it can quote.",
+    body: "We show you up to three local firms that cover your postcode. You choose who to contact, and only those firms get your details.",
   },
   {
     n: "03",

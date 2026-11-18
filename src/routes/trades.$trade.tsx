@@ -1,4 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { tradePlural } from "@/lib/trade-plural";
 import { useState } from "react";
 import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
 import { WaitingListInline } from "@/components/waiting-list-inline";
@@ -127,7 +128,7 @@ function TradePage() {
 
   const copy = tradeHeroCopy(trade.slug, {
     trade: trade.name,
-    tradePlural: `${trade.name}s`,
+    tradePlural: tradePlural(trade.name),
     blurb: trade.blurb,
     ...(search.area ? { area: search.area } : {}),
   });
