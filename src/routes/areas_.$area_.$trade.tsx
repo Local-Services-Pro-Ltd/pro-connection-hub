@@ -1,4 +1,5 @@
 import { createFileRoute, Link, notFound, redirect } from "@tanstack/react-router";
+import { tradePlural } from "@/lib/trade-plural";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { PageBanner } from "@/components/page-banner";
 import { ProCard } from "@/components/pro-card";
@@ -39,7 +40,7 @@ export const Route = createFileRoute("/areas_/$area_/$trade")({
       };
     }
     const { area, trade, firmCount } = loaderData;
-    const title = `${trade.name}s in ${area.name} | TradesmanFinder`;
+    const title = `${tradePlural(trade.name)} in ${area.name} | TradesmanFinder`;
     const description = `Find ${trade.name.toLowerCase()} firms in ${area.name}. See who is interested in your job and choose who to contact.`;
     const path = `/areas/${area.slug}/${trade.slug}`;
     return {
@@ -97,7 +98,7 @@ function AreaTradePage() {
     <>
       <PageBanner
         eyebrow={area.name}
-        title={`${trade.name}s in ${area.name}`}
+        title={`${tradePlural(trade.name)} in ${area.name}`}
         sub={trade.blurb}
         image={`/images/trades/${trade.slug}.webp`}
         imageAlt={`${trade.name} at work in ${area.name}`}
