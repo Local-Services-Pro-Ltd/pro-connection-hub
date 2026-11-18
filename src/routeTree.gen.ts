@@ -32,6 +32,7 @@ import { Route as VerificationRouteImport } from './routes/verification'
 import { Route as AdminAccessRouteImport } from './routes/admin.access'
 import { Route as AdminApplicationsRouteImport } from './routes/admin.applications'
 import { Route as AdminAuditRouteImport } from './routes/admin.audit'
+import { Route as AdminCredentialsRouteImport } from './routes/admin.credentials'
 import { Route as AdminEventsRouteImport } from './routes/admin.events'
 import { Route as AdminFeaturedRouteImport } from './routes/admin.featured'
 import { Route as AdminGalleriesRouteImport } from './routes/admin.galleries'
@@ -178,6 +179,11 @@ const AdminApplicationsRoute = AdminApplicationsRouteImport.update({
 const AdminAuditRoute = AdminAuditRouteImport.update({
   id: '/admin/audit',
   path: '/admin/audit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminCredentialsRoute = AdminCredentialsRouteImport.update({
+  id: '/admin/credentials',
+  path: '/admin/credentials',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminEventsRoute = AdminEventsRouteImport.update({
@@ -367,6 +373,7 @@ export interface FileRoutesByFullPath {
   '/admin/access': typeof AdminAccessRoute
   '/admin/applications': typeof AdminApplicationsRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/admin/credentials': typeof AdminCredentialsRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/featured': typeof AdminFeaturedRoute
   '/admin/galleries': typeof AdminGalleriesRoute
@@ -424,6 +431,7 @@ export interface FileRoutesByTo {
   '/admin/access': typeof AdminAccessRoute
   '/admin/applications': typeof AdminApplicationsRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/admin/credentials': typeof AdminCredentialsRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/featured': typeof AdminFeaturedRoute
   '/admin/galleries': typeof AdminGalleriesRoute
@@ -482,6 +490,7 @@ export interface FileRoutesById {
   '/admin/access': typeof AdminAccessRoute
   '/admin/applications': typeof AdminApplicationsRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/admin/credentials': typeof AdminCredentialsRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/featured': typeof AdminFeaturedRoute
   '/admin/galleries': typeof AdminGalleriesRoute
@@ -541,6 +550,7 @@ export interface FileRouteTypes {
     | '/admin/access'
     | '/admin/applications'
     | '/admin/audit'
+    | '/admin/credentials'
     | '/admin/events'
     | '/admin/featured'
     | '/admin/galleries'
@@ -598,6 +608,7 @@ export interface FileRouteTypes {
     | '/admin/access'
     | '/admin/applications'
     | '/admin/audit'
+    | '/admin/credentials'
     | '/admin/events'
     | '/admin/featured'
     | '/admin/galleries'
@@ -655,6 +666,7 @@ export interface FileRouteTypes {
     | '/admin/access'
     | '/admin/applications'
     | '/admin/audit'
+    | '/admin/credentials'
     | '/admin/events'
     | '/admin/featured'
     | '/admin/galleries'
@@ -713,6 +725,7 @@ export interface RootRouteChildren {
   AdminAccessRoute: typeof AdminAccessRoute
   AdminApplicationsRoute: typeof AdminApplicationsRoute
   AdminAuditRoute: typeof AdminAuditRoute
+  AdminCredentialsRoute: typeof AdminCredentialsRoute
   AdminEventsRoute: typeof AdminEventsRoute
   AdminFeaturedRoute: typeof AdminFeaturedRoute
   AdminGalleriesRoute: typeof AdminGalleriesRoute
@@ -908,6 +921,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/audit'
       fullPath: '/admin/audit'
       preLoaderRoute: typeof AdminAuditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/credentials': {
+      id: '/admin/credentials'
+      path: '/admin/credentials'
+      fullPath: '/admin/credentials'
+      preLoaderRoute: typeof AdminCredentialsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/events': {
@@ -1161,6 +1181,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminAccessRoute: AdminAccessRoute,
   AdminApplicationsRoute: AdminApplicationsRoute,
   AdminAuditRoute: AdminAuditRoute,
+  AdminCredentialsRoute: AdminCredentialsRoute,
   AdminEventsRoute: AdminEventsRoute,
   AdminFeaturedRoute: AdminFeaturedRoute,
   AdminGalleriesRoute: AdminGalleriesRoute,

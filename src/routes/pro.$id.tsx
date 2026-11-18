@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
-import { Star, ShieldCheck, MapPin, Hammer } from "lucide-react";
+import { Star, ShieldCheck, MapPin, Hammer, CircleAlert, Clock3 } from "lucide-react";
 import { Section } from "@/components/layout-bits";
 import { ReviewPanel } from "@/components/review-panel";
 import { ProjectGallery } from "@/components/project-gallery";
@@ -10,7 +10,8 @@ import { LeadForm } from "@/components/lead-form";
 import { SaveProButton } from "@/components/save-pro-button";
 import { tradeHero } from "@/lib/trade-media";
 
-import { areasQuery, proQuery, proProjectsQuery } from "@/lib/queries";
+import { areasQuery, proQuery, proProjectsQuery, type Credential } from "@/lib/queries";
+import { credentialRegister, credentialRegisterUrl, credentialState } from "@/lib/registers";
 import { formatProLocation } from "@/lib/pro-location";
 import { breadcrumbSchema, ldScript, organizationSchema } from "@/lib/structured-data";
 
@@ -121,6 +122,67 @@ export const Route = createFileRoute("/pro/$id")({
   component: ProPage,
 });
 
+function formatCredentialDate(value: string) {
+  return new Date(value).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+}
+
+function CredentialItem({ credential }: { credential: Credential }) {
+  const state = credentialState(credential);
+  const register = credentialRegister(credential.kind);
+  const registerUrl = credentialRegisterUrl(credential.kind, credential.reference);
+  const Icon = state === "verified" ? ShieldCheck : state === "expired" ? CircleAlert : Clock3;
+  const status =
+    state === "verified"
+      ? credential.verified_at
+        ? `Checked on ${formatCredentialDate(credential.verified_at)}`
+        : "Checked"
+      : state === "expired"
+        ? `Expired ${formatCredentialDate(credential.expires_on!)} — awaiting renewal`
+        : "Not yet checked";
+
+  return (
+    <li className="bg-card px-5 py-4">
+      <div className="flex items-center gap-2 text-sm">
+        <Icon
+          className={`h-4 w-4 shrink-0 ${
+            state === "verified"
+              ? "text-success"
+              : state === "expired"
+                ? "text-primary"
+                : "text-muted-foreground"
+          }`}
+          aria-hidden="true"
+        />
+        <span>{credential.label}</span>
+      </div>
+      <p className="mt-1.5 pl-6 text-xs text-muted-foreground">{status}</p>
+      {credential.reference && (
+        <p className="mt-1 pl-6 text-xs text-muted-foreground">Ref {credential.reference}</p>
+      )}
+      {state === "verified" && credential.expires_on && (
+        <p className="mt-1 pl-6 text-xs text-muted-foreground">
+          Expires {formatCredentialDate(credential.expires_on)}
+        </p>
+      )}
+      {registerUrl && (
+        <a
+          href={registerUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-2 inline-block pl-6 text-xs text-primary underline underline-offset-4"
+        >
+          Check on the {register.label} website
+        </a>
+      )}
+    </li>
+  );
+}
+
 function ProPage() {
   const { id } = Route.useParams();
   const { data } = useSuspenseQuery(proQuery(id));
@@ -199,25 +261,13 @@ function ProPage() {
             </ul>
 
             <h2 className="mt-12 text-2xl">Checks & credentials</h2>
+            <p className="mt-3 text-sm text-muted-foreground">
+              We check these against the official registers ourselves. You can check them too using
+              the links below.
+            </p>
             <ul className="mt-5 grid gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-2">
-              {credentials.map((c) => (
-                <li key={c.id} className="bg-card px-5 py-4">
-                  <div className="flex items-center gap-2 text-sm">
-                    <ShieldCheck
-                      className={`h-4 w-4 ${c.verified ? "text-success" : "text-muted-foreground"}`}
-                    />
-                    <span>{c.label}</span>
-                  </div>
-                  <p className="mt-1.5 pl-6 text-xs text-muted-foreground">
-                    {c.verified
-                      ? `Verified${c.verified_at ? ` ${new Date(c.verified_at).toLocaleDateString("en-GB", { month: "short", year: "numeric" })}` : ""}`
-                      : "Awaiting verification"}
-                    {c.reference ? ` · Ref ${c.reference}` : ""}
-                    {c.expires_on
-                      ? ` · Expires ${new Date(c.expires_on).toLocaleDateString("en-GB", { month: "short", year: "numeric" })}`
-                      : ""}
-                  </p>
-                </li>
+              {credentials.map((credential) => (
+                <CredentialItem key={credential.id} credential={credential} />
               ))}
               {credentials.length === 0 && (
                 <li className="bg-card px-5 py-4 text-sm text-muted-foreground">

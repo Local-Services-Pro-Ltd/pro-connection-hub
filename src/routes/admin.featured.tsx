@@ -224,11 +224,19 @@ function FeaturedBoard() {
         sub="A firm reaches the homepage only when you put it there. The database refuses to feature anything that isn't published with at least one verified credential, and every change is written to the audit log below."
       />
 
-      <p className="mt-6 text-sm text-muted-foreground">
-        {featuredCount === 0
-          ? "Nothing is featured, so the homepage is showing the vetting-status panel."
-          : `${featuredCount} firm${featuredCount === 1 ? "" : "s"} currently featured on the homepage.`}
-      </p>
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+        <p className="text-sm text-muted-foreground">
+          {featuredCount === 0
+            ? "Nothing is featured, so the homepage is showing the vetting-status panel."
+            : `${featuredCount} firm${featuredCount === 1 ? "" : "s"} currently featured on the homepage.`}
+        </p>
+        <Link
+          to="/admin/credentials"
+          className="inline-flex h-10 items-center rounded-sm border border-border px-4 font-display text-sm font-semibold hover:border-primary"
+        >
+          Manage credentials
+        </Link>
+      </div>
 
       <div className="mt-6 grid gap-4">
         {pros.map((p) => {

@@ -99,3 +99,12 @@
 - [x] Add reusable PageBanner imagery to the requested inner pages
 - [x] Add local fallback trade photography with missing-image handling
 - [x] Verify Light/Dim/Dark at desktop and phone widths, run checks, and commit without publishing
+
+## Official-register credential checks
+
+- [x] Add shared register links and verified/expired/pending credential states
+- [x] Show dated register checks and renewal states on firm profiles
+- [x] Add an admin-only credential editor with verification timestamps
+- [x] Maintain expired and inactive Companies House credentials in the nightly job
+- [x] Exclude expired credentials from displayed trust counts and scores
+- [x] Run regression checks, typecheck and lint; commit without publishing or database changes

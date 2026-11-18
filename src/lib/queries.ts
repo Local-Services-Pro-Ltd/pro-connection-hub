@@ -2,6 +2,7 @@ import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { matchPublicPros } from "@/lib/matching.functions";
+import { credentialState } from "@/lib/registers";
 import {
   adminListPros,
   adminListProjects,
@@ -385,15 +386,16 @@ export const adminProsQuery = queryOptions({
       adminListPros()
         .then((data) => ({ data, error: null }))
         .catch((error) => ({ data: null, error })),
-      supabase.from("pro_credentials").select("pro_id, verified"),
+      supabase.from("pro_credentials").select("pro_id, verified, expires_on"),
     ]);
     if (pros.error) throw pros.error;
     if (creds.error) throw creds.error;
+    const today = new Date();
     const tally = new Map<string, { verified: number; total: number }>();
     for (const c of creds.data ?? []) {
       const row = tally.get(c.pro_id) ?? { verified: 0, total: 0 };
       row.total += 1;
-      if (c.verified) row.verified += 1;
+      if (credentialState(c, today) === "verified") row.verified += 1;
       tally.set(c.pro_id, row);
     }
     return (pros.data ?? []).map((p) => ({
@@ -534,6 +536,25 @@ export async function fetchTradeHeroImage(slug: string) {
 
 export type ProProject = Database["public"]["Tables"]["pro_projects"]["Row"];
 export type ProTrust = Database["public"]["Views"]["pro_trust"]["Row"];
+type TrustCredential = Pick<Credential, "pro_id" | "verified" | "expires_on">;
+
+/** Correct the legacy view in the browser: expired credentials never earn trust points. */
+export function currentCredentialTrust(
+  row: ProTrust,
+  credentials: TrustCredential[],
+  today: Date = new Date(),
+): ProTrust {
+  const verified = credentials.filter(
+    (credential) => credentialState(credential, today) === "verified",
+  ).length;
+  const previouslyVerified = Number(row.verified_credentials ?? 0);
+  const removedPoints = (Math.min(previouslyVerified, 4) - Math.min(verified, 4)) * 10;
+  return {
+    ...row,
+    verified_credentials: verified,
+    score: Math.max(0, Number(row.score ?? 0) - removedPoints),
+  };
+}
 
 /** Published before/after projects for one tradesperson. */
 export function proProjectsQuery(proId: string) {
@@ -572,14 +593,27 @@ export function tradeProjectsQuery(trade: string) {
   });
 }
 
-/** Composite trust scores keyed by pro id. */
+/** Composite trust scores keyed by pro id, with expired checks removed. */
 export const trustScoresQuery = queryOptions({
   queryKey: ["pro-trust"],
   queryFn: async () => {
-    const { data, error } = await supabase.from("pro_trust").select("*");
-    if (error) return {} as Record<string, ProTrust>;
+    const [trust, credentials] = await Promise.all([
+      supabase.from("pro_trust").select("*"),
+      supabase.from("pro_credentials").select("pro_id, verified, expires_on"),
+    ]);
+    if (trust.error || credentials.error) return {} as Record<string, ProTrust>;
+    const today = new Date();
+    const byPro = new Map<string, TrustCredential[]>();
+    for (const credential of credentials.data ?? []) {
+      const rows = byPro.get(credential.pro_id) ?? [];
+      rows.push(credential);
+      byPro.set(credential.pro_id, rows);
+    }
     return Object.fromEntries(
-      (data ?? []).map((r) => [r.pro_id as string, r as ProTrust]),
+      (trust.data ?? []).map((row) => [
+        row.pro_id as string,
+        currentCredentialTrust(row as ProTrust, byPro.get(row.pro_id as string) ?? [], today),
+      ]),
     ) as Record<string, ProTrust>;
   },
   staleTime: 60_000,
@@ -589,12 +623,12 @@ export function proTrustQuery(proId: string) {
   return queryOptions({
     queryKey: ["pro-trust", proId],
     queryFn: async () => {
-      const { data } = await supabase
-        .from("pro_trust")
-        .select("*")
-        .eq("pro_id", proId)
-        .maybeSingle();
-      return (data as ProTrust | null) ?? null;
+      const [trust, credentials] = await Promise.all([
+        supabase.from("pro_trust").select("*").eq("pro_id", proId).maybeSingle(),
+        supabase.from("pro_credentials").select("pro_id, verified, expires_on").eq("pro_id", proId),
+      ]);
+      if (trust.error || credentials.error || !trust.data) return null;
+      return currentCredentialTrust(trust.data as ProTrust, credentials.data ?? []);
     },
     staleTime: 60_000,
   });
