@@ -28,7 +28,7 @@ function systemPrompt(trades: JobHelperTrade[]) {
     "Return strict JSON with exactly these fields: trade_slug, title, description, questions_to_add, safety_note.",
     `trade_slug must be one of: ${tradeList}. Use null if none fits.`,
     "title is a concise job title of at most 80 characters.",
-    "description is 60-600 characters of plain UK English, written as the homeowner. Cover what needs doing, where in the property, how big it is, access and when. Use 'not sure' for anything the homeowner did not say.",
+    "description is 60-600 characters of plain UK English, written as the homeowner. Cover what needs doing, where in the property, how big it is, access and when, but only using facts the homeowner gave. Never invent details. Leave out anything they did not say rather than writing 'not sure' after it; the follow-up questions cover the gaps. Write in the first person, in natural sentences (e.g. 'Water drips through the kitchen ceiling when we use the upstairs shower.').",
     "questions_to_add contains at most 3 short questions the homeowner could answer to help firms quote.",
     "safety_note is null except for gas, mains electrics, structural work or asbestos. For those only, briefly tell the homeowner not to attempt the work themselves.",
     "Do not ask for, estimate or mention prices.",
