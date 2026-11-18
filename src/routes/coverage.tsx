@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { MapPin, TrendingUp } from "lucide-react";
 import { Section, SectionHead } from "@/components/layout-bits";
+import { PageBanner } from "@/components/page-banner";
 import { WaitingListInline } from "@/components/waiting-list-inline";
 import { areasQuery, waitingListDemandQuery, waitingListTrendQuery } from "@/lib/queries";
 
@@ -99,19 +100,13 @@ function Coverage() {
 
   return (
     <>
-      <Section>
-        <div className="max-w-2xl">
-          <p className="eyebrow">Launch tracker</p>
-          <h1 className="mt-3 text-4xl leading-tight sm:text-5xl">
-            Where we open next is decided by you.
-          </h1>
-          <p className="mt-4 leading-relaxed text-muted-foreground">
-            We open an area once enough homeowners and local trades have put their postcode forward
-            — roughly {TARGET} confirmed sign-ups in a postcode area is where it starts to make
-            sense. Here's exactly where things stand.
-          </p>
-        </div>
-      </Section>
+      <PageBanner
+        eyebrow="Launch tracker"
+        title="Where we open next is decided by you."
+        sub={`We open an area once enough homeowners and local trades have put their postcode forward — roughly ${TARGET} confirmed sign-ups in a postcode area is where it starts to make sense. Here's exactly where things stand.`}
+        image="/images/pages/areas.webp"
+        imageAlt="A row of brick terraced houses on a UK street"
+      />
 
       <Section className="border-y border-border bg-surface">
         <SectionHead

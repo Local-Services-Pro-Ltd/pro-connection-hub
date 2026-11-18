@@ -91,3 +91,11 @@
 - [x] Audit Light/Dim/Dark contrast, button hierarchy and responsive layouts
 - [x] Show town and county on listing cards and profile headers
 - [x] Run checks, verify all themes at desktop and phone widths, and commit without publishing
+
+## Page photography and header theme access
+
+- [x] Enlarge homepage path-card photography without increasing desktop card height excessively
+- [x] Add an accessible, synchronised theme menu to desktop and mobile headers
+- [x] Add reusable PageBanner imagery to the requested inner pages
+- [x] Add local fallback trade photography with missing-image handling
+- [x] Verify Light/Dim/Dark at desktop and phone widths, run checks, and commit without publishing

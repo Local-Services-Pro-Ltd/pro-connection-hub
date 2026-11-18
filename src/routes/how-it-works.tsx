@@ -10,6 +10,7 @@ import {
   Star,
 } from "lucide-react";
 import { Section, SectionHead } from "@/components/layout-bits";
+import { PageBanner } from "@/components/page-banner";
 
 const SITE = "https://tradesmanfinder.org";
 
@@ -133,14 +134,16 @@ const criteria = [
 function HowItWorks() {
   return (
     <>
-      <Section>
-        <SectionHead
-          eyebrow="How it works"
-          title="Three steps, no phone tag."
-          sub="We're onboarding local trades now. Post your job and we'll match you as firms join and complete their checks."
-        />
+      <PageBanner
+        eyebrow="How it works"
+        title="Three steps, no phone tag."
+        sub="We're onboarding local trades now. Post your job and we'll match you as firms join and complete their checks."
+        image="/images/pages/how-it-works.webp"
+        imageAlt="A homeowner and a tradesperson talking through a job in a kitchen"
+      />
 
-        <ol className="mt-10 grid gap-px overflow-hidden rounded-md border border-border bg-border md:grid-cols-3">
+      <Section>
+        <ol className="grid gap-px overflow-hidden rounded-md border border-border bg-border md:grid-cols-3">
           {steps.map((s) => (
             <li key={s.n} className="bg-card p-8">
               <div className="flex items-center gap-3">

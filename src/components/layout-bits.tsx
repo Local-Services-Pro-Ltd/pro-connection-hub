@@ -49,6 +49,7 @@ export function PageHero({
   focal = "center",
   focalMobile,
   priority = true,
+  onImageError,
 }: {
   eyebrow: string;
   title: string;
@@ -62,6 +63,7 @@ export function PageHero({
   focalMobile?: string;
   /** Above-the-fold heroes load eagerly; set false to lazy-load. */
   priority?: boolean;
+  onImageError?: () => void;
 }) {
   const mobileFocal = focalMobile ?? focal;
   return (
@@ -80,6 +82,7 @@ export function PageHero({
               decoding="async"
               loading={priority ? "eager" : "lazy"}
               {...(priority ? { fetchPriority: "high" as const } : {})}
+              onError={onImageError}
               className="h-full w-full object-cover [object-position:var(--focal-mobile)] sm:[object-position:var(--focal)]"
               style={
                 {

@@ -1,4 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { useState } from "react";
 import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
 import { WaitingListInline } from "@/components/waiting-list-inline";
 import { ProCard } from "@/components/pro-card";
@@ -16,7 +17,7 @@ import {
 } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
 import { hasCostGuide } from "@/lib/cost-guides";
-import { tradeHero, tradeFocal, tradeAlt, hasTradeOgImage } from "@/lib/trade-media";
+import { tradeFocal, hasTradeOgImage } from "@/lib/trade-media";
 import { tradeHeroCopy } from "@/lib/trade-copy";
 import { getRequestOrigin } from "@/lib/origin.functions";
 
@@ -122,6 +123,7 @@ function TradePage() {
   const search = Route.useSearch();
   const { data: matches } = useSuspenseQuery(prosQuery({ trade: trade.slug, ...search }));
   const { data: tradeProjects } = useQuery(tradeProjectsQuery(trade.slug));
+  const [failedHeroImage, setFailedHeroImage] = useState<string | null>(null);
 
   const copy = tradeHeroCopy(trade.slug, {
     trade: trade.name,
@@ -130,9 +132,10 @@ function TradePage() {
     ...(search.area ? { area: search.area } : {}),
   });
 
-  // Admin overrides (/admin/hero-images) win over the bundled photo.
-  const heroImage = heroOverride?.image_url || tradeHero(trade.slug);
-  const heroAlt = heroOverride?.alt_text?.trim() || tradeAlt(trade.slug, trade.name);
+  // Admin overrides win; otherwise try the public local trade photo, then no image.
+  const requestedHeroImage = heroOverride?.image_url || `/images/trades/${trade.slug}.webp`;
+  const heroImage = failedHeroImage === requestedHeroImage ? undefined : requestedHeroImage;
+  const heroAlt = heroOverride?.alt_text?.trim() || `${trade.name} at work`;
   const base = tradeFocal(trade.slug);
   const focal = {
     focal: heroOverride?.focal || base.focal,
@@ -145,10 +148,11 @@ function TradePage() {
         eyebrow={copy.eyebrow}
         title={copy.title}
         sub={copy.sub}
-        image={heroImage}
+        {...(heroImage ? { image: heroImage } : {})}
         imageAlt={heroAlt}
         focal={focal.focal}
         focalMobile={focal.focalMobile}
+        onImageError={() => setFailedHeroImage(requestedHeroImage)}
       >
         <dl className="flex flex-wrap gap-x-12 gap-y-4 border-t border-border pt-6">
           <div>

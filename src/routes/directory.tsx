@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { PageHero, Section } from "@/components/layout-bits";
+import { Section } from "@/components/layout-bits";
+import { PageBanner } from "@/components/page-banner";
 import { ProCard } from "@/components/pro-card";
 import { WaitingListInline } from "@/components/waiting-list-inline";
 import { directoryQuery, tradesQuery, type Pro } from "@/lib/queries";
@@ -51,10 +52,12 @@ function Directory() {
 
   return (
     <>
-      <PageHero
+      <PageBanner
         eyebrow="Directory"
         title="Firms onboarding now"
         sub="We're onboarding local trades now. Listed firms are marked vetting in progress until their ID and insurance checks are complete."
+        image="/images/pages/trades.webp"
+        imageAlt="Several tradespeople's tools laid out on a workbench"
       />
 
       <Section>

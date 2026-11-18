@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { type ReactNode, useState } from "react";
 import { ChevronDown, Menu, X, UserRound, Mail } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
-import { ThemeControl } from "@/components/theme-control";
+import { HeaderThemeControl, ThemeControl } from "@/components/theme-control";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -81,6 +81,7 @@ export function SiteHeader() {
           </nav>
         </div>
         <div className="flex shrink-0 items-center gap-2">
+          <HeaderThemeControl />
           {user ? (
             <Link
               to="/account"
