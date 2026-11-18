@@ -52,7 +52,7 @@ export function SearchBar({ compact = false }: { compact?: boolean }) {
           value={place}
           onChange={(e) => setPlace(e.target.value)}
           placeholder="Postcode or town"
-          className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground/80 outline-none"
+          className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
         />
       </label>
 

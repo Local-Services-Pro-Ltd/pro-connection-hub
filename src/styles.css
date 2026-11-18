@@ -15,10 +15,8 @@
   --radius-xl: calc(var(--radius) + 6px);
   --radius-2xl: calc(var(--radius) + 10px);
 
-  --font-display: "Space Grotesk", "Space Grotesk Fallback", ui-sans-serif,
-    system-ui, sans-serif;
-  --font-sans: "DM Sans", "DM Sans Fallback", ui-sans-serif, system-ui,
-    sans-serif;
+  --font-display: "Space Grotesk", "Space Grotesk Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "DM Sans", "DM Sans Fallback", ui-sans-serif, system-ui, sans-serif;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -51,7 +49,7 @@
   --brand-blue: oklch(0.42 0.16 262);
 }
 
-/* ---------- Default theme: "Dim" (lifted graphite) ---------- */
+/* ---------- "Dim" (lifted graphite); Light is the first-visit default ---------- */
 :root,
 [data-theme="dim"] {
   --radius: 0.25rem;
@@ -70,7 +68,7 @@
   --secondary: oklch(0.375 0.012 60);
   --secondary-foreground: oklch(0.985 0.008 80);
   --muted: oklch(0.345 0.01 60);
-  --muted-foreground: oklch(0.845 0.014 70);
+  --muted-foreground: oklch(0.875 0.014 70);
   --accent: oklch(0.82 0.13 85);
   --accent-foreground: oklch(0.19 0.02 45);
   --destructive: oklch(0.7 0.19 25);
@@ -82,13 +80,8 @@
   --input: oklch(0.45 0.011 60);
   --ring: oklch(0.76 0.19 48);
 
-  --gradient-ember: linear-gradient(
-    135deg,
-    oklch(0.72 0.17 55),
-    oklch(0.63 0.19 35)
-  );
-  --shadow-lift: 0 1px 0 oklch(1 0 0 / 6%) inset,
-    0 24px 60px -30px oklch(0 0 0 / 80%);
+  --gradient-ember: linear-gradient(135deg, oklch(0.72 0.17 55), oklch(0.63 0.19 35));
+  --shadow-lift: 0 1px 0 oklch(1 0 0 / 6%) inset, 0 24px 60px -30px oklch(0 0 0 / 80%);
   --shadow-ember: 0 18px 40px -20px oklch(0.68 0.17 45 / 55%);
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
 
@@ -119,7 +112,6 @@
   --hero-on-media-muted: oklch(0.93 0.012 75);
 }
 
-
 /* ---------- Dark ---------- */
 [data-theme="dark"] {
   --background: oklch(0.185 0.008 60);
@@ -129,7 +121,7 @@
 
   --secondary: oklch(0.3 0.011 60);
   --muted: oklch(0.275 0.01 60);
-  --muted-foreground: oklch(0.82 0.014 70);
+  --muted-foreground: oklch(0.86 0.014 70);
 
   --border: oklch(0.4 0.011 60);
   --border-strong: oklch(0.56 0.013 60);
@@ -152,7 +144,7 @@
   --popover-foreground: oklch(0.23 0.012 60);
 
   /* Darkened ember so white label text clears 4.5:1 on buttons. */
-  --primary: oklch(0.55 0.18 42);
+  --primary: oklch(0.53 0.18 42);
   --primary-foreground: oklch(0.99 0.006 85);
   --secondary: oklch(0.93 0.007 85);
   --secondary-foreground: oklch(0.23 0.012 60);
@@ -167,17 +159,12 @@
   --border: oklch(0.86 0.008 80);
   --border-strong: oklch(0.7 0.01 75);
   --input: oklch(0.82 0.008 80);
-  --ring: oklch(0.55 0.18 42);
+  --ring: oklch(0.53 0.18 42);
 
   /* Darker ember stops so the gradient headline clears AA on light photos. */
-  --gradient-ember: linear-gradient(
-    135deg,
-    oklch(0.52 0.17 50),
-    oklch(0.43 0.18 33)
-  );
+  --gradient-ember: linear-gradient(135deg, oklch(0.52 0.17 50), oklch(0.43 0.18 33));
 
-  --shadow-lift: 0 1px 0 oklch(1 0 0 / 60%) inset,
-    0 20px 50px -30px oklch(0.3 0.02 60 / 35%);
+  --shadow-lift: 0 1px 0 oklch(1 0 0 / 60%) inset, 0 20px 50px -30px oklch(0.3 0.02 60 / 35%);
   --shadow-ember: 0 16px 36px -20px oklch(0.55 0.18 42 / 40%);
 
   --hero-image-opacity: 1;
@@ -197,7 +184,6 @@
   --hero-on-media: oklch(0.2 0.012 60);
   --hero-on-media-muted: oklch(0.33 0.015 60);
 }
-
 
 @layer base {
   * {
@@ -247,11 +233,8 @@
 }
 
 @utility rule-grid {
-  background-image: linear-gradient(
-      to right,
-      var(--color-border) 1px,
-      transparent 1px
-    ),
+  background-image:
+    linear-gradient(to right, var(--color-border) 1px, transparent 1px),
     linear-gradient(to bottom, var(--color-border) 1px, transparent 1px);
   background-size: 72px 72px;
   mask-image: radial-gradient(ellipse at 50% 0%, black, transparent 75%);

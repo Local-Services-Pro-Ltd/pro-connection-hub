@@ -9,7 +9,7 @@ export const THEMES: { value: Theme; label: string; hint: string }[] = [
 ];
 
 const STORAGE_KEY = "tf-theme";
-const DEFAULT_THEME: Theme = "dim";
+const DEFAULT_THEME: Theme = "light";
 
 type Ctx = { theme: Theme; setTheme: (t: Theme) => void; toggle: () => void };
 

@@ -82,7 +82,7 @@ export const Route = createFileRoute("/post-job")({
 });
 
 const field =
-  "w-full rounded-sm border border-input bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/70 outline-none transition-colors focus:border-primary";
+  "w-full rounded-sm border border-input bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none transition-colors focus:border-primary";
 
 const timings = [
   "As soon as possible",

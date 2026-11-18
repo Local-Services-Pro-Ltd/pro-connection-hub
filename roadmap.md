@@ -83,3 +83,11 @@
 - [x] Add noindex forgot-password and reset-password routes with human checks and recovery-session handling
 - [x] Add regression coverage and run lint, typecheck, tests, and build
 - [x] Add accessible password visibility controls and live reset-password match hints
+
+## Homepage photography and theme polish
+
+- [x] Add lightweight local trade photography to the homepage paths and trust block
+- [x] Default first-time visitors to Light while preserving saved theme choices
+- [x] Audit Light/Dim/Dark contrast, button hierarchy and responsive layouts
+- [x] Show town and county on listing cards and profile headers
+- [x] Run checks, verify all themes at desktop and phone widths, and commit without publishing
