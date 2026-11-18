@@ -120,7 +120,7 @@ const steps = [
   {
     n: "02",
     title: "Get up to 3 quotes",
-    body: "We match you with local trades as they join. Firms must complete ID and insurance checks before they can quote.",
+    body: "See up to three local firms and choose who to contact. Your details go only to the firms you pick.",
   },
   {
     n: "03",

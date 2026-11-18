@@ -108,3 +108,11 @@
 - [x] Maintain expired and inactive Companies House credentials in the nightly job
 - [x] Exclude expired credentials from displayed trust counts and scores
 - [x] Run regression checks, typecheck and lint; commit without publishing or database changes
+
+## AI job helper and contact-choice wording
+
+- [x] Add a rate-limited, validated AI job helper server function with Gemini settings and safe failure
+- [x] Add the optional helper, preview, form pre-fill and existing cost-guide range to /post-job
+- [x] Replace only the requested homeowner contact-choice wording and metadata
+- [x] Add regression tests and run existing tests, typecheck, lint and browser checks
+- [x] Commit without publishing or changing database schema
