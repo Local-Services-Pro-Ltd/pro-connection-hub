@@ -337,6 +337,13 @@
       "when": 1794971384923,
       "tag": "0047_close_trade_job_reads",
       "breakpoints": true
+    },
+    {
+      "idx": 48,
+      "version": "7",
+      "when": 1794972335181,
+      "tag": "0048_job_interest",
+      "breakpoints": true
     }
   ]
 }
