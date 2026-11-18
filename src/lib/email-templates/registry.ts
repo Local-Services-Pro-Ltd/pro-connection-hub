@@ -11,6 +11,7 @@ import { template as leadReceived } from "./lead-received";
 import { template as projectApplication } from "./project-application";
 import { template as projectStatus } from "./project-status";
 import { template as proClaimStatus } from "./pro-claim-status";
+import { template as jobInterest } from "./job-interest";
 
 export interface TemplateEntry {
   component: ComponentType<Record<string, unknown>>;
@@ -38,4 +39,5 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   "project-application": projectApplication,
   "project-status": projectStatus,
   "pro-claim-status": proClaimStatus,
+  "job-interest": jobInterest,
 };

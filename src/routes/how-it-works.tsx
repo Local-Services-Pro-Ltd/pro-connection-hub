@@ -21,7 +21,7 @@ const faqs = [
   },
   {
     q: "How many quotes will I get?",
-    a: "Up to three matched firms per job. You choose which, if any, to contact. Only those firms get your details, and there's no obligation to hire.",
+    a: "Up to three matched firms per job, and any local firm in your trade can say it's interested. You choose which, if any, to contact. Only those firms get your details, and there's no obligation to hire.",
   },
   {
     q: "Can a firm pay to be listed or featured?",

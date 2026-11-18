@@ -20,6 +20,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import {
   availabilityLabels,
+  budgetBands,
   firmApplicationsQuery,
   firmBookingsQuery,
   firmLeadsQuery,
@@ -29,6 +30,8 @@ import {
   type Availability,
   type Pro,
 } from "@/lib/queries";
+import { listJobsForMyFirm, registerJobInterest } from "@/lib/job-interest.functions";
+import type { FirmJob } from "@/lib/job-interest.shared";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -59,6 +62,7 @@ const card = "rounded-md border border-border bg-card p-6";
 
 const TABS = [
   { id: "leads", label: "Leads" },
+  { id: "jobs", label: "Jobs near you" },
   { id: "visits", label: "Visits" },
   { id: "profile", label: "Profile" },
   { id: "photos", label: "Photos" },
@@ -190,6 +194,7 @@ function Dashboard() {
                 onOpen={() => setTab("plan")}
               />
             ))}
+          {tab === "jobs" && <JobsNearYouTab />}
           {tab === "visits" &&
             (isMember(pro) ? (
               <VisitsTab pro={pro} />
@@ -317,6 +322,138 @@ function LeadsTab({ pro }: { pro: Pro }) {
         )}
       </div>
     </div>
+  );
+}
+
+/* -------------------------------------------------------- jobs near you */
+
+function JobsNearYouTab() {
+  const getJobs = useServerFn(listJobsForMyFirm);
+  const jobs = useQuery({
+    queryKey: ["jobs-for-my-firm"],
+    queryFn: () => getJobs({}),
+    staleTime: 30_000,
+  });
+
+  return (
+    <div>
+      <p className="max-w-2xl text-sm text-muted-foreground">
+        You'll see the job, not the homeowner's contact details. If they want a quote, they'll
+        contact you.
+      </p>
+      {jobs.isLoading ? (
+        <p className="mt-5 text-sm text-muted-foreground">Loading jobs…</p>
+      ) : jobs.error ? (
+        <p role="alert" className="mt-5 text-sm text-destructive">
+          {(jobs.error as Error).message}
+        </p>
+      ) : (jobs.data?.jobs.length ?? 0) === 0 ? (
+        <p className="mt-5 rounded-md border border-border bg-card p-6 text-sm text-muted-foreground">
+          No jobs in your trade and area right now. New jobs appear here as homeowners post them.
+        </p>
+      ) : (
+        <ul className="mt-6 grid gap-5">
+          {jobs.data!.jobs.map((job) => (
+            <JobNearYouCard key={job.id} job={job} />
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+function JobNearYouCard({ job }: { job: FirmJob }) {
+  const [expanded, setExpanded] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [note, setNote] = useState("");
+  const [sent, setSent] = useState(job.interested);
+  const register = useServerFn(registerJobInterest);
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: async () => register({ data: { jobId: job.id, message: note } }),
+    onSuccess: () => {
+      setSent(true);
+      setOpen(false);
+      void queryClient.invalidateQueries({ queryKey: ["jobs-for-my-firm"] });
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
+  const budget =
+    budgetBands.find((band) => band.value === job.budget_band)?.label ?? job.budget_band;
+
+  return (
+    <li className={card}>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h3 className="text-xl">{job.title}</h3>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {job.postcode_district} · {job.timing} · {budget}
+          </p>
+        </div>
+        <span className="text-xs text-muted-foreground">
+          Posted {new Date(job.created_at).toLocaleDateString("en-GB")}
+        </span>
+      </div>
+      <p
+        className={`mt-4 whitespace-pre-line text-sm leading-relaxed ${expanded ? "" : "line-clamp-4"}`}
+      >
+        {job.description}
+      </p>
+      {job.description.length > 240 && (
+        <button
+          type="button"
+          onClick={() => setExpanded((value) => !value)}
+          className="mt-2 text-sm text-primary underline underline-offset-4"
+        >
+          {expanded ? "Show less" : "Show more"}
+        </button>
+      )}
+
+      {sent ? (
+        <p className="mt-5 rounded-sm border border-border bg-surface p-3 text-sm">
+          Interest sent — the homeowner has your profile link
+        </p>
+      ) : open ? (
+        <div className="mt-5 rounded-sm border border-border bg-surface p-4">
+          <label className="block text-sm font-medium" htmlFor={`interest-note-${job.id}`}>
+            Add a short note (optional)
+          </label>
+          <textarea
+            id={`interest-note-${job.id}`}
+            rows={3}
+            maxLength={600}
+            value={note}
+            onChange={(event) => setNote(event.target.value)}
+            className={`${field} mt-2 resize-y`}
+          />
+          <div className="mt-3 flex gap-3">
+            <button
+              type="button"
+              disabled={mutation.isPending}
+              onClick={() => mutation.mutate()}
+              className="rounded-sm bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground disabled:opacity-60"
+            >
+              {mutation.isPending ? "Sending…" : "Send"}
+            </button>
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              className="rounded-sm border border-border-strong px-5 py-2.5 text-sm font-semibold"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="mt-5 rounded-sm bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
+        >
+          I'm interested
+        </button>
+      )}
+    </li>
   );
 }
 

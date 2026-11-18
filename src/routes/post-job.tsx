@@ -200,7 +200,7 @@ function PostJob() {
       <PageBanner
         eyebrow="Post a job"
         title="Tell us what needs doing."
-        sub="Two minutes. Free. We'll show you up to three local firms, and only the ones you choose will get your details."
+        sub="Two minutes. Free. Local firms can see your job and say they're interested, but only the ones you choose get your details."
         image="/images/pages/post-job.webp"
         imageAlt="A homeowner taking a photo of a leaking pipe on their phone"
       />
@@ -346,6 +346,10 @@ function PostJob() {
                   <span className="mt-1 block text-xs text-muted-foreground">
                     {form.description.trim().length}/4000
                   </span>
+                  <span className="mt-2 block text-xs text-muted-foreground">
+                    Local firms in this trade can read your job description, so please don't include
+                    your phone number or address.
+                  </span>
                 </label>
 
                 <div className="grid gap-6 sm:grid-cols-2">
@@ -416,12 +420,13 @@ function PostJob() {
               <p className="eyebrow">What happens next</p>
               <ol className="mt-4 space-y-4 text-sm text-muted-foreground">
                 <li>
-                  <strong className="text-foreground">1.</strong> We match your job with up to three
-                  local firms covering your postcode.
+                  <strong className="text-foreground">1.</strong> We show your job to local firms in
+                  your trade and area, and match you with up to three of them.
                 </li>
                 <li>
-                  <strong className="text-foreground">2.</strong> You see who they are, read their
-                  profiles and choose who to contact. Nobody gets your details until you do.
+                  <strong className="text-foreground">2.</strong> Firms can say they're interested.
+                  You see who they are, read their profiles and choose who to contact. Nobody gets
+                  your details until you do.
                 </li>
                 <li>
                   <strong className="text-foreground">3.</strong> Only the firms you contact can

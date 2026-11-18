@@ -91,9 +91,8 @@ function Areas() {
           {live.map((a) => (
             <Link
               key={a.slug}
-              to="/trades/$trade"
-              params={{ trade: "builder" }}
-              search={{ area: a.slug }}
+              to="/areas/$area"
+              params={{ area: a.slug }}
               className="group rounded-md border border-border bg-card p-8 transition-colors hover:border-primary"
             >
               <span className="inline-flex items-center gap-2 rounded-full bg-primary/12 px-3 py-1 font-display text-[0.7rem] uppercase tracking-widest text-primary">

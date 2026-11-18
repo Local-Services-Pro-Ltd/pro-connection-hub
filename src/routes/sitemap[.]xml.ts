@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
-import { allCostGuides } from "@/lib/cost-guides";
+import { allCostGuides, hasCostGuide } from "@/lib/cost-guides";
 
 const BASE_URL = "https://tradesmanfinder.org";
 
@@ -57,19 +57,44 @@ export const Route = createFileRoute("/sitemap.xml")({
             },
           });
 
-          const [trades, pros] = await Promise.all([
+          const [trades, pros, areas] = await Promise.all([
             supabasePublic.from("trades").select("slug").order("sort_order"),
-            supabasePublic.from("pros").select("id").eq("published", true),
+            supabasePublic.from("pros").select("id, area_slug, trade_slug").eq("published", true),
+            supabasePublic.from("areas").select("slug").eq("status", "live").order("sort_order"),
           ]);
+          if (trades.error || pros.error || areas.error) {
+            throw new Error(
+              trades.error?.message ??
+                pros.error?.message ??
+                areas.error?.message ??
+                "Dynamic sitemap query failed",
+            );
+          }
 
-          for (const trade of trades.data ?? []) {
+          for (const area of areas.data) {
+            entries.push({ path: `/areas/${area.slug}`, changefreq: "weekly", priority: "0.8" });
+            for (const trade of trades.data) {
+              const hasFirm = pros.data.some(
+                (pro) => pro.area_slug === area.slug && pro.trade_slug === trade.slug,
+              );
+              if (hasFirm || hasCostGuide(trade.slug)) {
+                entries.push({
+                  path: `/areas/${area.slug}/${trade.slug}`,
+                  changefreq: "weekly",
+                  priority: "0.7",
+                });
+              }
+            }
+          }
+
+          for (const trade of trades.data) {
             entries.push({
               path: `/trades/${trade.slug}`,
               changefreq: "weekly",
               priority: "0.7",
             });
           }
-          for (const pro of pros.data ?? []) {
+          for (const pro of pros.data) {
             entries.push({
               path: `/pro/${pro.id}`,
               changefreq: "weekly",
@@ -77,8 +102,12 @@ export const Route = createFileRoute("/sitemap.xml")({
             });
           }
         } catch (error) {
-          // A database hiccup shouldn't take the whole sitemap down.
+          // Never present a partial dynamic sitemap as though it were complete.
           console.error("[sitemap] dynamic entries unavailable", error);
+          return new Response("Sitemap temporarily unavailable", {
+            status: 503,
+            headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" },
+          });
         }
 
         const urls = entries.map((e) =>

@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -14,6 +15,7 @@ import {
 } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { listInterestForMyJobs, type HomeownerInterest } from "@/lib/job-interest.functions";
 
 export const Route = createFileRoute("/account")({
   head: () => ({
@@ -57,6 +59,16 @@ function Account() {
   const projects = useQuery({ ...myProjectsQuery, enabled: !!user });
   const leads = useQuery({ ...myLeadsQuery, enabled: !!user });
   const searches = useQuery({ ...savedSearchesQuery, enabled: !!user });
+  const getInterests = useServerFn(listInterestForMyJobs);
+  const interests = useQuery({
+    queryKey: ["interest-for-my-jobs"],
+    queryFn: () => getInterests({}),
+    enabled: !!user,
+  });
+  const interestsByJob = new Map<string, HomeownerInterest[]>();
+  for (const interest of interests.data?.interests ?? []) {
+    interestsByJob.set(interest.job_id, [...(interestsByJob.get(interest.job_id) ?? []), interest]);
+  }
 
   const queryClient = useQueryClient();
   const removeSearch = useMutation({
@@ -133,6 +145,37 @@ function Account() {
                     year: "numeric",
                   })}
                 </p>
+                <div className="mt-5 border-t border-border pt-5">
+                  <h4 className="font-display text-sm font-semibold">
+                    Firms interested in this job
+                  </h4>
+                  {interests.isLoading ? (
+                    <p className="mt-2 text-sm text-muted-foreground">Loading…</p>
+                  ) : (interestsByJob.get(j.id)?.length ?? 0) > 0 ? (
+                    <ul className="mt-3 space-y-3">
+                      {interestsByJob.get(j.id)!.map((interest) => (
+                        <li key={interest.pro_id} className="text-sm">
+                          <Link
+                            to="/pro/$id"
+                            params={{ id: interest.pro_id }}
+                            className="font-medium text-primary underline underline-offset-4"
+                          >
+                            {interest.name} · {interest.company}
+                          </Link>
+                          {interest.message && (
+                            <p className="mt-1 whitespace-pre-line text-muted-foreground">
+                              {interest.message}
+                            </p>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      No firms have registered interest yet.
+                    </p>
+                  )}
+                </div>
               </li>
             ))}
           </ul>

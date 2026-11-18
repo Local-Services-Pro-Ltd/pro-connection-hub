@@ -116,3 +116,12 @@
 - [x] Replace only the requested homeowner contact-choice wording and metadata
 - [x] Add regression tests and run existing tests, typecheck, lint and browser checks
 - [x] Commit without publishing or changing database schema
+
+## Firm job interest and local area pages
+
+- [x] Add authenticated, privacy-safe job listing and interest server functions using the existing job_interest table
+- [x] Send the homeowner interest email and add dashboard/account interest interfaces
+- [x] Add live-area and area-trade routes, regional cost ranges, metadata, breadcrumbs and sitemap entries
+- [x] Apply only the requested job-promise wording and description privacy hint
+- [x] Add privacy and area-region tests; run typecheck, lint, existing tests and browser checks
+- [x] Commit without publishing or changing migrations, tables, columns or policies

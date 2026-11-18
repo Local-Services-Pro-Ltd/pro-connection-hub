@@ -42,6 +42,7 @@ import { Route as AdminProjectsRouteImport } from './routes/admin.projects'
 import { Route as AdminQaRouteImport } from './routes/admin.qa'
 import { Route as AdminSlaRouteImport } from './routes/admin.sla'
 import { Route as AdminWaitingListRouteImport } from './routes/admin.waiting-list'
+import { Route as AreasAreaRouteImport } from './routes/areas_.$area'
 import { Route as AskIndexRouteImport } from './routes/ask.index'
 import { Route as AskIdRouteImport } from './routes/ask.$id'
 import { Route as ClaimIndexRouteImport } from './routes/claim.index'
@@ -64,6 +65,7 @@ import { Route as ApiPublicReviewsRouteImport } from './routes/api/public/review
 import { Route as ApiPublicSecurityAlertRouteImport } from './routes/api/public/security-alert'
 import { Route as ApiPublicSecurityScanRouteImport } from './routes/api/public/security-scan'
 import { Route as ApiPublicVettingStatusRouteImport } from './routes/api/public/vetting-status'
+import { Route as AreasAreaTradeRouteImport } from './routes/areas_.$area_.$trade'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 
 const IndexRoute = IndexRouteImport.update({
@@ -231,6 +233,11 @@ const AdminWaitingListRoute = AdminWaitingListRouteImport.update({
   path: '/admin/waiting-list',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AreasAreaRoute = AreasAreaRouteImport.update({
+  id: '/areas_/$area',
+  path: '/areas/$area',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AskIndexRoute = AskIndexRouteImport.update({
   id: '/ask/',
   path: '/ask/',
@@ -342,6 +349,11 @@ const ApiPublicVettingStatusRoute = ApiPublicVettingStatusRouteImport.update({
   path: '/api/public/vetting-status',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AreasAreaTradeRoute = AreasAreaTradeRouteImport.update({
+  id: '/areas_/$area_/$trade',
+  path: '/areas/$area/$trade',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LovableEmailTransactionalPreviewRoute =
   LovableEmailTransactionalPreviewRouteImport.update({
     id: '/lovable/email/transactional/preview',
@@ -383,6 +395,7 @@ export interface FileRoutesByFullPath {
   '/admin/qa': typeof AdminQaRoute
   '/admin/sla': typeof AdminSlaRoute
   '/admin/waiting-list': typeof AdminWaitingListRoute
+  '/areas/$area': typeof AreasAreaRoute
   '/ask/$id': typeof AskIdRoute
   '/claim/$proId': typeof ClaimProIdRoute
   '/costs/$trade': typeof CostsTradeRoute
@@ -405,6 +418,7 @@ export interface FileRoutesByFullPath {
   '/api/public/security-alert': typeof ApiPublicSecurityAlertRoute
   '/api/public/security-scan': typeof ApiPublicSecurityScanRoute
   '/api/public/vetting-status': typeof ApiPublicVettingStatusRoute
+  '/areas/$area/$trade': typeof AreasAreaTradeRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRoutesByTo {
@@ -441,6 +455,7 @@ export interface FileRoutesByTo {
   '/admin/qa': typeof AdminQaRoute
   '/admin/sla': typeof AdminSlaRoute
   '/admin/waiting-list': typeof AdminWaitingListRoute
+  '/areas/$area': typeof AreasAreaRoute
   '/ask/$id': typeof AskIdRoute
   '/claim/$proId': typeof ClaimProIdRoute
   '/costs/$trade': typeof CostsTradeRoute
@@ -463,6 +478,7 @@ export interface FileRoutesByTo {
   '/api/public/security-alert': typeof ApiPublicSecurityAlertRoute
   '/api/public/security-scan': typeof ApiPublicSecurityScanRoute
   '/api/public/vetting-status': typeof ApiPublicVettingStatusRoute
+  '/areas/$area/$trade': typeof AreasAreaTradeRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRoutesById {
@@ -500,6 +516,7 @@ export interface FileRoutesById {
   '/admin/qa': typeof AdminQaRoute
   '/admin/sla': typeof AdminSlaRoute
   '/admin/waiting-list': typeof AdminWaitingListRoute
+  '/areas_/$area': typeof AreasAreaRoute
   '/ask/$id': typeof AskIdRoute
   '/claim/$proId': typeof ClaimProIdRoute
   '/costs/$trade': typeof CostsTradeRoute
@@ -522,6 +539,7 @@ export interface FileRoutesById {
   '/api/public/security-alert': typeof ApiPublicSecurityAlertRoute
   '/api/public/security-scan': typeof ApiPublicSecurityScanRoute
   '/api/public/vetting-status': typeof ApiPublicVettingStatusRoute
+  '/areas_/$area_/$trade': typeof AreasAreaTradeRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRouteTypes {
@@ -560,6 +578,7 @@ export interface FileRouteTypes {
     | '/admin/qa'
     | '/admin/sla'
     | '/admin/waiting-list'
+    | '/areas/$area'
     | '/ask/$id'
     | '/claim/$proId'
     | '/costs/$trade'
@@ -582,6 +601,7 @@ export interface FileRouteTypes {
     | '/api/public/security-alert'
     | '/api/public/security-scan'
     | '/api/public/vetting-status'
+    | '/areas/$area/$trade'
     | '/lovable/email/transactional/preview'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -618,6 +638,7 @@ export interface FileRouteTypes {
     | '/admin/qa'
     | '/admin/sla'
     | '/admin/waiting-list'
+    | '/areas/$area'
     | '/ask/$id'
     | '/claim/$proId'
     | '/costs/$trade'
@@ -640,6 +661,7 @@ export interface FileRouteTypes {
     | '/api/public/security-alert'
     | '/api/public/security-scan'
     | '/api/public/vetting-status'
+    | '/areas/$area/$trade'
     | '/lovable/email/transactional/preview'
   id:
     | '__root__'
@@ -676,6 +698,7 @@ export interface FileRouteTypes {
     | '/admin/qa'
     | '/admin/sla'
     | '/admin/waiting-list'
+    | '/areas_/$area'
     | '/ask/$id'
     | '/claim/$proId'
     | '/costs/$trade'
@@ -698,6 +721,7 @@ export interface FileRouteTypes {
     | '/api/public/security-alert'
     | '/api/public/security-scan'
     | '/api/public/vetting-status'
+    | '/areas_/$area_/$trade'
     | '/lovable/email/transactional/preview'
   fileRoutesById: FileRoutesById
 }
@@ -735,6 +759,7 @@ export interface RootRouteChildren {
   AdminQaRoute: typeof AdminQaRoute
   AdminSlaRoute: typeof AdminSlaRoute
   AdminWaitingListRoute: typeof AdminWaitingListRoute
+  AreasAreaRoute: typeof AreasAreaRoute
   AskIdRoute: typeof AskIdRoute
   ClaimProIdRoute: typeof ClaimProIdRoute
   CostsTradeRoute: typeof CostsTradeRoute
@@ -757,6 +782,7 @@ export interface RootRouteChildren {
   ApiPublicSecurityAlertRoute: typeof ApiPublicSecurityAlertRoute
   ApiPublicSecurityScanRoute: typeof ApiPublicSecurityScanRoute
   ApiPublicVettingStatusRoute: typeof ApiPublicVettingStatusRoute
+  AreasAreaTradeRoute: typeof AreasAreaTradeRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
 }
 
@@ -993,6 +1019,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminWaitingListRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/areas_/$area': {
+      id: '/areas_/$area'
+      path: '/areas/$area'
+      fullPath: '/areas/$area'
+      preLoaderRoute: typeof AreasAreaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/ask/': {
       id: '/ask/'
       path: '/ask'
@@ -1147,6 +1180,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicVettingStatusRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/areas_/$area_/$trade': {
+      id: '/areas_/$area_/$trade'
+      path: '/areas/$area/$trade'
+      fullPath: '/areas/$area/$trade'
+      preLoaderRoute: typeof AreasAreaTradeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/transactional/preview': {
       id: '/lovable/email/transactional/preview'
       path: '/lovable/email/transactional/preview'
@@ -1191,6 +1231,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminQaRoute: AdminQaRoute,
   AdminSlaRoute: AdminSlaRoute,
   AdminWaitingListRoute: AdminWaitingListRoute,
+  AreasAreaRoute: AreasAreaRoute,
   AskIdRoute: AskIdRoute,
   ClaimProIdRoute: ClaimProIdRoute,
   CostsTradeRoute: CostsTradeRoute,
@@ -1213,6 +1254,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicSecurityAlertRoute: ApiPublicSecurityAlertRoute,
   ApiPublicSecurityScanRoute: ApiPublicSecurityScanRoute,
   ApiPublicVettingStatusRoute: ApiPublicVettingStatusRoute,
+  AreasAreaTradeRoute: AreasAreaTradeRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
 }
 export const routeTree = rootRouteImport
