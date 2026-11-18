@@ -189,7 +189,8 @@ function AreaTradePage() {
           search={{ trade: trade.slug }}
           className="mt-8 inline-block rounded-sm bg-primary px-6 py-3 font-display text-sm font-semibold text-primary-foreground shadow-ember"
         >
-          Post a {trade.name} job in {area.name}
+          Post {/^[aeiou]/i.test(trade.name) ? "an" : "a"} {trade.name.toLowerCase()} job in{" "}
+          {area.name}
         </Link>
       </Section>
     </>
