@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PageHero, Section } from "@/components/layout-bits";
+import { Section } from "@/components/layout-bits";
+import { PageBanner } from "@/components/page-banner";
 import { getRequestOrigin } from "@/lib/origin.functions";
 
 export const Route = createFileRoute("/terms")({
@@ -28,10 +29,12 @@ export const Route = createFileRoute("/terms")({
 function TermsPage() {
   return (
     <>
-      <PageHero
+      <PageBanner
         eyebrow="Legal"
         title="Terms of Use"
         sub="Plain-English rules for homeowners and trades using TradesmanFinder."
+        image="/images/pages/terms.webp"
+        imageAlt="A homeowner and a tradesperson shaking hands across a kitchen island"
       />
       <Section>
         <div className="max-w-3xl space-y-8">

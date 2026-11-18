@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { HeartOff } from "lucide-react";
-import { Section, SectionHead } from "@/components/layout-bits";
+import { Section } from "@/components/layout-bits";
+import { PageBanner } from "@/components/page-banner";
 import { ProCard } from "@/components/pro-card";
 import { useSavedPros } from "@/hooks/use-saved-pros";
 import { supabase } from "@/integrations/supabase/client";
@@ -46,33 +47,36 @@ function SavedPage() {
   });
 
   return (
-    <Section>
-      <SectionHead
+    <>
+      <PageBanner
         eyebrow="Shortlist"
         title="Your saved tradespeople"
         sub="Saved on this device while you browse — no account needed. Clear your browser data and the list goes with it."
+        image="/images/pages/saved.webp"
+        imageAlt="A man relaxing in an armchair by a bay window, browsing on his phone"
       />
-
-      {ids.length === 0 ? (
-        <div className="mt-10 rounded-md border border-dashed border-border p-10 text-center">
-          <HeartOff className="mx-auto h-8 w-8 text-muted-foreground" />
-          <p className="mt-4 text-muted-foreground">
-            Nothing saved yet. Tap the heart on any listing to keep it here.
-          </p>
-          <Link
-            to="/trades"
-            className="mt-6 inline-flex rounded-sm bg-primary px-5 py-2.5 font-display text-sm font-semibold text-primary-foreground shadow-ember hover:brightness-110"
-          >
-            Browse trades
-          </Link>
-        </div>
-      ) : (
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {(pros ?? []).map((pro) => (
-            <ProCard key={pro.id} pro={pro} />
-          ))}
-        </div>
-      )}
-    </Section>
+      <Section>
+        {ids.length === 0 ? (
+          <div className="rounded-md border border-dashed border-border p-10 text-center">
+            <HeartOff className="mx-auto h-8 w-8 text-muted-foreground" />
+            <p className="mt-4 text-muted-foreground">
+              Nothing saved yet. Tap the heart on any listing to keep it here.
+            </p>
+            <Link
+              to="/trades"
+              className="mt-6 inline-flex rounded-sm bg-primary px-5 py-2.5 font-display text-sm font-semibold text-primary-foreground shadow-ember hover:brightness-110"
+            >
+              Browse trades
+            </Link>
+          </div>
+        ) : (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {(pros ?? []).map((pro) => (
+              <ProCard key={pro.id} pro={pro} />
+            ))}
+          </div>
+        )}
+      </Section>
+    </>
   );
 }
