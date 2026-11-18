@@ -1,12 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Check, ShieldCheck, MapPin, Users, Star } from "lucide-react";
-import { PageHero, Section, SectionHead } from "@/components/layout-bits";
+import { Section, SectionHead } from "@/components/layout-bits";
+import { PageBanner } from "@/components/page-banner";
 import { useAuth } from "@/hooks/use-auth";
 import { getRequestOrigin } from "@/lib/origin.functions";
 import { plansQuery, planVisibilityQuery } from "@/lib/queries";
 import { ONBOARDING_FREE } from "@/lib/onboarding";
-import heroForTradesmen from "@/assets/hero-for-tradesmen.jpg";
 
 export const Route = createFileRoute("/for-tradesmen")({
   loader: async ({ context }) => {
@@ -122,7 +122,7 @@ function ForTradesmen() {
 
   return (
     <>
-      <PageHero
+      <PageBanner
         eyebrow="For tradesmen"
         title={
           ONBOARDING_FREE
@@ -134,10 +134,8 @@ function ForTradesmen() {
             ? "Approved firms get Trade-tier features free during onboarding, with a cap of three quotes per job and no per-lead charges. Our compliance and onboarding team replies to every application within 2 working days."
             : "A flat monthly membership and a cap of three quotes per job. We're onboarding local trades now, with ID and insurance checks required before quoting. Our compliance and onboarding team replies to every application within 2 working days."
         }
-        image={heroForTradesmen}
-        imageAlt="A tradesman checking his phone beside his van at sunrise"
-        focal="55% 40%"
-        focalMobile="65% 42%"
+        image="/images/pages/for-tradesmen.webp"
+        imageAlt="A carpenter measuring timber in a workshop"
       >
         <div className="flex flex-wrap gap-3">
           <Link
@@ -153,7 +151,7 @@ function ForTradesmen() {
             See membership
           </a>
         </div>
-      </PageHero>
+      </PageBanner>
 
       <Section>
         <SectionHead eyebrow="Why bother" title="Built by people sick of lead fees." />

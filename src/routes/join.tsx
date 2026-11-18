@@ -4,6 +4,7 @@ import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { BadgeCheck, Search } from "lucide-react";
 import { Section, SectionHead } from "@/components/layout-bits";
+import { PageBanner } from "@/components/page-banner";
 import { HumanCheck, useHumanCheck } from "@/components/human-check";
 import {
   Accordion,
@@ -260,16 +261,17 @@ function Join() {
 
   return (
     <>
+      <PageBanner
+        eyebrow="Join TradesmanFinder"
+        title="Get local jobs without paying for leads"
+        sub="Free to join while we onboard trades, with no commission or per-lead fees."
+        image="/images/pages/join.webp"
+        imageAlt="A tradesperson loading tools into a van on a residential street"
+      />
+
       <Section>
         <div className="mx-auto max-w-3xl">
-          <p className="eyebrow">Join TradesmanFinder</p>
-          <h1 className="mt-3 text-4xl leading-[1.05] sm:text-5xl lg:text-6xl">
-            Get local jobs without paying for leads
-          </h1>
-          <p className="mt-5 text-lg leading-relaxed text-muted-foreground">
-            Free to join while we onboard trades, with no commission or per-lead fees.
-          </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <div className="flex flex-col gap-3 sm:flex-row">
             <button
               type="button"
               onClick={() => scrollTo("apply")}

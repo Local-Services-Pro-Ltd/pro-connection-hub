@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { ArrowUpRight } from "lucide-react";
-import { PageHero, Section, SectionHead } from "@/components/layout-bits";
+import { Section, SectionHead } from "@/components/layout-bits";
+import { PageBanner } from "@/components/page-banner";
 import { tradesQuery } from "@/lib/queries";
 import { getRequestOrigin } from "@/lib/origin.functions";
 import { allCostGuides, gbp } from "@/lib/cost-guides";
@@ -51,10 +52,12 @@ function CostsIndex() {
 
   return (
     <>
-      <PageHero
+      <PageBanner
         eyebrow="Cost guides"
         title="Know the price before you pick up the phone"
         sub="Independent UK price ranges for the jobs people actually book, plus a calculator that prices your own job in about thirty seconds. No sign-up, no lead form."
+        image="/images/pages/cost-guides.webp"
+        imageAlt="A homeowner reviewing a written quote at a kitchen table"
       />
 
       <Section>

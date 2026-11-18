@@ -1,11 +1,10 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { Section } from "@/components/layout-bits";
-import { PageHero } from "@/components/layout-bits";
+import { PageBanner } from "@/components/page-banner";
 import { CostCalculator } from "@/components/cost-calculator";
 import { supabase } from "@/integrations/supabase/client";
 import { getRequestOrigin } from "@/lib/origin.functions";
 import { costGuide, gbp } from "@/lib/cost-guides";
-import { tradeHero, tradeAlt, tradeFocal } from "@/lib/trade-media";
 import type { Trade } from "@/lib/queries";
 
 export const Route = createFileRoute("/costs/$trade")({
@@ -82,18 +81,15 @@ export const Route = createFileRoute("/costs/$trade")({
 
 function CostGuidePage() {
   const { guide, trade } = Route.useLoaderData();
-  const focal = tradeFocal(trade.slug);
 
   return (
     <>
-      <PageHero
+      <PageBanner
         eyebrow="Cost guide"
         title={`How much does a ${trade.name.toLowerCase()} cost?`}
         sub={guide.intro}
-        image={tradeHero(trade.slug)}
-        imageAlt={tradeAlt(trade.slug, trade.name)}
-        focal={focal.focal}
-        focalMobile={focal.focalMobile}
+        image="/images/pages/cost-guides.webp"
+        imageAlt="A homeowner reviewing a written quote at a kitchen table"
       >
         <dl className="flex flex-wrap gap-x-12 gap-y-4 border-t border-border pt-6">
           <div>
@@ -113,7 +109,7 @@ function CostGuidePage() {
             <dd className="mt-1 font-display text-xl">{guide.jobs.length}</dd>
           </div>
         </dl>
-      </PageHero>
+      </PageBanner>
 
       <Section>
         <CostCalculator guide={guide} tradeName={trade.name} />

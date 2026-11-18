@@ -259,75 +259,75 @@ function Home() {
         className="border-b border-border px-5 py-5 sm:py-6 lg:px-8"
       >
         <div className="mx-auto grid max-w-7xl gap-3 md:grid-cols-2">
-          <div className="rounded-md border border-border bg-card p-4 sm:p-5">
-            <div className="flex items-center gap-4">
-              <img
-                src="/images/home/path-homeowner.webp"
-                alt="A homeowner chatting with a tradesperson in his kitchen"
-                loading="lazy"
-                decoding="async"
-                width={800}
-                height={800}
-                className="h-20 w-24 shrink-0 rounded-sm object-cover"
-              />
+          <div className="rounded-md border border-border bg-card p-4 sm:flex sm:items-center sm:gap-5 sm:p-5">
+            <img
+              src="/images/home/path-homeowner.webp"
+              alt="A homeowner chatting with a tradesperson in his kitchen"
+              loading="lazy"
+              decoding="async"
+              width={800}
+              height={800}
+              className="h-28 w-28 shrink-0 rounded-sm object-cover sm:h-36 sm:w-36"
+            />
+            <div className="mt-4 min-w-0 sm:mt-0">
               <div className="flex items-center gap-3">
                 <HomeIcon className="h-6 w-6 shrink-0 text-primary" aria-hidden="true" />
                 <h2 className="text-xl">I need a tradesman</h2>
               </div>
-            </div>
-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              Post your job free and we'll match you with checked local trades.
-            </p>
-            <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3">
-              <Link
-                to="/post-job"
-                search={{}}
-                className="inline-flex items-center gap-2 rounded-sm bg-primary px-5 py-2.5 font-display text-sm font-semibold text-primary-foreground shadow-ember transition-all hover:brightness-110"
-              >
-                Post a job <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </Link>
-              <Link
-                to="/trades"
-                className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
-              >
-                Find a tradesman <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </Link>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                Post your job free and we'll match you with checked local trades.
+              </p>
+              <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3">
+                <Link
+                  to="/post-job"
+                  search={{}}
+                  className="inline-flex items-center gap-2 rounded-sm bg-primary px-5 py-2.5 font-display text-sm font-semibold text-primary-foreground shadow-ember transition-all hover:brightness-110"
+                >
+                  Post a job <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </Link>
+                <Link
+                  to="/trades"
+                  className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+                >
+                  Find a tradesman <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </Link>
+              </div>
             </div>
           </div>
 
-          <div className="rounded-md border border-border bg-card p-4 sm:p-5">
-            <div className="flex items-center gap-4">
-              <img
-                src="/images/home/path-trade.webp"
-                alt="A tradesperson checking her phone beside a van on a residential street"
-                loading="lazy"
-                decoding="async"
-                width={800}
-                height={800}
-                className="h-20 w-24 shrink-0 rounded-sm object-cover"
-              />
+          <div className="rounded-md border border-border bg-card p-4 sm:flex sm:items-center sm:gap-5 sm:p-5">
+            <img
+              src="/images/home/path-trade.webp"
+              alt="A tradesperson checking her phone beside a van on a residential street"
+              loading="lazy"
+              decoding="async"
+              width={800}
+              height={800}
+              className="h-28 w-28 shrink-0 rounded-sm object-cover sm:h-36 sm:w-36"
+            />
+            <div className="mt-4 min-w-0 sm:mt-0">
               <div className="flex items-center gap-3">
                 <HardHat className="h-6 w-6 shrink-0 text-primary" aria-hidden="true" />
                 <h2 className="text-xl">I'm a tradesperson</h2>
               </div>
-            </div>
-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              Free to join while we onboard trades. No per-lead fees.
-            </p>
-            <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3">
-              <Link
-                to="/join"
-                className="inline-flex items-center gap-2 rounded-sm bg-primary px-5 py-2.5 font-display text-sm font-semibold text-primary-foreground shadow-ember transition-all hover:brightness-110"
-              >
-                Apply to join <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </Link>
-              <Link
-                to="/join"
-                hash="find"
-                className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
-              >
-                Claim your listing <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </Link>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                Free to join while we onboard trades. No per-lead fees.
+              </p>
+              <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3">
+                <Link
+                  to="/join"
+                  className="inline-flex items-center gap-2 rounded-sm bg-primary px-5 py-2.5 font-display text-sm font-semibold text-primary-foreground shadow-ember transition-all hover:brightness-110"
+                >
+                  Apply to join <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </Link>
+                <Link
+                  to="/join"
+                  hash="find"
+                  className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+                >
+                  Claim your listing <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </Link>
+              </div>
             </div>
           </div>
         </div>

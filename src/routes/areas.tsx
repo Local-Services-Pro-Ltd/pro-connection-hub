@@ -3,7 +3,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { ArrowRight, MapPin } from "lucide-react";
 import { WaitingListInline } from "@/components/waiting-list-inline";
 import { Section, SectionHead } from "@/components/layout-bits";
-import { LiveMapHero } from "@/components/live-map-hero";
+import { PageBanner } from "@/components/page-banner";
 import { areasQuery } from "@/lib/queries";
 import { getRequestOrigin } from "@/lib/origin.functions";
 import street from "@/assets/street.jpg";
@@ -73,10 +73,12 @@ function Areas() {
 
   return (
     <>
-      <LiveMapHero
+      <PageBanner
         eyebrow="Area onboarding"
         title="Local means local."
         sub="We're onboarding local trades area by area. Firms must complete ID and insurance checks before they can quote."
+        image="/images/pages/areas.webp"
+        imageAlt="A row of brick terraced houses on a UK street"
       />
 
       <Section>

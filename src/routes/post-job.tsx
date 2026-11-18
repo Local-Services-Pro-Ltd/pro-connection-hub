@@ -4,8 +4,8 @@ import { MatchedPros } from "@/components/matched-pros";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Check } from "lucide-react";
-import { PageHero, Section } from "@/components/layout-bits";
-import heroPostJob from "@/assets/hero-post-job.jpg";
+import { Section } from "@/components/layout-bits";
+import { PageBanner } from "@/components/page-banner";
 import { tradesQuery, areasQuery, budgetBands } from "@/lib/queries";
 import { getRequestOrigin } from "@/lib/origin.functions";
 import { isLiveArea } from "@/lib/postcode-gate";
@@ -180,14 +180,12 @@ function PostJob() {
 
   return (
     <>
-      <PageHero
+      <PageBanner
         eyebrow="Post a job"
         title="Tell us what needs doing."
         sub="Two minutes. Free. We'll match you with up to three local trades as they join and complete their checks."
-        image={heroPostJob}
-        imageAlt="A kitchen mid-renovation with a notepad and tape measure on the worktop"
-        focal="50% 50%"
-        focalMobile="58% 55%"
+        image="/images/pages/post-job.webp"
+        imageAlt="A homeowner taking a photo of a leaking pipe on their phone"
       />
 
       <Section>
