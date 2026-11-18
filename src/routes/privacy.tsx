@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PageHero, Section } from "@/components/layout-bits";
+import { Section } from "@/components/layout-bits";
+import { PageBanner } from "@/components/page-banner";
 import { getRequestOrigin } from "@/lib/origin.functions";
 import { openCookiePreferences } from "@/lib/cookie-consent";
 
@@ -29,10 +30,12 @@ export const Route = createFileRoute("/privacy")({
 function PrivacyPage() {
   return (
     <>
-      <PageHero
+      <PageBanner
         eyebrow="Legal"
         title="Privacy Policy"
         sub="What we collect when you use TradesmanFinder, why we collect it, and how you stay in control of it."
+        image="/images/pages/privacy.webp"
+        imageAlt="A quiet hallway with a closed front door and house keys in a bowl"
       />
       <Section>
         <div className="prose-tf max-w-3xl space-y-8">
