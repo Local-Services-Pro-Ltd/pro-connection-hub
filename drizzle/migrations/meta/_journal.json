@@ -344,6 +344,13 @@
       "when": 1794972335181,
       "tag": "0048_job_interest",
       "breakpoints": true
+    },
+    {
+      "idx": 49,
+      "version": "7",
+      "when": 1795129467892,
+      "tag": "0049_jobs_private_posture_check",
+      "breakpoints": true
     }
   ]
 }

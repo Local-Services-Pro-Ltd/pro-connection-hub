@@ -5,5 +5,23 @@
     "total": 23,
     "failed": 0,
     "new_findings": []
+  },
+  {
+    "file": "2026-11-18T10-04-07-728Z.json",
+    "ran_at": "2026-11-18T10:04:07.728Z",
+    "total": 23,
+    "failed": 1,
+    "new_findings": [
+      "posture/job_leads_require_published_pro"
+    ]
+  },
+  {
+    "file": "2026-11-19T10-13-57-429Z.json",
+    "ran_at": "2026-11-19T10:13:57.429Z",
+    "total": 23,
+    "failed": 1,
+    "new_findings": [
+      "posture/job_leads_require_published_pro"
+    ]
   }
 ]
