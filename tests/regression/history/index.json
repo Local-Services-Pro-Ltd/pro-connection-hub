@@ -23,5 +23,12 @@
     "new_findings": [
       "posture/job_leads_require_published_pro"
     ]
+  },
+  {
+    "file": "2026-11-20T09-57-58-595Z.json",
+    "ran_at": "2026-11-20T09:57:58.595Z",
+    "total": 23,
+    "failed": 0,
+    "new_findings": []
   }
 ]
