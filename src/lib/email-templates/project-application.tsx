@@ -10,6 +10,7 @@ import {
   Preview,
   Text,
 } from "@react-email/components";
+import { BrandFooter, BrandHeader } from "./brand";
 import type { TemplateEntry } from "./registry";
 
 interface Props {
@@ -36,7 +37,7 @@ const Email = ({
     <Preview>{company ?? "A local firm"} applied to your project posting</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Text style={eyebrow}>TRADESMANFINDER</Text>
+        <BrandHeader />
         <Heading style={heading}>A local firm wants your job</Heading>
         <Text style={text}>{name ? `Hi ${name},` : "Hi there,"}</Text>
         <Text style={text}>
@@ -56,6 +57,7 @@ const Email = ({
           You're getting this because you asked for notifications on this posting. Turn them off any
           time from your account.
         </Text>
+        <BrandFooter />
       </Container>
     </Body>
   </Html>

@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Body, Container, Head, Heading, Hr, Html, Preview, Text } from "@react-email/components";
+import { BrandFooter, BrandHeader } from "./brand";
 import type { TemplateEntry } from "./registry";
 
 interface Props {
@@ -15,7 +16,7 @@ const Email = ({ name, company, reference, message }: Props) => (
     <Preview>Your enquiry has been sent{company ? ` to ${company}` : ""}</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Text style={eyebrow}>TRADESMANFINDER</Text>
+        <BrandHeader />
         <Heading style={heading}>Your enquiry is on its way</Heading>
         <Text style={text}>{name ? `Hi ${name},` : "Hi there,"}</Text>
         <Text style={text}>
@@ -34,6 +35,7 @@ const Email = ({ name, company, reference, message }: Props) => (
           Firms must complete ID and insurance checks before they can quote. If anything feels off,
           reply to this email and we'll step in.
         </Text>
+        <BrandFooter />
       </Container>
     </Body>
   </Html>

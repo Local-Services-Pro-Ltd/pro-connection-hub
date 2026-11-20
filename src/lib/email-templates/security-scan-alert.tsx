@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Body, Container, Head, Heading, Hr, Html, Preview, Text } from "@react-email/components";
+import { BrandFooter, BrandHeader } from "./brand";
 import type { TemplateEntry } from "./registry";
 
 interface Failure {
@@ -21,7 +22,8 @@ const Email = ({ failures = [], total = 0, ranAt, environment }: Props) => (
     <Preview>{`TradesmanFinder security scan: ${failures.length} failing check(s)`}</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Text style={eyebrow}>TRADESMANFINDER · SECURITY</Text>
+        <BrandHeader />
+        <Text style={eyebrow}>SECURITY</Text>
         <Heading style={heading}>
           {failures.length} security check{failures.length === 1 ? "" : "s"} failed
         </Heading>
@@ -45,6 +47,7 @@ const Email = ({ failures = [], total = 0, ranAt, environment }: Props) => (
           Review the findings in the admin area under Plan settings → Security. This alert is sent
           automatically after each deployment scan.
         </Text>
+        <BrandFooter />
       </Container>
     </Body>
   </Html>

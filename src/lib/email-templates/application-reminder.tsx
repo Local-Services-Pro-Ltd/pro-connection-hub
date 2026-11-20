@@ -10,6 +10,7 @@ import {
   Preview,
   Text,
 } from "@react-email/components";
+import { BrandFooter, BrandHeader } from "./brand";
 
 interface Props {
   company?: string;
@@ -46,7 +47,7 @@ const Email = ({ company, contactName, reference, kind, detail, statusUrl }: Pro
       <Preview>{`${HEADLINES[key] ?? "Certification reminder"} (${reference ?? ""})`}</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Text style={eyebrow}>TRADESMANFINDER</Text>
+          <BrandHeader />
           <Heading style={heading}>{HEADLINES[key] ?? "Certification reminder"}</Heading>
           <Text style={text}>{contactName ? `Hi ${contactName},` : "Hi there,"}</Text>
           <Text style={text}>{BODIES[key] ?? BODIES["documents_pending"]}</Text>
@@ -66,6 +67,7 @@ const Email = ({ company, contactName, reference, kind, detail, statusUrl }: Pro
             You're getting this because your firm has an open TradesmanFinder certification
             application.
           </Text>
+          <BrandFooter />
         </Container>
       </Body>
     </Html>

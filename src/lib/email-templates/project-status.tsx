@@ -10,6 +10,7 @@ import {
   Preview,
   Text,
 } from "@react-email/components";
+import { BrandFooter, BrandHeader } from "./brand";
 import type { TemplateEntry } from "./registry";
 
 interface Props {
@@ -31,7 +32,7 @@ const Email = ({ name, projectTitle, status, reviewerNote, projectUrl, reference
       </Preview>
       <Body style={main}>
         <Container style={container}>
-          <Text style={eyebrow}>TRADESMANFINDER</Text>
+          <BrandHeader />
           <Heading style={heading}>
             {live ? "Your posting is live" : "We couldn't publish your posting"}
           </Heading>
@@ -58,6 +59,7 @@ const Email = ({ name, projectTitle, status, reviewerNote, projectUrl, reference
             Firms must complete ID and insurance checks before they can quote on postings through
             TradesmanFinder.
           </Text>
+          <BrandFooter />
         </Container>
       </Body>
     </Html>

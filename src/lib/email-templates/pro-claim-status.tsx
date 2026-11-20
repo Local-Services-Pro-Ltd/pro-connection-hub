@@ -9,6 +9,7 @@ import {
   Preview,
   Text,
 } from "@react-email/components";
+import { BrandFooter, BrandHeader } from "./brand";
 import type { TemplateEntry } from "./registry";
 
 interface Props {
@@ -33,7 +34,7 @@ const Email = ({ company, contactName, status, reviewerNote, actionUrl }: Props)
       <Preview>{headline}</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Text style={eyebrow}>TRADESMANFINDER</Text>
+          <BrandHeader />
           <Heading style={heading}>{headline}</Heading>
           <Text style={text}>{contactName ? `Hi ${contactName},` : "Hi there,"}</Text>
           <Text style={text}>Listing: {company ?? "—"}</Text>
@@ -58,6 +59,7 @@ const Email = ({ company, contactName, status, reviewerNote, actionUrl }: Props)
               Search listings
             </Button>
           ) : null}
+          <BrandFooter />
         </Container>
       </Body>
     </Html>

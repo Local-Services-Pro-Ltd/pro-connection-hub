@@ -10,6 +10,7 @@ import {
   Preview,
   Text,
 } from "@react-email/components";
+import { BrandFooter, BrandHeader } from "./brand";
 import type { TemplateEntry } from "./registry";
 
 interface Props {
@@ -31,7 +32,7 @@ const Email = ({ name, areaName, postcode, role, queuePosition, actionUrl }: Pro
       <Preview>{`TradesmanFinder is now onboarding in ${where}`}</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Text style={eyebrow}>TRADESMANFINDER</Text>
+          <BrandHeader />
           <Heading style={heading}>{`We're onboarding in ${where}.`}</Heading>
           <Text style={text}>{name ? `Hi ${name},` : "Hi there,"}</Text>
           <Text style={text}>
@@ -56,6 +57,7 @@ const Email = ({ name, areaName, postcode, role, queuePosition, actionUrl }: Pro
             You're getting this because you joined the TradesmanFinder waiting list for this
             postcode area.
           </Text>
+          <BrandFooter />
         </Container>
       </Body>
     </Html>

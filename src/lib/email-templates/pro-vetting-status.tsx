@@ -10,6 +10,7 @@ import {
   Preview,
   Text,
 } from "@react-email/components";
+import { BrandFooter, BrandHeader } from "./brand";
 import type { TemplateEntry } from "./registry";
 
 export type VettingOutcome = "featured" | "unfeatured" | "rejected" | "approved";
@@ -55,7 +56,8 @@ const Email = ({
       <Preview>{`${copy.heading} — ${company}`}</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Text style={eyebrow}>TRADESMANFINDER · VETTING</Text>
+          <BrandHeader />
+          <Text style={eyebrow}>VETTING</Text>
           <Heading style={heading}>{copy.heading}</Heading>
           <Text style={text}>{contactName ? `Hi ${contactName},` : "Hello,"}</Text>
           <Text style={text}>{copy.body}</Text>
@@ -82,6 +84,7 @@ const Email = ({
             You're receiving this because your firm is listed on TradesmanFinder. Reply to this
             email if anything looks wrong.
           </Text>
+          <BrandFooter />
         </Container>
       </Body>
     </Html>
