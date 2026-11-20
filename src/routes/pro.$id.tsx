@@ -279,7 +279,7 @@ function ProPage() {
             <div className="mt-12">
               <ProjectGallery
                 projects={projects ?? []}
-                heading="Recent work — before & after"
+                heading="Work gallery"
                 emptyNote={`${pro.name.split(" ")[0]} hasn't published project photos yet. Ask for examples of previous work when you contact the firm.`}
               />
             </div>

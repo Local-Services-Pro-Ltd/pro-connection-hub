@@ -2,6 +2,8 @@ import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { matchPublicPros } from "@/lib/matching.functions";
+import { listPublicPortfolio, listPublicTradePortfolio } from "@/lib/portfolio.functions";
+import type { PortfolioProjectRow } from "@/lib/portfolio.types";
 import { credentialState } from "@/lib/registers";
 import {
   adminListPros,
@@ -534,7 +536,7 @@ export async function fetchTradeHeroImage(slug: string) {
   return (data as TradeHeroImage | null) ?? null;
 }
 
-export type ProProject = Database["public"]["Tables"]["pro_projects"]["Row"];
+export type ProProject = PortfolioProjectRow;
 export type ProTrust = Database["public"]["Views"]["pro_trust"]["Row"];
 type TrustCredential = Pick<Credential, "pro_id" | "verified" | "expires_on">;
 
@@ -556,39 +558,20 @@ export function currentCredentialTrust(
   };
 }
 
-/** Published before/after projects for one tradesperson. */
+/** Approved work with short-lived photo URLs for one tradesperson. */
 export function proProjectsQuery(proId: string) {
   return queryOptions({
     queryKey: ["pro-projects", proId],
-    queryFn: async () =>
-      unwrap(
-        await supabase
-          .from("pro_projects")
-          .select("*")
-          .eq("pro_id", proId)
-          .eq("published", true)
-          .order("sort_order")
-          .order("created_at", { ascending: false }),
-      ) as ProProject[],
+    queryFn: async () => (await listPublicPortfolio({ data: { proId } })).projects,
     staleTime: 60_000,
   });
 }
 
-/** Recent published projects across every pro in a trade. */
+/** Recent approved work across a trade, without per-firm photo queries. */
 export function tradeProjectsQuery(trade: string) {
   return queryOptions({
     queryKey: ["trade-projects", trade],
-    queryFn: async () =>
-      unwrap(
-        await supabase
-          .from("pro_projects")
-          .select("*, pros!inner(published)")
-          .eq("trade_slug", trade)
-          .eq("published", true)
-          .eq("pros.published", true)
-          .order("created_at", { ascending: false })
-          .limit(6),
-      ) as ProProject[],
+    queryFn: async () => (await listPublicTradePortfolio({ data: { trade } })).projects,
     staleTime: 60_000,
   });
 }

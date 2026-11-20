@@ -25,13 +25,13 @@ import {
   firmBookingsQuery,
   firmLeadsQuery,
   myProProfileQuery,
-  adminProProjectsQuery,
   plansQuery,
   type Availability,
   type Pro,
 } from "@/lib/queries";
 import { listJobsForMyFirm, registerJobInterest } from "@/lib/job-interest.functions";
 import type { FirmJob } from "@/lib/job-interest.shared";
+import { WorkGalleryManager } from "@/components/work-gallery-manager";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -65,7 +65,7 @@ const TABS = [
   { id: "jobs", label: "Jobs near you" },
   { id: "visits", label: "Visits" },
   { id: "profile", label: "Profile" },
-  { id: "photos", label: "Photos" },
+  { id: "photos", label: "Work gallery" },
   { id: "plan", label: "Membership" },
 ] as const;
 
@@ -202,7 +202,7 @@ function Dashboard() {
               <MembershipLocked what="booked visits" onOpen={() => setTab("plan")} />
             ))}
           {tab === "profile" && <ProfileTab pro={pro} />}
-          {tab === "photos" && <PhotosTab pro={pro} />}
+          {tab === "photos" && <WorkGalleryManager pro={pro} />}
           {tab === "plan" && <PlanTab pro={pro} />}
         </div>
       </Section>
@@ -727,195 +727,6 @@ function ProfileTab({ pro }: { pro: Pro }) {
         {save.isPending ? "Saving…" : "Save changes"}
       </button>
     </form>
-  );
-}
-
-/* --------------------------------------------------------------- photos */
-
-const BUCKET = "pro-projects";
-const SIGNED_URL_TTL = 60 * 60 * 24 * 365 * 10;
-
-function PhotosTab({ pro }: { pro: Pro }) {
-  const queryClient = useQueryClient();
-  const projects = useQuery(adminProProjectsQuery(pro.id));
-  const [title, setTitle] = useState("");
-  const [summary, setSummary] = useState("");
-  const [beforeUrl, setBeforeUrl] = useState("");
-  const [afterUrl, setAfterUrl] = useState("");
-  const [busy, setBusy] = useState<"before" | "after" | null>(null);
-
-  const refresh = () => {
-    void queryClient.invalidateQueries({ queryKey: ["admin", "pro-projects"] });
-    void queryClient.invalidateQueries({ queryKey: ["pro-projects"] });
-    void queryClient.invalidateQueries({ queryKey: ["trade-projects"] });
-  };
-
-  async function upload(file: File, which: "before" | "after") {
-    setBusy(which);
-    try {
-      const path = `${pro.id}/${which}-${Date.now()}-${file.name.replace(/[^\w.-]/g, "_")}`;
-      const { error } = await supabase.storage
-        .from(BUCKET)
-        .upload(path, file, { upsert: true, cacheControl: "31536000" });
-      if (error) throw error;
-      const { data } = await supabase.storage.from(BUCKET).createSignedUrl(path, SIGNED_URL_TTL);
-      const url = data?.signedUrl ?? "";
-      if (!url) throw new Error("Could not create a link for that upload.");
-      if (which === "before") setBeforeUrl(url);
-      else setAfterUrl(url);
-      toast.success(`${which === "before" ? "Before" : "After"} photo uploaded`);
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Upload failed");
-    } finally {
-      setBusy(null);
-    }
-  }
-
-  const create = useMutation({
-    mutationFn: async () => {
-      if (!title.trim()) throw new Error("Give the job a title.");
-      if (!afterUrl) throw new Error("An after photo is required.");
-      const { error } = await supabase.from("pro_projects").insert({
-        pro_id: pro.id,
-        trade_slug: pro.trade_slug,
-        title: title.trim(),
-        summary: summary.trim(),
-        before_url: beforeUrl || null,
-        after_url: afterUrl,
-        published: true,
-      });
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      setTitle("");
-      setSummary("");
-      setBeforeUrl("");
-      setAfterUrl("");
-      refresh();
-      toast.success("Job added to your portfolio");
-    },
-    onError: (e: Error) => toast.error(e.message),
-  });
-
-  const toggle = useMutation({
-    mutationFn: async (row: { id: string; published: boolean }) => {
-      const { error } = await supabase
-        .from("pro_projects")
-        .update({ published: !row.published })
-        .eq("id", row.id);
-      if (error) throw error;
-    },
-    onSuccess: refresh,
-    onError: (e: Error) => toast.error(e.message),
-  });
-
-  return (
-    <div className="space-y-10">
-      <div className={card}>
-        <h2 className="text-lg">Add a completed job</h2>
-        <div className="mt-5 grid gap-5 sm:grid-cols-2">
-          <div>
-            <label className={label} htmlFor="p-title">
-              Title
-            </label>
-            <input
-              id="p-title"
-              className={`${field} mt-2`}
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-          </div>
-          <div>
-            <label className={label} htmlFor="p-summary">
-              Short summary
-            </label>
-            <input
-              id="p-summary"
-              className={`${field} mt-2`}
-              value={summary}
-              onChange={(e) => setSummary(e.target.value)}
-            />
-          </div>
-          <div>
-            <label className={label} htmlFor="p-before">
-              Before photo (optional)
-            </label>
-            <input
-              id="p-before"
-              type="file"
-              accept="image/*"
-              className={`${field} mt-2`}
-              onChange={(e) => {
-                const f = e.target.files?.[0];
-                if (f) void upload(f, "before");
-              }}
-            />
-            {busy === "before" && <p className="mt-1 text-xs text-muted-foreground">Uploading…</p>}
-            {beforeUrl && <p className="mt-1 text-xs text-success">Before photo ready</p>}
-          </div>
-          <div>
-            <label className={label} htmlFor="p-after">
-              After photo
-            </label>
-            <input
-              id="p-after"
-              type="file"
-              accept="image/*"
-              className={`${field} mt-2`}
-              onChange={(e) => {
-                const f = e.target.files?.[0];
-                if (f) void upload(f, "after");
-              }}
-            />
-            {busy === "after" && <p className="mt-1 text-xs text-muted-foreground">Uploading…</p>}
-            {afterUrl && <p className="mt-1 text-xs text-success">After photo ready</p>}
-          </div>
-        </div>
-        <button
-          type="button"
-          disabled={create.isPending}
-          onClick={() => create.mutate()}
-          className="mt-5 rounded-sm bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground disabled:opacity-60"
-        >
-          {create.isPending ? "Saving…" : "Add to portfolio"}
-        </button>
-      </div>
-
-      <div>
-        <h2 className="text-lg">Your portfolio</h2>
-        {(projects.data ?? []).length === 0 ? (
-          <p className="mt-3 text-sm text-muted-foreground">
-            No jobs added yet. Before-and-after photos are the single biggest driver of enquiries.
-          </p>
-        ) : (
-          <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {(projects.data ?? []).map((row) => (
-              <div key={row.id} className="rounded-md border border-border bg-card">
-                {row.after_url && (
-                  <img
-                    src={row.after_url}
-                    alt={row.title}
-                    loading="lazy"
-                    className="aspect-[4/3] w-full rounded-t-md object-cover"
-                  />
-                )}
-                <div className="p-4">
-                  <h3 className="text-base">{row.title}</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">{row.summary}</p>
-                  <button
-                    type="button"
-                    onClick={() => toggle.mutate({ id: row.id, published: row.published })}
-                    className="mt-3 text-sm text-primary underline"
-                  >
-                    {row.published ? "Hide from profile" : "Show on profile"}
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
   );
 }
 
