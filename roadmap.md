@@ -125,3 +125,12 @@
 - [x] Apply only the requested job-promise wording and description privacy hint
 - [x] Add privacy and area-region tests; run typecheck, lint, existing tests and browser checks
 - [x] Commit without publishing or changing migrations, tables, columns or policies
+
+## Firm work gallery and approval
+
+- [x] Add short-lived signed portfolio reads, validated storage paths and owner/admin server functions
+- [x] Rebuild the firm work gallery with image compression, editing, review states and job limits
+- [x] Add the public accessible comparison gallery and lightbox without listing-card N+1 queries
+- [x] Add the admin review queue, decision emails and path-based admin uploads
+- [x] Add regression tests and run typecheck, lint, tests and browser checks
+- [x] Commit without publishing or changing migrations, tables, columns or policies
