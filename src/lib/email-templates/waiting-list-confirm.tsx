@@ -11,6 +11,7 @@ import {
   Preview,
   Text,
 } from "@react-email/components";
+import { BrandFooter, BrandHeader } from "./brand";
 import type { TemplateEntry } from "./registry";
 
 interface Props {
@@ -32,7 +33,7 @@ const Email = ({ name, postcode, role, confirmUrl }: Props) => {
       <Preview>Confirm your TradesmanFinder waiting-list place</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Text style={eyebrow}>TRADESMANFINDER</Text>
+          <BrandHeader />
           <Heading style={heading}>Confirm your waiting-list place</Heading>
           <Text style={text}>{name ? `Hi ${name},` : "Hi there,"}</Text>
           <Text style={text}>
@@ -61,6 +62,7 @@ const Email = ({ name, postcode, role, confirmUrl }: Props) => {
           <Text style={small}>
             TradesmanFinder is part of Local Services Pro and All Care 4 U Group.
           </Text>
+          <BrandFooter />
         </Container>
       </Body>
     </Html>

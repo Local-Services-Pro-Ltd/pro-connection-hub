@@ -10,6 +10,7 @@ import {
   Preview,
   Text,
 } from "@react-email/components";
+import { BrandFooter, BrandHeader } from "./brand";
 
 interface Props {
   company?: string;
@@ -49,7 +50,7 @@ const Email = ({ company, contactName, reference, status, reviewerNote, statusUr
       <Preview>{`${HEADLINES[key] ?? "Certification update"} (${reference ?? ""})`}</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Text style={eyebrow}>TRADESMANFINDER</Text>
+          <BrandHeader />
           <Heading style={heading}>{HEADLINES[key] ?? "Certification update"}</Heading>
           <Text style={text}>{contactName ? `Hi ${contactName},` : "Hi there,"}</Text>
           <Text style={text}>{BODIES[key] ?? BODIES["submitted"]}</Text>
@@ -71,6 +72,7 @@ const Email = ({ company, contactName, reference, status, reviewerNote, statusUr
             You're getting this because your firm applied for TradesmanFinder certification. Keep
             the tracking link — it's the only way to see your progress.
           </Text>
+          <BrandFooter />
         </Container>
       </Body>
     </Html>

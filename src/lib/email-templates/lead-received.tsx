@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Body, Container, Head, Heading, Hr, Html, Preview, Text } from "@react-email/components";
+import { BrandFooter, BrandHeader } from "./brand";
 import type { TemplateEntry } from "./registry";
 
 interface Props {
@@ -32,7 +33,7 @@ const Email = ({
     <Preview>New enquiry{postcode ? ` in ${postcode}` : ""} from TradesmanFinder</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Text style={eyebrow}>TRADESMANFINDER</Text>
+        <BrandHeader />
         <Heading style={heading}>New enquiry for you</Heading>
         <Text style={text}>{company ? `Hi ${company},` : "Hi there,"}</Text>
         <Text style={text}>
@@ -64,6 +65,7 @@ const Email = ({
         <Text style={small}>
           Sent because this enquiry was addressed to your listing on TradesmanFinder.
         </Text>
+        <BrandFooter />
       </Container>
     </Body>
   </Html>

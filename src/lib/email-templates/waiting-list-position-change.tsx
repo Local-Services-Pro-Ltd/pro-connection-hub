@@ -10,6 +10,7 @@ import {
   Preview,
   Text,
 } from "@react-email/components";
+import { BrandFooter, BrandHeader } from "./brand";
 import type { TemplateEntry } from "./registry";
 
 interface Props {
@@ -44,7 +45,7 @@ const Email = ({
       <Preview>{`You're now number ${queuePosition ?? ""} in the queue for ${where}`}</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Text style={eyebrow}>TRADESMANFINDER</Text>
+          <BrandHeader />
           <Heading style={heading}>
             {moved > 0
               ? `You've moved up the queue in ${where}.`
@@ -70,6 +71,7 @@ const Email = ({
             You're getting this because you asked for launch updates for this postcode area. You can
             change that from the link in your confirmation email.
           </Text>
+          <BrandFooter />
         </Container>
       </Body>
     </Html>

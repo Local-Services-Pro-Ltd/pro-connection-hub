@@ -10,6 +10,7 @@ import {
   Preview,
   Text,
 } from "@react-email/components";
+import { BrandFooter, BrandHeader } from "./brand";
 import type { TemplateEntry } from "./registry";
 
 interface Props {
@@ -36,7 +37,7 @@ const Email = ({
     <Preview>A local firm is interested in your job {reference ?? ""}</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Text style={eyebrow}>TRADESMANFINDER</Text>
+        <BrandHeader />
         <Heading style={heading}>A local firm is interested in your job {reference}</Heading>
         <Text style={text}>
           <strong>{proName}</strong> from <strong>{company}</strong> is interested in your job.
@@ -54,6 +55,7 @@ const Email = ({
           They don't have your contact details. If you'd like a quote, contact them from their
           profile — only firms you contact get your details.
         </Text>
+        <BrandFooter />
       </Container>
     </Body>
   </Html>

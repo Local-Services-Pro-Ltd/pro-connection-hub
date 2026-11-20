@@ -8,6 +8,7 @@ import {
   formatBudget,
   myJobsQuery,
   myLeadsQuery,
+  myProProfileQuery,
   myProjectsQuery,
   myReviewsQuery,
   projectStatusLabels,
@@ -54,6 +55,7 @@ function Account() {
       navigate({ to: "/signin", search: { redirect: "/account" }, replace: true });
   }, [loading, user, navigate]);
 
+  const myPro = useQuery({ ...myProProfileQuery(user?.id), enabled: !!user });
   const jobs = useQuery({ ...myJobsQuery, enabled: !!user });
   const reviews = useQuery({ ...myReviewsQuery, enabled: !!user });
   const projects = useQuery({ ...myProjectsQuery, enabled: !!user });
@@ -98,6 +100,14 @@ function Account() {
         title="Jobs, quotes and reviews."
         sub={user.email ?? "Signed in"}
       >
+        {myPro.data && (
+          <Link
+            to="/dashboard"
+            className="mr-3 inline-flex rounded-sm bg-primary px-5 py-2.5 font-display text-sm font-semibold text-primary-foreground shadow-ember hover:brightness-110"
+          >
+            Trade dashboard: {myPro.data.company}
+          </Link>
+        )}
         <button
           onClick={async () => {
             await signOut();
