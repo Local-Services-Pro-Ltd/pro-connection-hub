@@ -58,8 +58,14 @@ async function requireAdmin(context: { supabase: unknown; userId: string }) {
   if (data !== true) throw new Error("Forbidden");
 }
 
-async function myFirm(client: PortfolioClient, userId: string) {
-  const { data, error } = await client
+/**
+ * The caller's firm. Looked up with the service role because signed-in users
+ * cannot read pros.user_id or contact_email; writes still go through the
+ * caller's own client so the approval trigger and row-level rules apply.
+ */
+async function myFirm(_client: PortfolioClient, userId: string) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data, error } = await (supabaseAdmin as unknown as PortfolioClient)
     .from("pros")
     .select("id, name, company, trade_slug, contact_email")
     .eq("user_id", userId)
