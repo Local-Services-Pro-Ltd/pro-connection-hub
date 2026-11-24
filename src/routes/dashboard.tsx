@@ -167,16 +167,18 @@ function Dashboard() {
         }
       />
       <Section>
-        <div className="flex flex-wrap gap-2 border-b border-border pb-4">
+        {/* Inverted bar so the tabs stand out: white on the dark themes, black on light. */}
+        <div className="flex flex-wrap gap-2 rounded-md bg-foreground p-2 shadow-sm">
           {TABS.map((t) => (
             <button
               key={t.id}
               type="button"
               onClick={() => setTab(t.id)}
-              className={`rounded-sm px-4 py-2 text-sm transition-colors ${
+              aria-pressed={tab === t.id}
+              className={`rounded-sm px-4 py-2 text-sm font-medium transition-colors ${
                 tab === t.id
                   ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:text-foreground"
+                  : "text-background/80 hover:bg-background/10 hover:text-background"
               }`}
             >
               {t.label}
