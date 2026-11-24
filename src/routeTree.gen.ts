@@ -29,6 +29,7 @@ import { Route as SigninRouteImport } from './routes/signin'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as VerificationRouteImport } from './routes/verification'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminAccessRouteImport } from './routes/admin.access'
 import { Route as AdminApplicationsRouteImport } from './routes/admin.applications'
 import { Route as AdminAuditRouteImport } from './routes/admin.audit'
@@ -166,6 +167,11 @@ const TermsRoute = TermsRouteImport.update({
 const VerificationRoute = VerificationRouteImport.update({
   id: '/verification',
   path: '/verification',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminAccessRoute = AdminAccessRouteImport.update({
@@ -406,6 +412,7 @@ export interface FileRoutesByFullPath {
   '/waiting-list/confirm': typeof WaitingListConfirmRoute
   '/waiting-list/manage': typeof WaitingListManageRoute
   '/waiting-list/thanks': typeof WaitingListThanksRoute
+  '/admin/': typeof AdminIndexRoute
   '/ask/': typeof AskIndexRoute
   '/claim/': typeof ClaimIndexRoute
   '/costs/': typeof CostsIndexRoute
@@ -466,6 +473,7 @@ export interface FileRoutesByTo {
   '/waiting-list/confirm': typeof WaitingListConfirmRoute
   '/waiting-list/manage': typeof WaitingListManageRoute
   '/waiting-list/thanks': typeof WaitingListThanksRoute
+  '/admin': typeof AdminIndexRoute
   '/ask': typeof AskIndexRoute
   '/claim': typeof ClaimIndexRoute
   '/costs': typeof CostsIndexRoute
@@ -527,6 +535,7 @@ export interface FileRoutesById {
   '/waiting-list/confirm': typeof WaitingListConfirmRoute
   '/waiting-list/manage': typeof WaitingListManageRoute
   '/waiting-list/thanks': typeof WaitingListThanksRoute
+  '/admin/': typeof AdminIndexRoute
   '/ask/': typeof AskIndexRoute
   '/claim/': typeof ClaimIndexRoute
   '/costs/': typeof CostsIndexRoute
@@ -589,6 +598,7 @@ export interface FileRouteTypes {
     | '/waiting-list/confirm'
     | '/waiting-list/manage'
     | '/waiting-list/thanks'
+    | '/admin/'
     | '/ask/'
     | '/claim/'
     | '/costs/'
@@ -649,6 +659,7 @@ export interface FileRouteTypes {
     | '/waiting-list/confirm'
     | '/waiting-list/manage'
     | '/waiting-list/thanks'
+    | '/admin'
     | '/ask'
     | '/claim'
     | '/costs'
@@ -709,6 +720,7 @@ export interface FileRouteTypes {
     | '/waiting-list/confirm'
     | '/waiting-list/manage'
     | '/waiting-list/thanks'
+    | '/admin/'
     | '/ask/'
     | '/claim/'
     | '/costs/'
@@ -770,6 +782,7 @@ export interface RootRouteChildren {
   WaitingListConfirmRoute: typeof WaitingListConfirmRoute
   WaitingListManageRoute: typeof WaitingListManageRoute
   WaitingListThanksRoute: typeof WaitingListThanksRoute
+  AdminIndexRoute: typeof AdminIndexRoute
   AskIndexRoute: typeof AskIndexRoute
   ClaimIndexRoute: typeof ClaimIndexRoute
   CostsIndexRoute: typeof CostsIndexRoute
@@ -926,6 +939,13 @@ declare module '@tanstack/react-router' {
       path: '/verification'
       fullPath: '/verification'
       preLoaderRoute: typeof VerificationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/access': {
@@ -1242,6 +1262,7 @@ const rootRouteChildren: RootRouteChildren = {
   WaitingListConfirmRoute: WaitingListConfirmRoute,
   WaitingListManageRoute: WaitingListManageRoute,
   WaitingListThanksRoute: WaitingListThanksRoute,
+  AdminIndexRoute: AdminIndexRoute,
   AskIndexRoute: AskIndexRoute,
   ClaimIndexRoute: ClaimIndexRoute,
   CostsIndexRoute: CostsIndexRoute,

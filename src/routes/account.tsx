@@ -7,6 +7,7 @@ import { Section, PageHero } from "@/components/layout-bits";
 import {
   formatBudget,
   myJobsQuery,
+  isAdminQuery,
   myLeadsQuery,
   myProProfileQuery,
   myProjectsQuery,
@@ -55,6 +56,7 @@ function Account() {
       navigate({ to: "/signin", search: { redirect: "/account" }, replace: true });
   }, [loading, user, navigate]);
 
+  const admin = useQuery({ ...isAdminQuery(user?.id), enabled: !!user });
   const myPro = useQuery({ ...myProProfileQuery(user?.id), enabled: !!user });
   const jobs = useQuery({ ...myJobsQuery, enabled: !!user });
   const reviews = useQuery({ ...myReviewsQuery, enabled: !!user });
@@ -100,6 +102,14 @@ function Account() {
         title="Jobs, quotes and reviews."
         sub={user.email ?? "Signed in"}
       >
+        {admin.data && (
+          <Link
+            to="/admin"
+            className="mr-3 inline-flex rounded-sm bg-primary px-5 py-2.5 font-display text-sm font-semibold text-primary-foreground shadow-ember hover:brightness-110"
+          >
+            Admin area
+          </Link>
+        )}
         {myPro.data && (
           <Link
             to="/dashboard"
