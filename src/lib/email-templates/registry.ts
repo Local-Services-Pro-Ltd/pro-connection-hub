@@ -24,6 +24,8 @@ import { template as complaintToAnswer } from "./complaint-to-answer";
 import { template as reviewPublished } from "./review-published";
 import { template as visitRequested } from "./visit-requested";
 import { template as visitDecision } from "./visit-decision";
+import { template as credentialStatus } from "./credential-status";
+import { template as credentialExpiring } from "./credential-expiring";
 
 export interface TemplateEntry {
   component: ComponentType<Record<string, unknown>>;
@@ -64,4 +66,6 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   "review-published": reviewPublished,
   "visit-requested": visitRequested,
   "visit-decision": visitDecision,
+  "credential-status": credentialStatus,
+  "credential-expiring": credentialExpiring,
 };

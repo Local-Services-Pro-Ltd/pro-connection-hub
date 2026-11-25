@@ -351,6 +351,19 @@ async function run(request: Request): Promise<Response> {
       lastError = `${credentials.failures} credential maintenance update${credentials.failures === 1 ? "" : "s"} failed.`;
     }
 
+    // Warn firms before a checked document expires, and when it has.
+    let credentialReminders = 0;
+    try {
+      const { sendCredentialExpiryReminders } = await import("@/lib/credential-reminders.server");
+      const result = await sendCredentialExpiryReminders();
+      credentialReminders = result.sent;
+      failed += result.failed;
+    } catch (reminderError) {
+      failed += 1;
+      lastError =
+        reminderError instanceof Error ? reminderError.message : "Credential reminders failed";
+    }
+
     // Quotes past their valid-until date can no longer be accepted.
     const { error: quoteExpiryError } = await (
       supabaseAdmin as unknown as {
@@ -389,6 +402,7 @@ async function run(request: Request): Promise<Response> {
         failed,
         credentials,
         adminSummary,
+        credentialReminders,
         at: new Date().toISOString(),
       },
       ...(lastError ? { p_error: lastError } : {}),

@@ -89,6 +89,7 @@ export type WaitingCounts = {
   answers: number;
   reviews: number;
   complaints: number;
+  documents: number;
 };
 
 /** What is waiting for an admin right now. */
@@ -108,18 +109,40 @@ export async function countWaiting(): Promise<WaitingCounts> {
     return total ?? 0;
   };
   const waitingOnUs = ["pending", "in_review", "resubmitted"];
-  const [applications, claims, gallery, projects, questions, answers, reviews, complaints] =
-    await Promise.all([
-      count("pro_applications", (q) => q.in("status", waitingOnUs).neq("kind", "claim")),
-      count("pro_applications", (q) => q.in("status", waitingOnUs).eq("kind", "claim")),
-      count("pro_projects", (q) => q.eq("status", "pending")),
-      count("projects", (q) => q.eq("status", "pending")),
-      count("questions", (q) => q.eq("status", "pending")),
-      count("answers", (q) => q.eq("status", "pending")),
-      count("reviews", (q) => q.eq("status", "pending")),
-      count("complaints", (q) => q.in("status", ["received", "firm_asked"])),
-    ]);
-  return { applications, claims, gallery, projects, questions, answers, reviews, complaints };
+  const [
+    applications,
+    claims,
+    gallery,
+    projects,
+    questions,
+    answers,
+    reviews,
+    complaints,
+    documents,
+  ] = await Promise.all([
+    count("pro_applications", (q) => q.in("status", waitingOnUs).neq("kind", "claim")),
+    count("pro_applications", (q) => q.in("status", waitingOnUs).eq("kind", "claim")),
+    count("pro_projects", (q) => q.eq("status", "pending")),
+    count("projects", (q) => q.eq("status", "pending")),
+    count("questions", (q) => q.eq("status", "pending")),
+    count("answers", (q) => q.eq("status", "pending")),
+    count("reviews", (q) => q.eq("status", "pending")),
+    count("complaints", (q) => q.in("status", ["received", "firm_asked"])),
+    count("pro_credentials", (q) =>
+      q.eq("verified", false).not("submitted_at", "is", null).is("review_note", null),
+    ),
+  ]);
+  return {
+    applications,
+    claims,
+    gallery,
+    projects,
+    questions,
+    answers,
+    reviews,
+    complaints,
+    documents,
+  };
 }
 
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
@@ -155,6 +178,8 @@ export async function sendDailyAdminSummary(now = new Date()): Promise<number> {
     if (waiting.reviews) lines.push(`${plural(waiting.reviews, "review", "reviews")} to check`);
     if (waiting.complaints)
       lines.push(`${plural(waiting.complaints, "complaint", "complaints")} still open`);
+    if (waiting.documents)
+      lines.push(`${plural(waiting.documents, "firm document", "firm documents")} to check`);
     if (!lines.length) return 0;
     const total = Object.values(waiting).reduce((sum, value) => sum + value, 0);
     return await notifyAdmins({
