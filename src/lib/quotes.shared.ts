@@ -44,6 +44,7 @@ export type FirmQuote = QuoteView & {
     postcode: string;
     contact_name: string;
     contact_email: string;
+    photos: string[];
   };
 };
 

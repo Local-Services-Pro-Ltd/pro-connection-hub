@@ -414,6 +414,13 @@
       "when": 1795882923768,
       "tag": "0058_firm_documents",
       "breakpoints": true
+    },
+    {
+      "idx": 59,
+      "version": "7",
+      "when": 1795886523768,
+      "tag": "0059_job_photos",
+      "breakpoints": true
     }
   ]
 }

@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Plus, Trash2 } from "lucide-react";
+import { JobPhotoStrip } from "@/components/job-photos";
 import { listMyQuotes, saveMyQuote, withdrawMyQuote } from "@/lib/quotes.functions";
 import {
   QUOTE_STATUS_LABEL,
@@ -68,6 +69,7 @@ export function QuoteManager() {
           <p className="mt-4 max-w-3xl whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
             {quote.job.description}
           </p>
+          <JobPhotoStrip photos={quote.job.photos} label="Photos from the homeowner" />
           {quote.job.contact_name ? (
             <p className="mt-4 text-sm">
               Homeowner: <strong>{quote.job.contact_name}</strong> ·{" "}
