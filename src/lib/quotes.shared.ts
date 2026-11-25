@@ -33,6 +33,7 @@ export type QuoteView = {
 
 /** What a firm sees for a job it has been invited to quote for. */
 export type FirmQuote = QuoteView & {
+  job_id: string;
   invited_at: string;
   viewed_at: string | null;
   job: {

@@ -4,6 +4,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Plus, Trash2 } from "lucide-react";
 import { JobPhotoStrip } from "@/components/job-photos";
+import { FirmMessages } from "@/components/message-thread";
+import { myUnreadMessages } from "@/lib/messages.functions";
 import { listMyQuotes, saveMyQuote, withdrawMyQuote } from "@/lib/quotes.functions";
 import {
   QUOTE_STATUS_LABEL,
@@ -24,6 +26,12 @@ export function QuoteManager() {
   const list = useServerFn(listMyQuotes);
   const quotes = useQuery({ queryKey: ["my-quotes"], queryFn: () => list({}) });
   const [openId, setOpenId] = useState<string | null>(null);
+  const unreadFn = useServerFn(myUnreadMessages);
+  const unread = useQuery({
+    queryKey: ["my-unread-messages"],
+    queryFn: () => unreadFn({}),
+    refetchInterval: 60_000,
+  });
 
   if (quotes.isPending) return <p className="text-muted-foreground">Loading your quotes…</p>;
   if (quotes.isError)
@@ -93,6 +101,12 @@ export function QuoteManager() {
                 : ""}
             </p>
           ) : null}
+
+          <FirmMessages
+            quoteId={quote.id}
+            homeowner={quote.job.contact_name.split(" ")[0] ?? ""}
+            unread={unread.data?.[quote.job_id] ?? 0}
+          />
 
           {["invited", "draft", "sent"].includes(quote.status) &&
             (openId === quote.id ? (

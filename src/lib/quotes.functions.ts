@@ -496,6 +496,7 @@ export const listMyQuotes = createServerFn({ method: "POST" })
       return [
         {
           ...quoteView(row, firm.company, items.get(row.id) ?? []),
+          job_id: row.job_id,
           invited_at: row.invited_at,
           viewed_at: row.viewed_at,
           job: {
