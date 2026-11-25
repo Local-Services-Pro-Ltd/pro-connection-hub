@@ -58,5 +58,12 @@
     "total": 24,
     "failed": 0,
     "new_findings": []
+  },
+  {
+    "file": "2026-11-25T11-12-26-578Z.json",
+    "ran_at": "2026-11-25T11:12:26.578Z",
+    "total": 24,
+    "failed": 0,
+    "new_findings": []
   }
 ]
