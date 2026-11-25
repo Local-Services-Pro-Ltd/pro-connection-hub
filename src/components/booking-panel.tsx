@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { bookedSlotsQuery, proAvailabilityQuery, type ProAvailability } from "@/lib/queries";
 import { useAuth } from "@/hooks/use-auth";
+import { announceVisitRequest, suggestVisitTime } from "@/lib/visits.functions";
 
 const HOURS = [8, 10, 13, 15];
 const DAYS = 10;
@@ -44,6 +45,18 @@ function buildSlots(windows: ProAvailability[]): Date[] {
   return out;
 }
 
+/** Half-hour times a homeowner may suggest: 7am to 8pm. */
+const SUGGEST_TIMES = Array.from({ length: 27 }, (_, i) => {
+  const minutes = 7 * 60 + i * 30;
+  return `${String(Math.floor(minutes / 60)).padStart(2, "0")}:${minutes % 60 === 0 ? "00" : "30"}`;
+});
+
+function isoDay(offsetDays: number) {
+  const d = new Date();
+  d.setDate(d.getDate() + offsetDays);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
 const reasons: Record<string, string> = {
   unknown_pro: "That tradesperson isn't taking bookings right now.",
   invalid_slot: "Pick a time in the future.",
@@ -77,6 +90,13 @@ export function BookingPanel({
   const [phone, setPhone] = useState("");
   const [notes, setNotes] = useState("");
   const [reference, setReference] = useState<string | null>(null);
+  // "None of these suit": the homeowner proposes their own date and time.
+  const [suggesting, setSuggesting] = useState(false);
+  const [suggestDate, setSuggestDate] = useState("");
+  const [suggestTime, setSuggestTime] = useState("");
+  const suggested =
+    suggesting && suggestDate && suggestTime ? new Date(`${suggestDate}T${suggestTime}:00`) : null;
+  const chosen = suggesting ? suggested : selected;
 
   const byDay = useMemo(() => {
     const map = new Map<string, Date[]>();
@@ -89,6 +109,22 @@ export function BookingPanel({
 
   const booking = useMutation({
     mutationFn: async () => {
+      if (suggesting) {
+        if (!suggested || Number.isNaN(suggested.getTime()))
+          throw new Error("Choose a date and a time to suggest.");
+        const result = await suggestVisitTime({
+          data: {
+            proId,
+            slotStart: suggested.toISOString(),
+            name: name.trim(),
+            email: email.trim(),
+            phone: phone.trim(),
+            postcode,
+            notes: notes.trim(),
+          },
+        });
+        return result.reference;
+      }
       if (!selected) throw new Error("Choose a time slot first.");
       const { data, error } = await supabase.rpc("request_booking", {
         p_pro_id: proId,
@@ -102,12 +138,18 @@ export function BookingPanel({
       if (error) throw error;
       const res = data as { ok: boolean; reason?: string; reference?: string };
       if (!res.ok) throw new Error(reasons[res.reason ?? ""] ?? "Couldn't book that slot.");
+      // The request is saved; telling the firm must not make it look as if it failed.
+      try {
+        await announceVisitRequest({ data: { reference: res.reference!, email: email.trim() } });
+      } catch {
+        /* the firm still sees it in its dashboard */
+      }
       return res.reference!;
     },
     onSuccess: (ref) => {
       setReference(ref);
       void queryClient.invalidateQueries({ queryKey: ["booked-slots", proId] });
-      toast.success("Slot requested");
+      toast.success(suggesting ? "Time suggested" : "Slot requested");
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -118,11 +160,11 @@ export function BookingPanel({
         <div className="grid h-10 w-10 place-items-center rounded-sm bg-primary/15">
           <Check className="h-5 w-5 text-primary" />
         </div>
-        <h3 className="mt-4 text-xl">Slot requested</h3>
+        <h3 className="mt-4 text-xl">{suggesting ? "Time suggested" : "Slot requested"}</h3>
         <p className="mt-2 text-sm text-muted-foreground">
           {proName.split(" ")[0]} has your request for{" "}
           <strong className="text-foreground">
-            {selected?.toLocaleString("en-GB", {
+            {chosen?.toLocaleString("en-GB", {
               weekday: "long",
               day: "numeric",
               month: "long",
@@ -130,8 +172,10 @@ export function BookingPanel({
               minute: "2-digit",
             })}
           </strong>
-          . Reference <strong className="font-display text-foreground">{reference}</strong>. You'll
-          get a confirmation once it's accepted.
+          . Reference <strong className="font-display text-foreground">{reference}</strong>.{" "}
+          {suggesting
+            ? "This time is outside the firm's listed slots, so it is not booked until the firm accepts it. We'll email you either way."
+            : "We'll email you as soon as the firm accepts or declines."}
         </p>
       </div>
     );
@@ -144,7 +188,7 @@ export function BookingPanel({
         Book a visit
       </p>
       <p className="mt-3 text-sm text-muted-foreground">
-        Pick a slot rather than waiting on a callback. Free to request, and you can cancel any time.
+        Pick a slot rather than waiting on a callback. Free to request. The firm confirms by email.
       </p>
 
       <div className="mt-5 max-h-72 space-y-4 overflow-y-auto pr-1">
@@ -187,6 +231,54 @@ export function BookingPanel({
         ))}
       </div>
 
+      <div className="mt-4 border-t border-border pt-4">
+        <button
+          type="button"
+          aria-expanded={suggesting}
+          onClick={() => {
+            setSuggesting((value) => !value);
+            setSelected(null);
+          }}
+          className="text-sm text-primary underline underline-offset-4 hover:brightness-110"
+        >
+          {suggesting ? "Back to the listed times" : "None of these suit? Suggest another time"}
+        </button>
+        {suggesting && (
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <label className="text-sm">
+              <span className="text-muted-foreground">Date</span>
+              <input
+                type="date"
+                value={suggestDate}
+                min={isoDay(1)}
+                max={isoDay(30)}
+                onChange={(e) => setSuggestDate(e.target.value)}
+                className="mt-1 w-full rounded-sm border border-border bg-background px-3 py-2 text-sm"
+              />
+            </label>
+            <label className="text-sm">
+              <span className="text-muted-foreground">Time</span>
+              <select
+                value={suggestTime}
+                onChange={(e) => setSuggestTime(e.target.value)}
+                className="mt-1 w-full rounded-sm border border-border bg-background px-3 py-2 text-sm"
+              >
+                <option value="">Choose a time</option>
+                {SUGGEST_TIMES.map((time) => (
+                  <option key={time} value={time}>
+                    {time}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <p className="text-xs text-muted-foreground sm:col-span-2">
+              Any day in the next 30 days, between 7am and 8pm. A suggested time is a request: it
+              isn't booked until the firm accepts it.
+            </p>
+          </div>
+        )}
+      </div>
+
       <form
         className="mt-5 grid gap-3"
         onSubmit={(e) => {
@@ -222,14 +314,16 @@ export function BookingPanel({
         />
         <button
           type="submit"
-          disabled={booking.isPending || !selected}
+          disabled={booking.isPending || !chosen}
           className="rounded-sm bg-primary px-5 py-3 font-display text-sm font-semibold text-primary-foreground shadow-ember hover:brightness-110 disabled:opacity-60"
         >
           {booking.isPending
             ? "Requesting…"
-            : selected
-              ? `Request ${selected.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" })} at ${selected.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}`
-              : "Choose a slot"}
+            : chosen
+              ? `${suggesting ? "Suggest" : "Request"} ${chosen.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" })} at ${chosen.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}`
+              : suggesting
+                ? "Choose a date and time"
+                : "Choose a slot"}
         </button>
       </form>
     </div>

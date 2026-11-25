@@ -47,22 +47,25 @@ const Email = ({
         <Text style={text}>Trade: {trade}</Text>
         <Text style={text}>Status: {vettingStatus}</Text>
         {message ? <Text style={quoteStyle}>{message}</Text> : null}
-        {profileUrl ? (
-          <Button style={button} href={profileUrl}>
-            View {company}'s profile
+        {jobUrl ? (
+          <Button style={button} href={jobUrl}>
+            Invite them to quote
           </Button>
+        ) : null}
+        {profileUrl ? (
+          <Text style={text}>
+            You can read <a href={profileUrl}>{company}'s profile and checks</a> first.
+          </Text>
         ) : null}
         <Hr style={rule} />
         <Text style={text}>
-          They don't have your contact details. If you'd like a quote, contact them from their
-          profile — only firms you contact get your details.
+          They don't have your contact details. Inviting a firm to quote shares your name, email
+          address and full postcode with that firm only. You can invite up to three firms and
+          compare their quotes side by side.
         </Text>
-        {jobUrl ? (
-          <Text style={text}>
-            <a href={jobUrl}>See your job and every firm that is interested</a>. That page is
-            private to you, so please don't forward this email.
-          </Text>
-        ) : null}
+        <Text style={text}>
+          The button opens your private job page, so please don't forward this email.
+        </Text>
         <BrandFooter />
       </Container>
     </Body>

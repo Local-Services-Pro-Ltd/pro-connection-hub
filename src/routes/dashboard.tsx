@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ProfileTips } from "@/components/profile-tips";
 import { QuoteManager } from "@/components/quote-manager";
+import { decideVisit } from "@/lib/visits.functions";
 import { FirmReviews } from "@/components/firm-reviews";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState } from "react";
@@ -31,6 +32,7 @@ import {
   plansQuery,
   type Availability,
   type Pro,
+  type Booking,
 } from "@/lib/queries";
 import { listJobsForMyFirm, registerJobInterest } from "@/lib/job-interest.functions";
 import type { FirmJob } from "@/lib/job-interest.shared";
@@ -470,13 +472,42 @@ function JobNearYouCard({ job }: { job: FirmJob }) {
 /* --------------------------------------------------------------- visits */
 
 function VisitsTab({ pro }: { pro: Pro }) {
+  const queryClient = useQueryClient();
   const bookings = useQuery(firmBookingsQuery(pro.id));
-  const rows = bookings.data ?? [];
+  const decide = useServerFn(decideVisit);
+  const [notes, setNotes] = useState<Record<string, string>>({});
+  const answer = useMutation({
+    mutationFn: (input: { bookingId: string; decision: "accept" | "decline" }) =>
+      decide({ data: { ...input, note: notes[input.bookingId] ?? "" } }),
+    onSuccess: async (result, input) => {
+      toast.success(
+        `${input.decision === "accept" ? "Visit confirmed" : "Request declined"}. ${
+          result.emailed ? "We've emailed the homeowner." : "Please email the homeowner yourself."
+        }`,
+      );
+      await queryClient.invalidateQueries({ queryKey: ["firm-bookings", pro.id] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+  const rows = (bookings.data ?? []) as (Booking & {
+    suggested_by_customer?: boolean;
+    decided_at?: string | null;
+    firm_note?: string | null;
+  })[];
   const now = Date.now();
   const upcoming = rows.filter((b) => new Date(b.slot_start).getTime() >= now);
   const past = rows.filter((b) => new Date(b.slot_start).getTime() < now);
+  const waiting = upcoming.filter((b) => b.status === "requested");
+  const statusLabel = (b: (typeof rows)[number]) =>
+    b.status === "requested"
+      ? "Waiting for your answer"
+      : b.status === "confirmed"
+        ? "Confirmed"
+        : b.decided_at
+          ? "Declined"
+          : "Cancelled";
 
-  const render = (title: string, list: typeof rows) => (
+  const render = (title: string, list: typeof rows, canAnswer: boolean) => (
     <div>
       <h2 className="text-lg">{title}</h2>
       {list.length === 0 ? (
@@ -496,13 +527,18 @@ function VisitsTab({ pro }: { pro: Pro }) {
                   })}
                 </h3>
                 <span className="text-xs uppercase tracking-widest text-muted-foreground">
-                  {b.status} · {b.duration_mins} mins
+                  {statusLabel(b)} · {b.duration_mins} mins
                 </span>
               </div>
               <p className="mt-1 text-sm text-muted-foreground">
                 {b.contact_name}
                 {b.postcode ? ` · ${b.postcode}` : ""}
               </p>
+              {b.suggested_by_customer ? (
+                <p className="mt-2 text-sm text-primary">
+                  The homeowner suggested this time. It is outside your listed slots.
+                </p>
+              ) : null}
               {b.notes && <p className="mt-3 text-sm">{b.notes}</p>}
               <a
                 href={`mailto:${b.contact_email}`}
@@ -510,6 +546,45 @@ function VisitsTab({ pro }: { pro: Pro }) {
               >
                 Email {b.contact_email}
               </a>
+              {b.firm_note ? (
+                <p className="mt-3 border-l-2 border-border pl-3 text-sm text-muted-foreground">
+                  Your message: {b.firm_note}
+                </p>
+              ) : null}
+              {canAnswer && b.status === "requested" && (
+                <div className="mt-4 border-t border-border pt-4">
+                  <label className="block text-sm">
+                    <span className="text-muted-foreground">
+                      Message to the homeowner (optional). If you decline, say when you could come.
+                    </span>
+                    <textarea
+                      rows={2}
+                      maxLength={600}
+                      value={notes[b.id] ?? ""}
+                      onChange={(e) => setNotes((all) => ({ ...all, [b.id]: e.target.value }))}
+                      className={`${field} mt-2`}
+                    />
+                  </label>
+                  <div className="mt-3 flex flex-wrap gap-3">
+                    <button
+                      type="button"
+                      disabled={answer.isPending}
+                      onClick={() => answer.mutate({ bookingId: b.id, decision: "accept" })}
+                      className="rounded-sm bg-primary px-4 py-2 font-display text-sm font-semibold text-primary-foreground shadow-ember hover:brightness-110 disabled:opacity-60"
+                    >
+                      Accept this visit
+                    </button>
+                    <button
+                      type="button"
+                      disabled={answer.isPending}
+                      onClick={() => answer.mutate({ bookingId: b.id, decision: "decline" })}
+                      className="rounded-sm border border-border-strong px-4 py-2 font-display text-sm font-semibold hover:border-primary hover:text-primary disabled:opacity-60"
+                    >
+                      Decline
+                    </button>
+                  </div>
+                </div>
+              )}
             </li>
           ))}
         </ul>
@@ -519,11 +594,19 @@ function VisitsTab({ pro }: { pro: Pro }) {
 
   return (
     <div className="space-y-10">
-      {render("Upcoming visits", upcoming)}
-      {render("Past visits", past)}
+      {waiting.length > 0 && (
+        <p className="rounded-md border border-primary bg-card p-4 text-sm">
+          {waiting.length === 1
+            ? "1 visit request is waiting for your answer."
+            : `${waiting.length} visit requests are waiting for your answer.`}{" "}
+          The homeowner is emailed as soon as you accept or decline.
+        </p>
+      )}
+      {render("Upcoming visits", upcoming, true)}
+      {render("Past visits", past, false)}
       <p className="text-sm text-muted-foreground">
-        Visit windows homeowners can book come from your availability — ask us to change them any
-        time.
+        The listed slots homeowners can book come from your availability. Ask us to change them any
+        time. Homeowners can also suggest another time, which is only booked if you accept it.
       </p>
     </div>
   );
