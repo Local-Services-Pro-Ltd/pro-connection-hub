@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as ApplicationStatusRouteImport } from './routes/application-status'
 import { Route as AreasRouteImport } from './routes/areas'
+import { Route as ComplaintsRouteImport } from './routes/complaints'
 import { Route as CoverageRouteImport } from './routes/coverage'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DirectoryRouteImport } from './routes/directory'
@@ -34,6 +35,7 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminAccessRouteImport } from './routes/admin.access'
 import { Route as AdminApplicationsRouteImport } from './routes/admin.applications'
 import { Route as AdminAuditRouteImport } from './routes/admin.audit'
+import { Route as AdminComplaintsRouteImport } from './routes/admin.complaints'
 import { Route as AdminCredentialsRouteImport } from './routes/admin.credentials'
 import { Route as AdminEventsRouteImport } from './routes/admin.events'
 import { Route as AdminFeaturedRouteImport } from './routes/admin.featured'
@@ -91,6 +93,11 @@ const ApplicationStatusRoute = ApplicationStatusRouteImport.update({
 const AreasRoute = AreasRouteImport.update({
   id: '/areas',
   path: '/areas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ComplaintsRoute = ComplaintsRouteImport.update({
+  id: '/complaints',
+  path: '/complaints',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CoverageRoute = CoverageRouteImport.update({
@@ -196,6 +203,11 @@ const AdminApplicationsRoute = AdminApplicationsRouteImport.update({
 const AdminAuditRoute = AdminAuditRouteImport.update({
   id: '/admin/audit',
   path: '/admin/audit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminComplaintsRoute = AdminComplaintsRouteImport.update({
+  id: '/admin/complaints',
+  path: '/admin/complaints',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminCredentialsRoute = AdminCredentialsRouteImport.update({
@@ -396,6 +408,7 @@ export interface FileRoutesByFullPath {
   '/account': typeof AccountRoute
   '/application-status': typeof ApplicationStatusRoute
   '/areas': typeof AreasRoute
+  '/complaints': typeof ComplaintsRoute
   '/coverage': typeof CoverageRoute
   '/dashboard': typeof DashboardRoute
   '/directory': typeof DirectoryRoute
@@ -416,6 +429,7 @@ export interface FileRoutesByFullPath {
   '/admin/access': typeof AdminAccessRoute
   '/admin/applications': typeof AdminApplicationsRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/admin/complaints': typeof AdminComplaintsRoute
   '/admin/credentials': typeof AdminCredentialsRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/featured': typeof AdminFeaturedRoute
@@ -461,6 +475,7 @@ export interface FileRoutesByTo {
   '/account': typeof AccountRoute
   '/application-status': typeof ApplicationStatusRoute
   '/areas': typeof AreasRoute
+  '/complaints': typeof ComplaintsRoute
   '/coverage': typeof CoverageRoute
   '/dashboard': typeof DashboardRoute
   '/directory': typeof DirectoryRoute
@@ -481,6 +496,7 @@ export interface FileRoutesByTo {
   '/admin/access': typeof AdminAccessRoute
   '/admin/applications': typeof AdminApplicationsRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/admin/complaints': typeof AdminComplaintsRoute
   '/admin/credentials': typeof AdminCredentialsRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/featured': typeof AdminFeaturedRoute
@@ -527,6 +543,7 @@ export interface FileRoutesById {
   '/account': typeof AccountRoute
   '/application-status': typeof ApplicationStatusRoute
   '/areas': typeof AreasRoute
+  '/complaints': typeof ComplaintsRoute
   '/coverage': typeof CoverageRoute
   '/dashboard': typeof DashboardRoute
   '/directory': typeof DirectoryRoute
@@ -547,6 +564,7 @@ export interface FileRoutesById {
   '/admin/access': typeof AdminAccessRoute
   '/admin/applications': typeof AdminApplicationsRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/admin/complaints': typeof AdminComplaintsRoute
   '/admin/credentials': typeof AdminCredentialsRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/featured': typeof AdminFeaturedRoute
@@ -594,6 +612,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/application-status'
     | '/areas'
+    | '/complaints'
     | '/coverage'
     | '/dashboard'
     | '/directory'
@@ -614,6 +633,7 @@ export interface FileRouteTypes {
     | '/admin/access'
     | '/admin/applications'
     | '/admin/audit'
+    | '/admin/complaints'
     | '/admin/credentials'
     | '/admin/events'
     | '/admin/featured'
@@ -659,6 +679,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/application-status'
     | '/areas'
+    | '/complaints'
     | '/coverage'
     | '/dashboard'
     | '/directory'
@@ -679,6 +700,7 @@ export interface FileRouteTypes {
     | '/admin/access'
     | '/admin/applications'
     | '/admin/audit'
+    | '/admin/complaints'
     | '/admin/credentials'
     | '/admin/events'
     | '/admin/featured'
@@ -724,6 +746,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/application-status'
     | '/areas'
+    | '/complaints'
     | '/coverage'
     | '/dashboard'
     | '/directory'
@@ -744,6 +767,7 @@ export interface FileRouteTypes {
     | '/admin/access'
     | '/admin/applications'
     | '/admin/audit'
+    | '/admin/complaints'
     | '/admin/credentials'
     | '/admin/events'
     | '/admin/featured'
@@ -790,6 +814,7 @@ export interface RootRouteChildren {
   AccountRoute: typeof AccountRoute
   ApplicationStatusRoute: typeof ApplicationStatusRoute
   AreasRoute: typeof AreasRoute
+  ComplaintsRoute: typeof ComplaintsRoute
   CoverageRoute: typeof CoverageRoute
   DashboardRoute: typeof DashboardRoute
   DirectoryRoute: typeof DirectoryRoute
@@ -810,6 +835,7 @@ export interface RootRouteChildren {
   AdminAccessRoute: typeof AdminAccessRoute
   AdminApplicationsRoute: typeof AdminApplicationsRoute
   AdminAuditRoute: typeof AdminAuditRoute
+  AdminComplaintsRoute: typeof AdminComplaintsRoute
   AdminCredentialsRoute: typeof AdminCredentialsRoute
   AdminEventsRoute: typeof AdminEventsRoute
   AdminFeaturedRoute: typeof AdminFeaturedRoute
@@ -879,6 +905,13 @@ declare module '@tanstack/react-router' {
       path: '/areas'
       fullPath: '/areas'
       preLoaderRoute: typeof AreasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/complaints': {
+      id: '/complaints'
+      path: '/complaints'
+      fullPath: '/complaints'
+      preLoaderRoute: typeof ComplaintsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/coverage': {
@@ -1026,6 +1059,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/audit'
       fullPath: '/admin/audit'
       preLoaderRoute: typeof AdminAuditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/complaints': {
+      id: '/admin/complaints'
+      path: '/admin/complaints'
+      fullPath: '/admin/complaints'
+      preLoaderRoute: typeof AdminComplaintsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/credentials': {
@@ -1302,6 +1342,7 @@ const rootRouteChildren: RootRouteChildren = {
   AccountRoute: AccountRoute,
   ApplicationStatusRoute: ApplicationStatusRoute,
   AreasRoute: AreasRoute,
+  ComplaintsRoute: ComplaintsRoute,
   CoverageRoute: CoverageRoute,
   DashboardRoute: DashboardRoute,
   DirectoryRoute: DirectoryRoute,
@@ -1322,6 +1363,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminAccessRoute: AdminAccessRoute,
   AdminApplicationsRoute: AdminApplicationsRoute,
   AdminAuditRoute: AdminAuditRoute,
+  AdminComplaintsRoute: AdminComplaintsRoute,
   AdminCredentialsRoute: AdminCredentialsRoute,
   AdminEventsRoute: AdminEventsRoute,
   AdminFeaturedRoute: AdminFeaturedRoute,

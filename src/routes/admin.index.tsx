@@ -51,6 +51,11 @@ const GROUPS = [
         body: "Review homeowner projects before they go on the project board.",
       },
       {
+        to: "/admin/complaints",
+        label: "Complaints",
+        body: "Problems homeowners have reported about a job, and what was decided.",
+      },
+      {
         to: "/admin/reviews",
         label: "Reviews",
         body: "Publish or reject homeowner reviews of firms.",

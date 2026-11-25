@@ -230,11 +230,11 @@ function Home() {
         <div className="relative mx-auto flex min-h-[88vh] max-w-7xl flex-col justify-center px-5 py-24 lg:px-8">
           <p className="eyebrow hero-ink-muted">Local trades, carefully onboarded</p>
           <h1 className="mt-4 max-w-3xl hero-ink text-5xl leading-[1.05] sm:text-6xl lg:text-7xl">
-            Find a qualified local tradesman <span className="ember-text">who delivers.</span>
+            Local trades whose checks <span className="ember-text">you can see for yourself.</span>
           </h1>
           <p className="mt-6 max-w-lg text-lg leading-relaxed hero-ink-muted">
-            Post your job free and we'll match you with local trades as they join — ID-checked and
-            insured before they can quote.
+            Post your job free and compare quotes line by line. Every check is shown with its date,
+            and a firm can't quote until we have checked its insurance.
           </p>
 
           <div className="mt-9 max-w-3xl">

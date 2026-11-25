@@ -244,6 +244,11 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
+              <Link to="/complaints" className="hover:text-foreground">
+                If something goes wrong
+              </Link>
+            </li>
+            <li>
               <Link to="/join" className="hover:text-foreground">
                 Join as a tradesman
               </Link>

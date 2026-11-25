@@ -110,7 +110,7 @@ const checks = [
   {
     icon: Star,
     title: "Reviews",
-    body: "Reviews will only come from customers who've had work done through TradesmanFinder, and are moderated before publishing.",
+    body: "Reviews come only from homeowners whose job a firm completed through TradesmanFinder. We check each one before it is published, and a low score is never a reason to reject it.",
   },
 ];
 
@@ -134,6 +134,17 @@ const labels = [
     label: "No credentials uploaded yet",
     meaning: "We have not recorded any checks for this firm so far.",
   },
+];
+
+const reviewRules = [
+  "Only the homeowner of a job on TradesmanFinder can leave a review, and only for the firm they chose for that job, once they have told us the work is complete.",
+  "A review like that is labelled Verified job. There is one review per job.",
+  "We show the reviewer's first name. We never show their surname or contact details.",
+  "Each review has five ratings: quality, punctuality, communication, cleanliness and price accuracy.",
+  "We check every review before publishing for three things only: it relates to the job, it contains no personal details or abuse, and it is not from the firm or someone connected to it.",
+  "A low score is never a reason to reject a review.",
+  "The firm may post one public reply, and may report a review it believes breaks these rules. We decide within 10 working days and tell both sides.",
+  "Firms cannot pay to remove, hide or reorder reviews.",
 ];
 
 function Verification() {
@@ -171,6 +182,24 @@ function Verification() {
             </div>
           ))}
         </dl>
+      </Section>
+
+      <Section className="border-t border-border">
+        <div id="reviews" className="scroll-mt-28">
+          <SectionHead
+            eyebrow="Review rules"
+            title="How reviews are collected and checked."
+            sub="Reviews are only worth reading if they come from real jobs. These are the rules we apply to every one."
+          />
+        </div>
+        <ul className="mt-6 grid max-w-3xl gap-3 text-muted-foreground">
+          {reviewRules.map((rule) => (
+            <li key={rule}>{rule}</li>
+          ))}
+        </ul>
+        <Link to="/complaints" className="mt-6 inline-flex text-primary hover:underline">
+          What to do if something goes wrong
+        </Link>
       </Section>
 
       <Section className="border-t border-border">

@@ -161,6 +161,30 @@ async function itemsFor(quoteIds: string[]): Promise<Map<string, QuoteItem[]>> {
   return map;
 }
 
+/**
+ * The site promises a firm cannot quote until its checks are done. In practice
+ * that means an admin has recorded and verified its public liability insurance
+ * and the policy has not expired.
+ */
+async function quoteReadyFirms(proIds: string[]): Promise<Set<string>> {
+  if (!proIds.length) return new Set();
+  const db = await adminDb();
+  const today = new Date().toISOString().slice(0, 10);
+  const { data } = await db
+    .from("pro_credentials")
+    .select("pro_id, expires_on")
+    .eq("kind", "insurance")
+    .eq("verified", true)
+    .in("pro_id", proIds);
+  return new Set(
+    ((data ?? []) as { pro_id: string; expires_on: string | null }[])
+      .filter((row) => !row.expires_on || row.expires_on.slice(0, 10) >= today)
+      .map((row) => row.pro_id),
+  );
+}
+
+const NOT_READY = "This firm can't quote yet because we haven't finished checking its insurance.";
+
 /* ------------------------------------------------------------- homeowner */
 
 export type JobQuotes = {
@@ -169,6 +193,8 @@ export type JobQuotes = {
   /** Quotes the homeowner can read: sent, accepted or not chosen. */
   quotes: QuoteView[];
   invitesLeft: number;
+  /** Interested firms whose insurance check is complete, so they can be invited. */
+  quoteReady: string[];
   chosen: { pro_id: string; company: string; outcome: string } | null;
 };
 
@@ -214,8 +240,18 @@ export const getJobQuotes = createServerFn({ method: "POST" })
       .eq("job_id", job.id)
       .maybeSingle();
 
+    const { data: interested } = await db
+      .from("job_interest")
+      .select("pro_id")
+      .eq("job_id", job.id)
+      .limit(50);
+    const ready = await quoteReadyFirms(
+      ((interested ?? []) as { pro_id: string }[]).map((row) => row.pro_id),
+    );
+
     const active = all.filter((row) => row.status !== "withdrawn").length;
     return {
+      quoteReady: [...ready],
       invited: all.map((row) => ({
         pro_id: row.pro_id,
         company: names.get(row.pro_id) ?? "A local firm",
@@ -264,6 +300,7 @@ export const inviteToQuote = createServerFn({ method: "POST" })
       .maybeSingle();
     if (!firm?.published || !firm.user_id)
       throw new Error("This firm can't receive invitations at the moment.");
+    if (!(await quoteReadyFirms([data.proId])).has(data.proId)) throw new Error(NOT_READY);
 
     const { data: existing } = await db
       .from("quotes")
@@ -534,6 +571,10 @@ export const saveMyQuote = createServerFn({ method: "POST" })
     const today = new Date().toISOString().slice(0, 10);
 
     if (data.send) {
+      if (!(await quoteReadyFirms([firm.id])).has(firm.id))
+        throw new Error(
+          "You can send quotes once we have checked your public liability insurance. Email your certificate to hello@tradesmanfinder.org.",
+        );
       if (totals.net <= 0) throw new Error("Add your labour or materials price before sending.");
       if (!data.startDate) throw new Error("Add an estimated start date.");
       if (!data.durationDays) throw new Error("Add how many working days the job should take.");

@@ -5,7 +5,13 @@ import { Star } from "lucide-react";
 import { Section, SectionHead } from "@/components/layout-bits";
 import { useAuth } from "@/hooks/use-auth";
 import { isAdminQuery } from "@/lib/queries";
-import { adminListReviews, adminModerateReview, type AdminReview } from "@/lib/reviews.functions";
+import { RATING_FIELDS } from "@/lib/after-job.shared";
+import {
+  adminListReviews,
+  adminModerateReply,
+  adminModerateReview,
+  type AdminReview,
+} from "@/lib/reviews.functions";
 
 export const Route = createFileRoute("/admin/reviews")({
   head: () => ({
@@ -76,7 +82,19 @@ function ReviewQueue() {
     },
     onError: (e: Error) => toast.error(e.message),
   });
-  const waiting = (reviews ?? []).filter((review) => review.status === "pending").length;
+  const decideReply = useMutation({
+    mutationFn: (input: { id: string; status: "published" | "rejected" }) =>
+      adminModerateReply({ data: input }),
+    onSuccess: async () => {
+      toast.success("Reply decision saved");
+      await queryClient.invalidateQueries({ queryKey: ["admin", "reviews"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+  const waiting = (reviews ?? []).filter(
+    (review) =>
+      review.status === "pending" || review.reported_at || review.reply?.status === "pending",
+  ).length;
 
   return (
     <Section>
@@ -98,7 +116,8 @@ function ReviewQueue() {
         </p>
       ) : reviews.length === 0 ? (
         <p className="mt-8 max-w-2xl text-muted-foreground">
-          No reviews yet. Reviews will arrive here once homeowners can review a completed job.
+          No reviews yet. A review arrives here when a homeowner reviews the firm they chose for a
+          completed job.
         </p>
       ) : (
         <>
@@ -125,18 +144,82 @@ function ReviewQueue() {
                 <p className="mt-4 whitespace-pre-line leading-relaxed text-muted-foreground">
                   {review.body}
                 </p>
+                <dl className="mt-4 grid gap-x-6 gap-y-1 text-sm sm:grid-cols-2">
+                  {RATING_FIELDS.filter((item) => review.ratings[item.key]).map((item) => (
+                    <div key={item.key} className="flex justify-between gap-3">
+                      <dt className="text-muted-foreground">{item.label}</dt>
+                      <dd>{review.ratings[item.key]} / 5</dd>
+                    </div>
+                  ))}
+                </dl>
+                <p className="mt-3 text-sm text-muted-foreground">
+                  {review.verified_job
+                    ? `Verified job${review.job_reference ? ` ${review.job_reference}` : ""}: the homeowner accepted this firm's quote and marked the work complete.`
+                    : "Not linked to a job."}
+                </p>
+                {review.reported_at ? (
+                  <div className="mt-4 rounded-sm border border-primary p-4 text-sm">
+                    <p className="font-semibold">The firm has reported this review</p>
+                    <p className="mt-1 whitespace-pre-line text-muted-foreground">
+                      {review.report_reason}
+                    </p>
+                    <p className="mt-2 text-muted-foreground">
+                      Publish again to keep it, or take it down. Either decision clears the report.
+                      Tell both sides what you decided.
+                    </p>
+                  </div>
+                ) : null}
+                {review.reply ? (
+                  <div className="mt-4 border-l-2 border-primary pl-4 text-sm">
+                    <p className="font-semibold">
+                      Firm's reply ·{" "}
+                      {review.reply.status === "pending"
+                        ? "waiting for a decision"
+                        : review.reply.status}
+                    </p>
+                    <p className="mt-1 whitespace-pre-line text-muted-foreground">
+                      {review.reply.body}
+                    </p>
+                    {review.reply.status === "pending" && (
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          disabled={decideReply.isPending}
+                          onClick={() =>
+                            decideReply.mutate({ id: review.reply!.id, status: "published" })
+                          }
+                          className="rounded-sm bg-primary px-3 py-1.5 font-display text-sm font-semibold text-primary-foreground hover:brightness-110 disabled:opacity-60"
+                        >
+                          Publish reply
+                        </button>
+                        <button
+                          type="button"
+                          disabled={decideReply.isPending}
+                          onClick={() =>
+                            decideReply.mutate({ id: review.reply!.id, status: "rejected" })
+                          }
+                          className="rounded-sm border border-border-strong px-3 py-1.5 font-display text-sm font-semibold hover:border-primary hover:text-primary disabled:opacity-60"
+                        >
+                          Reject reply
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ) : null}
                 <div className="mt-5 flex flex-wrap items-center gap-3">
                   <span className="rounded-sm border border-border px-2.5 py-1 text-xs font-semibold text-muted-foreground">
                     {LABEL[review.status]}
                   </span>
-                  {review.status !== "published" && (
+                  {(review.status !== "published" || review.reported_at) && (
                     <button
                       type="button"
                       disabled={decide.isPending}
                       onClick={() => decide.mutate({ id: review.id, status: "published" })}
                       className="rounded-sm bg-primary px-4 py-2 font-display text-sm font-semibold text-primary-foreground shadow-ember hover:brightness-110 disabled:opacity-60"
                     >
-                      Publish
+                      {review.reported_at && review.status === "published"
+                        ? "Keep published"
+                        : "Publish"}
                     </button>
                   )}
                   {review.status !== "rejected" && (

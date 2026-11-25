@@ -3,7 +3,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Section } from "@/components/layout-bits";
 import { MatchedPros } from "@/components/matched-pros";
+import { JobAfterPanel } from "@/components/job-after";
 import { JobSteps, QuoteCompare } from "@/components/quote-compare";
+import { getJobAfter } from "@/lib/after-job.functions";
+import { afterStep } from "@/lib/after-job.shared";
 import { getJobByLink } from "@/lib/job-link.functions";
 import { decideQuote, getJobQuotes, inviteToQuote } from "@/lib/quotes.functions";
 import { QUOTE_STATUS_LABEL } from "@/lib/quotes.shared";
@@ -52,6 +55,12 @@ function JobStatus() {
     enabled: Boolean(token) && Boolean(job),
     retry: false,
   });
+  const after = useQuery({
+    queryKey: ["job-after", token],
+    queryFn: () => getJobAfter({ data: { token } }),
+    enabled: Boolean(token) && Boolean(job),
+    retry: false,
+  });
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["job-quotes", token] });
   const invite = useMutation({
     mutationFn: (proId: string) => inviteToQuote({ data: { token, proId } }),
@@ -72,6 +81,7 @@ function JobStatus() {
       );
       await refresh();
       await queryClient.invalidateQueries({ queryKey: ["job-link", token] });
+      await queryClient.invalidateQueries({ queryKey: ["job-after", token] });
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -108,8 +118,9 @@ function JobStatus() {
   const invitedStatus = new Map(
     (quotes.data?.invited ?? []).map((row) => [row.pro_id, row.status]),
   );
+  const quoteReady = new Set(quotes.data?.quoteReady ?? []);
   const canInvite = Boolean(quotes.data) && !chosen && (quotes.data?.invitesLeft ?? 0) > 0;
-  const step: 0 | 1 | 2 = chosen ? 2 : received.length > 0 ? 1 : 0;
+  const step: 0 | 1 | 2 | 3 | 4 = chosen ? afterStep(after.data) : received.length > 0 ? 1 : 0;
 
   return (
     <Section>
@@ -168,6 +179,8 @@ function JobStatus() {
           </>
         )}
 
+        {chosen && <JobAfterPanel token={token} />}
+
         <h2 className="mt-12 text-2xl">Firms interested in your job</h2>
         {job.interests.length === 0 ? (
           <p className="mt-3 text-muted-foreground">
@@ -198,6 +211,10 @@ function JobStatus() {
                         invitedStatus.get(interest.pro_id) === "draft"
                           ? "Invited, quote awaited"
                           : QUOTE_STATUS_LABEL[invitedStatus.get(interest.pro_id)!]}
+                      </span>
+                    ) : !quoteReady.has(interest.pro_id) ? (
+                      <span className="rounded-sm border border-border px-3 py-2 text-sm text-muted-foreground">
+                        Can't quote yet: insurance check not finished
                       </span>
                     ) : canInvite ? (
                       <button

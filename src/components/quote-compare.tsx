@@ -141,10 +141,10 @@ export function QuoteCompare({
   );
 }
 
-const STEPS = ["Posted", "Quotes", "Firm chosen"] as const;
+const STEPS = ["Posted", "Quotes", "Firm chosen", "Work completed", "Reviewed"] as const;
 
-/** Where the job stands. Later steps (completed, reviewed) join in the next release. */
-export function JobSteps({ step }: { step: 0 | 1 | 2 }) {
+/** Where the job stands, from posting to review. */
+export function JobSteps({ step }: { step: 0 | 1 | 2 | 3 | 4 }) {
   return (
     <ol className="mt-8 flex flex-wrap gap-2" aria-label="Job progress">
       {STEPS.map((label, index) => (
