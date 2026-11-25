@@ -18,6 +18,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { listInterestForMyJobs, type HomeownerInterest } from "@/lib/job-interest.functions";
+import { listMyJobLinks } from "@/lib/quotes.functions";
 
 export const Route = createFileRoute("/account")({
   head: () => ({
@@ -69,6 +70,13 @@ function Account() {
     queryFn: () => getInterests({}),
     enabled: !!user,
   });
+  const getLinks = useServerFn(listMyJobLinks);
+  const links = useQuery({
+    queryKey: ["my-job-links"],
+    queryFn: () => getLinks({}),
+    enabled: !!user,
+  });
+  const linkByJob = new Map((links.data ?? []).map((row) => [row.job_id, row.token]));
   const interestsByJob = new Map<string, HomeownerInterest[]>();
   for (const interest of interests.data?.interests ?? []) {
     interestsByJob.set(interest.job_id, [...(interestsByJob.get(interest.job_id) ?? []), interest]);
@@ -165,6 +173,15 @@ function Account() {
                     year: "numeric",
                   })}
                 </p>
+                {linkByJob.get(j.id) ? (
+                  <Link
+                    to="/job-status"
+                    search={{ t: linkByJob.get(j.id)! }}
+                    className="mt-4 inline-flex rounded-sm bg-primary px-4 py-2 font-display text-sm font-semibold text-primary-foreground shadow-ember hover:brightness-110"
+                  >
+                    Open job page: invite firms and compare quotes
+                  </Link>
+                ) : null}
                 <div className="mt-5 border-t border-border pt-5">
                   <h4 className="font-display text-sm font-semibold">
                     Firms interested in this job

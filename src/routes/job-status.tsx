@@ -1,8 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { Section } from "@/components/layout-bits";
 import { MatchedPros } from "@/components/matched-pros";
+import { JobSteps, QuoteCompare } from "@/components/quote-compare";
 import { getJobByLink } from "@/lib/job-link.functions";
+import { decideQuote, getJobQuotes, inviteToQuote } from "@/lib/quotes.functions";
+import { QUOTE_STATUS_LABEL } from "@/lib/quotes.shared";
 
 type Search = { t?: string };
 
@@ -41,6 +45,37 @@ function JobStatus() {
     retry: false,
   });
 
+  const queryClient = useQueryClient();
+  const quotes = useQuery({
+    queryKey: ["job-quotes", token],
+    queryFn: () => getJobQuotes({ data: { token } }),
+    enabled: Boolean(token) && Boolean(job),
+    retry: false,
+  });
+  const refresh = () => queryClient.invalidateQueries({ queryKey: ["job-quotes", token] });
+  const invite = useMutation({
+    mutationFn: (proId: string) => inviteToQuote({ data: { token, proId } }),
+    onSuccess: async () => {
+      toast.success("Invitation sent. We'll email you when their quote arrives.");
+      await refresh();
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+  const decide = useMutation({
+    mutationFn: (input: { quoteId: string; decision: "accept" | "decline" }) =>
+      decideQuote({ data: { token, ...input } }),
+    onSuccess: async (_result, input) => {
+      toast.success(
+        input.decision === "accept"
+          ? "Quote accepted. We've told the firm and given them your details."
+          : "Quote declined. We've let the firm know.",
+      );
+      await refresh();
+      await queryClient.invalidateQueries({ queryKey: ["job-link", token] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   if (!token || error) {
     return (
       <Section>
@@ -68,9 +103,17 @@ function JobStatus() {
     );
   }
 
+  const received = quotes.data?.quotes ?? [];
+  const chosen = quotes.data?.chosen ?? null;
+  const invitedStatus = new Map(
+    (quotes.data?.invited ?? []).map((row) => [row.pro_id, row.status]),
+  );
+  const canInvite = Boolean(quotes.data) && !chosen && (quotes.data?.invitesLeft ?? 0) > 0;
+  const step: 0 | 1 | 2 = chosen ? 2 : received.length > 0 ? 1 : 0;
+
   return (
     <Section>
-      <div className="mx-auto max-w-3xl">
+      <div className="mx-auto max-w-5xl">
         <p className="eyebrow">Your job · {job.reference}</p>
         <h1 className="mt-3 text-3xl sm:text-4xl">{job.title}</h1>
         <p className="mt-3 text-sm text-muted-foreground">
@@ -95,6 +138,36 @@ function JobStatus() {
           <p className="mt-6 whitespace-pre-line text-muted-foreground">{job.description}</p>
         </div>
 
+        <JobSteps step={step} />
+
+        {received.length > 0 && (
+          <>
+            <h2 className="mt-12 text-2xl">
+              {chosen ? `You chose ${chosen.company}` : "Compare your quotes"}
+            </h2>
+            <p className="mt-3 max-w-3xl text-muted-foreground">
+              {chosen
+                ? "We've told the firm and given them your contact details. Agree the start date with them and get the agreement in writing before work begins."
+                : "Every quote uses the same headings in the same order. Accepting one tells that firm you'd like to go ahead and lets the others know."}
+            </p>
+            <QuoteCompare
+              quotes={received}
+              busy={decide.isPending}
+              canDecide={!chosen}
+              onDecide={(quoteId, decision) => {
+                if (
+                  decision === "accept" &&
+                  !window.confirm(
+                    "Accept this quote? We'll tell this firm you'd like to go ahead and let the other firms know.",
+                  )
+                )
+                  return;
+                decide.mutate({ quoteId, decision });
+              }}
+            />
+          </>
+        )}
+
         <h2 className="mt-12 text-2xl">Firms interested in your job</h2>
         {job.interests.length === 0 ? (
           <p className="mt-3 text-muted-foreground">
@@ -111,13 +184,32 @@ function JobStatus() {
                       {interest.name} · interested {day(interest.created_at)}
                     </p>
                   </div>
-                  <Link
-                    to="/pro/$id"
-                    params={{ id: interest.pro_id }}
-                    className="rounded-sm bg-primary px-4 py-2 font-display text-sm font-semibold text-primary-foreground shadow-ember hover:brightness-110"
-                  >
-                    View profile and contact
-                  </Link>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Link
+                      to="/pro/$id"
+                      params={{ id: interest.pro_id }}
+                      className="rounded-sm border border-border-strong px-4 py-2 font-display text-sm font-semibold hover:border-primary hover:text-primary"
+                    >
+                      Profile and checks
+                    </Link>
+                    {invitedStatus.has(interest.pro_id) ? (
+                      <span className="rounded-sm bg-primary/15 px-3 py-2 text-sm font-medium">
+                        {invitedStatus.get(interest.pro_id) === "invited" ||
+                        invitedStatus.get(interest.pro_id) === "draft"
+                          ? "Invited, quote awaited"
+                          : QUOTE_STATUS_LABEL[invitedStatus.get(interest.pro_id)!]}
+                      </span>
+                    ) : canInvite ? (
+                      <button
+                        type="button"
+                        disabled={invite.isPending}
+                        onClick={() => invite.mutate(interest.pro_id)}
+                        className="rounded-sm bg-primary px-4 py-2 font-display text-sm font-semibold text-primary-foreground shadow-ember hover:brightness-110 disabled:opacity-60"
+                      >
+                        Invite to quote
+                      </button>
+                    ) : null}
+                  </div>
                 </div>
                 {interest.message ? (
                   <p className="mt-4 border-l-2 border-border pl-4 text-sm text-muted-foreground">
@@ -128,9 +220,14 @@ function JobStatus() {
             ))}
           </ul>
         )}
-        <p className="mt-4 text-sm text-muted-foreground">
-          Interested firms can't see your name, email address or full postcode. Only firms you
-          contact from their profile get your details.
+        <p className="mt-4 max-w-3xl text-sm text-muted-foreground">
+          Interested firms can't see your name, email address or full postcode. Inviting a firm to
+          quote shares those three details with that firm only, so it can price the job properly.
+          {quotes.data && !chosen
+            ? ` You can invite ${quotes.data.invitesLeft} more ${
+                quotes.data.invitesLeft === 1 ? "firm" : "firms"
+              }, up to three in total.`
+            : ""}
         </p>
 
         <h2 className="mt-12 text-2xl">Firms we've matched to your job</h2>

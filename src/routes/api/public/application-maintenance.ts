@@ -351,6 +351,30 @@ async function run(request: Request): Promise<Response> {
       lastError = `${credentials.failures} credential maintenance update${credentials.failures === 1 ? "" : "s"} failed.`;
     }
 
+    // Quotes past their valid-until date can no longer be accepted.
+    const { error: quoteExpiryError } = await (
+      supabaseAdmin as unknown as {
+        from: (table: string) => {
+          update: (values: Record<string, unknown>) => {
+            eq: (
+              column: string,
+              value: string,
+            ) => {
+              lt: (column: string, value: string) => Promise<{ error: { message: string } | null }>;
+            };
+          };
+        };
+      }
+    )
+      .from("quotes")
+      .update({ status: "expired", updated_at: new Date().toISOString() })
+      .eq("status", "sent")
+      .lt("expires_on", new Date().toISOString().slice(0, 10));
+    if (quoteExpiryError) {
+      failed += 1;
+      lastError = `Quote expiry failed: ${quoteExpiryError.message}`;
+    }
+
     // One email a day to the admins listing anything still waiting for them.
     const { sendDailyAdminSummary } = await import("@/lib/admin-alerts.server");
     const adminSummary = await sendDailyAdminSummary();

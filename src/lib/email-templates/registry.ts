@@ -16,6 +16,9 @@ import { template as portfolioStatus } from "./portfolio-status";
 import { template as adminAlert } from "./admin-alert";
 import { template as firmInvite } from "./firm-invite";
 import { template as jobPosted } from "./job-posted";
+import { template as quoteInvited } from "./quote-invited";
+import { template as quoteReceived } from "./quote-received";
+import { template as quoteDecision } from "./quote-decision";
 
 export interface TemplateEntry {
   component: ComponentType<Record<string, unknown>>;
@@ -48,4 +51,7 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   "admin-alert": adminAlert,
   "firm-invite": firmInvite,
   "job-posted": jobPosted,
+  "quote-invited": quoteInvited,
+  "quote-received": quoteReceived,
+  "quote-decision": quoteDecision,
 };

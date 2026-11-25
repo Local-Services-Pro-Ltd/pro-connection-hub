@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ProfileTips } from "@/components/profile-tips";
+import { QuoteManager } from "@/components/quote-manager";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -64,6 +65,7 @@ const card = "rounded-md border border-border bg-card p-6";
 const TABS = [
   { id: "leads", label: "Leads" },
   { id: "jobs", label: "Jobs near you" },
+  { id: "quotes", label: "Quotes" },
   { id: "visits", label: "Visits" },
   { id: "profile", label: "Profile" },
   { id: "photos", label: "Work gallery" },
@@ -199,6 +201,7 @@ function Dashboard() {
               />
             ))}
           {tab === "jobs" && <JobsNearYouTab />}
+          {tab === "quotes" && <QuoteManager />}
           {tab === "visits" &&
             (isMember(pro) ? (
               <VisitsTab pro={pro} />
