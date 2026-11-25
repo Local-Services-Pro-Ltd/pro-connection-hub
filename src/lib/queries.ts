@@ -22,6 +22,13 @@ export type Trade = Database["public"]["Tables"]["trades"]["Row"];
 export type Area = Database["public"]["Tables"]["areas"]["Row"];
 export type Pro = Database["public"]["Tables"]["pros"]["Row"];
 export type Credential = Database["public"]["Tables"]["pro_credentials"]["Row"];
+
+/**
+ * What anyone may read about a credential. `public_reference` holds a register
+ * number (Companies House, Gas Safe and so on) but never an insurance policy number.
+ */
+const PUBLIC_CREDENTIAL_COLUMNS =
+  "id, pro_id, label, kind, verified, verified_at, expires_on, created_at, public_reference";
 export type Review = Database["public"]["Tables"]["reviews"]["Row"];
 export type PublicReview = Database["public"]["Views"]["reviews_public"]["Row"];
 export type Job = Database["public"]["Tables"]["jobs"]["Row"];
@@ -190,7 +197,13 @@ export function proQuery(id: string) {
           .eq("id", id)
           .eq("published", true)
           .maybeSingle(),
-        supabase.from("pro_credentials").select("*").eq("pro_id", id).order("created_at"),
+        // Only the public columns: signed-out visitors may not read the rest,
+        // and asking for everything would return nothing at all for them.
+        supabase
+          .from("pro_credentials")
+          .select(PUBLIC_CREDENTIAL_COLUMNS as "*")
+          .eq("pro_id", id)
+          .order("created_at"),
         supabase
           .from("reviews_public")
           .select("*")
@@ -200,7 +213,11 @@ export function proQuery(id: string) {
       if (pro.error) throw pro.error;
       return {
         pro: pro.data as Pro | null,
-        credentials: (credentials.data ?? []) as Credential[],
+        credentials: (
+          (credentials.data ?? []) as unknown as (Credential & {
+            public_reference?: string | null;
+          })[]
+        ).map((row) => ({ ...row, reference: row.public_reference ?? null })) as Credential[],
         reviews: (reviews.data ?? []) as PublicReview[],
       };
     },

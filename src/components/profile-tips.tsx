@@ -11,7 +11,7 @@ type Tip = {
   done: boolean;
   title: string;
   why: string;
-  action?: { label: string; tab: "profile" | "photos" };
+  action?: { label: string; tab: "profile" | "photos" | "documents" };
 };
 
 const GALLERY_TARGET = 3;
@@ -25,7 +25,7 @@ export function ProfileTips({
   onOpenTab,
 }: {
   pro: Pro;
-  onOpenTab: (tab: "profile" | "photos") => void;
+  onOpenTab: (tab: "profile" | "photos" | "documents") => void;
 }) {
   const list = useServerFn(listMyPortfolio);
   const gallery = useQuery({ queryKey: ["my-portfolio"], queryFn: () => list({}) });
@@ -89,13 +89,15 @@ export function ProfileTips({
       id: "insurance",
       done: insured,
       title: "Send us your public liability insurance",
-      why: "Email your certificate to hello@tradesmanfinder.org. Once we have checked it, your profile shows it with its expiry date.",
+      why: "Upload your certificate and its expiry date. Once we have checked it, homeowners can invite you to quote.",
+      action: { label: "Upload it", tab: "documents" },
     },
     {
       id: "register",
       done: registered,
-      title: "Send us your company or trade registration number",
+      title: "Add your company or trade registration number",
       why: "For example your Companies House, Gas Safe, NICEIC, NAPIT or FENSA number. We check it against the official register.",
+      action: { label: "Add a number", tab: "documents" },
     },
   ];
 

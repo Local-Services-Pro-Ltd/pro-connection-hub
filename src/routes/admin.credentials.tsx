@@ -1,4 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import {
+  adminDocumentLink,
+  adminListPendingDocuments,
+  adminReviewDocument,
+} from "@/lib/firm-documents.functions";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -100,7 +105,8 @@ function CredentialManager() {
         title="Firm credentials"
         sub="Add the credentials a firm has supplied, then record when each official-register check is complete."
       />
-      <label className="mt-8 block max-w-xl">
+      <PendingDocuments onOpenFirm={setProId} />
+      <label className="mt-10 block max-w-xl">
         <span className="eyebrow">Tradesperson</span>
         <select
           value={proId}
@@ -305,5 +311,120 @@ function CredentialRow({
         {credential.verified ? "Unverify" : "Verify"}
       </button>
     </li>
+  );
+}
+
+/** What firms have sent from their dashboards and nobody has checked yet. */
+function PendingDocuments({ onOpenFirm }: { onOpenFirm: (proId: string) => void }) {
+  const queryClient = useQueryClient();
+  const { data: pending, isPending } = useQuery({
+    queryKey: ["admin", "pending-documents"],
+    queryFn: () => adminListPendingDocuments(),
+  });
+  const [notes, setNotes] = useState<Record<string, string>>({});
+  const openDocument = useMutation({
+    mutationFn: (id: string) => adminDocumentLink({ data: { id } }),
+    onSuccess: (result) => window.open(result.url, "_blank", "noopener"),
+    onError: (error: Error) => toast.error(error.message),
+  });
+  const review = useMutation({
+    mutationFn: (input: { id: string; decision: "verify" | "return" }) =>
+      adminReviewDocument({ data: { ...input, note: notes[input.id] ?? "" } }),
+    onSuccess: async (result) => {
+      toast.success(
+        `${result.verified ? "Marked as checked" : "Sent back to the firm"}. ${
+          result.emailed ? "The firm has been emailed." : "The firm has no email address on file."
+        }`,
+      );
+      await queryClient.invalidateQueries({ queryKey: ["admin", "pending-documents"] });
+      await queryClient.invalidateQueries({ queryKey: ["admin", "credentials"] });
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
+
+  return (
+    <div className="mt-8">
+      <h2 className="text-2xl">Sent by firms, waiting for a check</h2>
+      {isPending ? (
+        <p className="mt-4 text-sm text-muted-foreground">Loading…</p>
+      ) : (pending ?? []).length === 0 ? (
+        <p className="mt-4 text-sm text-muted-foreground">Nothing is waiting.</p>
+      ) : (
+        <ul className="mt-5 space-y-3">
+          {(pending ?? []).map((doc) => (
+            <li key={doc.id} className="rounded-md border border-border bg-card p-5">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h3 className="font-display font-semibold">
+                    {doc.company} · {doc.label}
+                  </h3>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {doc.reference ? `Number ${doc.reference} · ` : ""}
+                    {doc.expires_on ? `Expires ${doc.expires_on} · ` : ""}
+                    {doc.submitted_at
+                      ? `Sent ${new Date(doc.submitted_at).toLocaleDateString("en-GB")}`
+                      : ""}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => onOpenFirm(doc.pro_id)}
+                  className="text-sm text-primary underline underline-offset-4"
+                >
+                  All checks for this firm
+                </button>
+              </div>
+              <p className="mt-3 text-sm text-muted-foreground">
+                {doc.kind === "insurance"
+                  ? "Open the certificate and confirm the firm's name, that it is public liability cover, and that the expiry date matches."
+                  : "Look the number up on the official register and confirm it belongs to this firm and is current."}
+              </p>
+              <label className="mt-3 block text-sm">
+                <span className="text-muted-foreground">
+                  If you send it back, tell the firm what to put right
+                </span>
+                <textarea
+                  rows={2}
+                  maxLength={600}
+                  value={notes[doc.id] ?? ""}
+                  onChange={(event) =>
+                    setNotes((all) => ({ ...all, [doc.id]: event.target.value }))
+                  }
+                  className="mt-2 w-full rounded-sm border border-border-strong bg-background px-4 py-2.5 text-sm"
+                />
+              </label>
+              <div className="mt-3 flex flex-wrap gap-3">
+                {doc.has_document && (
+                  <button
+                    type="button"
+                    disabled={openDocument.isPending}
+                    onClick={() => openDocument.mutate(doc.id)}
+                    className="rounded-sm border border-border-strong px-4 py-2 font-display text-sm font-semibold hover:border-primary hover:text-primary disabled:opacity-60"
+                  >
+                    Open the document
+                  </button>
+                )}
+                <button
+                  type="button"
+                  disabled={review.isPending}
+                  onClick={() => review.mutate({ id: doc.id, decision: "verify" })}
+                  className="rounded-sm bg-primary px-4 py-2 font-display text-sm font-semibold text-primary-foreground shadow-ember hover:brightness-110 disabled:opacity-60"
+                >
+                  Mark as checked
+                </button>
+                <button
+                  type="button"
+                  disabled={review.isPending}
+                  onClick={() => review.mutate({ id: doc.id, decision: "return" })}
+                  className="rounded-sm border border-border-strong px-4 py-2 font-display text-sm font-semibold hover:border-primary hover:text-primary disabled:opacity-60"
+                >
+                  Send back
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }

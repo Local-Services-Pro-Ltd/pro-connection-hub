@@ -3,6 +3,7 @@ import { ProfileTips } from "@/components/profile-tips";
 import { QuoteManager } from "@/components/quote-manager";
 import { decideVisit } from "@/lib/visits.functions";
 import { FirmReviews } from "@/components/firm-reviews";
+import { FirmDocuments } from "@/components/firm-documents";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -73,6 +74,7 @@ const TABS = [
   { id: "visits", label: "Visits" },
   { id: "profile", label: "Profile" },
   { id: "photos", label: "Work gallery" },
+  { id: "documents", label: "Documents" },
   { id: "plan", label: "Membership" },
 ] as const;
 
@@ -207,6 +209,7 @@ function Dashboard() {
           {tab === "jobs" && <JobsNearYouTab />}
           {tab === "quotes" && <QuoteManager />}
           {tab === "reviews" && <FirmReviews />}
+          {tab === "documents" && <FirmDocuments proId={pro.id} />}
           {tab === "visits" &&
             (isMember(pro) ? (
               <VisitsTab pro={pro} />
