@@ -79,10 +79,29 @@ export const listJobsForMyFirm = createServerFn({ method: "POST" })
     if (interestError) throw new Error("Could not check your job interest.");
     const interested = new Set((existing ?? []).map((row) => row.job_id));
     const liveAreas = await liveAreaSlugs(client);
+    const { signJobPhotos } = await import("@/lib/job-photos.server");
+    // The photos column is newer than the generated database types.
+    const { data: photoRows } = await (
+      supabaseAdmin as unknown as {
+        from: (table: string) => {
+          select: (columns: string) => {
+            in: (
+              column: string,
+              values: string[],
+            ) => Promise<{ data: { id: string; photos: string[] | null }[] | null }>;
+          };
+        };
+      }
+    )
+      .from("jobs")
+      .select("id, photos")
+      .in("id", jobIds);
+    const photoPaths = new Map((photoRows ?? []).map((row) => [row.id, row.photos ?? []]));
     const jobs: FirmJob[] = [];
     for (const row of rows) {
       if (await firmCoversPostcode(client, firm, row.postcode, liveAreas)) {
-        jobs.push(firmJobView(row, interested.has(row.id)));
+        const photos = await signJobPhotos(row.id, photoPaths.get(row.id));
+        jobs.push(firmJobView(row, interested.has(row.id), photos));
       }
     }
     return { jobs };

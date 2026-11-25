@@ -11,6 +11,8 @@ import { getRequestOrigin } from "@/lib/origin.functions";
 import { isLiveArea } from "@/lib/postcode-gate";
 import { useServerFn } from "@tanstack/react-start";
 import { confirmJobPosted } from "@/lib/job-link.functions";
+import { JobPhotoPicker } from "@/components/job-photos";
+import { uploadJobPhotos } from "@/lib/job-photo-upload";
 import { submitWaitingList } from "@/lib/waiting-list.functions";
 import { HumanCheck, useHumanCheck } from "@/components/human-check";
 
@@ -104,6 +106,9 @@ function PostJob() {
   const liveAreaNames = areas.filter((a) => a.status === "live").map((a) => a.name);
   const [reference, setReference] = useState<string | null>(null);
   const [emailed, setEmailed] = useState(false);
+  const [photos, setPhotos] = useState<File[]>([]);
+  // null = no photos chosen; a number = how many were attached; -1 = upload failed.
+  const [photoResult, setPhotoResult] = useState<number | null>(null);
   const confirmJob = useServerFn(confirmJobPosted);
 
   const [form, setForm] = useState({
@@ -179,6 +184,15 @@ function PostJob() {
       } catch {
         setEmailed(false);
       }
+      if (photos.length) {
+        try {
+          setPhotoResult(await uploadJobPhotos(id, photos));
+        } catch {
+          setPhotoResult(-1);
+        }
+      } else {
+        setPhotoResult(null);
+      }
       return ref;
     },
     onSuccess: (ref) => {
@@ -239,6 +253,13 @@ function PostJob() {
                 We'll match your job with local trades covering {form.postcode.toUpperCase()} as
                 they join and complete their checks.
               </p>
+              {photoResult !== null ? (
+                <p className="mt-3 max-w-md text-sm text-muted-foreground">
+                  {photoResult > 0
+                    ? `${photoResult} ${photoResult === 1 ? "photo" : "photos"} added to your job.`
+                    : "Your job is posted, but the photos couldn't be uploaded. You can describe what they showed to firms that get in touch."}
+                </p>
+              ) : null}
               {emailed ? (
                 <p className="mt-3 max-w-md text-sm text-muted-foreground">
                   We've emailed <strong className="text-foreground">{form.contact_email}</strong>{" "}
@@ -253,7 +274,11 @@ function PostJob() {
 
               <div className="mt-6 flex flex-wrap gap-3">
                 <button
-                  onClick={() => setReference(null)}
+                  onClick={() => {
+                    setReference(null);
+                    setPhotos([]);
+                    setPhotoResult(null);
+                  }}
                   className="rounded-sm border border-border-strong px-5 py-2.5 font-display text-sm font-semibold hover:border-primary hover:text-primary"
                 >
                   Post another job
@@ -373,6 +398,8 @@ function PostJob() {
                     your phone number or address.
                   </span>
                 </label>
+
+                <JobPhotoPicker files={photos} onChange={setPhotos} />
 
                 <div className="grid gap-6 sm:grid-cols-2">
                   <label className="block">

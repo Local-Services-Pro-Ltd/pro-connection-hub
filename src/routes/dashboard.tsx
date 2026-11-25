@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ProfileTips } from "@/components/profile-tips";
 import { QuoteManager } from "@/components/quote-manager";
+import { JobPhotoStrip } from "@/components/job-photos";
 import { decideVisit } from "@/lib/visits.functions";
 import { FirmReviews } from "@/components/firm-reviews";
 import { FirmDocuments } from "@/components/firm-documents";
@@ -414,6 +415,7 @@ function JobNearYouCard({ job }: { job: FirmJob }) {
       >
         {job.description}
       </p>
+      <JobPhotoStrip photos={job.photos} label="Photos from the homeowner" />
       {job.description.length > 240 && (
         <button
           type="button"

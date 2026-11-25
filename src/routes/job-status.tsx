@@ -4,6 +4,8 @@ import { toast } from "sonner";
 import { Section } from "@/components/layout-bits";
 import { MatchedPros } from "@/components/matched-pros";
 import { JobAfterPanel } from "@/components/job-after";
+import { JobPhotoStrip } from "@/components/job-photos";
+import { QuestionsToAsk } from "@/components/questions-to-ask";
 import { JobSteps, QuoteCompare } from "@/components/quote-compare";
 import { getJobAfter } from "@/lib/after-job.functions";
 import { afterStep } from "@/lib/after-job.shared";
@@ -147,6 +149,7 @@ function JobStatus() {
             </div>
           </dl>
           <p className="mt-6 whitespace-pre-line text-muted-foreground">{job.description}</p>
+          <JobPhotoStrip photos={job.photos} label="Your photos" />
         </div>
 
         <JobSteps step={step} />
@@ -246,6 +249,8 @@ function JobStatus() {
               }, up to three in total.`
             : ""}
         </p>
+
+        {!chosen && <QuestionsToAsk tradeSlug={job.trade_slug} trade={job.trade} />}
 
         <h2 className="mt-12 text-2xl">Firms we've matched to your job</h2>
         <MatchedPros trade={job.trade_slug} postcode={job.postcode} budget={job.budget_band} />

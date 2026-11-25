@@ -8,9 +8,11 @@ export type FirmJob = {
   created_at: string;
   postcode_district: string;
   interested: boolean;
+  /** Short-lived links to the homeowner's photos of the job. */
+  photos: string[];
 };
 
-export type FirmJobSource = Omit<FirmJob, "postcode_district" | "interested"> & {
+export type FirmJobSource = Omit<FirmJob, "postcode_district" | "interested" | "photos"> & {
   postcode: string;
   contact_name?: string;
   contact_email?: string;
@@ -18,7 +20,11 @@ export type FirmJobSource = Omit<FirmJob, "postcode_district" | "interested"> & 
 };
 
 /** The only job fields a firm can receive; contact fields never cross this boundary. */
-export function firmJobView(job: FirmJobSource, interested: boolean): FirmJob {
+export function firmJobView(
+  job: FirmJobSource,
+  interested: boolean,
+  photos: string[] = [],
+): FirmJob {
   return {
     id: job.id,
     reference: job.reference,
@@ -29,6 +35,7 @@ export function firmJobView(job: FirmJobSource, interested: boolean): FirmJob {
     created_at: job.created_at,
     postcode_district: postcodeDistrict(job.postcode),
     interested,
+    photos,
   };
 }
 

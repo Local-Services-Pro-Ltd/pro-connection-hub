@@ -62,10 +62,11 @@ type JobRow = {
   contact_name: string;
   contact_email: string;
   status: string;
+  photos?: string[] | null;
 };
 
 const JOB_COLUMNS =
-  "id, reference, title, description, trade_slug, postcode, timing, budget_band, contact_name, contact_email, status";
+  "id, reference, title, description, trade_slug, postcode, timing, budget_band, contact_name, contact_email, status, photos";
 
 /** The job behind a homeowner's private link, or a clear error. */
 async function jobFromLink(token: string): Promise<JobRow> {
@@ -483,6 +484,10 @@ export const listMyQuotes = createServerFn({ method: "POST" })
       );
     const jobById = new Map(((jobs ?? []) as JobRow[]).map((job) => [job.id, job]));
     const items = await itemsFor(all.map((row) => row.id as string));
+    const { signJobPhotos } = await import("@/lib/job-photos.server");
+    const photosByJob = new Map<string, string[]>();
+    for (const job of jobById.values())
+      photosByJob.set(job.id, await signJobPhotos(job.id, job.photos));
     return all.flatMap((row) => {
       const job = jobById.get(row.job_id);
       if (!job) return [];
@@ -502,6 +507,7 @@ export const listMyQuotes = createServerFn({ method: "POST" })
             postcode: showContact ? job.postcode : "",
             contact_name: showContact ? job.contact_name : "",
             contact_email: showContact ? job.contact_email : "",
+            photos: photosByJob.get(job.id) ?? [],
           },
         },
       ];

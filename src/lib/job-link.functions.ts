@@ -118,6 +118,8 @@ export type LinkedJob = {
   budget_band: string;
   status: string;
   created_at: string;
+  /** Short-lived links to the photos the homeowner added. */
+  photos: string[];
   interests: {
     pro_id: string;
     company: string;
@@ -141,7 +143,7 @@ export const getJobByLink = createServerFn({ method: "POST" })
     const { data: job, error } = await db
       .from("jobs")
       .select(
-        "id, reference, title, description, trade_slug, postcode, timing, budget_band, status, created_at",
+        "id, reference, title, description, trade_slug, postcode, timing, budget_band, status, created_at, photos",
       )
       .eq("id", jobId)
       .maybeSingle();
@@ -177,6 +179,7 @@ export const getJobByLink = createServerFn({ method: "POST" })
       budget_band: job.budget_band,
       status: job.status,
       created_at: job.created_at,
+      photos: await (await import("@/lib/job-photos.server")).signJobPhotos(jobId, job.photos),
       interests: (
         (rows ?? []) as { pro_id: string; message: string | null; created_at: string }[]
       ).flatMap((row) => {
