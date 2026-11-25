@@ -38,7 +38,7 @@ export function QuoteManager() {
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
           When you register interest in a job under Jobs near you, the homeowner can invite you to
           quote. Invitations appear here and we email you as well. A homeowner can invite up to
-          three firms.
+          three firms. You can be invited once we have checked your public liability insurance.
         </p>
       </div>
     );

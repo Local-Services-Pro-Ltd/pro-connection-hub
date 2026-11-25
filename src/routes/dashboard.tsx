@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ProfileTips } from "@/components/profile-tips";
 import { QuoteManager } from "@/components/quote-manager";
+import { FirmReviews } from "@/components/firm-reviews";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -66,6 +67,7 @@ const TABS = [
   { id: "leads", label: "Leads" },
   { id: "jobs", label: "Jobs near you" },
   { id: "quotes", label: "Quotes" },
+  { id: "reviews", label: "Reviews" },
   { id: "visits", label: "Visits" },
   { id: "profile", label: "Profile" },
   { id: "photos", label: "Work gallery" },
@@ -202,6 +204,7 @@ function Dashboard() {
             ))}
           {tab === "jobs" && <JobsNearYouTab />}
           {tab === "quotes" && <QuoteManager />}
+          {tab === "reviews" && <FirmReviews />}
           {tab === "visits" &&
             (isMember(pro) ? (
               <VisitsTab pro={pro} />
@@ -345,8 +348,8 @@ function JobsNearYouTab() {
   return (
     <div>
       <p className="max-w-2xl text-sm text-muted-foreground">
-        You'll see the job, not the homeowner's contact details. If they want a quote, they'll
-        contact you.
+        You'll see the job, not the homeowner's contact details. If they'd like a quote they can
+        invite you, and the invitation appears under Quotes.
       </p>
       {jobs.isLoading ? (
         <p className="mt-5 text-sm text-muted-foreground">Loading jobs…</p>
