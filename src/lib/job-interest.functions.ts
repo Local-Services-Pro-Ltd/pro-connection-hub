@@ -147,6 +147,7 @@ export const registerJobInterest = createServerFn({ method: "POST" })
       .maybeSingle();
     try {
       const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
+      const { jobLinkToken } = await import("@/lib/signed-links.server");
       await sendTemplateEmail("job-interest", job.contact_email, {
         templateData: {
           reference: job.reference,
@@ -156,6 +157,7 @@ export const registerJobInterest = createServerFn({ method: "POST" })
           vettingStatus: "Vetting in progress",
           profileUrl: `https://tradesmanfinder.org/pro/${encodeURIComponent(firm.id)}`,
           message: data.message || null,
+          jobUrl: `https://tradesmanfinder.org/job-status?t=${encodeURIComponent(jobLinkToken(job.id))}`,
         },
         idempotencyKey: `job-interest:${job.id}:${firm.id}`,
       });

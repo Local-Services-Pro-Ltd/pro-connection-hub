@@ -365,6 +365,13 @@
       "when": 1795342923768,
       "tag": "0051_owns_pro_policies",
       "breakpoints": true
+    },
+    {
+      "idx": 52,
+      "version": "7",
+      "when": 1795861323768,
+      "tag": "0052_firm_invites",
+      "breakpoints": true
     }
   ]
 }

@@ -13,6 +13,9 @@ import { template as projectStatus } from "./project-status";
 import { template as proClaimStatus } from "./pro-claim-status";
 import { template as jobInterest } from "./job-interest";
 import { template as portfolioStatus } from "./portfolio-status";
+import { template as adminAlert } from "./admin-alert";
+import { template as firmInvite } from "./firm-invite";
+import { template as jobPosted } from "./job-posted";
 
 export interface TemplateEntry {
   component: ComponentType<Record<string, unknown>>;
@@ -42,4 +45,7 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   "pro-claim-status": proClaimStatus,
   "job-interest": jobInterest,
   "portfolio-status": portfolioStatus,
+  "admin-alert": adminAlert,
+  "firm-invite": firmInvite,
+  "job-posted": jobPosted,
 };

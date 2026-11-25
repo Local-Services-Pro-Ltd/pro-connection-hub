@@ -84,7 +84,11 @@ function SignIn() {
           email,
           password,
           options: {
-            emailRedirectTo: window.location.origin,
+            // Send people back to where they were heading (an invitation, say)
+            // once they confirm their address.
+            emailRedirectTo: search.redirect
+              ? `${window.location.origin}${dest}`
+              : window.location.origin,
             data: { full_name: name },
           },
         });
