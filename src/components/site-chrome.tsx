@@ -239,6 +239,11 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
+              <Link to="/verification" className="hover:text-foreground">
+                How we check firms
+              </Link>
+            </li>
+            <li>
               <Link to="/join" className="hover:text-foreground">
                 Join as a tradesman
               </Link>

@@ -263,7 +263,10 @@ function ProPage() {
             <h2 className="mt-12 text-2xl">Checks & credentials</h2>
             <p className="mt-3 text-sm text-muted-foreground">
               We check these against the official registers ourselves. You can check them too using
-              the links below.
+              the links below.{" "}
+              <Link to="/verification" className="text-primary hover:underline">
+                How we check firms
+              </Link>
             </p>
             <ul className="mt-5 grid gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-2">
               {credentials.map((credential) => (
