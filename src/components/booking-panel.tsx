@@ -244,7 +244,7 @@ export function BookingPanel({
           {suggesting ? "Back to the listed times" : "None of these suit? Suggest another time"}
         </button>
         {suggesting && (
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <div className="mt-3 grid gap-3">
             <label className="text-sm">
               <span className="text-muted-foreground">Date</span>
               <input
@@ -271,7 +271,7 @@ export function BookingPanel({
                 ))}
               </select>
             </label>
-            <p className="text-xs text-muted-foreground sm:col-span-2">
+            <p className="text-xs text-muted-foreground">
               Any day in the next 30 days, between 7am and 8pm. A suggested time is a request: it
               isn't booked until the firm accepts it.
             </p>

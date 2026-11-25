@@ -48,7 +48,7 @@ export const Route = createFileRoute("/pro/$id")({
     const image = `https://tradesmanfinder.org${tradeHero(p.trade_slug)}`;
     const title = `${p.company} — ${p.name}, ${p.area} | TradesmanFinder`;
     const description =
-      `${p.company} in ${p.area}. Vetting in progress. ${p.years} years' experience. ${p.bio}`.slice(
+      `${p.company} in ${p.area}. ${p.is_demo ? "Example listing, not a real firm" : "Vetting in progress"}. ${p.years} years' experience. ${p.bio}`.slice(
         0,
         158,
       );
@@ -214,7 +214,7 @@ function ProPage() {
             <p className="mt-3 text-lg text-muted-foreground">{pro.name}</p>
             <div className="mt-4 flex items-center gap-3">
               <span className="rounded-sm bg-muted px-3 py-1.5 font-display text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                Vetting in progress
+                {pro.is_demo ? "Example listing" : "Vetting in progress"}
               </span>
               <SaveProButton proId={pro.id} company={pro.company} />
             </div>
