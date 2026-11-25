@@ -38,7 +38,8 @@ export async function companiesHouseCheck(
   }
 
   const normalised = normaliseCompanyNumber(chNumber);
-  const apiKey = process.env["COMPANIES_HOUSE_API_KEY"];
+  // Trimmed: a stray space or line break from pasting makes the register answer 401.
+  const apiKey = process.env["COMPANIES_HOUSE_API_KEY"]?.trim();
   if (!apiKey) {
     return {
       key: "companies_house",
@@ -70,7 +71,10 @@ export async function companiesHouseCheck(
         key: "companies_house",
         label: "Companies House",
         outcome: "warn",
-        detail: `Register lookup failed (HTTP ${response.status}). Check by hand.`,
+        detail:
+          response.status === 401
+            ? "Companies House rejected our API key (HTTP 401). Check by hand, and ask an admin to check the key."
+            : `Register lookup failed (HTTP ${response.status}). Check by hand.`,
       };
     }
     const found = (await response.json()) as {
