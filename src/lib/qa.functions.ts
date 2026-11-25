@@ -116,6 +116,19 @@ export const submitQuestion = createServerFn({ method: "POST" })
       ai = null;
     }
 
+    const { notifyAdmins } = await import("@/lib/admin-alerts.server");
+    await notifyAdmins({
+      subject: `New Ask the Pros question: ${data.title}`,
+      intro: "A new question is waiting to be moderated. It stays hidden until you publish it.",
+      lines: [
+        ...(data.trade ? [`Trade: ${data.trade.replaceAll("-", " ")}`] : []),
+        ...(ai?.verdict ? [`Suggested decision: ${ai.verdict}`] : []),
+      ],
+      path: "/admin/qa",
+      actionLabel: "Moderate questions",
+      dedupeKey: `question:${String(questionId ?? data.title)}`,
+    });
+
     return {
       pending: true as const,
       aiAnswer: ai?.answer ?? null,

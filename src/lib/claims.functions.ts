@@ -154,5 +154,20 @@ export const submitListingClaim = createServerFn({ method: "POST" })
       console.error("[claims] submission failed", error);
       throw new Error("We couldn't send your claim. Please try again.");
     }
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: listing } = await supabaseAdmin
+      .from("pros")
+      .select("company")
+      .eq("id", data.proId)
+      .maybeSingle();
+    const { notifyAdmins } = await import("@/lib/admin-alerts.server");
+    await notifyAdmins({
+      subject: `New listing claim: ${listing?.company ?? data.proId}`,
+      intro: "Someone has asked to manage a listing. Check they are who they say before approving.",
+      lines: [`Claimed by: ${data.fullName} (${data.role})`, `Listing: ${data.proId}`],
+      path: "/admin/applications",
+      actionLabel: "Review claims",
+      dedupeKey: `claim:${String(id)}`,
+    });
     return { id: String(id), status: "pending" as const };
   });

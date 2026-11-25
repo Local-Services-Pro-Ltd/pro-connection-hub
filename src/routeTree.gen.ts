@@ -20,6 +20,7 @@ import { Route as EnterpriseRouteImport } from './routes/enterprise'
 import { Route as ForTradesmenRouteImport } from './routes/for-tradesmen'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
+import { Route as JobStatusRouteImport } from './routes/job-status'
 import { Route as JoinRouteImport } from './routes/join'
 import { Route as PostJobRouteImport } from './routes/post-job'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -36,6 +37,7 @@ import { Route as AdminAuditRouteImport } from './routes/admin.audit'
 import { Route as AdminCredentialsRouteImport } from './routes/admin.credentials'
 import { Route as AdminEventsRouteImport } from './routes/admin.events'
 import { Route as AdminFeaturedRouteImport } from './routes/admin.featured'
+import { Route as AdminFirmsRouteImport } from './routes/admin.firms'
 import { Route as AdminGalleriesRouteImport } from './routes/admin.galleries'
 import { Route as AdminHeroImagesRouteImport } from './routes/admin.hero-images'
 import { Route as AdminPlansRouteImport } from './routes/admin.plans'
@@ -50,6 +52,7 @@ import { Route as ClaimIndexRouteImport } from './routes/claim.index'
 import { Route as ClaimProIdRouteImport } from './routes/claim.$proId'
 import { Route as CostsIndexRouteImport } from './routes/costs.index'
 import { Route as CostsTradeRouteImport } from './routes/costs.$trade'
+import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as ProIdRouteImport } from './routes/pro.$id'
 import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
 import { Route as ProjectsIdRouteImport } from './routes/projects.$id'
@@ -122,6 +125,11 @@ const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
 const HowItWorksRoute = HowItWorksRouteImport.update({
   id: '/how-it-works',
   path: '/how-it-works',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JobStatusRoute = JobStatusRouteImport.update({
+  id: '/job-status',
+  path: '/job-status',
   getParentRoute: () => rootRouteImport,
 } as any)
 const JoinRoute = JoinRouteImport.update({
@@ -204,6 +212,11 @@ const AdminFeaturedRoute = AdminFeaturedRouteImport.update({
   path: '/admin/featured',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminFirmsRoute = AdminFirmsRouteImport.update({
+  id: '/admin/firms',
+  path: '/admin/firms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminGalleriesRoute = AdminGalleriesRouteImport.update({
   id: '/admin/galleries',
   path: '/admin/galleries',
@@ -272,6 +285,11 @@ const CostsIndexRoute = CostsIndexRouteImport.update({
 const CostsTradeRoute = CostsTradeRouteImport.update({
   id: '/costs/$trade',
   path: '/costs/$trade',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InviteTokenRoute = InviteTokenRouteImport.update({
+  id: '/invite/$token',
+  path: '/invite/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProIdRoute = ProIdRouteImport.update({
@@ -379,6 +397,7 @@ export interface FileRoutesByFullPath {
   '/for-tradesmen': typeof ForTradesmenRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/how-it-works': typeof HowItWorksRoute
+  '/job-status': typeof JobStatusRoute
   '/join': typeof JoinRoute
   '/post-job': typeof PostJobRoute
   '/privacy': typeof PrivacyRoute
@@ -394,6 +413,7 @@ export interface FileRoutesByFullPath {
   '/admin/credentials': typeof AdminCredentialsRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/featured': typeof AdminFeaturedRoute
+  '/admin/firms': typeof AdminFirmsRoute
   '/admin/galleries': typeof AdminGalleriesRoute
   '/admin/hero-images': typeof AdminHeroImagesRoute
   '/admin/plans': typeof AdminPlansRoute
@@ -405,6 +425,7 @@ export interface FileRoutesByFullPath {
   '/ask/$id': typeof AskIdRoute
   '/claim/$proId': typeof ClaimProIdRoute
   '/costs/$trade': typeof CostsTradeRoute
+  '/invite/$token': typeof InviteTokenRoute
   '/pro/$id': typeof ProIdRoute
   '/projects/$id': typeof ProjectsIdRoute
   '/projects/new': typeof ProjectsNewRoute
@@ -440,6 +461,7 @@ export interface FileRoutesByTo {
   '/for-tradesmen': typeof ForTradesmenRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/how-it-works': typeof HowItWorksRoute
+  '/job-status': typeof JobStatusRoute
   '/join': typeof JoinRoute
   '/post-job': typeof PostJobRoute
   '/privacy': typeof PrivacyRoute
@@ -455,6 +477,7 @@ export interface FileRoutesByTo {
   '/admin/credentials': typeof AdminCredentialsRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/featured': typeof AdminFeaturedRoute
+  '/admin/firms': typeof AdminFirmsRoute
   '/admin/galleries': typeof AdminGalleriesRoute
   '/admin/hero-images': typeof AdminHeroImagesRoute
   '/admin/plans': typeof AdminPlansRoute
@@ -466,6 +489,7 @@ export interface FileRoutesByTo {
   '/ask/$id': typeof AskIdRoute
   '/claim/$proId': typeof ClaimProIdRoute
   '/costs/$trade': typeof CostsTradeRoute
+  '/invite/$token': typeof InviteTokenRoute
   '/pro/$id': typeof ProIdRoute
   '/projects/$id': typeof ProjectsIdRoute
   '/projects/new': typeof ProjectsNewRoute
@@ -502,6 +526,7 @@ export interface FileRoutesById {
   '/for-tradesmen': typeof ForTradesmenRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/how-it-works': typeof HowItWorksRoute
+  '/job-status': typeof JobStatusRoute
   '/join': typeof JoinRoute
   '/post-job': typeof PostJobRoute
   '/privacy': typeof PrivacyRoute
@@ -517,6 +542,7 @@ export interface FileRoutesById {
   '/admin/credentials': typeof AdminCredentialsRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/featured': typeof AdminFeaturedRoute
+  '/admin/firms': typeof AdminFirmsRoute
   '/admin/galleries': typeof AdminGalleriesRoute
   '/admin/hero-images': typeof AdminHeroImagesRoute
   '/admin/plans': typeof AdminPlansRoute
@@ -528,6 +554,7 @@ export interface FileRoutesById {
   '/ask/$id': typeof AskIdRoute
   '/claim/$proId': typeof ClaimProIdRoute
   '/costs/$trade': typeof CostsTradeRoute
+  '/invite/$token': typeof InviteTokenRoute
   '/pro/$id': typeof ProIdRoute
   '/projects/$id': typeof ProjectsIdRoute
   '/projects/new': typeof ProjectsNewRoute
@@ -565,6 +592,7 @@ export interface FileRouteTypes {
     | '/for-tradesmen'
     | '/forgot-password'
     | '/how-it-works'
+    | '/job-status'
     | '/join'
     | '/post-job'
     | '/privacy'
@@ -580,6 +608,7 @@ export interface FileRouteTypes {
     | '/admin/credentials'
     | '/admin/events'
     | '/admin/featured'
+    | '/admin/firms'
     | '/admin/galleries'
     | '/admin/hero-images'
     | '/admin/plans'
@@ -591,6 +620,7 @@ export interface FileRouteTypes {
     | '/ask/$id'
     | '/claim/$proId'
     | '/costs/$trade'
+    | '/invite/$token'
     | '/pro/$id'
     | '/projects/$id'
     | '/projects/new'
@@ -626,6 +656,7 @@ export interface FileRouteTypes {
     | '/for-tradesmen'
     | '/forgot-password'
     | '/how-it-works'
+    | '/job-status'
     | '/join'
     | '/post-job'
     | '/privacy'
@@ -641,6 +672,7 @@ export interface FileRouteTypes {
     | '/admin/credentials'
     | '/admin/events'
     | '/admin/featured'
+    | '/admin/firms'
     | '/admin/galleries'
     | '/admin/hero-images'
     | '/admin/plans'
@@ -652,6 +684,7 @@ export interface FileRouteTypes {
     | '/ask/$id'
     | '/claim/$proId'
     | '/costs/$trade'
+    | '/invite/$token'
     | '/pro/$id'
     | '/projects/$id'
     | '/projects/new'
@@ -687,6 +720,7 @@ export interface FileRouteTypes {
     | '/for-tradesmen'
     | '/forgot-password'
     | '/how-it-works'
+    | '/job-status'
     | '/join'
     | '/post-job'
     | '/privacy'
@@ -702,6 +736,7 @@ export interface FileRouteTypes {
     | '/admin/credentials'
     | '/admin/events'
     | '/admin/featured'
+    | '/admin/firms'
     | '/admin/galleries'
     | '/admin/hero-images'
     | '/admin/plans'
@@ -713,6 +748,7 @@ export interface FileRouteTypes {
     | '/ask/$id'
     | '/claim/$proId'
     | '/costs/$trade'
+    | '/invite/$token'
     | '/pro/$id'
     | '/projects/$id'
     | '/projects/new'
@@ -749,6 +785,7 @@ export interface RootRouteChildren {
   ForTradesmenRoute: typeof ForTradesmenRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   HowItWorksRoute: typeof HowItWorksRoute
+  JobStatusRoute: typeof JobStatusRoute
   JoinRoute: typeof JoinRoute
   PostJobRoute: typeof PostJobRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -764,6 +801,7 @@ export interface RootRouteChildren {
   AdminCredentialsRoute: typeof AdminCredentialsRoute
   AdminEventsRoute: typeof AdminEventsRoute
   AdminFeaturedRoute: typeof AdminFeaturedRoute
+  AdminFirmsRoute: typeof AdminFirmsRoute
   AdminGalleriesRoute: typeof AdminGalleriesRoute
   AdminHeroImagesRoute: typeof AdminHeroImagesRoute
   AdminPlansRoute: typeof AdminPlansRoute
@@ -775,6 +813,7 @@ export interface RootRouteChildren {
   AskIdRoute: typeof AskIdRoute
   ClaimProIdRoute: typeof ClaimProIdRoute
   CostsTradeRoute: typeof CostsTradeRoute
+  InviteTokenRoute: typeof InviteTokenRoute
   ProIdRoute: typeof ProIdRoute
   ProjectsIdRoute: typeof ProjectsIdRoute
   ProjectsNewRoute: typeof ProjectsNewRoute
@@ -876,6 +915,13 @@ declare module '@tanstack/react-router' {
       path: '/how-it-works'
       fullPath: '/how-it-works'
       preLoaderRoute: typeof HowItWorksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/job-status': {
+      id: '/job-status'
+      path: '/job-status'
+      fullPath: '/job-status'
+      preLoaderRoute: typeof JobStatusRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/join': {
@@ -990,6 +1036,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminFeaturedRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/firms': {
+      id: '/admin/firms'
+      path: '/admin/firms'
+      fullPath: '/admin/firms'
+      preLoaderRoute: typeof AdminFirmsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/galleries': {
       id: '/admin/galleries'
       path: '/admin/galleries'
@@ -1086,6 +1139,13 @@ declare module '@tanstack/react-router' {
       path: '/costs/$trade'
       fullPath: '/costs/$trade'
       preLoaderRoute: typeof CostsTradeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/invite/$token': {
+      id: '/invite/$token'
+      path: '/invite/$token'
+      fullPath: '/invite/$token'
+      preLoaderRoute: typeof InviteTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/pro/$id': {
@@ -1229,6 +1289,7 @@ const rootRouteChildren: RootRouteChildren = {
   ForTradesmenRoute: ForTradesmenRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   HowItWorksRoute: HowItWorksRoute,
+  JobStatusRoute: JobStatusRoute,
   JoinRoute: JoinRoute,
   PostJobRoute: PostJobRoute,
   PrivacyRoute: PrivacyRoute,
@@ -1244,6 +1305,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminCredentialsRoute: AdminCredentialsRoute,
   AdminEventsRoute: AdminEventsRoute,
   AdminFeaturedRoute: AdminFeaturedRoute,
+  AdminFirmsRoute: AdminFirmsRoute,
   AdminGalleriesRoute: AdminGalleriesRoute,
   AdminHeroImagesRoute: AdminHeroImagesRoute,
   AdminPlansRoute: AdminPlansRoute,
@@ -1255,6 +1317,7 @@ const rootRouteChildren: RootRouteChildren = {
   AskIdRoute: AskIdRoute,
   ClaimProIdRoute: ClaimProIdRoute,
   CostsTradeRoute: CostsTradeRoute,
+  InviteTokenRoute: InviteTokenRoute,
   ProIdRoute: ProIdRoute,
   ProjectsIdRoute: ProjectsIdRoute,
   ProjectsNewRoute: ProjectsNewRoute,

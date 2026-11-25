@@ -239,6 +239,16 @@ export const submitProApplication = createServerFn({ method: "POST" })
       console.error("[applications] submission email failed", emailError);
     }
 
+    const { notifyAdmins } = await import("@/lib/admin-alerts.server");
+    await notifyAdmins({
+      subject: `New firm application: ${data.company}`,
+      intro: "A firm has applied to join and is waiting for review.",
+      lines: [`Contact: ${data.contactName}`, `Reference: ${reference}`],
+      path: "/admin/applications",
+      actionLabel: "Review applications",
+      dedupeKey: `application:${applicationId}`,
+    });
+
     return { id: applicationId, reference, trackingToken, statusUrl };
   });
 

@@ -21,6 +21,7 @@ interface Props {
   vettingStatus?: string;
   profileUrl?: string;
   message?: string | null;
+  jobUrl?: string;
 }
 
 const Email = ({
@@ -31,6 +32,7 @@ const Email = ({
   vettingStatus,
   profileUrl,
   message,
+  jobUrl,
 }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
@@ -55,6 +57,12 @@ const Email = ({
           They don't have your contact details. If you'd like a quote, contact them from their
           profile — only firms you contact get your details.
         </Text>
+        {jobUrl ? (
+          <Text style={text}>
+            <a href={jobUrl}>See your job and every firm that is interested</a>. That page is
+            private to you, so please don't forward this email.
+          </Text>
+        ) : null}
         <BrandFooter />
       </Container>
     </Body>

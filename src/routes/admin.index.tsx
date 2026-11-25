@@ -21,6 +21,11 @@ const GROUPS = [
         body: "Review firms applying to join or claiming a listing.",
       },
       {
+        to: "/admin/firms",
+        label: "Firms and invitations",
+        body: "See which listings have an account and invite the rest to take theirs over.",
+      },
+      {
         to: "/admin/credentials",
         label: "Credentials",
         body: "Add and verify company numbers, insurance and trade registrations.",

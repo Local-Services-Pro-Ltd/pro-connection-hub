@@ -10,6 +10,7 @@ import { tradesQuery, areasQuery, budgetBands } from "@/lib/queries";
 import { getRequestOrigin } from "@/lib/origin.functions";
 import { isLiveArea } from "@/lib/postcode-gate";
 import { useServerFn } from "@tanstack/react-start";
+import { confirmJobPosted } from "@/lib/job-link.functions";
 import { submitWaitingList } from "@/lib/waiting-list.functions";
 import { HumanCheck, useHumanCheck } from "@/components/human-check";
 
@@ -102,6 +103,8 @@ function PostJob() {
   const { data: areas } = useSuspenseQuery(areasQuery);
   const liveAreaNames = areas.filter((a) => a.status === "live").map((a) => a.name);
   const [reference, setReference] = useState<string | null>(null);
+  const [emailed, setEmailed] = useState(false);
+  const confirmJob = useServerFn(confirmJobPosted);
 
   const [form, setForm] = useState({
     trade_slug: search.trade ?? "",
@@ -138,7 +141,11 @@ function PostJob() {
       if (form.contact_name.trim().length < 2) errors.push("Enter your name.");
       if (errors.length) throw new Error(errors[0]);
 
+      // The browser picks the id so the server can find this job afterwards
+      // and email the confirmation, including for guests who can't read it back.
+      const id = crypto.randomUUID();
       const row = {
+        id,
         trade_slug: form.trade_slug,
         postcode: form.postcode.trim().toUpperCase(),
         title: form.title.trim().slice(0, 140),
@@ -152,6 +159,7 @@ function PostJob() {
 
       // Guests can post but cannot read jobs back, so only signed-in
       // customers get the stored reference returned.
+      let ref = "";
       if (user) {
         const { data, error } = await supabase
           .from("jobs")
@@ -159,11 +167,19 @@ function PostJob() {
           .select("reference")
           .single();
         if (error) throw error;
-        return data.reference as string;
+        ref = data.reference as string;
+      } else {
+        const { error } = await supabase.from("jobs").insert(row);
+        if (error) throw error;
       }
-      const { error } = await supabase.from("jobs").insert(row);
-      if (error) throw error;
-      return "";
+      // The job is saved; a failed confirmation email must not look like a failed post.
+      try {
+        const result = await confirmJob({ data: { jobId: id } });
+        setEmailed(result.sent);
+      } catch {
+        setEmailed(false);
+      }
+      return ref;
     },
     onSuccess: (ref) => {
       setReference(ref);
@@ -223,6 +239,12 @@ function PostJob() {
                 We'll match your job with local trades covering {form.postcode.toUpperCase()} as
                 they join and complete their checks.
               </p>
+              {emailed ? (
+                <p className="mt-3 max-w-md text-sm text-muted-foreground">
+                  We've emailed <strong className="text-foreground">{form.contact_email}</strong>{" "}
+                  your reference and a private link to check on this job. No account needed.
+                </p>
+              ) : null}
               <MatchedPros
                 trade={form.trade_slug}
                 postcode={form.postcode}

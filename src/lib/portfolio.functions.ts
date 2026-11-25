@@ -197,6 +197,27 @@ type SavePortfolioInput = {
   extraPaths?: string[];
 };
 
+/** Tell the admins a gallery job is waiting. Edits alert at most once a day. */
+async function alertGalleryReview(proId: string, jobId: string, title: string, edited: boolean) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data: firm } = await supabaseAdmin
+    .from("pros")
+    .select("company")
+    .eq("id", proId)
+    .maybeSingle();
+  const { notifyAdmins } = await import("@/lib/admin-alerts.server");
+  await notifyAdmins({
+    subject: `Work gallery job to approve: ${firm?.company ?? proId}`,
+    intro: edited
+      ? "A firm has changed a job in its work gallery. It is hidden again until you approve it."
+      : "A firm has added a job to its work gallery. It stays hidden until you approve it.",
+    lines: [`Job: ${title}`],
+    path: "/admin/galleries",
+    actionLabel: "Review work galleries",
+    dedupeKey: `gallery:${jobId}:${edited ? new Date().toISOString().slice(0, 10) : "new"}`,
+  });
+}
+
 export const saveMyPortfolio = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: SavePortfolioInput) => ({
@@ -228,9 +249,10 @@ export const saveMyPortfolio = createServerFn({ method: "POST" })
         .update(values)
         .eq("id", data.id)
         .eq("pro_id", firm.id)
-        .select("id")
+        .select("id, status")
         .single();
       if (error || !row) throw new Error("Could not save this job. Please try again.");
+      if (row.status === "pending") await alertGalleryReview(firm.id, row.id, data.title, true);
       return { id: row.id };
     }
     const { count, error: countError } = await client
@@ -246,6 +268,7 @@ export const saveMyPortfolio = createServerFn({ method: "POST" })
       .select("id")
       .single();
     if (error || !row) throw new Error("Could not save this job. Please try again.");
+    await alertGalleryReview(firm.id, row.id, data.title, false);
     return { id: row.id };
   });
 

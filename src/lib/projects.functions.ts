@@ -107,6 +107,15 @@ export const createProject = createServerFn({ method: "POST" })
       console.error("[projects] create failed", error);
       throw new Error("We couldn't save that posting. Please try again.");
     }
+    const { notifyAdmins } = await import("@/lib/admin-alerts.server");
+    await notifyAdmins({
+      subject: `New project posting to review: ${data.title}`,
+      intro: "A homeowner has posted a project. It stays hidden until you approve it.",
+      lines: [`Reference: ${row.reference}`, `Postcode: ${data.postcode}`],
+      path: "/admin/projects",
+      actionLabel: "Review project postings",
+      dedupeKey: `project:${row.id}`,
+    });
     return row;
   });
 

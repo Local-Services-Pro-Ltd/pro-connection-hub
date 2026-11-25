@@ -351,6 +351,10 @@ async function run(request: Request): Promise<Response> {
       lastError = `${credentials.failures} credential maintenance update${credentials.failures === 1 ? "" : "s"} failed.`;
     }
 
+    // One email a day to the admins listing anything still waiting for them.
+    const { sendDailyAdminSummary } = await import("@/lib/admin-alerts.server");
+    const adminSummary = await sendDailyAdminSummary();
+
     await supabaseAdmin.rpc("release_job_lease", {
       p_name: JOB,
       p_result: {
@@ -360,12 +364,13 @@ async function run(request: Request): Promise<Response> {
         dead,
         failed,
         credentials,
+        adminSummary,
         at: new Date().toISOString(),
       },
       ...(lastError ? { p_error: lastError } : {}),
     });
 
-    return json({ ok: true, checked, reminders, retried, dead, failed, credentials });
+    return json({ ok: true, checked, reminders, retried, dead, failed, credentials, adminSummary });
   } catch (runError) {
     await supabaseAdmin.rpc("release_job_lease", {
       p_name: JOB,
