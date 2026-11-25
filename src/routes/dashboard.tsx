@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { ProfileTips } from "@/components/profile-tips";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -167,6 +168,7 @@ function Dashboard() {
         }
       />
       <Section>
+        <ProfileTips pro={pro} onOpenTab={setTab} />
         {/* Inverted bar so the tabs stand out: white on the dark themes, black on light. */}
         <div className="flex flex-wrap gap-2 rounded-md bg-foreground p-2 shadow-sm">
           {TABS.map((t) => (

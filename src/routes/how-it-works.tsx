@@ -194,7 +194,7 @@ function HowItWorks() {
           to="/verification"
           className="mt-8 inline-flex text-sm font-medium text-primary underline underline-offset-4"
         >
-          The full verification detail
+          How we check firms, in full
         </Link>
       </Section>
 
