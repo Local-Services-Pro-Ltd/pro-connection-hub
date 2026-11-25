@@ -50,6 +50,11 @@ const GROUPS = [
         label: "Project postings",
         body: "Review homeowner projects before they go on the project board.",
       },
+      {
+        to: "/admin/reviews",
+        label: "Reviews",
+        body: "Publish or reject homeowner reviews of firms.",
+      },
       { to: "/admin/qa", label: "Ask the Pros", body: "Moderate questions and answers." },
       {
         to: "/admin/waiting-list",

@@ -1,57 +1,8 @@
-import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Star, Quote, ShieldCheck } from "lucide-react";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/use-auth";
 import type { PublicReview } from "@/lib/queries";
 
-const field =
-  "w-full rounded-sm border border-input bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none transition-colors focus:border-primary";
-
-export function ReviewPanel({ proId, reviews }: { proId: string; reviews: PublicReview[] }) {
-  const { user } = useAuth();
-  const queryClient = useQueryClient();
-  const [rating, setRating] = useState(5);
-  const [title, setTitle] = useState("");
-  const [body, setBody] = useState("");
-  const [jobType, setJobType] = useState("");
-  const [place, setPlace] = useState("");
-
-  const mutation = useMutation({
-    mutationFn: async () => {
-      if (!user) throw new Error("Sign in to leave a review.");
-      const trimmed = body.trim();
-      if (trimmed.length < 20) throw new Error("Please write at least 20 characters.");
-      const { error } = await supabase.from("reviews").insert({
-        pro_id: proId,
-        author_id: user.id,
-        author_name:
-          (user.user_metadata?.["full_name"] as string | undefined) ??
-          user.email?.split("@")[0] ??
-          "Customer",
-        author_place: place.trim() || null,
-        job_type: jobType.trim() || null,
-        rating,
-        title: title.trim().slice(0, 120),
-        body: trimmed.slice(0, 2000),
-        status: "pending",
-      });
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      setTitle("");
-      setBody("");
-      setJobType("");
-      setPlace("");
-      setRating(5);
-      queryClient.invalidateQueries({ queryKey: ["pro", proId] });
-      toast.success("Review submitted — it'll appear once approved by a reviewer.");
-    },
-    onError: (e: Error) => toast.error(e.message),
-  });
-
+export function ReviewPanel({ reviews }: { reviews: PublicReview[] }) {
   return (
     <>
       <div className="mt-12 flex items-baseline justify-between gap-4">
@@ -91,7 +42,7 @@ export function ReviewPanel({ proId, reviews }: { proId: string; reviews: Public
         </ul>
       ) : (
         <div className="mt-5 rounded-md border border-border bg-card p-6">
-          <p className="font-display text-base">Be the first to review this firm</p>
+          <p className="font-display text-base">No reviews yet</p>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
             Reviews will only come from customers who've had work done through TradesmanFinder. This
             firm hasn't been reviewed here yet.
@@ -100,86 +51,17 @@ export function ReviewPanel({ proId, reviews }: { proId: string; reviews: Public
       )}
 
       <div className="mt-8 rounded-md border border-border bg-surface p-6">
-        <p className="eyebrow">Worked with them?</p>
-        <h3 className="mt-2 text-xl">Leave a review</h3>
-
-        {!user ? (
-          <p className="mt-3 text-sm text-muted-foreground">
-            <Link to="/signin" className="text-primary hover:underline">
-              Sign in
-            </Link>{" "}
-            to write a review. Reviews are moderated before publication and will only come from
-            customers who've had work done through TradesmanFinder.
-          </p>
-        ) : (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              mutation.mutate();
-            }}
-            className="mt-5 space-y-4"
-          >
-            <div className="flex items-center gap-1">
-              {[1, 2, 3, 4, 5].map((n) => (
-                <button
-                  key={n}
-                  type="button"
-                  aria-label={`${n} star${n === 1 ? "" : "s"}`}
-                  onClick={() => setRating(n)}
-                  className="p-1"
-                >
-                  <Star
-                    className={`h-6 w-6 ${n <= rating ? "fill-accent text-accent" : "text-muted-foreground"}`}
-                  />
-                </button>
-              ))}
-            </div>
-
-            <input
-              required
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              maxLength={120}
-              placeholder="Summary — e.g. Bathroom refit, on time and tidy"
-              className={field}
-            />
-            <textarea
-              required
-              rows={5}
-              value={body}
-              onChange={(e) => setBody(e.target.value)}
-              maxLength={2000}
-              placeholder="What was the job, how did it go, would you use them again?"
-              className={`${field} resize-y`}
-            />
-            <div className="grid gap-4 sm:grid-cols-2">
-              <input
-                value={jobType}
-                onChange={(e) => setJobType(e.target.value)}
-                maxLength={80}
-                placeholder="Job type (optional)"
-                className={field}
-              />
-              <input
-                value={place}
-                onChange={(e) => setPlace(e.target.value)}
-                maxLength={80}
-                placeholder="Your town (optional)"
-                className={field}
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={mutation.isPending}
-              className="rounded-sm bg-primary px-6 py-3 font-display text-sm font-semibold text-primary-foreground shadow-ember hover:brightness-110 disabled:opacity-60"
-            >
-              {mutation.isPending ? "Submitting…" : "Submit review"}
-            </button>
-            <p className="text-xs text-muted-foreground">
-              Reviews are moderated before publication and are linked to your account.
-            </p>
-          </form>
-        )}
+        <p className="eyebrow">How reviews work</p>
+        <h3 className="mt-2 text-xl">Reviews come from jobs, not from anyone passing by</h3>
+        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+          A review can only be left by a homeowner whose job on TradesmanFinder this firm quoted
+          for. We check each one before it is published, and a low score is never a reason to reject
+          it. We are still building the step that asks homeowners for their review, so no reviews
+          can be left just yet.
+        </p>
+        <Link to="/verification" className="mt-4 inline-flex text-sm text-primary hover:underline">
+          How we check firms
+        </Link>
       </div>
     </>
   );

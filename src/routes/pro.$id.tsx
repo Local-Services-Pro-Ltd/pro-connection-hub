@@ -287,7 +287,7 @@ function ProPage() {
               />
             </div>
 
-            <ReviewPanel proId={pro.id} reviews={reviews} />
+            <ReviewPanel reviews={reviews} />
           </div>
 
           <div className="space-y-6 lg:sticky lg:top-24 lg:h-fit">

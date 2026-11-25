@@ -87,6 +87,7 @@ export type WaitingCounts = {
   projects: number;
   questions: number;
   answers: number;
+  reviews: number;
 };
 
 /** What is waiting for an admin right now. */
@@ -106,15 +107,16 @@ export async function countWaiting(): Promise<WaitingCounts> {
     return total ?? 0;
   };
   const waitingOnUs = ["pending", "in_review", "resubmitted"];
-  const [applications, claims, gallery, projects, questions, answers] = await Promise.all([
+  const [applications, claims, gallery, projects, questions, answers, reviews] = await Promise.all([
     count("pro_applications", (q) => q.in("status", waitingOnUs).neq("kind", "claim")),
     count("pro_applications", (q) => q.in("status", waitingOnUs).eq("kind", "claim")),
     count("pro_projects", (q) => q.eq("status", "pending")),
     count("projects", (q) => q.eq("status", "pending")),
     count("questions", (q) => q.eq("status", "pending")),
     count("answers", (q) => q.eq("status", "pending")),
+    count("reviews", (q) => q.eq("status", "pending")),
   ]);
-  return { applications, claims, gallery, projects, questions, answers };
+  return { applications, claims, gallery, projects, questions, answers, reviews };
 }
 
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
@@ -147,6 +149,7 @@ export async function sendDailyAdminSummary(now = new Date()): Promise<number> {
       lines.push(
         `${plural(waiting.answers, "Ask the Pros answer", "Ask the Pros answers")} to moderate`,
       );
+    if (waiting.reviews) lines.push(`${plural(waiting.reviews, "review", "reviews")} to check`);
     if (!lines.length) return 0;
     const total = Object.values(waiting).reduce((sum, value) => sum + value, 0);
     return await notifyAdmins({

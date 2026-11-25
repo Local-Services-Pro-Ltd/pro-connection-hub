@@ -43,6 +43,7 @@ import { Route as AdminHeroImagesRouteImport } from './routes/admin.hero-images'
 import { Route as AdminPlansRouteImport } from './routes/admin.plans'
 import { Route as AdminProjectsRouteImport } from './routes/admin.projects'
 import { Route as AdminQaRouteImport } from './routes/admin.qa'
+import { Route as AdminReviewsRouteImport } from './routes/admin.reviews'
 import { Route as AdminSlaRouteImport } from './routes/admin.sla'
 import { Route as AdminWaitingListRouteImport } from './routes/admin.waiting-list'
 import { Route as AreasAreaRouteImport } from './routes/areas_.$area'
@@ -242,6 +243,11 @@ const AdminQaRoute = AdminQaRouteImport.update({
   path: '/admin/qa',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminReviewsRoute = AdminReviewsRouteImport.update({
+  id: '/admin/reviews',
+  path: '/admin/reviews',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminSlaRoute = AdminSlaRouteImport.update({
   id: '/admin/sla',
   path: '/admin/sla',
@@ -419,6 +425,7 @@ export interface FileRoutesByFullPath {
   '/admin/plans': typeof AdminPlansRoute
   '/admin/projects': typeof AdminProjectsRoute
   '/admin/qa': typeof AdminQaRoute
+  '/admin/reviews': typeof AdminReviewsRoute
   '/admin/sla': typeof AdminSlaRoute
   '/admin/waiting-list': typeof AdminWaitingListRoute
   '/areas/$area': typeof AreasAreaRoute
@@ -483,6 +490,7 @@ export interface FileRoutesByTo {
   '/admin/plans': typeof AdminPlansRoute
   '/admin/projects': typeof AdminProjectsRoute
   '/admin/qa': typeof AdminQaRoute
+  '/admin/reviews': typeof AdminReviewsRoute
   '/admin/sla': typeof AdminSlaRoute
   '/admin/waiting-list': typeof AdminWaitingListRoute
   '/areas/$area': typeof AreasAreaRoute
@@ -548,6 +556,7 @@ export interface FileRoutesById {
   '/admin/plans': typeof AdminPlansRoute
   '/admin/projects': typeof AdminProjectsRoute
   '/admin/qa': typeof AdminQaRoute
+  '/admin/reviews': typeof AdminReviewsRoute
   '/admin/sla': typeof AdminSlaRoute
   '/admin/waiting-list': typeof AdminWaitingListRoute
   '/areas_/$area': typeof AreasAreaRoute
@@ -614,6 +623,7 @@ export interface FileRouteTypes {
     | '/admin/plans'
     | '/admin/projects'
     | '/admin/qa'
+    | '/admin/reviews'
     | '/admin/sla'
     | '/admin/waiting-list'
     | '/areas/$area'
@@ -678,6 +688,7 @@ export interface FileRouteTypes {
     | '/admin/plans'
     | '/admin/projects'
     | '/admin/qa'
+    | '/admin/reviews'
     | '/admin/sla'
     | '/admin/waiting-list'
     | '/areas/$area'
@@ -742,6 +753,7 @@ export interface FileRouteTypes {
     | '/admin/plans'
     | '/admin/projects'
     | '/admin/qa'
+    | '/admin/reviews'
     | '/admin/sla'
     | '/admin/waiting-list'
     | '/areas_/$area'
@@ -807,6 +819,7 @@ export interface RootRouteChildren {
   AdminPlansRoute: typeof AdminPlansRoute
   AdminProjectsRoute: typeof AdminProjectsRoute
   AdminQaRoute: typeof AdminQaRoute
+  AdminReviewsRoute: typeof AdminReviewsRoute
   AdminSlaRoute: typeof AdminSlaRoute
   AdminWaitingListRoute: typeof AdminWaitingListRoute
   AreasAreaRoute: typeof AreasAreaRoute
@@ -1078,6 +1091,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminQaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/reviews': {
+      id: '/admin/reviews'
+      path: '/admin/reviews'
+      fullPath: '/admin/reviews'
+      preLoaderRoute: typeof AdminReviewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/sla': {
       id: '/admin/sla'
       path: '/admin/sla'
@@ -1311,6 +1331,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminPlansRoute: AdminPlansRoute,
   AdminProjectsRoute: AdminProjectsRoute,
   AdminQaRoute: AdminQaRoute,
+  AdminReviewsRoute: AdminReviewsRoute,
   AdminSlaRoute: AdminSlaRoute,
   AdminWaitingListRoute: AdminWaitingListRoute,
   AreasAreaRoute: AreasAreaRoute,

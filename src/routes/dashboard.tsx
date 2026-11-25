@@ -228,7 +228,7 @@ function MembershipLocked({ what, onOpen }: { what: string; onOpen: () => void }
       <h2 className="mt-2 text-2xl">Unlock your {what}</h2>
       <p className="mt-2 text-sm text-muted-foreground">
         Your listing stays live either way. A paid membership opens the contact details on every
-        enquiry, your booked visits and priority placement in the directory.
+        enquiry and your booked visits. Membership never changes where you rank.
       </p>
       <button
         type="button"
@@ -756,7 +756,6 @@ function FreeFoundingPlan({ pro }: { pro: Pro }) {
           <li>· Unlimited matched jobs</li>
           <li>· {TRADE_TIER_LIMITS.tradeCategoryLimit} trade categories</li>
           <li>· {TRADE_TIER_LIMITS.postcodeAreaLimit} postcode areas</li>
-          <li>· Priority ranking eligibility</li>
           <li>· Photo portfolio</li>
         </ul>
       </div>
@@ -817,7 +816,7 @@ function PaidPlanTab({ pro }: { pro: Pro }) {
                   ? ` — renews ${new Date(pro.current_period_end).toLocaleDateString("en-GB")}`
                   : ""
               }.`
-            : "Your listing is visible, but paid membership unlocks the full lead allowance and priority placement."}
+            : "Your listing is visible, but paid membership unlocks the full lead allowance."}
         </p>
         {active && (
           <button
