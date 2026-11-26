@@ -78,6 +78,11 @@ const GROUPS = [
     links: [
       { to: "/admin/plans", label: "Plans", body: "Control which membership plans are shown." },
       {
+        to: "/admin/numbers",
+        label: "Numbers",
+        body: "Firms, jobs, quotes, reviews and complaints at a glance.",
+      },
+      {
         to: "/admin/sla",
         label: "Review times",
         body: "How quickly applications are being handled.",
