@@ -11,13 +11,13 @@ import type { CostGuide } from "./cost-guides";
  * not all say whether VAT is included, so the page tells people to ask.
  */
 
-const CHECKED = "November 2026";
+export const CHECKED = "November 2026";
 
-const checkatrade = (path: string) => ({
+export const checkatrade = (path: string) => ({
   name: "Checkatrade cost guide",
   url: `https://www.checkatrade.com/blog/cost-guides/${path}`,
 });
-const myJobQuote = (path: string) => ({
+export const myJobQuote = (path: string) => ({
   name: "MyJobQuote cost guide",
   url: `https://www.myjobquote.co.uk/costs/${path}`,
 });

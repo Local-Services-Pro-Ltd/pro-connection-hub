@@ -5,7 +5,6 @@ import { PageBanner } from "@/components/page-banner";
 import { ProCard } from "@/components/pro-card";
 import { Section, SectionHead } from "@/components/layout-bits";
 import { costGuide, gbp, hasCostGuide } from "@/lib/cost-guides";
-import { regionalJobRange } from "@/lib/area-pages";
 import { areasQuery, prosQuery, tradesQuery } from "@/lib/queries";
 import { breadcrumbSchema, ldScript, SITE_URL } from "@/lib/structured-data";
 
@@ -124,7 +123,7 @@ function AreaTradePage() {
         <Section className="border-y border-border bg-surface">
           <SectionHead
             eyebrow="Cost guide"
-            title={`Typical ${area.name} prices from our cost guide — your quote may differ`}
+            title="Typical UK prices from our cost guide. Your quote may differ."
           />
           <div className="mt-8 overflow-x-auto rounded-md border border-border bg-card">
             <table className="w-full border-collapse text-sm">
@@ -134,13 +133,13 @@ function AreaTradePage() {
                     Typical job
                   </th>
                   <th scope="col" className="p-4 text-right font-display">
-                    Adjusted range
+                    Typical UK range
                   </th>
                 </tr>
               </thead>
               <tbody>
                 {guide.jobs.map((job) => {
-                  const [low, high] = regionalJobRange(area.slug, job.low, job.high);
+                  const { low, high } = job;
                   return (
                     <tr key={job.id} className="border-b border-border last:border-0">
                       <td className="p-4">
