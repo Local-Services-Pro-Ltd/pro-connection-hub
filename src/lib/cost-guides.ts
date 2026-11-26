@@ -35,7 +35,12 @@ export type CostGuide = {
   /** Typical rate range for the trade, £ ex VAT. Per day unless `rateUnit` says otherwise. */
   dayRate: [number, number];
   /** Some trades are not charged by the day: locksmiths and cleaners by the hour, lofts by area. */
-  rateUnit?: "day" | "hour" | "m²";
+  rateUnit?: "day" | "hour" | "m²" | "job";
+  /**
+   * Set where job prices are mostly equipment (solar panels, alarm kits), so
+   * dividing the total by the day rate would give a nonsense number of days.
+   */
+  noDayEstimate?: boolean;
   jobs: CostJob[];
   /** Practical money-saving or pitfall guidance. */
   tips: string[];
@@ -995,11 +1000,14 @@ export function rateLabel(guide: CostGuide): string {
     ? "Typical hourly rate"
     : unit === "m²"
       ? "Typical cost per m²"
-      : "Typical day rate";
+      : unit === "job"
+        ? "Typical labour per job"
+        : "Typical day rate";
 }
 
 export function rateRange(guide: CostGuide): string {
-  return `${gbp(guide.dayRate[0])}–${gbp(guide.dayRate[1])}`;
+  const [low, high] = guide.dayRate;
+  return low === high ? `about ${gbp(low)}` : `${gbp(low)}–${gbp(high)}`;
 }
 
 export function allCostGuides(): CostGuide[] {

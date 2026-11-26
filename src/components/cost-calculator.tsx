@@ -155,7 +155,7 @@ export function CostCalculator({ guide, tradeName }: { guide: CostGuide; tradeNa
                 {guide.sources
                   ? "Typical UK figures. Ask each firm whether its price includes VAT."
                   : "Labour and standard materials, excluding VAT."}
-                {(guide.rateUnit ?? "day") === "day"
+                {(guide.rateUnit ?? "day") === "day" && !guide.noDayEstimate
                   ? ` Roughly ${days} working ${days === 1 ? "day" : "days"} on site.`
                   : ""}
               </p>
