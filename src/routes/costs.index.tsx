@@ -5,7 +5,7 @@ import { Section, SectionHead } from "@/components/layout-bits";
 import { PageBanner } from "@/components/page-banner";
 import { tradesQuery } from "@/lib/queries";
 import { getRequestOrigin } from "@/lib/origin.functions";
-import { allCostGuides, gbp } from "@/lib/cost-guides";
+import { allCostGuides, gbp, rateLabel, rateRange } from "@/lib/cost-guides";
 import { tradeHero, tradeAlt, tradeFocal } from "@/lib/trade-media";
 
 export const Route = createFileRoute("/costs/")({
@@ -20,7 +20,7 @@ export const Route = createFileRoute("/costs/")({
     const base = loaderData?.origin ?? "";
     const title = "How much should it cost? UK trade price guides | TradesmanFinder";
     const description =
-      "Real 2026 UK prices for plumbing, electrics, roofing, bathrooms, kitchens and more — with a free calculator that prices your job before you speak to anyone.";
+      "Typical 2026 UK prices for plumbing, electrics, roofing, bathrooms, kitchens and more — with a free calculator that prices your job before you speak to anyone.";
     return {
       meta: [
         { title },
@@ -99,7 +99,10 @@ function CostsIndex() {
                     {g.intro}
                   </p>
                   <p className="mt-4 border-t border-border pt-4 text-xs text-muted-foreground">
-                    Day rate {gbp(g.dayRate[0])}–{gbp(g.dayRate[1])} · jobs from {gbp(cheapest)}
+                    {rateLabel(g)
+                      .replace("Typical ", "")
+                      .replace(/^./, (c) => c.toUpperCase())}{" "}
+                    {rateRange(g)} · jobs from {gbp(cheapest)}
                   </p>
                 </div>
               </Link>
@@ -125,9 +128,9 @@ function CostsIndex() {
         </div>
 
         <p className="mt-10 max-w-2xl text-sm text-muted-foreground">
-          Prices are typical South East figures excluding VAT, updated for 2026. They are a guide to
-          help you sanity-check a quote — the only real price is the one a tradesperson gives you
-          after seeing the job.
+          These are estimates to help you sanity-check a quote, not prices we set or guarantee. Each
+          guide says what its figures are based on. The only real price is the one a tradesperson
+          gives you after seeing the job.
         </p>
       </Section>
     </>

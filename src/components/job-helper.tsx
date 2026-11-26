@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { AlertTriangle, Sparkles } from "lucide-react";
 import { useState } from "react";
-import { costGuide, gbp, hasCostGuide } from "@/lib/cost-guides";
+import { costGuide, hasCostGuide, rateLabel, rateRange } from "@/lib/cost-guides";
 import { helpWriteJob } from "@/lib/job-helper.functions";
 import type { JobSuggestion } from "@/lib/job-helper.types";
 import type { Trade } from "@/lib/queries";
@@ -76,7 +76,7 @@ export function JobHelper({
         {guide && suggestion.trade_slug && (
           <div className="mt-5 rounded-sm border border-border bg-card p-4 text-sm">
             <p className="font-display font-semibold">
-              Typical day rate: {gbp(guide.dayRate[0])}–{gbp(guide.dayRate[1])}
+              {rateLabel(guide)}: {rateRange(guide)}
             </p>
             <p className="mt-1 text-muted-foreground">
               Typical UK range from our cost guide — your quote may differ
