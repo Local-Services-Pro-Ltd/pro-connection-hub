@@ -1,10 +1,14 @@
 /**
  * UK job-cost data behind /costs — the cost-guide hub and calculator.
  *
- * Figures are typical 2026 supply-and-fit prices for domestic work in the
- * South East, VAT excluded, based on published industry rate cards and the
- * quote ranges we see on the network. They are estimates, never quotes.
+ * The first fourteen guides in this file give typical 2026 supply-and-fit
+ * prices for domestic work in the South East, VAT excluded. Their source was
+ * not recorded when they were written, so they carry no `sources`. Guides
+ * added later (cost-guides-more.ts) name the published price guides they were
+ * drawn from. Every figure is an estimate, never a quote.
  */
+
+import { moreGuides } from "./cost-guides-more";
 
 export type CostJob = {
   /** Stable id, used in the calculator's URL-free local state. */
@@ -28,12 +32,21 @@ export type CostGuide = {
   slug: string;
   /** Short intro shown under the hero. */
   intro: string;
-  /** Typical day rate range for the trade, £/day ex VAT. */
+  /** Typical rate range for the trade, £ ex VAT. Per day unless `rateUnit` says otherwise. */
   dayRate: [number, number];
+  /** Some trades are not charged by the day: locksmiths and cleaners by the hour, lofts by area. */
+  rateUnit?: "day" | "hour" | "m²";
   jobs: CostJob[];
   /** Practical money-saving or pitfall guidance. */
   tips: string[];
   faqs: { q: string; a: string }[];
+  /**
+   * Published price guides the ranges were drawn from. Guides with sources
+   * give typical UK figures; guides without are the original South East set.
+   */
+  sources?: { name: string; url: string }[];
+  /** When the sources were last read, for example "November 2026". */
+  checked?: string;
 };
 
 const guides: CostGuide[] = [
@@ -971,7 +984,23 @@ const guides: CostGuide[] = [
   },
 ];
 
+guides.push(...moreGuides);
+
 const bySlug = new Map(guides.map((g) => [g.slug, g]));
+
+/** "Typical day rate" or "Typical hourly rate", with the range. */
+export function rateLabel(guide: CostGuide): string {
+  const unit = guide.rateUnit ?? "day";
+  return unit === "hour"
+    ? "Typical hourly rate"
+    : unit === "m²"
+      ? "Typical cost per m²"
+      : "Typical day rate";
+}
+
+export function rateRange(guide: CostGuide): string {
+  return `${gbp(guide.dayRate[0])}–${gbp(guide.dayRate[1])}`;
+}
 
 export function allCostGuides(): CostGuide[] {
   return guides;

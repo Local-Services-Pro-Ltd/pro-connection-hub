@@ -152,8 +152,12 @@ export function CostCalculator({ guide, tradeName }: { guide: CostGuide; tradeNa
                 {gbp(total.low)} – {gbp(total.high)}
               </p>
               <p className="mt-2 text-xs text-muted-foreground">
-                Labour and standard materials, excluding VAT. Roughly {days} working{" "}
-                {days === 1 ? "day" : "days"} on site.
+                {guide.sources
+                  ? "Typical UK figures. Ask each firm whether its price includes VAT."
+                  : "Labour and standard materials, excluding VAT."}
+                {(guide.rateUnit ?? "day") === "day"
+                  ? ` Roughly ${days} working ${days === 1 ? "day" : "days"} on site.`
+                  : ""}
               </p>
               <ul className="mt-4 space-y-1.5 border-t border-border pt-4 text-xs text-muted-foreground">
                 {lines.map((l) => (

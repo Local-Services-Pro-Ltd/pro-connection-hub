@@ -4,7 +4,7 @@ import { PageBanner } from "@/components/page-banner";
 import { CostCalculator } from "@/components/cost-calculator";
 import { supabase } from "@/integrations/supabase/client";
 import { getRequestOrigin } from "@/lib/origin.functions";
-import { costGuide, gbp } from "@/lib/cost-guides";
+import { costGuide, gbp, rateLabel, rateRange } from "@/lib/cost-guides";
 import type { Trade } from "@/lib/queries";
 
 export const Route = createFileRoute("/costs/$trade")({
@@ -30,7 +30,7 @@ export const Route = createFileRoute("/costs/$trade")({
     const { guide, trade, origin } = loaderData;
     const lowest = Math.min(...guide.jobs.map((j) => j.low));
     const title = `How much does a ${trade.name.toLowerCase()} cost in 2026? | TradesmanFinder`;
-    const description = `Typical UK ${trade.name.toLowerCase()} prices: jobs from ${gbp(lowest)}, day rates ${gbp(guide.dayRate[0])}–${gbp(guide.dayRate[1])}. Use the free calculator to price your own job.`;
+    const description = `Typical UK ${trade.name.toLowerCase()} prices: jobs from ${gbp(lowest)}, ${rateLabel(guide).toLowerCase()} ${rateRange(guide)}. Use the free calculator to price your own job.`;
     const base = origin ?? "";
     const image = origin ? `${origin}/og/trade-${trade.slug}.jpg` : undefined;
     return {
@@ -93,10 +93,8 @@ function CostGuidePage() {
       >
         <dl className="flex flex-wrap gap-x-12 gap-y-4 border-t border-border pt-6">
           <div>
-            <dt className="eyebrow">Typical day rate</dt>
-            <dd className="mt-1 font-display text-xl">
-              {gbp(guide.dayRate[0])}–{gbp(guide.dayRate[1])}
-            </dd>
+            <dt className="eyebrow">{rateLabel(guide)}</dt>
+            <dd className="mt-1 font-display text-xl">{rateRange(guide)}</dd>
           </div>
           <div>
             <dt className="eyebrow">Smallest job</dt>
@@ -146,9 +144,37 @@ function CostGuidePage() {
                 ))}
               </tbody>
             </table>
-            <p className="mt-4 text-xs text-muted-foreground">
-              Ex VAT. South East baseline — the calculator adjusts for your region.
-            </p>
+            {guide.sources ? (
+              <div className="mt-4 text-xs text-muted-foreground">
+                <p>
+                  Typical UK figures drawn from published price guides, read in {guide.checked}. The
+                  sources don't all say whether VAT is included, so ask each firm. These are
+                  estimates to help you sanity-check a quote, not prices we set or guarantee.
+                </p>
+                <p className="mt-2">
+                  Sources:{" "}
+                  {guide.sources.map((source, index) => (
+                    <span key={source.url}>
+                      {index > 0 ? ", " : ""}
+                      <a
+                        href={source.url}
+                        target="_blank"
+                        rel="noreferrer nofollow"
+                        className="underline underline-offset-2 hover:text-foreground"
+                      >
+                        {source.name}
+                      </a>
+                    </span>
+                  ))}
+                  .
+                </p>
+              </div>
+            ) : (
+              <p className="mt-4 text-xs text-muted-foreground">
+                Ex VAT. South East baseline — the calculator adjusts for your region. Estimates
+                only, not prices we set or guarantee.
+              </p>
+            )}
           </div>
 
           <div>
