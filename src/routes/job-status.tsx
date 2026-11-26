@@ -5,6 +5,7 @@ import { Section } from "@/components/layout-bits";
 import { MatchedPros } from "@/components/matched-pros";
 import { JobAfterPanel } from "@/components/job-after";
 import { JobPhotoStrip } from "@/components/job-photos";
+import { HomeownerMessages } from "@/components/message-thread";
 import { QuestionsToAsk } from "@/components/questions-to-ask";
 import { JobSteps, QuoteCompare } from "@/components/quote-compare";
 import { getJobAfter } from "@/lib/after-job.functions";
@@ -69,6 +70,7 @@ function JobStatus() {
     onSuccess: async () => {
       toast.success("Invitation sent. We'll email you when their quote arrives.");
       await refresh();
+      await queryClient.invalidateQueries({ queryKey: ["job-threads", token] });
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -183,6 +185,8 @@ function JobStatus() {
         )}
 
         {chosen && <JobAfterPanel token={token} />}
+
+        <HomeownerMessages token={token} />
 
         <h2 className="mt-12 text-2xl">Firms interested in your job</h2>
         {job.interests.length === 0 ? (

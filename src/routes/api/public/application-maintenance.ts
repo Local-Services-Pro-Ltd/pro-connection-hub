@@ -364,6 +364,18 @@ async function run(request: Request): Promise<Response> {
         reminderError instanceof Error ? reminderError.message : "Credential reminders failed";
     }
 
+    // Ask homeowners whether the work is finished, and for a review once it is.
+    let jobNudges = 0;
+    try {
+      const { sendJobNudges } = await import("@/lib/job-nudges.server");
+      const result = await sendJobNudges();
+      jobNudges = result.sent;
+      failed += result.failed;
+    } catch (nudgeError) {
+      failed += 1;
+      lastError = nudgeError instanceof Error ? nudgeError.message : "Job nudges failed";
+    }
+
     // Quotes past their valid-until date can no longer be accepted.
     const { error: quoteExpiryError } = await (
       supabaseAdmin as unknown as {
@@ -403,6 +415,7 @@ async function run(request: Request): Promise<Response> {
         credentials,
         adminSummary,
         credentialReminders,
+        jobNudges,
         at: new Date().toISOString(),
       },
       ...(lastError ? { p_error: lastError } : {}),

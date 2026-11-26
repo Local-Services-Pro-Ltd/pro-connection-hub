@@ -42,6 +42,7 @@ import { Route as AdminFeaturedRouteImport } from './routes/admin.featured'
 import { Route as AdminFirmsRouteImport } from './routes/admin.firms'
 import { Route as AdminGalleriesRouteImport } from './routes/admin.galleries'
 import { Route as AdminHeroImagesRouteImport } from './routes/admin.hero-images'
+import { Route as AdminNumbersRouteImport } from './routes/admin.numbers'
 import { Route as AdminPlansRouteImport } from './routes/admin.plans'
 import { Route as AdminProjectsRouteImport } from './routes/admin.projects'
 import { Route as AdminQaRouteImport } from './routes/admin.qa'
@@ -240,6 +241,11 @@ const AdminHeroImagesRoute = AdminHeroImagesRouteImport.update({
   path: '/admin/hero-images',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminNumbersRoute = AdminNumbersRouteImport.update({
+  id: '/admin/numbers',
+  path: '/admin/numbers',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminPlansRoute = AdminPlansRouteImport.update({
   id: '/admin/plans',
   path: '/admin/plans',
@@ -436,6 +442,7 @@ export interface FileRoutesByFullPath {
   '/admin/firms': typeof AdminFirmsRoute
   '/admin/galleries': typeof AdminGalleriesRoute
   '/admin/hero-images': typeof AdminHeroImagesRoute
+  '/admin/numbers': typeof AdminNumbersRoute
   '/admin/plans': typeof AdminPlansRoute
   '/admin/projects': typeof AdminProjectsRoute
   '/admin/qa': typeof AdminQaRoute
@@ -503,6 +510,7 @@ export interface FileRoutesByTo {
   '/admin/firms': typeof AdminFirmsRoute
   '/admin/galleries': typeof AdminGalleriesRoute
   '/admin/hero-images': typeof AdminHeroImagesRoute
+  '/admin/numbers': typeof AdminNumbersRoute
   '/admin/plans': typeof AdminPlansRoute
   '/admin/projects': typeof AdminProjectsRoute
   '/admin/qa': typeof AdminQaRoute
@@ -571,6 +579,7 @@ export interface FileRoutesById {
   '/admin/firms': typeof AdminFirmsRoute
   '/admin/galleries': typeof AdminGalleriesRoute
   '/admin/hero-images': typeof AdminHeroImagesRoute
+  '/admin/numbers': typeof AdminNumbersRoute
   '/admin/plans': typeof AdminPlansRoute
   '/admin/projects': typeof AdminProjectsRoute
   '/admin/qa': typeof AdminQaRoute
@@ -640,6 +649,7 @@ export interface FileRouteTypes {
     | '/admin/firms'
     | '/admin/galleries'
     | '/admin/hero-images'
+    | '/admin/numbers'
     | '/admin/plans'
     | '/admin/projects'
     | '/admin/qa'
@@ -707,6 +717,7 @@ export interface FileRouteTypes {
     | '/admin/firms'
     | '/admin/galleries'
     | '/admin/hero-images'
+    | '/admin/numbers'
     | '/admin/plans'
     | '/admin/projects'
     | '/admin/qa'
@@ -774,6 +785,7 @@ export interface FileRouteTypes {
     | '/admin/firms'
     | '/admin/galleries'
     | '/admin/hero-images'
+    | '/admin/numbers'
     | '/admin/plans'
     | '/admin/projects'
     | '/admin/qa'
@@ -842,6 +854,7 @@ export interface RootRouteChildren {
   AdminFirmsRoute: typeof AdminFirmsRoute
   AdminGalleriesRoute: typeof AdminGalleriesRoute
   AdminHeroImagesRoute: typeof AdminHeroImagesRoute
+  AdminNumbersRoute: typeof AdminNumbersRoute
   AdminPlansRoute: typeof AdminPlansRoute
   AdminProjectsRoute: typeof AdminProjectsRoute
   AdminQaRoute: typeof AdminQaRoute
@@ -1110,6 +1123,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminHeroImagesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/numbers': {
+      id: '/admin/numbers'
+      path: '/admin/numbers'
+      fullPath: '/admin/numbers'
+      preLoaderRoute: typeof AdminNumbersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/plans': {
       id: '/admin/plans'
       path: '/admin/plans'
@@ -1370,6 +1390,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminFirmsRoute: AdminFirmsRoute,
   AdminGalleriesRoute: AdminGalleriesRoute,
   AdminHeroImagesRoute: AdminHeroImagesRoute,
+  AdminNumbersRoute: AdminNumbersRoute,
   AdminPlansRoute: AdminPlansRoute,
   AdminProjectsRoute: AdminProjectsRoute,
   AdminQaRoute: AdminQaRoute,
