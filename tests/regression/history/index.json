@@ -72,5 +72,12 @@
     "total": 24,
     "failed": 0,
     "new_findings": []
+  },
+  {
+    "file": "2026-11-27T10-47-41-246Z.json",
+    "ran_at": "2026-11-27T10:47:41.246Z",
+    "total": 24,
+    "failed": 0,
+    "new_findings": []
   }
 ]
